@@ -17,7 +17,9 @@ struct Citizen_amount
   Citizen_type type;
   int amount;
 
-  Citizen_amount() { type = CIT_NULL; amount = 0; }
+  Citizen_amount(Citizen_type T = CIT_NULL, int A = 0) :
+    type (T), amount (A) {}
+  
 };
 
 #endif

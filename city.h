@@ -11,5 +11,4 @@ class City
   std::vector<Building> buildings;
 };
 
-
 #endif

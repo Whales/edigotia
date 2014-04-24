@@ -17,6 +17,8 @@ struct Resource_cost
 {
   Resource type;
   int amount;
+
+  Resource_cost(Resource T, int A) : type (T), amount (A) {}
 };
 
 #endif

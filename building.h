@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "citizen.h"
 #include "resource.h"
 
 enum Building_type
@@ -23,15 +24,17 @@ enum Building_type
   BUILD_MAX
 };
 
-struct Building_data
+struct Building_datum
 {
+  int uid;
   std::string name;
   std::vector<Resource_cost> build_costs;
+  int upkeep;
 
   Citizen_amount housing;
 
   int jobs;
-  std::vector<Resource_cost> flat_production;
+  std::vector<Resource_cost> flat_production; // Per job, w/ skill of 5 (max)
 
   std::vector<Resource> buildable;
 };
@@ -40,5 +43,8 @@ struct Building
 {
   Building_type type;
 };
+
+extern Building_datum* Building_data[BUILD_MAX];
+void init_building_data();
 
 #endif
