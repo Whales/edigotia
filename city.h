@@ -6,9 +6,14 @@
 
 class City
 {
+  City();
+  ~City();
+
   int population[CIT_MAX];
 
-  std::vector<Building> buildings;
+  int buildings[BUILD_MAX];
+
+  void interface_buildings();
 };
 
 #endif
