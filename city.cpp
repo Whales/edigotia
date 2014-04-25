@@ -1,6 +1,9 @@
+#include <vector>
 #include "city.h"
 #include "cuss.h"
 #include "window.h"
+#include "building.h"
+#include "stringfunc.h"
 
 City::City()
 {
@@ -16,7 +19,7 @@ City::City()
   }
 }
 
-void City::interface_buildings
+void City::interface_buildings()
 {
   cuss::interface i_buildings;
   Window w_buildings(0, 0, 80, 24);

@@ -40,7 +40,7 @@ void init_building_data()
     _housing(CIT_BURGHER, 50);
 
   _build(BUILD_PALACE);
-    _cost(RES_GOD, 1500);
+    _cost(RES_GOLD, 1500);
     _cost(RES_STONE, 50);
     _upkeep(20);
     _housing(CIT_NOBLE, 20);
