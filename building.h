@@ -18,8 +18,13 @@ enum Building_type
 
 // Basic resources
   BUILD_FARM,
+  BUILD_QUARRY,
   BUILD_MINE,
   BUILD_CAMP,
+  BUILD_SAWMILL,
+
+// Military
+  BUILD_BARRACKS,
 
   BUILD_MAX
 };
@@ -30,6 +35,7 @@ struct Building_datum
   std::string name;
   std::vector<Resource_cost> build_costs;
   int upkeep;
+  int wages;
 
   Citizen_amount housing;
 

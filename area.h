@@ -32,11 +32,15 @@ enum Area_type
   AREA_MAX
 };
 
-class Area
+class Area_datum
 {
   std::string name;
+  int uid;
   glyph symbol;
   Building_type building;
 };
+
+extern Area_datum* Area_data[AREA_MAX];
+void init_area_data();
 
 #endif

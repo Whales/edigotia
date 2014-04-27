@@ -10,6 +10,12 @@ enum Resource
   RES_WOOD,
   RES_STONE,
 
+// Meta-resources
+  RES_FARMING,  // Can be any available crop
+  RES_MINING,   // Available minerals, decided by the terrain
+  RES_HUNTING,  // Available game, decided by the terrain
+  RES_LOGGING,  // Produces wood based on terrain
+
   RES_MAX
 };
 
