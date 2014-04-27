@@ -32,7 +32,7 @@ enum Area_type
   AREA_MAX
 };
 
-class Area_datum
+struct Area_datum
 {
   std::string name;
   int uid;

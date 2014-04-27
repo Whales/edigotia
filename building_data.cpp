@@ -11,7 +11,7 @@ Building_datum* Building_data[BUILD_MAX];
 #define _upkeep(n) \
   Building_data[cur_id]->upkeep = (n)
 #define _wages(n) \
-  Buiding_data[cur_id]->wages = (n)
+  Building_data[cur_id]->wages = (n)
 #define _housing(t, n) \
   Building_data[cur_id]->housing = Citizen_amount((t), (n))
 #define _jobs(n) \
@@ -67,7 +67,7 @@ void init_building_data()
     _upkeep(3);
     _wages(1);
     _jobs(10);
-    _flat(RES_FARM, 10);
+    _flat(RES_FARMING, 10);
 
   _build(BUILD_QUARRY);
     _name("quarry");

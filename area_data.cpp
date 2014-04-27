@@ -27,7 +27,7 @@ void init_area_data()
   _area(AREA_HOUSES);
     _name("Houses");
     _symbol('o', c_ltgreen);
-    _building(BUILD_HOUSES);
+    _building(BUILD_HOUSE);
 
   _area(AREA_MANOR);
     _name("manor");
