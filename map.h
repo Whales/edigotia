@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#define CITY_MAP_SIZE 8
+
 enum Terrain_type
 {
   TER_NULL = 0,
@@ -32,12 +34,17 @@ enum Map_type
   MAP_MOUNTAINOUS,  // Almost all mountains
   MAP_COASTAL,      // Ocean along one side
 
+  MAP_MAX
+};
+
 class City_map
 {
   City_map();
   ~City_map();
 
-  std::vector< std::vector<Terrain_type> > tiles;
+  void generate(Map_type type);
+
+  tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
 };
 
 #endif
