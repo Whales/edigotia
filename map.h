@@ -2,6 +2,7 @@
 #define _MAP_H_
 
 #include <vector>
+#include "geometry.h" // For direction
 
 #define CITY_MAP_SIZE 8
 
@@ -21,7 +22,7 @@ enum Terrain_type
   TER_SWAMP,      // Bad for most everything
 
   TER_MAX
-}
+};
 
 enum Map_type
 {
@@ -33,6 +34,8 @@ enum Map_type
   MAP_BASIN,        // River, then fields and swamp
   MAP_MOUNTAINOUS,  // Almost all mountains
   MAP_COASTAL,      // Ocean along one side
+  MAP_SWAMP,        // Mostly swamp
+  MAP_DESERT,       // Mostly desert
 
   MAP_MAX
 };
@@ -42,9 +45,9 @@ class City_map
   City_map();
   ~City_map();
 
-  void generate(Map_type type);
+  void generate(Map_type type, Direction coast = DIR_NULL);
 
-  tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
+  Terrain_type tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
 };
 
 #endif
