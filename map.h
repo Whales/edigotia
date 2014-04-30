@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "geometry.h" // For direction
+#include "glyph.h"    // For terrain glyph
 
 #define CITY_MAP_SIZE 8
 
@@ -16,13 +17,26 @@ enum Terrain_type
   TER_MOUNTAIN,   // Great for mining, OK for quarry
 
   TER_RIVER,      // Good for fishing
-  TER_OCEAN,      // Food for fishing
+  TER_OCEAN,      // Good for fishing
 
   TER_DESERT,     // Bad for most everything
   TER_SWAMP,      // Bad for most everything
 
   TER_MAX
 };
+
+struct Terrain_datum
+{
+  std::string name;
+  glyph symbol;
+  int farm_percent;
+// TODO: List of crops available
+// TODO: List of minables
+// TODO: List of wildlife
+};
+
+extern Terrain_datum* Terrain_data[TER_MAX];
+void init_terrain_data();
 
 enum Map_type
 {

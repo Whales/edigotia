@@ -3,6 +3,7 @@
 
 #include "citizen.h"
 #include "building.h"
+#include "map.h"
 
 class City
 {
@@ -10,8 +11,9 @@ class City
   ~City();
 
   int population[CIT_MAX];
-
   int buildings[BUILD_MAX];
+
+  City_map map;
 
   void interface_buildings();
 };
