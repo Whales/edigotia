@@ -13,6 +13,7 @@ Terrain_datum* Terrain_data[TER_MAX];
 
 void init_terrain_data()
 {
+  int cur_id = 0;
   _ter(TER_FIELD);
     _name("Field");
     _symbol('.', c_green);
