@@ -61,3 +61,21 @@ void City::interface_buildings()
     }
   }
 }
+
+void City::draw_map(Window* w, cuss::interface* i_map)
+{
+  if (!w || !i_map) {
+    return;
+  }
+
+// Draw the map
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      Terrain_type ter = map.tiles[x][y];
+      Terrain_datum* terdata = Terrain_data[ter];
+      i_map->set_data("draw_map", terdata->symbol, x, y);
+    }
+  }
+
+  
+}

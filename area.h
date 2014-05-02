@@ -9,6 +9,7 @@
 
 #include "glyph.h"
 #include "building.h"
+#include "geometry.h"
 #include <string>
 
 enum Area_type
@@ -38,6 +39,7 @@ struct Area_datum
   int uid;
   glyph symbol;
   Building_type building;
+  Point pos;
 };
 
 extern Area_datum* Area_data[AREA_MAX];
