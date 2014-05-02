@@ -39,6 +39,11 @@ struct Area_datum
   int uid;
   glyph symbol;
   Building_type building;
+};
+
+struct Area
+{
+  Area_type type;
   Point pos;
 };
 

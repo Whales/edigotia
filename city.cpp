@@ -19,6 +19,19 @@ City::City()
   }
 }
 
+void City::place_keep()
+{
+  Window w_map(0, 0, 40, 24);
+  cuss::interface i_map;
+  if (!i_map.load_from_file("cuss/city_map.cuss")) {
+    return;
+  }
+
+  draw_map(&w_map, &i_map);
+
+  i_map.set_data("text_info", "Select a location for your keep.");
+}
+
 void City::interface_buildings()
 {
   cuss::interface i_buildings;
@@ -62,7 +75,7 @@ void City::interface_buildings()
   }
 }
 
-void City::draw_map(Window* w, cuss::interface* i_map)
+void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
 {
   if (!w || !i_map) {
     return;
@@ -77,5 +90,16 @@ void City::draw_map(Window* w, cuss::interface* i_map)
     }
   }
 
-  
+// Draw any constructed areas
+  for (int i = 0; i < areas.size(); i++) {
+    Area* area = &(areas[i]);
+    Area_datum* areadata = Area_data[area->type];
+    i_map->set_data("draw_map", areadata->symbol, area->pos.x, area->pos.y);
+  }
+
+  i_map->draw(w);
+  w->refresh();
+  if (!interactive) {
+    return;
+  }
 }

@@ -56,6 +56,7 @@ enum Map_type
 
 class City_map
 {
+public:
   City_map();
   ~City_map();
 
