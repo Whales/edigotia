@@ -5,7 +5,7 @@
 #include "geometry.h" // For direction
 #include "glyph.h"    // For terrain glyph
 
-#define CITY_MAP_SIZE 8
+#define CITY_MAP_SIZE 9
 
 enum Terrain_type
 {
@@ -15,6 +15,8 @@ enum Terrain_type
   TER_ROCKY,      // OK for farming, good for quarry, OK for mining
   TER_HILL,       // Good for mining, OK for quarry
   TER_MOUNTAIN,   // Great for mining, OK for quarry
+
+  TER_FOREST,     // Great for hunting, abundant wood
 
   TER_RIVER,      // Good for fishing
   TER_OCEAN,      // Good for fishing
@@ -44,6 +46,7 @@ enum Map_type
 
   MAP_PLAINS,       // Mostly field and rocky
   MAP_WASTELAND,    // Mostly rocky and hills
+  MAP_FOREST,       // Mostly forest and plains
   MAP_FOOTHILLS,    // Mostly hills and mountains
   MAP_BASIN,        // River, then fields and swamp
   MAP_MOUNTAINOUS,  // Almost all mountains

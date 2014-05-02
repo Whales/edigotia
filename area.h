@@ -20,7 +20,7 @@ enum Area_type
   AREA_HOVELS,
   AREA_HOUSES,
   AREA_MANOR,
-  AREA_PALACE,  // Always the center tile; always start with this
+  AREA_KEEP,  // Always the center tile; always start with this
 
 // Raw resource production
   AREA_FARM,

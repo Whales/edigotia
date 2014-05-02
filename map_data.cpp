@@ -13,7 +13,15 @@ Terrain_datum* Terrain_data[TER_MAX];
 
 void init_terrain_data()
 {
+  for (int i = 0; i < TER_MAX; i++) {
+    Terrain_data[i] = new Terrain_datum;
+  }
   int cur_id = 0;
+
+  _ter(TER_NULL);
+    _name("NULL");
+    _symbol('x', c_red);
+
   _ter(TER_FIELD);
     _name("Field");
     _symbol('.', c_green);
@@ -33,6 +41,11 @@ void init_terrain_data()
     _name("Mountain");
     _symbol('M', c_ltgray);
     _farm(5);
+
+  _ter(TER_FOREST);
+    _name("Forest");
+    _symbol('7', c_ltgreen);
+    _farm(10);
 
   _ter(TER_RIVER);
     _name("River");

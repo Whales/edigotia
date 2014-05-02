@@ -19,6 +19,10 @@ City::City()
   }
 }
 
+City::~City()
+{
+}
+
 void City::place_keep()
 {
   Window w_map(0, 0, 40, 24);
@@ -27,9 +31,34 @@ void City::place_keep()
     return;
   }
 
-  draw_map(&w_map, &i_map);
-
   i_map.set_data("text_info", "Select a location for your keep.");
+
+  Point pos(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+
+  do {
+    draw_map(&w_map, &i_map);
+    i_map.set_data("draw_map", glyph('@', c_yellow, c_black), pos.x, pos.y);
+    i_map.draw(&w_map);
+    w_map.refresh();
+    long ch = getch();
+    if (pos.x > 0 && (ch == '4' || ch == 'h' || ch == KEY_LEFT)) {
+      pos.x--;
+    } else if (pos.x < CITY_MAP_SIZE - 1 &&
+               (ch == '6' || ch == 'l' || ch == KEY_RIGHT)) {
+      pos.x++;
+    } else if (pos.y > 0 && (ch == '8' || ch == 'k' || ch == KEY_UP)) {
+      pos.y--;
+    } else if (pos.y < CITY_MAP_SIZE - 1 &&
+               (ch == '2' || ch == 'j' || ch == KEY_DOWN)) {
+      pos.y++;
+    } else if (ch == '\n') {
+      Area keep;
+      keep.type = AREA_KEEP;
+      keep.pos = pos;
+      areas.push_back(keep);
+      return;
+    }
+  } while (true);
 }
 
 void City::interface_buildings()

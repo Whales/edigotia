@@ -51,8 +51,8 @@ void init_building_data()
     _upkeep(12);
     _housing(CIT_BURGHER, 50);
 
-  _build(BUILD_PALACE);
-    _name("palace");
+  _build(BUILD_KEEP);
+    _name("keep");
     _cost(RES_GOLD, 1500);
     _cost(RES_STONE, 50);
     _upkeep(20);

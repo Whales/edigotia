@@ -14,7 +14,7 @@ enum Building_type
   BUILD_HOVEL,
   BUILD_HOUSE,
   BUILD_MANOR,
-  BUILD_PALACE,
+  BUILD_KEEP,
 
 // Basic resources
   BUILD_FARM,
@@ -35,11 +35,11 @@ struct Building_datum
   std::string name;
   std::vector<Resource_cost> build_costs;
   int upkeep;
-  int wages;
 
   Citizen_amount housing;
 
   int jobs;
+  int wages;
   std::vector<Resource_cost> flat_production; // Per job, w/ skill of 5 (max)
 
   std::vector<Resource> buildable;

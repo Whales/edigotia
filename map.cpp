@@ -19,59 +19,74 @@ void City_map::generate(Map_type type, Direction coast)
   }
   switch (type) {
     case MAP_PLAINS:
-      chance[TER_FIELD]     = 15;
-      chance[TER_ROCKY]     =  7;
-      chance[TER_HILL]      =  4;
+      chance[TER_FIELD]     = 50;
+      chance[TER_ROCKY]     =  9;
+      chance[TER_HILL]      =  5;
       chance[TER_MOUNTAIN]  =  1;
+      chance[TER_FOREST]    =  6;
       chance[TER_SWAMP]     =  1;
       break;
     case MAP_WASTELAND:
-      chance[TER_FIELD]     =  4;
-      chance[TER_ROCKY]     = 10;
-      chance[TER_HILL]      =  8;
+      chance[TER_FIELD]     =  6;
+      chance[TER_ROCKY]     = 30;
+      chance[TER_HILL]      = 10;
       chance[TER_MOUNTAIN]  =  2;
+      chance[TER_FOREST]    =  1;
       chance[TER_DESERT]    =  2;
+      break;
+    case MAP_FOREST:
+      chance[TER_FIELD]     =  7;
+      chance[TER_ROCKY]     =  5;
+      chance[TER_HILL]      =  2;
+      chance[TER_MOUNTAIN]  =  1;
+      chance[TER_FOREST]    = 45;
+      chance[TER_SWAMP]     =  8;
       break;
     case MAP_FOOTHILLS:
       chance[TER_FIELD]     =  5;
-      chance[TER_ROCKY]     =  8;
-      chance[TER_HILL]      = 15;
+      chance[TER_ROCKY]     = 12;
+      chance[TER_HILL]      = 25;
       chance[TER_MOUNTAIN]  =  5;
+      chance[TER_FOREST]    =  3;
       chance[TER_DESERT]    =  1;
       break;
     case MAP_BASIN:
-      chance[TER_FIELD]     = 10;
-      chance[TER_ROCKY]     =  1;
+      chance[TER_FIELD]     = 40;
+      chance[TER_ROCKY]     =  2;
       chance[TER_HILL]      =  1;
-      chance[TER_SWAMP]     =  4;
+      chance[TER_FOREST]    =  7;
+      chance[TER_SWAMP]     =  7;
 // We'll stick in a river later
       break;
     case MAP_MOUNTAINOUS:
       chance[TER_FIELD]     =  1;
-      chance[TER_ROCKY]     =  5;
-      chance[TER_HILL]      =  8;
-      chance[TER_MOUNTAIN]  = 15;
+      chance[TER_ROCKY]     =  8;
+      chance[TER_HILL]      = 15;
+      chance[TER_MOUNTAIN]  = 25;
+      chance[TER_FOREST]    =  2;
       chance[TER_DESERT]    =  1;
       break;
     case MAP_COASTAL:
-      chance[TER_FIELD]     = 15;
-      chance[TER_ROCKY]     =  4;
+      chance[TER_FIELD]     = 25;
+      chance[TER_ROCKY]     =  7;
       chance[TER_HILL]      =  1;
+      chance[TER_FOREST]    =  4;
       chance[TER_SWAMP]     =  5;
       break;
     case MAP_SWAMP:
       chance[TER_FIELD]     =  4;
       chance[TER_ROCKY]     =  6;
-      chance[TER_HILL]      =  3;
+      chance[TER_HILL]      =  4;
       chance[TER_MOUNTAIN]  =  1;
-      chance[TER_SWAMP]     = 20;
+      chance[TER_FOREST]    =  7;
+      chance[TER_SWAMP]     = 40;
       break;
     case MAP_DESERT:
       chance[TER_FIELD]     =  1;
-      chance[TER_ROCKY]     =  5;
+      chance[TER_ROCKY]     =  8;
       chance[TER_HILL]      =  1;
       chance[TER_MOUNTAIN]  =  3;
-      chance[TER_DESERT]    = 15;
+      chance[TER_DESERT]    = 25;
       break;
   }
 
@@ -95,25 +110,37 @@ void City_map::generate(Map_type type, Direction coast)
 
 // Now fix up coastal / basin
   if (type == MAP_COASTAL) {
-    int x = 0, x2 = 1;
-    int y = 0, y2 = 1;
+    int x = 0, x2 = 1, x3 = 2, x4 = 3;
+    int y = 0, y2 = 1, y3 = 2, y4 = 3;
     if (coast == DIR_SOUTH) {
       y  = CITY_MAP_SIZE - 1;
       y2 = CITY_MAP_SIZE - 2;
+      y3 = CITY_MAP_SIZE - 3;
+      y4 = CITY_MAP_SIZE - 4;
     } else if (coast == DIR_EAST) {
       x  = CITY_MAP_SIZE - 1;
       x2 = CITY_MAP_SIZE - 2;
+      x3 = CITY_MAP_SIZE - 3;
+      x4 = CITY_MAP_SIZE - 4;
     }
     for (int i = 0; i < CITY_MAP_SIZE; i++) {
       if (coast == DIR_NORTH || coast == DIR_SOUTH) {
         x = i;
-        if (one_in(4)) {
-          tiles[x][y2] = TER_OCEAN;
+        tiles[x][y2] = TER_OCEAN;
+        if (one_in(5)) {
+          tiles[x][y3] = TER_OCEAN;
+          tiles[x][y4] = TER_OCEAN;
+        } else if (one_in(3)) {
+          tiles[x][y3] = TER_OCEAN;
         }
       } else {
         y = i;
-        if (one_in(4)) {
-          tiles[x2][y] = TER_OCEAN;
+        tiles[x2][y] = TER_OCEAN;
+        if (one_in(5)) {
+          tiles[x3][y] = TER_OCEAN;
+          tiles[x4][y] = TER_OCEAN;
+        } if (one_in(3)) {
+          tiles[x3][y] = TER_OCEAN;
         }
       }
       tiles[x][y] = TER_OCEAN;

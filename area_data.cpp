@@ -34,10 +34,10 @@ void init_area_data()
     _symbol('o', c_ltblue);
     _building(BUILD_MANOR);
 
-  _area(AREA_PALACE);
-    _name("palace");
+  _area(AREA_KEEP);
+    _name("keep");
     _symbol('@', c_yellow);
-    _building(BUILD_PALACE);
+    _building(BUILD_KEEP);
 
   _area(AREA_FARM);
     _name("farm");
