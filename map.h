@@ -44,15 +44,20 @@ enum Map_type
 {
   MAP_NULL = 0,
 
-  MAP_PLAINS,       // Mostly field and rocky
-  MAP_WASTELAND,    // Mostly rocky and hills
-  MAP_FOREST,       // Mostly forest and plains
-  MAP_FOOTHILLS,    // Mostly hills and mountains
-  MAP_BASIN,        // River, then fields and swamp
-  MAP_MOUNTAINOUS,  // Almost all mountains
-  MAP_COASTAL,      // Ocean along one side
-  MAP_SWAMP,        // Mostly swamp
   MAP_DESERT,       // Mostly desert
+  MAP_WASTELAND,    // Mostly rocky and hills
+  MAP_PLAINS,       // Mostly field and rocky
+  MAP_FOREST,       // Mostly forest and plains
+  MAP_SWAMP,        // Mostly swamp
+
+  MAP_FOOTHILLS,    // Mostly hills and mountains
+  MAP_MOUNTAINOUS,  // Almost all mountains
+
+  MAP_BASIN,        // River, then fields and swamp
+  MAP_CANYON,       // River, then mountains and hills
+
+  MAP_COASTAL,      // Ocean along one side
+  MAP_OCEAN,        // Almost all ocean, occasional island
 
   MAP_MAX
 };

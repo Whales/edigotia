@@ -19,58 +19,67 @@ void City_map::generate(Map_type type, Direction coast)
   }
   switch (type) {
     case MAP_PLAINS:
-      chance[TER_FIELD]     = 50;
-      chance[TER_ROCKY]     =  9;
-      chance[TER_HILL]      =  5;
-      chance[TER_MOUNTAIN]  =  1;
-      chance[TER_FOREST]    =  6;
+      chance[TER_FIELD]     = 75;
+      chance[TER_ROCKY]     = 14;
+      chance[TER_HILL]      =  8;
+      chance[TER_MOUNTAIN]  =  2;
+      chance[TER_FOREST]    =  9;
       chance[TER_SWAMP]     =  1;
       break;
     case MAP_WASTELAND:
-      chance[TER_FIELD]     =  6;
-      chance[TER_ROCKY]     = 30;
-      chance[TER_HILL]      = 10;
-      chance[TER_MOUNTAIN]  =  2;
-      chance[TER_FOREST]    =  1;
-      chance[TER_DESERT]    =  2;
+      chance[TER_FIELD]     = 10;
+      chance[TER_ROCKY]     = 60;
+      chance[TER_HILL]      = 18;
+      chance[TER_MOUNTAIN]  =  4;
+      chance[TER_FOREST]    =  3;
+      chance[TER_DESERT]    =  4;
       break;
     case MAP_FOREST:
-      chance[TER_FIELD]     =  7;
-      chance[TER_ROCKY]     =  5;
+      chance[TER_FIELD]     =  5;
+      chance[TER_ROCKY]     =  4;
       chance[TER_HILL]      =  2;
       chance[TER_MOUNTAIN]  =  1;
       chance[TER_FOREST]    = 45;
-      chance[TER_SWAMP]     =  8;
+      chance[TER_SWAMP]     =  6;
       break;
     case MAP_FOOTHILLS:
-      chance[TER_FIELD]     =  5;
-      chance[TER_ROCKY]     = 12;
-      chance[TER_HILL]      = 25;
-      chance[TER_MOUNTAIN]  =  5;
-      chance[TER_FOREST]    =  3;
+      chance[TER_FIELD]     =  8;
+      chance[TER_ROCKY]     = 20;
+      chance[TER_HILL]      = 50;
+      chance[TER_MOUNTAIN]  =  8;
+      chance[TER_FOREST]    =  4;
       chance[TER_DESERT]    =  1;
       break;
     case MAP_BASIN:
-      chance[TER_FIELD]     = 40;
-      chance[TER_ROCKY]     =  2;
-      chance[TER_HILL]      =  1;
-      chance[TER_FOREST]    =  7;
+      chance[TER_FIELD]     = 80;
+      chance[TER_ROCKY]     =  4;
+      chance[TER_HILL]      =  2;
+      chance[TER_FOREST]    =  9;
       chance[TER_SWAMP]     =  7;
+// We'll stick in a river later
+      break;
+    case MAP_CANYON:
+      chance[TER_FIELD]     =  2;
+      chance[TER_ROCKY]     = 12;
+      chance[TER_HILL]      = 24;
+      chance[TER_MOUNTAIN]  = 60;
+      chance[TER_FOREST]    =  8;
+      chance[TER_SWAMP]     =  1;
 // We'll stick in a river later
       break;
     case MAP_MOUNTAINOUS:
       chance[TER_FIELD]     =  1;
-      chance[TER_ROCKY]     =  8;
-      chance[TER_HILL]      = 15;
-      chance[TER_MOUNTAIN]  = 25;
-      chance[TER_FOREST]    =  2;
+      chance[TER_ROCKY]     = 10;
+      chance[TER_HILL]      = 24;
+      chance[TER_MOUNTAIN]  = 60;
+      chance[TER_FOREST]    =  3;
       chance[TER_DESERT]    =  1;
       break;
     case MAP_COASTAL:
-      chance[TER_FIELD]     = 25;
-      chance[TER_ROCKY]     =  7;
-      chance[TER_HILL]      =  1;
-      chance[TER_FOREST]    =  4;
+      chance[TER_FIELD]     = 30;
+      chance[TER_ROCKY]     = 10;
+      chance[TER_HILL]      =  2;
+      chance[TER_FOREST]    =  6;
       chance[TER_SWAMP]     =  5;
       break;
     case MAP_SWAMP:
@@ -83,10 +92,16 @@ void City_map::generate(Map_type type, Direction coast)
       break;
     case MAP_DESERT:
       chance[TER_FIELD]     =  1;
-      chance[TER_ROCKY]     =  8;
-      chance[TER_HILL]      =  1;
-      chance[TER_MOUNTAIN]  =  3;
-      chance[TER_DESERT]    = 25;
+      chance[TER_ROCKY]     = 15;
+      chance[TER_HILL]      =  2;
+      chance[TER_MOUNTAIN]  =  4;
+      chance[TER_DESERT]    = 60;
+      break;
+    case MAP_OCEAN:
+      chance[TER_FIELD]     =  1;
+      chance[TER_MOUNTAIN]  =  1;
+      chance[TER_DESERT]    =  2;
+      chance[TER_OCEAN]     = 80;
       break;
   }
 
@@ -146,7 +161,7 @@ void City_map::generate(Map_type type, Direction coast)
       tiles[x][y] = TER_OCEAN;
     }
 
-  } else if (type == MAP_BASIN) {
+  } else if (type == MAP_BASIN || type == MAP_CANYON) {
 // TODO: Do we need to specify which direction the river travels?
 //       For now, it's just northwest => southeast
     int x = 0, y = 0;
@@ -156,6 +171,23 @@ void City_map::generate(Map_type type, Direction coast)
         x++;
       } else {
         y++;
+      }
+    }
+  } else if (type == MAP_OCEAN){
+// Obviously, not every ocean tile is going to have a prominent center isle;
+// however since this is specifically for cities on ocean tiles, let's always
+// give an island.
+// TODO: Except if we have mermen, don't do this?
+    for (int x = CITY_MAP_SIZE / 2 - 2; x <= CITY_MAP_SIZE / 2 +2; x++) {
+      for (int y = CITY_MAP_SIZE / 2 - 2; y <= CITY_MAP_SIZE / 2 +2; y++) {
+        if (one_in(4)) {
+          tiles[x][y] = TER_DESERT;
+        } else if (one_in(5)) {
+          tiles[x][y] = TER_ROCKY;
+        } else if ((x == CITY_MAP_SIZE / 2 && y == CITY_MAP_SIZE / 2) ||
+                   one_in(2)) {
+          tiles[x][y] = TER_FIELD;
+        }
       }
     }
   }
