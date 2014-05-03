@@ -27,12 +27,12 @@ void City_map::generate(Map_type type, Direction coast)
       chance[TER_SWAMP]     =  1;
       break;
     case MAP_WASTELAND:
-      chance[TER_FIELD]     = 10;
+      chance[TER_FIELD]     =  8;
       chance[TER_ROCKY]     = 60;
-      chance[TER_HILL]      = 18;
-      chance[TER_MOUNTAIN]  =  4;
-      chance[TER_FOREST]    =  3;
-      chance[TER_DESERT]    =  4;
+      chance[TER_HILL]      = 14;
+      chance[TER_MOUNTAIN]  =  1;
+      chance[TER_FOREST]    =  2;
+      chance[TER_DESERT]    =  3;
       break;
     case MAP_FOREST:
       chance[TER_FIELD]     =  5;
