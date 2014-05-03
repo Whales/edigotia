@@ -16,6 +16,8 @@ public:
   void add_continent(Point origin);
   void add_river(Point origin);
 
+  void draw();
+
   Map_type tiles[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int rainfall[WORLD_MAP_SIZE][WORLD_MAP_SIZE];

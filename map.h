@@ -62,6 +62,16 @@ enum Map_type
   MAP_MAX
 };
 
+struct Map_type_datum
+{
+  std::string name;
+  glyph symbol;
+};
+
+extern Map_type_datum* Map_type_data[MAP_MAX];
+
+void init_map_type_data();
+
 class City_map
 {
 public:

@@ -1,6 +1,7 @@
 #include "city.h"
 #include "rng.h"
 #include "window.h"
+#include "world.h"
 
 int main()
 {
@@ -11,6 +12,11 @@ int main()
   init_building_data();
   init_area_data();
   init_terrain_data();
+  init_map_type_data();
+
+  World_map world;
+  world.generate();
+  world.draw();
 
   City city;
 
