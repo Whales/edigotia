@@ -13,7 +13,7 @@ public:
   ~World_map();
 
   void generate();
-  void add_continent(Point origin);
+  void add_continent(Point origin, int step = 8);
   void add_river(Point origin);
 
   void draw();
