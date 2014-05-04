@@ -76,31 +76,37 @@ void World_map::generate()
 
 // Set rainfall
   for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-    if (altitude[0][y] < 85) {
-      rainfall[0][y] = 85 - altitude[0][y];
-    }
+    rainfall[0][y] = 35;
   }
   for (int x = 1; x < WORLD_MAP_SIZE; x++) {
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       int past;
       int sources = 2;
+      past = rainfall[x - 1][y] * 2;
       if (altitude[x][y] <= 0) {
-        past = rng(10, 60);
-        sources = 1;
-      } else {
-        past = rainfall[x - 1][y] * 2;
+        past += rng(0, 1);
+      } else if (one_in(15)) {
+        past -= rng(0, 1);
       }
       if (y > 0 && rainfall[x - 1][y - 1] > 0) {
-        sources += 3;
-        past += rainfall[x - 1][y - 1] * 3;
+        sources += 5;
+        past += rainfall[x - 1][y - 1] * 5;
+        if (rainfall[x - 1][y - 1] > rainfall[x - 1][y]) {
+          sources += 2;
+          past += rainfall[x - 1][y - 1] * 2;
+        }
       }
       if (y < WORLD_MAP_SIZE - 1 && rainfall[x - 1][y + 1] > 0) {
-        sources += 3;
-        past += rainfall[x - 1][y + 1] * 3;
+        sources += 5;
+        past += rainfall[x - 1][y + 1] * 5;
+        if (rainfall[x - 1][y + 1] > rainfall[x - 1][y]) {
+          sources += 2;
+          past += rainfall[x - 1][y + 1] * 2;
+        }
       }
       past /= sources;
       if (altitude[x][y] >= 85) {
-        past = 0;
+        past = rng(0, past / 2);
       } else if (altitude[x][y] >= 60 && one_in(6)) {
         past -= rng(0, 4);
       } else if (altitude[x][y] < 85 - past && one_in(3)) {
@@ -198,7 +204,7 @@ void World_map::generate()
       } else {
         if (temperature[x][y] <= 20) {
           tiles[x][y] = MAP_TUNDRA;
-        } else if (rainfall[x][y] >= 55) {
+        } else if (rainfall[x][y] >= 62) {
           tiles[x][y] = MAP_SWAMP;
         } else if (river[x][y] && temperature[x][y] > 20) {
           tiles[x][y] = MAP_BASIN;
@@ -244,42 +250,51 @@ void World_map::add_continent(Point origin, int height, int step, int id)
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE &&
             altitude[x][y] <= 0) {
           altitude[x][y] = altitude[p.x][p.y];
-          if (continent_id[x][y] != -1) {
-// Joined continents!
-            int other_id = continent_id[x][y];
-            if (joined_continents.count(id) == 0) {
-              std::vector<int> tmp;
-              tmp.push_back(other_id);
-              joined_continents[id] = tmp;
-            } else {
-// Check if we've already noted this
-              bool found = false;
-              for (int i = 0; !found && i < joined_continents[id].size(); i++) {
-                if (joined_continents[id][i] == other_id) {
-                  found = true;
-                }
-              }
-              if (!found) {
-                joined_continents[id].push_back(other_id);
-                if (joined_continents.count(other_id) == 0) {
-                  std::vector<int> tmp;
-                  tmp.push_back(id);
-                  joined_continents[other_id] = tmp;
-                } else {
-                  joined_continents[other_id].push_back(id);
-                }
-              }
-            }
-          } else {
-            continent_id[x][y] = id;
+          int dist_to_edge = (x < y ? x : y);
+          if (WORLD_MAP_SIZE - 1 - x < dist_to_edge) {
+            dist_to_edge = WORLD_MAP_SIZE - 1 - x;
           }
-          if (one_in(30)) {
+          if (WORLD_MAP_SIZE - 1 - y < dist_to_edge) {
+            dist_to_edge = WORLD_MAP_SIZE - 1 - y;
+          }
+          if (dist_to_edge < 10) {
+            altitude[x][y] -= rng((10 - dist_to_edge), 15*(10 - dist_to_edge));
+          } else if (one_in(30)) {
             altitude[x][y] -= rng(0, 100);
           } else if (!one_in(10)) {
             altitude[x][y] -= rng(0, step);
           }
           if (altitude[x][y] > 0) {
             new_points.push_back(Point(x, y));
+            if (continent_id[x][y] != -1) {
+// Joined continents!
+              int other_id = continent_id[x][y];
+              if (joined_continents.count(id) == 0) {
+                std::vector<int> tmp;
+                tmp.push_back(other_id);
+                joined_continents[id] = tmp;
+              } else {
+// Check if we've already noted this
+                bool found = false;
+                for (int i = 0; !found && i<joined_continents[id].size(); i++) {
+                  if (joined_continents[id][i] == other_id) {
+                    found = true;
+                  }
+                }
+                if (!found) {
+                  joined_continents[id].push_back(other_id);
+                  if (joined_continents.count(other_id) == 0) {
+                    std::vector<int> tmp;
+                    tmp.push_back(id);
+                    joined_continents[other_id] = tmp;
+                  } else {
+                    joined_continents[other_id].push_back(id);
+                  }
+                }
+              }
+            } else {
+              continent_id[x][y] = id;
+            }
           } else {
             altitude[x][y] = 0; // "False" ocean
           }
@@ -412,6 +427,34 @@ void World_map::draw(Window* w_map)
         }
         pos.x = continents[cur_cont].x - (xdim / 2);
         pos.y = continents[cur_cont].y - (ydim / 2);
+        break;
+      case 'Y':
+        pos.x -= 10;
+        pos.y -= 10;
+        break;
+      case 'K':
+        pos.y -= 10;
+        break;
+      case 'U':
+        pos.x += 10;
+        pos.y -= 10;
+        break;
+      case 'H':
+        pos.x -= 10;
+        break;
+      case 'L':
+        pos.x += 10;
+        break;
+      case 'B':
+        pos.x -= 10;
+        pos.y += 10;
+        break;
+      case 'J':
+        pos.y += 10;
+        break;
+      case 'N':
+        pos.x += 10;
+        pos.y += 10;
         break;
       case 'y':
       case '7':
