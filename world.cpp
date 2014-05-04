@@ -16,25 +16,25 @@ void World_map::generate()
 {
   int temp_shift = 0;
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
-    if (one_in(8)) {
+    if (!one_in(3)) {
       temp_shift += rng(-1, 1);
     }
-    if (temp_shift < -5) {
-      temp_shift = -5;
-    } else if (temp_shift > 5) {
-      temp_shift = 5;
+    if (temp_shift < -15) {
+      temp_shift = -15;
+    } else if (temp_shift > 15) {
+      temp_shift = 15;
     }
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       tiles[x][y] = MAP_OCEAN;
       altitude[x][y] = -1;
       rainfall[x][y] = -1;
       if (y < WORLD_MAP_SIZE / 2) {
-        temperature[x][y] = (100 * y) / (WORLD_MAP_SIZE / 2);
+        temperature[x][y] = (100 * (temp_shift + y))  / (WORLD_MAP_SIZE / 2);
       } else {
         int fy = WORLD_MAP_SIZE - 1 - y;
-        temperature[x][y] = (100 * fy) / (WORLD_MAP_SIZE / 2);
+        temperature[x][y] = (100 * (temp_shift + fy)) / (WORLD_MAP_SIZE / 2);
       }
-      temperature[x][y] += temp_shift + rng(-1, 1);
+      //temperature[x][y] += rng(-1, 1);
       //temperature[x][y] += rng(-3, 3);
       continent_id[x][y] = -1;
       river[x][y] = false;
@@ -200,7 +200,7 @@ void World_map::generate()
           tiles[x][y] = MAP_TUNDRA;
         } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
-        } else if (river[x][y] && temperature[x][y] >= 35) {
+        } else if (river[x][y] && temperature[x][y] > 20) {
           tiles[x][y] = MAP_BASIN;
         } else if (rainfall[x][y] >= 45) {
           tiles[x][y] = MAP_FOREST;
