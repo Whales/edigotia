@@ -22,6 +22,11 @@ void init_terrain_data()
     _name("NULL");
     _symbol('x', c_red);
 
+  _ter(TER_TUNDRA);
+    _name("tundra");
+    _symbol('*', c_white);
+    _farm(10);
+
   _ter(TER_FIELD);
     _name("Field");
     _symbol('.', c_green);

@@ -18,6 +18,13 @@ void City_map::generate(Map_type type, Direction coast)
     chance[i] = 0;
   }
   switch (type) {
+    case MAP_TUNDRA:
+      chance[TER_TUNDRA]    = 60;
+      chance[TER_ROCKY]     =  1;
+      chance[TER_HILL]      =  3;
+      chance[TER_MOUNTAIN]  =  3;
+      chance[TER_FOREST]    =  5;
+      break;
     case MAP_PLAINS:
       chance[TER_FIELD]     = 75;
       chance[TER_ROCKY]     = 14;

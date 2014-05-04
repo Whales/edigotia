@@ -3,6 +3,7 @@
 
 #include "map.h"
 #include "geometry.h"
+#include "window.h"
 #include <vector>
 #include <map>
 
@@ -18,11 +19,12 @@ public:
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river(Point origin);
 
-  void draw();
+  void draw(Window* w_map = NULL);
 
   Map_type tiles[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int rainfall[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int temperature[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int continent_id[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   bool river[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 

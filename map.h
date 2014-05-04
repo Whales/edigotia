@@ -11,6 +11,8 @@ enum Terrain_type
 {
   TER_NULL = 0,
 
+  TER_TUNDRA,     // Not good for much - some oil
+
   TER_FIELD,      // Good for farming
   TER_ROCKY,      // OK for farming, good for quarry, OK for mining
   TER_HILL,       // Good for mining, OK for quarry
@@ -43,6 +45,8 @@ void init_terrain_data();
 enum Map_type
 {
   MAP_NULL = 0,
+
+  MAP_TUNDRA,       // Mostly tundra, some forest
 
   MAP_DESERT,       // Mostly desert
   MAP_WASTELAND,    // Mostly rocky and hills

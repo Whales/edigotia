@@ -14,11 +14,28 @@ World_map::~World_map()
 
 void World_map::generate()
 {
+  int temp_shift = 0;
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    if (one_in(8)) {
+      temp_shift += rng(-1, 1);
+    }
+    if (temp_shift < -5) {
+      temp_shift = -5;
+    } else if (temp_shift > 5) {
+      temp_shift = 5;
+    }
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       tiles[x][y] = MAP_OCEAN;
       altitude[x][y] = -1;
       rainfall[x][y] = -1;
+      if (y < WORLD_MAP_SIZE / 2) {
+        temperature[x][y] = (100 * y) / (WORLD_MAP_SIZE / 2);
+      } else {
+        int fy = WORLD_MAP_SIZE - 1 - y;
+        temperature[x][y] = (100 * fy) / (WORLD_MAP_SIZE / 2);
+      }
+      temperature[x][y] += temp_shift + rng(-1, 1);
+      //temperature[x][y] += rng(-3, 3);
       continent_id[x][y] = -1;
       river[x][y] = false;
     }
@@ -58,10 +75,9 @@ void World_map::generate()
   }
 
 // Set rainfall
-  int x = 0;
   for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-    if (altitude[x][y] < 85) {
-      rainfall[x][y] = 85 - altitude[x][y];
+    if (altitude[0][y] < 85) {
+      rainfall[0][y] = 85 - altitude[0][y];
     }
   }
   for (int x = 1; x < WORLD_MAP_SIZE; x++) {
@@ -96,6 +112,9 @@ void World_map::generate()
         } else {
           past += rng(1, 15);
         }
+      }
+      if (past > temperature[x][y]) {
+        past = rng(temperature[x][y], past);
       }
       rainfall[x][y] = past;
       if (rainfall[x][y] < 0) {
@@ -156,15 +175,15 @@ void World_map::generate()
 // Finally, set terrain based on altitude & rainfall
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-      if (altitude[x][y] >= 85) {
+      if (altitude[x][y] >= 80) {
         if (river[x][y]) {
           tiles[x][y] = MAP_CANYON;
         } else {
           tiles[x][y] = MAP_MOUNTAINOUS;
         }
-      } else if (altitude[x][y] >= 60) {
+      } else if (altitude[x][y] >= 55) {
         if (river[x][y]) {
-          if (altitude[x][y] >= rng(60, 85)) {
+          if (altitude[x][y] >= rng(60, 85) || temperature[x][y] <= 20) {
             tiles[x][y] = MAP_CANYON;
           } else {
             tiles[x][y] = MAP_BASIN;
@@ -177,15 +196,19 @@ void World_map::generate()
       } else if (altitude[x][y] <= 0) {
         tiles[x][y] = MAP_OCEAN;
       } else {
-        if (rainfall[x][y] >= 55) {
+        if (temperature[x][y] <= 20) {
+          tiles[x][y] = MAP_TUNDRA;
+        } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
-        } else if (river[x][y]) {
+        } else if (river[x][y] && temperature[x][y] >= 35) {
           tiles[x][y] = MAP_BASIN;
         } else if (rainfall[x][y] >= 45) {
           tiles[x][y] = MAP_FOREST;
         } else if (rainfall[x][y] >= 30) {
           tiles[x][y] = MAP_PLAINS;
         } else if (rainfall[x][y] >= 12) {
+          tiles[x][y] = MAP_WASTELAND;
+        } else if (temperature[x][y] <= 32) {
           tiles[x][y] = MAP_WASTELAND;
         } else {
           tiles[x][y] = MAP_DESERT;
@@ -339,28 +362,37 @@ void World_map::add_river(Point origin)
 
 }
 
-void World_map::draw()
+void World_map::draw(Window* w_map)
 {
-  Window w_map(0, 0, 80, 24);
+  bool owns_window = false;
+  int xdim, ydim;
+  if (w_map == NULL) {
+    owns_window = true;
+    get_screen_dims(xdim, ydim);
+    w_map = new Window(0, 0, xdim, ydim);
+  } else {
+    xdim = w_map->sizex();
+    ydim = w_map->sizey();
+  }
 
   int cur_cont = 0;
   Point pos = continents[0];
-  pos.x -= 40;
-  pos.y -= 12;
+  pos.x -= (xdim / 2);
+  pos.y -= (ydim / 2);
 
   while (true) {
-    for (int x = pos.x; x < pos.x + 80; x++) {
-      for (int y = pos.y; y < pos.y + 24; y++) {
+    for (int x = pos.x; x < pos.x + xdim; x++) {
+      for (int y = pos.y; y < pos.y + ydim; y++) {
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
           Map_type_datum* data = Map_type_data[type];
-          w_map.putglyph(x - pos.x, y - pos.y, data->symbol);
+          w_map->putglyph(x - pos.x, y - pos.y, data->symbol);
         } else {
-          w_map.putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
+          w_map->putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
         }
       }
     }
-    w_map.refresh();
+    w_map->refresh();
     long ch = getch();
     switch (ch) {
       case '>':
@@ -369,8 +401,8 @@ void World_map::draw()
         } else {
           cur_cont++;
         }
-        pos.x = continents[cur_cont].x - 40;
-        pos.y = continents[cur_cont].y - 12;
+        pos.x = continents[cur_cont].x - (xdim / 2);
+        pos.y = continents[cur_cont].y - (ydim / 2);
         break;
       case '<':
         if (cur_cont <= 0) {
@@ -378,8 +410,8 @@ void World_map::draw()
         } else {
           cur_cont--;
         }
-        pos.x = continents[cur_cont].x - 40;
-        pos.y = continents[cur_cont].y - 12;
+        pos.x = continents[cur_cont].x - (xdim / 2);
+        pos.y = continents[cur_cont].y - (ydim / 2);
         break;
       case 'y':
       case '7':
@@ -423,6 +455,9 @@ void World_map::draw()
         break;
       case KEY_ESC:
       case '\n':
+        if (owns_window) {
+          delete w_map;
+        }
         return;
     }
   }

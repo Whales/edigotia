@@ -16,6 +16,10 @@ void init_map_type_data()
     Map_type_data[i] = new Map_type_datum;
   }
 
+  _ter(MAP_TUNDRA);
+    _name("tundra");
+    _symbol('*', c_white);
+
   _ter(MAP_DESERT);
     _name("desert");
     _symbol('x', c_yellow);
