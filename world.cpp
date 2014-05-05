@@ -44,7 +44,7 @@ void World_map::generate()
   continents.clear();
 
 // Pick a bunch of points to base continents off of.
-  for (int i = 0; i < 35; i++) {
+  for (int i = 0; i < 45; i++) {
     Point continent(rng(20, WORLD_MAP_SIZE - 21), rng(20, WORLD_MAP_SIZE - 21));
     continents.push_back(continent);
   }
@@ -52,10 +52,10 @@ void World_map::generate()
 // Build continent, and rivers there
   for (int i = 0; i < continents.size(); i++) {
     int height = rng(70, 125);
-    int size = rng(3, 12);
+    int size = rng(3, 8);
     if (one_in(8)) { // Island
       if (one_in(2)) {  // Low-altitude island
-        height = rng(20, 70);
+        height = rng(20, 50);
         size = rng(2, 6);
       } else {  // Mountainous island
         height = rng(100, 150);
@@ -85,6 +85,9 @@ void World_map::generate()
       past = rainfall[x - 1][y] * 2;
       if (altitude[x][y] <= 0) {
         past += rng(0, 1);
+        if (one_in(4)) {
+          past += rng(1, 2);
+        }
       } else if (one_in(15)) {
         past -= rng(0, 1);
       }
@@ -208,7 +211,7 @@ void World_map::generate()
       } else {
         if (temperature[x][y] <= 20) {
           tiles[x][y] = MAP_TUNDRA;
-        } else if (rainfall[x][y] >= 62) {
+        } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
         } else if (river[x][y] && temperature[x][y] > 20) {
           tiles[x][y] = MAP_BASIN;
@@ -290,8 +293,8 @@ void World_map::add_continent(Point origin, int height, int step, int id)
           if (WORLD_MAP_SIZE - 1 - y < dist_to_edge) {
             dist_to_edge = WORLD_MAP_SIZE - 1 - y;
           }
-          if (dist_to_edge < 10) {
-            altitude[x][y] -= rng((10 - dist_to_edge), 15*(10 - dist_to_edge));
+          if (dist_to_edge < 20) {
+            altitude[x][y] -= rng(0, 2 * (20 - dist_to_edge));
           } else if (one_in(30)) {
             altitude[x][y] -= rng(0, 100);
           } else if (!one_in(10)) {
