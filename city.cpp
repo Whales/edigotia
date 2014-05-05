@@ -23,42 +23,34 @@ City::~City()
 {
 }
 
-void City::place_keep()
+bool City::place_keep()
 {
   Window w_map(0, 0, 40, 24);
   cuss::interface i_map;
   if (!i_map.load_from_file("cuss/city_map.cuss")) {
-    return;
+    return false;
   }
 
-  i_map.set_data("text_info", "Select a location for your keep.");
-
-  Point pos(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+  i_map.set_data("text_info", "Start town here?\n<c=magenta>Y/N<c=/>");
 
   do {
     draw_map(&w_map, &i_map);
-    i_map.set_data("draw_map", glyph('@', c_yellow, c_black), pos.x, pos.y);
+    i_map.set_data("draw_map", glyph('@', c_yellow, c_black),
+                   CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
     i_map.draw(&w_map);
     w_map.refresh();
     long ch = getch();
-    if (pos.x > 0 && (ch == '4' || ch == 'h' || ch == KEY_LEFT)) {
-      pos.x--;
-    } else if (pos.x < CITY_MAP_SIZE - 1 &&
-               (ch == '6' || ch == 'l' || ch == KEY_RIGHT)) {
-      pos.x++;
-    } else if (pos.y > 0 && (ch == '8' || ch == 'k' || ch == KEY_UP)) {
-      pos.y--;
-    } else if (pos.y < CITY_MAP_SIZE - 1 &&
-               (ch == '2' || ch == 'j' || ch == KEY_DOWN)) {
-      pos.y++;
-    } else if (ch == '\n') {
+    if (ch == 'Y' || ch == 'y') {
       Area keep;
       keep.type = AREA_KEEP;
-      keep.pos = pos;
+      keep.pos = Point(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
       areas.push_back(keep);
-      return;
+      return true;
+    } else if (ch == 'n' || ch == 'N') {
+      return false;
     }
   } while (true);
+  return false;
 }
 
 void City::interface_buildings()
@@ -106,8 +98,20 @@ void City::interface_buildings()
 
 void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
 {
-  if (!w || !i_map) {
-    return;
+  bool owns_window = false, owns_interface = false;
+  if (!i_map) {
+    owns_interface = true;
+    i_map = new cuss::interface;
+    if (!i_map->load_from_file("cuss/city_map.cuss")) {
+      delete i_map;
+      return;
+    }
+  }
+  if (!w) {
+    owns_window = true;
+    int xdim, ydim;
+    get_screen_dims(xdim, ydim);
+    w = new Window(0, 0, xdim, ydim);
   }
 
 // Draw the map
@@ -129,6 +133,103 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
   i_map->draw(w);
   w->refresh();
   if (!interactive) {
+    if (owns_window) {
+      delete w;
+    }
+    if (owns_interface) {
+      delete i_map;
+    }
     return;
+  }
+
+// Interactive part
+  bool done = false;
+  Point pos(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+  while (!done) {
+    for (int x = 0; x < CITY_MAP_SIZE; x++) {
+      for (int y = 0; y < CITY_MAP_SIZE; y++) {
+        Terrain_type ter = map.tiles[x][y];
+        Terrain_datum* terdata = Terrain_data[ter];
+        glyph gl = terdata->symbol;
+        if (x == pos.x && y == pos.y) {
+          gl = gl.hilite(c_blue);
+        }
+        i_map->set_data("draw_map", gl, x, y);
+      }
+    }
+
+// Draw any constructed areas
+    for (int i = 0; i < areas.size(); i++) {
+      Area* area = &(areas[i]);
+      Area_datum* areadata = Area_data[area->type];
+      i_map->set_data("draw_map", areadata->symbol, area->pos.x, area->pos.y);
+    }
+    i_map->draw(w);
+    w->refresh();
+    long ch = getch();
+    switch (ch) {
+      case 'y':
+      case '7':
+        pos.x--;
+        pos.y--;
+        break;
+      case 'k':
+      case '8':
+      case KEY_UP:
+        pos.y--;
+        break;
+      case 'u':
+      case '9':
+        pos.x++;
+        pos.y--;
+        break;
+      case 'h':
+      case '4':
+      case KEY_LEFT:
+        pos.x--;
+        break;
+      case 'l':
+      case '6':
+      case KEY_RIGHT:
+        pos.x++;
+        break;
+      case 'b':
+      case '1':
+        pos.x--;
+        pos.y++;
+        break;
+      case 'j':
+      case '2':
+      case KEY_DOWN:
+        pos.y++;
+        break;
+      case 'n':
+      case '3':
+        pos.x++;
+        pos.y++;
+        break;
+      case KEY_ESC:
+      case '\n':
+        done = true;
+        break;
+    }
+    if (pos.x < 0) {
+      pos.x = 0;
+    }
+    if (pos.y < 0) {
+      pos.y = 0;
+    }
+    if (pos.x >= CITY_MAP_SIZE) {
+      pos.x = CITY_MAP_SIZE - 1;
+    }
+    if (pos.y >= CITY_MAP_SIZE) {
+      pos.y = CITY_MAP_SIZE - 1;
+    }
+  }
+  if (owns_window) {
+    delete w;
+  }
+  if (owns_interface) {
+    delete i_map;
   }
 }

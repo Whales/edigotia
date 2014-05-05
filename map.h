@@ -62,6 +62,7 @@ enum Map_type
 
   MAP_COASTAL,      // Ocean along one side
   MAP_OCEAN,        // Almost all ocean, occasional island
+  MAP_ICECAP,       // Frozen ocean
 
   MAP_MAX
 };

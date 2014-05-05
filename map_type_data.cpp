@@ -63,4 +63,8 @@ void init_map_type_data()
   _ter(MAP_OCEAN);
     _name("ocean");
     _symbol('=', c_blue);
+
+  _ter(MAP_ICECAP);
+    _name("icecap");
+    _symbol('=', c_ltcyan);
 }

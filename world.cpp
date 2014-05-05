@@ -92,16 +92,16 @@ void World_map::generate()
         sources += 5;
         past += rainfall[x - 1][y - 1] * 5;
         if (rainfall[x - 1][y - 1] > rainfall[x - 1][y]) {
-          sources += 2;
-          past += rainfall[x - 1][y - 1] * 2;
+          sources += 1;
+          past += rainfall[x - 1][y - 1];
         }
       }
       if (y < WORLD_MAP_SIZE - 1 && rainfall[x - 1][y + 1] > 0) {
         sources += 5;
         past += rainfall[x - 1][y + 1] * 5;
         if (rainfall[x - 1][y + 1] > rainfall[x - 1][y]) {
-          sources += 2;
-          past += rainfall[x - 1][y + 1] * 2;
+          sources += 1;
+          past += rainfall[x - 1][y + 1];
         }
       }
       past /= sources;
@@ -200,7 +200,11 @@ void World_map::generate()
           tiles[x][y] = MAP_FOOTHILLS;
         }
       } else if (altitude[x][y] <= 0) {
-        tiles[x][y] = MAP_OCEAN;
+        if (altitude[x][y] == 0 && temperature[x][y] <= 18) {
+          tiles[x][y] = MAP_ICECAP;
+        } else {
+          tiles[x][y] = MAP_OCEAN;
+        }
       } else {
         if (temperature[x][y] <= 20) {
           tiles[x][y] = MAP_TUNDRA;
@@ -222,6 +226,35 @@ void World_map::generate()
       }
     }
   }
+
+// Fix clustered rivers
+/*
+  std::vector<Point> swamps;
+  for (int x = 0; x < WORLD_MAP_SIZE - 2; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE - 2; y++) {
+      int count = 0;
+      for (int rx = x; rx <= x + 10; rx++) {
+        for (int ry = y; ry <= y + 10; ry++) {
+          if (tiles[rx][ry] == MAP_BASIN) {
+            count++;
+          }
+        }
+      }
+      if (count >= 35) {
+        for (int rx = x; rx <= x + 10; rx++) {
+          for (int ry = y; ry <= y + 10; ry++) {
+            if (tiles[rx][ry] == MAP_BASIN || one_in(6)) {
+              swamps.push_back( Point(rx, ry) );
+            }
+          }
+        }
+      }
+    }
+  }
+  for (int i = 0; i < swamps.size(); i++) {
+    tiles[swamps[i].x][swamps[i].y] = MAP_SWAMP;
+  }
+*/
 }
 
 void World_map::add_continent(Point origin, int height, int step, int id)
@@ -377,7 +410,7 @@ void World_map::add_river(Point origin)
 
 }
 
-void World_map::draw(Window* w_map)
+Point World_map::draw(Window* w_map)
 {
   bool owns_window = false;
   int xdim, ydim;
@@ -401,7 +434,11 @@ void World_map::draw(Window* w_map)
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
           Map_type_datum* data = Map_type_data[type];
-          w_map->putglyph(x - pos.x, y - pos.y, data->symbol);
+          glyph gl = data->symbol;
+          if (x == pos.x + xdim / 2 && y == pos.y + ydim / 2) {
+            gl = gl.hilite(c_blue);
+          }
+          w_map->putglyph(x - pos.x, y - pos.y, gl);
         } else {
           w_map->putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
         }
@@ -501,7 +538,37 @@ void World_map::draw(Window* w_map)
         if (owns_window) {
           delete w_map;
         }
-        return;
+        if (ch == '\n') {
+          pos.x += (xdim / 2);
+          pos.y += (ydim / 2);
+          return pos;
+        }
+        return Point(-1, -1);
     }
   }
+}
+
+Direction World_map::coast_from(int x, int y)
+{
+  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+    return DIR_NULL;
+  }
+  std::vector<Direction> candidates;
+  if (x > 0 && tiles[x - 1][y] == MAP_OCEAN) {
+    candidates.push_back(DIR_WEST);
+  }
+  if (x < WORLD_MAP_SIZE - 1 && tiles[x + 1][y] == MAP_OCEAN) {
+    candidates.push_back(DIR_EAST);
+  }
+  if (y > 0 && tiles[x][y - 1] == MAP_OCEAN) {
+    candidates.push_back(DIR_NORTH);
+  }
+  if (y < WORLD_MAP_SIZE - 1 && tiles[x][y + 1] == MAP_OCEAN) {
+    candidates.push_back(DIR_SOUTH);
+  }
+
+  if (candidates.empty()) {
+    return DIR_NULL;
+  }
+  return candidates[ rng(0, candidates.size() - 1) ];
 }

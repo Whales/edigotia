@@ -19,7 +19,9 @@ public:
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river(Point origin);
 
-  void draw(Window* w_map = NULL);
+  Point draw(Window* w_map = NULL);
+
+  Direction coast_from(int x, int y);
 
   Map_type tiles[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude[WORLD_MAP_SIZE][WORLD_MAP_SIZE];

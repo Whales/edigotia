@@ -112,6 +112,16 @@ void City_map::generate(Map_type type, Direction coast)
       break;
   }
 
+  if (type != MAP_OCEAN && coast != DIR_NULL) {  // Alter chances a bit.
+    chance[TER_TUNDRA]    *= 1.5;
+    chance[TER_FIELD]     *= 1.5;
+    chance[TER_ROCKY]     *=  .8;
+    chance[TER_HILL]      *=  .6;
+    chance[TER_MOUNTAIN]  *=  .2;
+    chance[TER_FOREST]    *= 1.3;
+    chance[TER_SWAMP]     *= 1.2;
+  }
+
   for (int i = 0; i < TER_MAX; i++) {
     total_chance += chance[i];
   }
@@ -131,7 +141,7 @@ void City_map::generate(Map_type type, Direction coast)
   }
 
 // Now fix up coastal / basin
-  if (type == MAP_COASTAL) {
+  if (type != MAP_OCEAN && coast != DIR_NULL) {
     int x = 0, x2 = 1, x3 = 2, x4 = 3;
     int y = 0, y2 = 1, y3 = 2, y4 = 3;
     if (coast == DIR_SOUTH) {

@@ -2,6 +2,7 @@
 #include "rng.h"
 #include "window.h"
 #include "world.h"
+#include "interface.h"
 
 int main()
 {
@@ -16,14 +17,26 @@ int main()
 
   World_map world;
   world.generate();
-  world.draw();
+  Point p = world.draw();
+
+  if (p.x == -1) {
+    return 0;
+  }
 
   City city;
-
-  for (int i = 1; i < MAP_MAX; i++) {
-    city.map.generate(Map_type(i));
-    city.place_keep();
+  city.map.generate( world.tiles[p.x][p.y], world.coast_from(p.x, p.y));
+  bool placed = false;
+  while (!placed) {
+    placed = city.place_keep();
+    if (!placed) {
+      p = world.draw();
+      city.map.generate( world.tiles[p.x][p.y], world.coast_from(p.x, p.y));
+    }
   }
+
+  Interface interface;
+  interface.city = &city;
+  interface.main_loop();
 
   endwin();
   return 0;

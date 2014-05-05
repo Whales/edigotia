@@ -21,7 +21,7 @@ public:
 
   City_map map;
 
-  void place_keep();
+  bool place_keep();
 
   void interface_buildings();
   void draw_map(Window* w, cuss::interface* i_map, bool interactive = false);
