@@ -17,9 +17,7 @@ enum Area_type
   AREA_NULL = 0,
 
 // Housing
-  AREA_HOVELS,
   AREA_HOUSES,
-  AREA_MANOR,
   AREA_KEEP,  // Always the center tile; always start with this
 
 // Raw resource production

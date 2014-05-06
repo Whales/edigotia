@@ -7,7 +7,7 @@ Area_datum* Area_data[AREA_MAX];
 #define _name(n) \
   Area_data[cur_id]->name = (n)
 #define _symbol(s, f) \
-  Area_data[cur_id]->symbol = glyph(s, f, c_black)
+  Area_data[cur_id]->symbol = glyph(s, f, c_blue)
 #define _building(bt) \
   Area_data[cur_id]->building = (bt)
 
@@ -19,20 +19,10 @@ void init_area_data()
   }
   int cur_id = 0;
 
-  _area(AREA_HOVELS);
-    _name("Hovels");
-    _symbol('o', c_brown);
-    _building(BUILD_HOVEL);
-
   _area(AREA_HOUSES);
     _name("Houses");
     _symbol('o', c_ltgreen);
     _building(BUILD_HOUSE);
-
-  _area(AREA_MANOR);
-    _name("manor");
-    _symbol('o', c_ltblue);
-    _building(BUILD_MANOR);
 
   _area(AREA_KEEP);
     _name("keep");

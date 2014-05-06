@@ -1,9 +1,11 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
-#include <vector>
 #include "geometry.h" // For direction
 #include "glyph.h"    // For terrain glyph
+#include "resource.h" // Crops and minerals
+#include <vector>
+#include <string>
 
 #define CITY_MAP_SIZE 9
 
@@ -85,7 +87,11 @@ public:
 
   void generate(Map_type type, Direction coast = DIR_NULL);
 
-  Terrain_type tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
+  std::string get_resource_info(int x, int y);
+
+  Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
+  std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];
+  std::vector<Mineral>  minerals[CITY_MAP_SIZE][CITY_MAP_SIZE];
 };
 
 #endif

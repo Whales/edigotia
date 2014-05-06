@@ -17,6 +17,8 @@ public:
   int population[CIT_MAX];
   int buildings[BUILD_MAX];
 
+  int radius;
+
   std::vector<Area> areas;
 
   City_map map;
@@ -24,7 +26,8 @@ public:
   bool place_keep();
 
   void interface_buildings();
-  void draw_map(Window* w, cuss::interface* i_map, bool interactive = false);
+  void draw_map(Window* w, cuss::interface* i_map, bool interactive = false,
+                bool radius_limited = false);
 };
 
 #endif

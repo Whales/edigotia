@@ -48,7 +48,7 @@ void Interface::main_loop()
           break;
           case 'v':
           case 'V':
-            city->draw_map(NULL, NULL, true);
+            city->draw_map(NULL, NULL, true, true);
             break;
         }
         break;

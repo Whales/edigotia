@@ -1,9 +1,10 @@
-#include <vector>
 #include "city.h"
 #include "cuss.h"
 #include "window.h"
 #include "building.h"
 #include "stringfunc.h"
+#include <sstream>
+#include <vector>
 
 City::City()
 {
@@ -17,6 +18,8 @@ City::City()
   for (int i = 0; i < BUILD_MAX; i++) {
     buildings[i] = 0;
   }
+
+  radius = 1;
 }
 
 City::~City()
@@ -96,9 +99,11 @@ void City::interface_buildings()
   }
 }
 
-void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
+void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
+                    bool radius_limited)
 {
   bool owns_window = false, owns_interface = false;
+  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
   if (!i_map) {
     owns_interface = true;
     i_map = new cuss::interface;
@@ -119,7 +124,11 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
       Terrain_type ter = map.tiles[x][y];
       Terrain_datum* terdata = Terrain_data[ter];
-      i_map->set_data("draw_map", terdata->symbol, x, y);
+      glyph gl = terdata->symbol;
+      if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+        gl.fg = c_dkgray;
+      }
+      i_map->set_data("draw_map", gl, x, y);
     }
   }
 
@@ -144,15 +153,26 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
 
 // Interactive part
   bool done = false;
+  Area_type building = AREA_NULL;
   Point pos(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+
   while (!done) {
+// Set data depending on the building type
+    if (building == AREA_NULL) {
+      i_map->clear_data("text_info");
+    } else {
+      i_map->set_data( map.get_resource_info(pos.x, pos.y) );
+    }
     for (int x = 0; x < CITY_MAP_SIZE; x++) {
       for (int y = 0; y < CITY_MAP_SIZE; y++) {
         Terrain_type ter = map.tiles[x][y];
         Terrain_datum* terdata = Terrain_data[ter];
         glyph gl = terdata->symbol;
+        if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+          gl.fg = c_dkgray;
+        }
         if (x == pos.x && y == pos.y) {
-          gl = gl.hilite(c_blue);
+          gl = gl.hilite(c_cyan);
         }
         i_map->set_data("draw_map", gl, x, y);
       }
@@ -208,8 +228,35 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive)
         pos.x++;
         pos.y++;
         break;
-      case KEY_ESC:
+
+      case 'a':
+      case 'A': {
+        std::stringstream area_options;
+        for (int i = AREA_NULL + 1; i < AREA_MAX; i++) {
+          area_options << "<c=magenta>" << i << "<c=/>: " <<
+                          Area_data[i]->name << std::endl;
+        }
+        area_options << "<c=magenta>Q<c=/>: Cancel";
+        i_map->set_data("text_info", area_options.str());
+        i_map->draw(w);
+        w->refresh();
+        long area_ch = input();
+        if (area_ch >= '1' && area_ch <= '1' + AREA_MAX - 2) {
+          building = Area_type( area_ch - '1' );
+        } else {
+          building = AREA_NULL;
+        }
+      } break;
+
       case '\n':
+        if (building != AREA_NULL) {
+// Add building
+        }
+        break;
+
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
         done = true;
         break;
     }
