@@ -161,7 +161,7 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
     if (building == AREA_NULL) {
       i_map->clear_data("text_info");
     } else {
-      i_map->set_data( map.get_resource_info(pos.x, pos.y) );
+      i_map->set_data( "text_info", map.get_resource_info(pos.x, pos.y) );
     }
     for (int x = 0; x < CITY_MAP_SIZE; x++) {
       for (int y = 0; y < CITY_MAP_SIZE; y++) {

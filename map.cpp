@@ -209,3 +209,13 @@ void City_map::generate(Map_type type, Direction coast)
     }
   }
 }
+
+std::string City_map::get_resource_info(int x, int y)
+{
+  if (x < 0 || x >= CITY_MAP_SIZE || y < 0 || y >= CITY_MAP_SIZE) {
+    return std::string();
+  }
+
+  std::stringstream ret;
+  for (int i = 0; i < crops[x][y].size(); i++) {
+    ret << 

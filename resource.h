@@ -1,6 +1,8 @@
 #ifndef _RESOURCE_H_
 #define _RESOURCE_H_
 
+#include "color.h"
+
 enum Resource
 {
   RES_NULL = 0,
@@ -17,6 +19,18 @@ enum Resource
   RES_LOGGING,  // Produces wood based on terrain
 
   RES_MAX
+};
+
+enum Crop_type
+{
+  CROPTYPE_NULL = 0,
+  CROPTYPE_FOOD,
+  CROPTYPE_SPICE,
+  CROPTYPE_DRUG,
+  CROPTYPE_POISON,
+  CROPTYPE_MATERIAL,
+  CROPTYPE_OTHER,
+  CROPTYPE_MAX
 };
 
 enum Crop
@@ -74,12 +88,21 @@ struct Crop_datum
 {
   std::string name;
   int food;
+  Crop_type type;
+  Crop_datum() { food = 0; type = CROPTYPE_NULL; }
+
+  nc_color get_color();
 };
 
 struct Mineral_datum
 {
   std::string name;
 };
+
+extern Crop_datum*    Crop_data   [CROP_MAX];
+extern Mineral_datum* Mineral_data[MINERAL_MAX];
+
+void init_crops_and_minerals();
 
 struct Resource_cost
 {
