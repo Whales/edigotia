@@ -12,7 +12,7 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
 #define _food(s) \
   Crop_data[cur_id]->food = (s)
 #define _type(s) \
-  Drop_data[cur_id]->type = (s)
+  Crop_data[cur_id]->type = (s)
 
 #define _mineral(n) \
   cur_id = (n)

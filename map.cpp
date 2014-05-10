@@ -1,6 +1,7 @@
 #include "map.h"
 #include "rng.h"
 #include "geometry.h" // For direction
+#include <sstream>
 
 City_map::City_map()
 {
@@ -217,5 +218,5 @@ std::string City_map::get_resource_info(int x, int y)
   }
 
   std::stringstream ret;
-  for (int i = 0; i < crops[x][y].size(); i++) {
-    ret << 
+  return ret.str();
+}
