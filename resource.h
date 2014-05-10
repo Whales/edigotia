@@ -61,7 +61,7 @@ enum Crop
   CROP_VIPERVINE,
   CROP_SCORPICON,
 
-// Building resources
+// Materials
   CROP_COTTON,
   CROP_HEMP,
 
@@ -76,10 +76,12 @@ enum Mineral
   MINERAL_NULL = 0,
 
   MINERAL_STONE,
+  MINERAL_TIN,
   MINERAL_COPPER,
   MINERAL_IRON,
   MINERAL_GOLD,
-  MINERAL_TIN,
+
+  MINERAL_COAL,
 
   MINERAL_MAX
 };
@@ -88,8 +90,9 @@ struct Crop_datum
 {
   std::string name;
   int food;
+  int percentage;
   Crop_type type;
-  Crop_datum() { food = 0; type = CROPTYPE_NULL; }
+  Crop_datum() { food = 0; percentage = 0; type = CROPTYPE_NULL; }
 
   nc_color get_color();
 };
@@ -97,6 +100,15 @@ struct Crop_datum
 struct Mineral_datum
 {
   std::string name;
+  int percentage;
+
+  Mineral_datum() { percentage = 0; }
+};
+
+struct Mineral_amount
+{
+  Mineral type;
+  int amount;
 };
 
 extern Crop_datum*    Crop_data   [CROP_MAX];

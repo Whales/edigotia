@@ -3,13 +3,17 @@
 Terrain_datum* Terrain_data[TER_MAX];
 
 #define _ter(n) \
-  cur_id = n
+  cur_id = (n)
 #define _name(n) \
-  Terrain_data[cur_id]->name = n
+  Terrain_data[cur_id]->name = (n)
 #define _symbol(c, f) \
-  Terrain_data[cur_id]->symbol = glyph(c, f, c_black)
+  Terrain_data[cur_id]->symbol = glyph((c), (f), (c_black))
 #define _farm(n) \
-  Terrain_data[cur_id]->farm_percent = n
+  Terrain_data[cur_id]->farm_percent = (n)
+#define _crop(c) \
+  Terrain_data[cur_id]->crops.push_back( (c) )
+#define _mineral(m, a) \
+  Terrain_data[cur_id]->minerals.push_back( Mineral_amount( (m), (a) ) )
 
 void init_terrain_data()
 {

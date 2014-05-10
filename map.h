@@ -36,6 +36,8 @@ struct Terrain_datum
   std::string name;
   glyph symbol;
   int farm_percent;
+  std::vector<Crop> crops;
+  std::vector<Mineral_amount> minerals;
 // TODO: List of crops available
 // TODO: List of minables
 // TODO: List of wildlife
