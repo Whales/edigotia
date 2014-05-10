@@ -35,26 +35,55 @@ void init_terrain_data()
     _name("Field");
     _symbol('.', c_green);
     _farm(100);
+    _crop(CROP_WHEAT);
+    _crop(CROP_CORN);
+    _crop(CROP_CABBAGE);
+    _crop(CROP_TOBACCO);
+    _crop(CROP_AMANITAS);
+    _crop(CROP_DEATHCAP);
+    _crop(CROP_COTTON);
+    _crop(CROP_HAY);
 
   _ter(TER_ROCKY);
     _name("Rocky");
     _symbol(',', c_brown);
-    _farm(70);
+    _farm(50);
+    _crop(CROP_WHEAT);
+    _crop(CROP_CORN);
+    _crop(CROP_CABBAGE);
+    _crop(CROP_TOBACCO);
+    _crop(CROP_AMANITAS);
+    _crop(CROP_DEATHCAP);
+    _crop(CROP_HEMP);
+    _crop(CROP_HAY);
 
   _ter(TER_HILL);
     _name("Hill");
     _symbol('n', c_brown);
     _farm(50);
+    _crop(CROP_WHEAT);
+    _crop(CROP_CABBAGE);
+    _crop(CROP_GRAPES);
+    _crop(CROP_MELON);
+    _crop(CROP_TOBACCO);
+    _crop(CROP_HEMP);
 
   _ter(TER_MOUNTAIN);
     _name("Mountain");
     _symbol('M', c_ltgray);
     _farm(5);
+    _crop(CROP_WHEAT);
+    _crop(CROP_MELON);
 
   _ter(TER_FOREST);
     _name("Forest");
     _symbol('7', c_ltgreen);
     _farm(10);
+    _crop(CROP_CABBAGE);
+    _crop(CROP_MELON);
+    _crop(CROP_AMANITAS);
+    _crop(CROP_DEATHCAP);
+    _crop(CROP_CINNAMON);
 
   _ter(TER_RIVER);
     _name("River");
@@ -69,10 +98,18 @@ void init_terrain_data()
   _ter(TER_DESERT);
     _name("Desert");
     _symbol('x', c_yellow);
-    _farm(15);
+    _farm(35);
+    _crop(CROP_CACTUS);
+    _crop(CROP_SPICEREED);
+    _crop(CROP_SCORPICON);
 
   _ter(TER_SWAMP);
     _name("Swamp");
     _symbol('s', c_cyan);
-    _farm(50);
+    _farm(80);
+    _crop(CROP_RICE);
+    _crop(CROP_PEPPER);
+    _crop(CROP_CINNAMON);
+    _crop(CROP_AYAHUASCA);
+    _crop(CROP_VIPERVINE);
 }

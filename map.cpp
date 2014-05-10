@@ -209,6 +209,8 @@ void City_map::generate(Map_type type, Direction coast)
       }
     }
   }
+
+// Now place some resources...
 }
 
 std::string City_map::get_resource_info(int x, int y)
