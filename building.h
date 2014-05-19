@@ -33,14 +33,14 @@ struct Building_datum
 {
   int uid;
   std::string name;
-  std::vector<Resource_cost> build_costs;
+  std::vector<Resource_amount> build_costs;
   int upkeep;
 
   Citizen_amount housing;
 
   int jobs;
   int wages;
-  std::vector<Resource_cost> flat_production; // Per job, w/ skill of 5 (max)
+  std::vector<Resource_amount> flat_production; // Per job, w/ skill of 5 (max)
 
   std::vector<Resource> buildable;
 };

@@ -20,6 +20,7 @@ City::City()
   }
 
   radius = 1;
+  labor_pool = 0;
 }
 
 City::~City()
@@ -278,5 +279,17 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
   }
   if (owns_interface) {
     delete i_map;
+  }
+}
+
+void City::do_turn()
+{
+// First, deduct maintenance/wages for all areas
+/* TODO:  This could be better.  It could be the case that while we can't afford
+ *        these costs NOW, we WILL be able to afford them after collecting
+ *        resources from areas & buildings.
+ */
+  for (int i = 0; i < areas.size(); i++) {
+// TODO: Check if the area is open!
   }
 }

@@ -10,6 +10,7 @@
 #include "glyph.h"
 #include "building.h"
 #include "geometry.h"
+#include "resource.h"
 #include <string>
 
 enum Area_type
@@ -36,7 +37,13 @@ struct Area_datum
   std::string name;
   int uid;
   glyph symbol;
+
   Building_type building;
+
+  std::vector<Resource_amount> build_cost;
+  std::vector<Resource_amount> maintenance_cost;
+  int wages;
+
 };
 
 struct Area

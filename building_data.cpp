@@ -7,7 +7,7 @@ Building_datum* Building_data[BUILD_MAX];
 #define _name(n) \
   Building_data[cur_id]->name = (n)
 #define _cost(t, n) \
-  Building_data[cur_id]->build_costs.push_back( Resource_cost( (t), (n) ) )
+  Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 #define _upkeep(n) \
   Building_data[cur_id]->upkeep = (n)
 #define _wages(n) \
@@ -17,7 +17,7 @@ Building_datum* Building_data[BUILD_MAX];
 #define _jobs(n) \
   Building_data[cur_id]->jobs = (n)
 #define _flat(t, n) \
-  Building_data[cur_id]->flat_production.push_back( Resource_cost( (t), (n) ) )
+  Building_data[cur_id]->flat_production.push_back( Resource_amount( (t), (n) ))
 #define _buildable(t) \
   Building_data[cur_id]->buildable.push_back( (t) )
 

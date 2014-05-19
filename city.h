@@ -20,6 +20,8 @@ public:
   int radius;
 
   std::vector<Area> areas;
+  std::vector<Area> area_queue;
+  int labor_pool;
 
   City_map map;
 
@@ -28,6 +30,9 @@ public:
   void interface_buildings();
   void draw_map(Window* w, cuss::interface* i_map, bool interactive = false,
                 bool radius_limited = false);
+
+  void do_turn();
+  void add_area_to_queue(Area area);
 };
 
 #endif

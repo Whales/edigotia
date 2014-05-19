@@ -116,12 +116,12 @@ extern Mineral_datum* Mineral_data[MINERAL_MAX];
 
 void init_crops_and_minerals();
 
-struct Resource_cost
+struct Resource_amount
 {
   Resource type;
   int amount;
 
-  Resource_cost(Resource T, int A) : type (T), amount (A) {}
+  Resource_amount(Resource T, int A) : type (T), amount (A) {}
 };
 
 #endif
