@@ -12,6 +12,7 @@
 #include "geometry.h"
 #include "resource.h"
 #include <string>
+#include <map>
 
 enum Area_type
 {
@@ -40,16 +41,18 @@ struct Area_datum
 
   Building_type building;
 
-  std::vector<Resource_amount> build_cost;
-  std::vector<Resource_amount> maintenance_cost;
-  int wages;
-
 };
 
 struct Area
 {
+  Area(Area_type T = AREA_NULL, Point P = Point(-1, -1));
+
+  std::map<Resource,int> get_maintenance();
+
   Area_type type;
   Point pos;
+  int workers;
+  bool open;
 };
 
 extern Area_datum* Area_data[AREA_MAX];

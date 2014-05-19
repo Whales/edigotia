@@ -32,6 +32,7 @@ public:
                 bool radius_limited = false);
 
   void do_turn();
+  void add_area_to_queue(Area_type type, Point location);
   void add_area_to_queue(Area area);
 };
 

@@ -290,6 +290,22 @@ void City::do_turn()
  *        resources from areas & buildings.
  */
   for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open) {
+      if (!expend_resources( areas[i].get_maintenance() )) {
+        areas[i].open = false;
+      }
+    }
 // TODO: Check if the area is open!
   }
+}
+
+void City::add_area_to_queue(Area_type type, Point location)
+{
+  Area tmp(type, location);
+  add_area_to_queue(tmp);
+}
+
+void City::add_area_to_queue(Area area)
+{
+  area_queue.push_back(area);
 }

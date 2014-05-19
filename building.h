@@ -40,7 +40,9 @@ struct Building_datum
 
   int jobs;
   int wages;
+  int build_time;
   std::vector<Resource_amount> flat_production; // Per job, w/ skill of 5 (max)
+  std::vector<Resource_amount> maintenance_cost;
 
   std::vector<Resource> buildable;
 };
