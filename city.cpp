@@ -309,3 +309,21 @@ void City::add_area_to_queue(Area area)
 {
   area_queue.push_back(area);
 }
+
+bool City::expend_resources(std::map<Resource,int> resources)
+{
+  std::map<Resource,int>::interator it;
+// Check if we have enough
+  for (it = resources.begin(); it != resources.end(); it++) {
+    Resource res = it->first;
+    if (resources[res] < it->second) {
+      return false;
+    }
+  }
+// Now actually use them
+  for (it = resources.begin(); it != resources.end(); it++) {
+    Resource res = it->first;
+    resources[res] -= it->second;
+  }
+  return true;
+}

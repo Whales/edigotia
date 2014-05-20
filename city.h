@@ -7,6 +7,7 @@
 #include "map.h"
 #include "window.h"
 #include "cuss.h"
+#include <map>
 
 class City
 {
@@ -16,6 +17,7 @@ public:
 
   int population[CIT_MAX];
   int buildings[BUILD_MAX];
+  int resources[RES_MAX];
 
   int radius;
 
@@ -34,6 +36,8 @@ public:
   void do_turn();
   void add_area_to_queue(Area_type type, Point location);
   void add_area_to_queue(Area area);
+
+  bool expend_resources(std::map<Resource,int> resources);
 };
 
 #endif
