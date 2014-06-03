@@ -140,6 +140,15 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
     i_map->set_data("draw_map", areadata->symbol, area->pos.x, area->pos.y);
   }
 
+// Draw any enqueued areas
+  for (int i = 0; i < area_queue.size(); i++) {
+    Area* area = &(area_queue[i]);
+    Area_datum* areadata = Area_data[area->type];
+    glyph gl = areadata->symbol;
+    gl.bg = c_blue;
+    i_map->set_data("draw_map", gl, area->pos.x, area->pos.y);
+  }
+
   i_map->draw(w);
   w->refresh();
   if (!interactive) {
@@ -185,6 +194,15 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
       Area_datum* areadata = Area_data[area->type];
       i_map->set_data("draw_map", areadata->symbol, area->pos.x, area->pos.y);
     }
+// Draw any enqueued areas
+    for (int i = 0; i < area_queue.size(); i++) {
+      Area* area = &(area_queue[i]);
+      Area_datum* areadata = Area_data[area->type];
+      glyph gl = areadata->symbol;
+      gl.bg = c_blue;
+      i_map->set_data("draw_map", gl, area->pos.x, area->pos.y);
+    }
+
     i_map->draw(w);
     w->refresh();
     long ch = getch();
@@ -243,7 +261,7 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
         w->refresh();
         long area_ch = input();
         if (area_ch >= '1' && area_ch <= '1' + AREA_MAX - 2) {
-          building = Area_type( area_ch - '1' );
+          building = Area_type( area_ch - '1' + 1 );
         } else {
           building = AREA_NULL;
         }
@@ -251,6 +269,7 @@ void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
 
       case '\n':
         if (building != AREA_NULL) {
+          add_area_to_queue(building, pos);
 // Add building
         }
         break;
@@ -312,7 +331,7 @@ void City::add_area_to_queue(Area area)
 
 bool City::expend_resources(std::map<Resource,int> resources)
 {
-  std::map<Resource,int>::interator it;
+  std::map<Resource,int>::iterator it;
 // Check if we have enough
   for (it = resources.begin(); it != resources.end(); it++) {
     Resource res = it->first;
