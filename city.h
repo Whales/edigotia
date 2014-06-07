@@ -38,6 +38,7 @@ public:
   void add_area_to_queue(Area_type type, Point location);
   void add_area_to_queue(Area area);
 
+  bool expend_resources(std::vector<Resource_amount> resources);
   bool expend_resources(std::map<Resource,int> resources);
 };
 

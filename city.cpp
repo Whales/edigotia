@@ -320,7 +320,7 @@ void City::do_turn()
   for (int i = 0; i < BUILD_MAX; i++) {
     int bd_num = open_buildings[i];
     for (int n = 0; n < bd_num; n++) {
-      Building_datum* bd_data = Building_data[i];
+      Building_datum* bd = Building_data[i];
       if (!expend_resources( bd->maintenance_cost )) {
         open_buildings[i]--;
         closed_buildings[i]++;
@@ -341,18 +341,35 @@ void City::add_area_to_queue(Area area)
   area_queue.push_back(area);
 }
 
-bool City::expend_resources(std::map<Resource,int> resources)
+bool City::expend_resources(std::vector<Resource_amount> res_used)
+{
+// First, check if we have enough
+  for (int i = 0; i < res_used.size(); i++) {
+    Resource res = res_used[i].type;
+    if (resources[res] < res_used[i].amount) {
+      return false;
+    }
+  }
+// Now, actually consume them
+  for (int i = 0; i < res_used.size(); i++) {
+    Resource res = res_used[i].type;
+    resources[res] -= res_used[i].amount;
+  }
+  return true;
+}
+
+bool City::expend_resources(std::map<Resource,int> res_used)
 {
   std::map<Resource,int>::iterator it;
-// Check if we have enough
-  for (it = resources.begin(); it != resources.end(); it++) {
+// First, check if we have enough
+  for (it = res_used.begin(); it != res_used.end(); it++) {
     Resource res = it->first;
     if (resources[res] < it->second) {
       return false;
     }
   }
-// Now actually use them
-  for (it = resources.begin(); it != resources.end(); it++) {
+// Now, actually consume them
+  for (it = res_used.begin(); it != res_used.end(); it++) {
     Resource res = it->first;
     resources[res] -= it->second;
   }

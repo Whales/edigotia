@@ -10,8 +10,8 @@ Building_datum* Building_data[BUILD_MAX];
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 #define _upkeep(n) \
   Building_data[cur_id]->upkeep = (n)
-#define _wages(n) \
-  Building_data[cur_id]->wages = (n)
+#define _maintenance(t, n) \
+  Building_data[cur_id]->maintenance_cost.push_back( Resource_amount( (t),(n) ))
 #define _housing(t, n) \
   Building_data[cur_id]->housing = Citizen_amount((t), (n))
 #define _jobs(n) \
@@ -65,7 +65,6 @@ void init_building_data()
     _name("farm");
     _cost(RES_GOLD, 100);
     _upkeep(3);
-    _wages(1);
     _jobs(10);
     _flat(RES_FARMING, 10);
 
@@ -73,7 +72,6 @@ void init_building_data()
     _name("quarry");
     _cost(RES_GOLD, 500);
     _upkeep(2);
-    _wages(1);
     _jobs(10);
     _flat(RES_STONE, 5);
 
@@ -82,21 +80,18 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 50);
     _upkeep(3);
-    _wages(2);
     _jobs(10);
     _flat(RES_MINING, 10);
 
   _build(BUILD_CAMP);
     _name("hunting camp");
     _cost(RES_GOLD, 50);
-    _wages(1);
     _jobs(10);
     _flat(RES_HUNTING, 10);
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
     _cost(RES_GOLD, 100);
-    _wages(1);
     _jobs(10);
     _flat(RES_LOGGING, 10);
 

@@ -28,6 +28,12 @@ void Interface::main_loop()
     long ch = getch();
     if (ch == KEY_ESC) {
       toggle_menu(&i_menu_bar, cur_menu);
+    } else if (ch == '.') {
+      city->do_turn();
+    } else if (ch == '>') {
+      for (int i = 0; i < 7; i++) {
+        city->do_turn();
+      }
     }
     switch (cur_menu) {
 
