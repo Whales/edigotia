@@ -16,7 +16,8 @@ City::City()
   population[CIT_NOBLE]    =   0;
 
   for (int i = 0; i < BUILD_MAX; i++) {
-    buildings[i] = 0;
+    open_buildings[i]   = 0;
+    closed_buildings[i] = 0;
   }
 
   radius = 1;
@@ -70,16 +71,16 @@ void City::interface_buildings()
   std::vector<Building_type> building_types; // To key name list to types
 
   for (int i = 0; i < BUILD_MAX; i++) {
-    if (buildings[i] > 0) {
-      building_names.push_back( Building_data[i]->name );
-      building_count.push_back( itos(buildings[i])     );
-      building_types.push_back( Building_type(i)       );
+    if (open_buildings[i] > 0) {
+      building_names.push_back( Building_data[i]->name  );
+      building_count.push_back( itos(open_buildings[i]) );
+      building_types.push_back( Building_type(i)        );
     }
   }
 
   i_buildings.set_data("list_buildings", building_names);
   i_buildings.set_data("list_count",     building_count);
-  i_buildings.select("list_buildings");
+  i_buildings.select  ("list_buildings");
 
   bool done = false;
   while (!done) {
@@ -314,8 +315,19 @@ void City::do_turn()
         areas[i].open = false;
       }
     }
-// TODO: Check if the area is open!
   }
+// Ditto for buildings (and ditto for the TODO)
+  for (int i = 0; i < BUILD_MAX; i++) {
+    int bd_num = open_buildings[i];
+    for (int n = 0; n < bd_num; n++) {
+      Building_datum* bd_data = Building_data[i];
+      if (!expend_resources( bd->maintenance_cost )) {
+        open_buildings[i]--;
+        closed_buildings[i]++;
+      }
+    }
+  }
+        
 }
 
 void City::add_area_to_queue(Area_type type, Point location)

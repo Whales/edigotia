@@ -32,11 +32,5 @@ std::map<Resource,int> Area::get_maintenance()
     }
   }
 
-  if (ret.count(RES_GOLD)) {
-    ret[RES_GOLD] += bd_data->wages * workers;
-  } else {
-    ret[RES_GOLD] = bd_data->wages * workers;
-  }
-
   return ret;
 }

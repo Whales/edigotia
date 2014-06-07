@@ -38,8 +38,8 @@ struct Building_datum
 
   Citizen_amount housing;
 
+  Citizen_type job_class;
   int jobs;
-  int wages;
   int build_time;
   std::vector<Resource_amount> flat_production; // Per job, w/ skill of 5 (max)
   std::vector<Resource_amount> maintenance_cost;

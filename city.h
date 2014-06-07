@@ -16,7 +16,8 @@ public:
   ~City();
 
   int population[CIT_MAX];
-  int buildings[BUILD_MAX];
+  int open_buildings[BUILD_MAX];
+  int closed_buildings[BUILD_MAX];
   int resources[RES_MAX];
 
   int radius;
