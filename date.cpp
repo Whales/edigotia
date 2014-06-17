@@ -12,6 +12,22 @@ Date::~Date()
 {
 }
 
+Date::Date(const Date& copy)
+{
+  year  = copy.year;
+  month = copy.month;
+  day   = copy.day;
+  standardize();
+}
+
+Date::Date(int _year, int _month, int _day)
+{
+  year  = _year;
+  month = _month;
+  day   = _day;
+  standardize();
+}
+
 bool Date::operator==(const Date& other) const
 {
   Date left = *this;
