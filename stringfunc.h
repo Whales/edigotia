@@ -24,6 +24,8 @@ std::string no_caps          (const std::string &orig);
 std::string capitalize       (const std::string &orig);
 std::string remove_color_tags(const std::string &orig);
 
+int tagless_length           (const std::string &orig);
+
 // Convert an int to a string
 std::string itos(int num);
 

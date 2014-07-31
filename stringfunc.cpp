@@ -228,6 +228,12 @@ std::string remove_color_tags(const std::string &orig)
   return ret;
 }
 
+int tagless_length(const std::string &orig)
+{
+  std::string tagless = remove_color_tags(orig);
+  return tagless.length();
+}
+
 std::string itos(int num)
 {
   std::stringstream ret;
