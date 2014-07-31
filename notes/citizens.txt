@@ -8,14 +8,14 @@ Peasants:
     Requires farm.
     Grows crops (food, fibers, medicine or luxuries).
   Fisher:
-    Requires water tiles.
+    Requires docks.
     Collects fish (food).
   Hunter:
-    Requires undeveloped tiles.
+    Requires hunting camp.
     Collects game (food, fur).
   Miner:
     Requires mine.
-    Collects metals (salt, iron, copper, gold).
+    Collects (salt, emerald, ruby, sapphire, diamond, iron, copper, gold).
 ! Soldier:
     Forms the basis of most military units.
 
@@ -79,3 +79,33 @@ Burgher:
     Requires courthouse.
     Improves effectiveness of guardsmen.
     Decreases corruption.
+
+Magi:
+When you build a mage tower (or whatever it's called), 1-3 mage flavors from the
+following list become available as jobs for merchants, depending on your race's
+magic skill.
+Upgrading the mage tower (two upgrades?) unlocks another flavor.
+You can send merchants away to other cities to train them in further flavors...
+but that usually costs money (and is a dangerous/expensive voyage, etc).
+Should some of these be advanced, and only available to burghers?  Maybe.
+
+  Geomancer:
+    Can work at a mine to improve its output by 5% (this increases the minerals
+    coming out without consuming more of the mineral reserves).
+    Spell: Divination
+      Cost: A bunch of minerals (gems, iron, copper, etc)
+      Effect: You're told 50% of a mine's mineral reserves.  A second casting
+              increases this to 75%, then 87.5%, etc etc
+
+  Kairomancer:
+    Spell: Fair Weather
+      Cost: 1x Emerald
+      Effect: Weather is improved, on average, for the next 3 months.
+    Spell: Call Storm
+      Cost: 1x Ruby
+      Effect: A storm hits a nearby location.  It could range from a mild
+              thunderstorm (reduce an army's morale) to a (much more rare)
+              tornado (dealing serious damage).
+
+  Aquamancer:
+    Can work onboard a ship to increase its speed by 10%.
