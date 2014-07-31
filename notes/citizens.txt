@@ -1,0 +1,81 @@
+Items preceded with a ! are military; all others are domestic.
+
+Peasants:
+
+  Free Peasant:
+    Generates 1 gold per day (may be taxed).
+  Farmer:
+    Requires farm.
+    Grows crops (food, fibers, medicine or luxuries).
+  Fisher:
+    Requires water tiles.
+    Collects fish (food).
+  Hunter:
+    Requires undeveloped tiles.
+    Collects game (food, fur).
+  Miner:
+    Requires mine.
+    Collects metals (salt, iron, copper, gold).
+! Soldier:
+    Forms the basis of most military units.
+
+
+Merchant:
+
+  Free Merchant:
+    Generates between 5 and 10 gold per day (depends on race's trade skill).
+  Smith:
+    Requires forge.
+    Turns metals into goods:
+      Iron -> Weaponry, Tools
+      Copper -> Luxuries
+  Actor:
+    Requires theater.
+    Generates morale.
+  Priest:
+    Requires temple.
+    Generates religion (which can affect morale and standing w/ god).
+  Mage:
+    Requires mage tower (rename this).
+    Many flavors; see below.
+  Guard:
+    Reduces crime.
+! General:
+    Improves morale & effectiveness of whatever unit they're attached to.
+! Artilleryman (need better word for this):
+    Operates war engines (catapult, trebuchet, etc)
+  Doctor:
+    Requires apothecary.
+    Provides healing.
+  Scribe:
+    Requires library.
+    Copies books.
+  Clothier:
+    Requires workshop.
+    Produces clothing (from furs or fibers).
+  Carpenter:
+    Requires workshop.
+    Produces furniture (luxury) and vehicles (wagon, war machines).
+  Fletcher:
+    Requires fletchery.
+    Produces bows and crossbows (and their ammunition).
+
+Burgher:
+
+  Free Burgher:
+    Generates between 10 and 20 gold per day (depends on race's trade skill).
+  High Mage:
+    Requires (upgraded) mage tower.
+    Improves mage training & adds one new flavor.
+  High Priest:
+    Requires (upgraded) temple.
+    Improves religion output of all priests; unlocks some god abilities.
+  Surgeon:
+    Requires (upgraded) apothecary.
+    Provides healing for more dire conditions.
+  Writer:
+    Produces books.
+  Magistrate:
+    Requires courthouse.
+    Improves effectiveness of guardsmen.
+    Decreases corruption.
