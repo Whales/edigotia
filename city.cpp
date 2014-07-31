@@ -10,12 +10,7 @@
 
 City::City()
 {
-  population[CIT_NULL]     =   0;
-  population[CIT_SLAVE]    =   0;
-  population[CIT_PEASANT]  = 100;
-  population[CIT_MERCHANT] =   0;
-  population[CIT_BURGHER]  =   0;
-  population[CIT_NOBLE]    =   0;
+  population[CIT_PEASANT].count  = 100;
 
   for (int i = 0; i < BUILD_MAX; i++) {
     open_buildings[i]   = 0;

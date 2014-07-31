@@ -9,13 +9,22 @@
 #include "cuss.h"
 #include <map>
 
+struct Citizens
+{
+  int count;
+  int wealth;
+
+  Citizens() { count = 0; wealth = 0; }
+};
+
 class City
 {
 public:
   City();
   ~City();
 
-  int population[CIT_MAX];
+  Citizens population[CIT_MAX];
+  //int population[CIT_MAX];
   int open_buildings[BUILD_MAX];
   int closed_buildings[BUILD_MAX];
   int resources[RES_MAX];
