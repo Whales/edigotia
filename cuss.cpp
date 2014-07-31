@@ -19,7 +19,8 @@ void print_scrollbar(Window *win, int posx, int posy, int length, int offset,
   (ele)->sizey = szy;\
   (ele)->selected = false;\
   (ele)->selectable = selectable;\
-  (ele)->align = ALIGN_LEFT
+  (ele)->align = ALIGN_LEFT; \
+  (ele)->v_align = ALIGN_TOP
 
 std::string cuss::element_type_name(cuss::element_type type)
 {
