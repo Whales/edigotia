@@ -12,6 +12,39 @@ Interface::~Interface()
 {
 }
 
+bool Interface::init(City* C)
+{
+  if (!C) {
+    debugmsg("Interface init'd with NULL city.");
+    return false;
+  }
+
+  city = C;
+
+  if (!i_main.load_from_file("cuss/interface.cuss")) {
+    debugmsg("Failed to load critical interface file cuss/interface.cuss!");
+    return false;
+  }
+
+  w_main.init(0, 0, 80, 24);
+
+  return true;
+}
+
+void Interface::main_loop()
+{
+  city->draw_map(i_main.find_by_name("draw_map"));
+
+  i_main.draw(&w_main);
+  w_main.refresh();
+
+  bool done = false;
+  while (!done) {
+    long ch = input();
+  }
+}
+
+/*
 void Interface::main_loop()
 {
   Window w_menu_bar(0, 0, 80, 24);
@@ -61,6 +94,7 @@ void Interface::main_loop()
     }
   }
 }
+*/
 
 void Interface::toggle_menu(cuss::interface* i_menu_bar, Menu_item item)
 {

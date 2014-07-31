@@ -91,9 +91,13 @@ public:
 
   std::string get_resource_info(int x, int y);
 
+  glyph get_glyph(int x, int y);
+
   Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Mineral>  minerals[CITY_MAP_SIZE][CITY_MAP_SIZE];
+private:
+  bool is_oob(int x, int y);
 };
 
 #endif

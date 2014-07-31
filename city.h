@@ -31,8 +31,9 @@ public:
   bool place_keep();
 
   void interface_buildings();
-  void draw_map(Window* w, cuss::interface* i_map, bool interactive = false,
-                bool radius_limited = false);
+  void draw_map(cuss::element* e_draw, bool radius_limited = false);
+  void display_map(Window* w, cuss::interface* i_map, bool interactive = false,
+                   bool radius_limited = false);
 
   void do_turn();
   void add_area_to_queue(Area_type type, Point location);

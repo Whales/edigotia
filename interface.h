@@ -2,6 +2,7 @@
 #define _INTERFACE_H_
 
 #include "cuss.h"
+#include "window.h"
 #include <vector>
 #include <string>
 
@@ -19,6 +20,8 @@ struct Interface
   Interface();
   ~Interface();
 
+  bool init(City* C);
+
   void main_loop();
 
   void toggle_menu(cuss::interface* i_menu_bar, Menu_item item);
@@ -27,6 +30,9 @@ struct Interface
 // DATA
   Menu_item cur_menu;
   City* city;
+
+  cuss::interface i_main;
+  Window w_main;
 };
 
 #endif

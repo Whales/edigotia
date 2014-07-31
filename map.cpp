@@ -215,10 +215,26 @@ void City_map::generate(Map_type type, Direction coast)
 
 std::string City_map::get_resource_info(int x, int y)
 {
-  if (x < 0 || x >= CITY_MAP_SIZE || y < 0 || y >= CITY_MAP_SIZE) {
+  if (is_oob(x, y)) {
     return std::string();
   }
 
   std::stringstream ret;
   return ret.str();
+}
+
+glyph City_map::get_glyph(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return glyph();
+  }
+
+  Terrain_type ter = tiles[x][y];
+  Terrain_datum* terdata = Terrain_data[ter];
+  return terdata->symbol;
+}
+
+bool City_map::is_oob(int x, int y)
+{
+  return (x < 0 || x >= CITY_MAP_SIZE || y < 0 || y >= CITY_MAP_SIZE);
 }

@@ -3,8 +3,10 @@
 #include "window.h"
 #include "building.h"
 #include "stringfunc.h"
+#include "geometry.h"
 #include <sstream>
 #include <vector>
+#include <map>
 
 City::City()
 {
@@ -39,7 +41,7 @@ bool City::place_keep()
   i_map.set_data("text_info", "Start town here?\n<c=magenta>Y/N<c=/>");
 
   do {
-    draw_map(&w_map, &i_map);
+    display_map(&w_map, &i_map);
     i_map.set_data("draw_map", glyph('@', c_yellow, c_black),
                    CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
     i_map.draw(&w_map);
@@ -101,8 +103,62 @@ void City::interface_buildings()
   }
 }
 
-void City::draw_map(Window* w, cuss::interface* i_map, bool interactive,
-                    bool radius_limited)
+void City::draw_map(cuss::element* e_draw, bool radius_limited)
+{
+  if (!e_draw) {
+    debugmsg("City::draw_map() called with NULL drawing area.");
+    return;
+  }
+  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+
+  std::map<Point,glyph,Pointcomp> drawing;
+
+// Draw any constructed areas
+  for (int i = 0; i < areas.size(); i++) {
+    Area* area = &(areas[i]);
+    Area_datum* areadata = Area_data[area->type];
+    drawing[area->pos] = areadata->symbol;
+  }
+
+// Draw any enqueued areas
+  for (int i = 0; i < area_queue.size(); i++) {
+    Area* area = &(area_queue[i]);
+    Area_datum* areadata = Area_data[area->type];
+    glyph gl = areadata->symbol;
+    gl.bg = c_blue;
+    drawing[area->pos] = gl;
+  }
+
+// Now for any "unclaimed" points, pull the glyph from our map
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      Point pos(x, y);
+      if (drawing.count(pos) == 0) {
+        glyph gl = map.get_glyph(x, y);
+        if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+          gl.fg = c_dkgray;
+        }
+        drawing[pos] = gl;
+      }
+    }
+  }
+
+// Finally, draw the glyphs to e_draw.
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      Point pos(x, y);
+      if (drawing.count(pos) == 0) {
+        debugmsg("ERROR - hole in city drawing at %s!", pos.str().c_str());
+        e_draw->set_data(glyph(), x, y);
+      } else {
+        e_draw->set_data(drawing[pos], x, y);
+      }
+    }
+  }
+}
+
+void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
+                       bool radius_limited)
 {
   bool owns_window = false, owns_interface = false;
   Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);

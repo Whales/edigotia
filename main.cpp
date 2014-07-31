@@ -35,6 +35,7 @@ int main()
   }
 
   Interface interface;
+  interface.init(&city);
   interface.city = &city;
   interface.main_loop();
 
