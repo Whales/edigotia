@@ -8,6 +8,7 @@
 Interface::Interface()
 {
   cur_menu = MENU_NULL;
+  cur_mode = IMODE_NULL;
 }
 
 Interface::~Interface()
@@ -64,58 +65,6 @@ void Interface::main_loop()
   }
 }
 
-/*
-void Interface::main_loop()
-{
-  Window w_menu_bar(0, 0, 80, 24);
-  cuss::interface i_menu_bar;
-  if (!i_menu_bar.load_from_file("cuss/menu_bar.cuss")) {
-    return;
-  }
-
-  bool done = false;
-  while (!done) {
-    i_menu_bar.draw(&w_menu_bar);
-    w_menu_bar.refresh();
-
-    long ch = getch();
-    if (ch == KEY_ESC) {
-      toggle_menu(&i_menu_bar, cur_menu);
-    } else if (ch == '.') {
-      city->do_turn();
-    } else if (ch == '>') {
-      for (int i = 0; i < 7; i++) {
-        city->do_turn();
-      }
-    }
-    switch (cur_menu) {
-
-      case MENU_NULL:
-        switch (ch) {
-          case 'c':
-          case 'C':
-            toggle_menu(&i_menu_bar, MENU_CITY);
-          break;
-        }
-        break;
-
-      case MENU_CITY:
-        switch (ch) {
-          case 'c':
-          case 'C':
-            toggle_menu(&i_menu_bar, MENU_CITY);
-          break;
-          case 'v':
-          case 'V':
-            city->draw_map(NULL, NULL, true, true);
-            break;
-        }
-        break;
-    }
-  }
-}
-*/
-
 void Interface::set_menu(Menu_item item)
 {
   std::string menu_name;
@@ -170,6 +119,10 @@ void Interface::set_menu(Menu_item item)
   glyph line_nw(LINE_XOOX, c_white, c_black);
   i_main.set_data("menu_border", line_ne, 0, sizey);
   i_main.set_data("menu_border", line_nw, sizex + 1, sizey);
+}
+
+void Interface::minister_finance()
+{
 }
 
 void Interface::get_menu_info(Menu_item item, std::string& name, int& posx)

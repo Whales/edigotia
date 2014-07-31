@@ -16,7 +16,6 @@ enum Menu_item
 enum Interface_mode
 {
   IMODE_NULL = 0,
-  IMODE_CITY,
   IMODE_MAX
 };
 
@@ -25,8 +24,9 @@ class City;
 // Basically, highlights the first letter.
 std::string menuify(std::string name);
 
-struct Interface
+class Interface
 {
+public:
   Interface();
   ~Interface();
 
@@ -34,10 +34,18 @@ struct Interface
 
   void main_loop();
 
+private:
 // Modes
   void set_mode(Interface_mode mode);
 // Menus
   void set_menu(Menu_item item);
+
+// Special screens
+  void minister_finance();
+
+// Helper / data-storing functions
+  void get_menu_info(Menu_item item, std::string& name, int& posx);
+  std::vector<std::string> get_menu_options(Menu_item item);
 
 // DATA
   Menu_item cur_menu;
@@ -49,9 +57,6 @@ struct Interface
   cuss::interface i_menu;
   Window w_menu;
 
-private:
-  void get_menu_info(Menu_item item, std::string& name, int& posx);
-  std::vector<std::string> get_menu_options(Menu_item item);
 };
 
 #endif
