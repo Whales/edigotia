@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-enum Menu_item
+enum Menu_id
 {
   MENU_NULL = 0,
   MENU_MINISTERS,
@@ -16,10 +16,27 @@ enum Menu_item
 enum Interface_mode
 {
   IMODE_NULL = 0,
+  IMODE_MENU,
+  IMODE_VIEW_MAP,
+  IMODE_AREAS,
   IMODE_MAX
 };
 
 class City;
+
+struct Command
+{
+  std::string name;
+  int index;
+};
+
+struct Menu
+{
+  std::string name;
+  Menu_id id;
+  int posx;
+  std::vector<std::string> items;
+};
 
 // Basically, highlights the first letter.
 std::string menuify(std::string name);
@@ -35,21 +52,36 @@ public:
   void main_loop();
 
 private:
+/* This is a modal interface, so keys are handled differently depending on what
+ * mode we're in.  Esc and ! are unique; Esc always sets mode/menu to NULL, and
+ * ! always sets mode to Menu and menu to NULL.
+ */
+  void handle_key(long ch);
 // Modes
   void set_mode(Interface_mode mode);
 // Menus
-  void set_menu(Menu_item item);
+  void set_menu(Menu_id item);
+  void do_menu_action(Menu_id menu, int index);
 
 // Special screens
   void minister_finance();
 
 // Helper / data-storing functions
-  void get_menu_info(Menu_item item, std::string& name, int& posx);
-  std::vector<std::string> get_menu_options(Menu_item item);
+  void get_menu_info(Menu_id item, std::string& name, int& posx);
+  std::vector<std::string> get_menu_options(Menu_id item);
+
+// Setup functions
+  bool add_menu(Menu_id id, std::string name, ...);
+  void set_menu_str();
 
 // DATA
-  Menu_item cur_menu;
+  Menu_id cur_menu;
+  std::vector<Menu> menus;
+  std::string menu_str;
+  int next_menu_posx;
+
   Interface_mode cur_mode;
+
   City* city;
 
   cuss::interface i_main;

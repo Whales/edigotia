@@ -4,11 +4,13 @@
 #include "city.h"
 #include "stringfunc.h"
 #include <sstream>
+#include <cstdarg> // For the variadic function below
 
 Interface::Interface()
 {
   cur_menu = MENU_NULL;
   cur_mode = IMODE_NULL;
+  next_menu_posx = 2;
 }
 
 Interface::~Interface()
@@ -55,17 +57,72 @@ void Interface::main_loop()
     long ch = input();
 
     if (ch == KEY_ESC) {
+      set_mode(IMODE_NULL);
       set_menu(MENU_NULL);
 
-    } else if (ch == 'm' || ch == 'M') {
-      set_menu(MENU_MINISTERS);
+    } else if (ch == '!') {
+      set_mode(IMODE_MENU);
+      set_menu(MENU_NULL);
+
+    } else {
+      handle_key(ch);
     }
-    
+  }
+}
+
+void Interface::handle_key(long ch)
+{
+  if (ch >= '1' && ch <= '9') { // Accessing or using a menu!
+
+/* We start counting at 1 because this is tied to the interface.  All menus and
+ * items in menus start counting at 1, so we do too.
+ */
+    int menu_index = ch - '0';
+
+    if (cur_menu == MENU_NULL) { // We're not in a menu - so open one
+      set_menu( Menu_id( menu_index ) );
+    } else {
+      do_menu_action(cur_menu, menu_index);
+    }
+
+  } else {
+
+    switch (cur_mode) {
+// TODO: Fill this in with all keybindings for all modes.
+    }
 
   }
 }
 
-void Interface::set_menu(Menu_item item)
+void Interface::set_mode(Interface_mode mode)
+{
+  i_main.clear_data("text_info");
+  switch (mode) {
+
+    case IMODE_NULL:
+    case IMODE_MENU:
+      i_main.clear_data("text_commands");
+      break;
+
+    case IMODE_VIEW_MAP:
+      i_main.set_data("text_commands", "\
+Use movement keys to scroll.\n\
+<c=pink>Enter<c=/>: Get info on tile
+<c=pink>R<c=/>: Toggle control radius");
+      break;
+
+    case IMODE_AREAS:
+      i_main.set_data("text_commands", "\
+<c=pink>B<c=/>uild Area\n\
+<c=pink>C<c=/>lose Area\n\
+<c=pink>D<c=/>estroy Area");
+      break;
+
+  }
+
+}
+
+void Interface::set_menu(Menu_id item)
 {
   std::string menu_name;
   int posx = -1;
@@ -75,6 +132,7 @@ void Interface::set_menu(Menu_item item)
   }
 // Remove any currently-open menu.
   if (cur_menu != MENU_NULL) {
+    set_mode(IMODE_MENU);
     get_menu_info(cur_menu, menu_name, posx);
     i_main.erase_element(menu_name);
     i_main.erase_element("menu_border");
@@ -121,24 +179,34 @@ void Interface::set_menu(Menu_item item)
   i_main.set_data("menu_border", line_nw, sizex + 1, sizey);
 }
 
+void Interface::do_menu_action(Menu_id menu, int index)
+{
+}
+
 void Interface::minister_finance()
 {
 }
 
-void Interface::get_menu_info(Menu_item item, std::string& name, int& posx)
+void Interface::get_menu_info(Menu_id item, std::string& name, int& posx)
 {
-  switch (item) {
-    case MENU_MINISTERS:
-      name = "list_ministers";
-      posx = 2;
-      break;
-  }
+  name = menus[item].name;
+  posx = menus[item].posx;
 }
 
-std::vector<std::string> Interface::get_menu_options(Menu_item item)
+std::vector<std::string> Interface::get_menu_options(Menu_id item)
 {
   std::vector<std::string> ret;
 
+  for (int i = 0; i < menus[item].items.size(); i++) {
+    std::stringstream ss_name;
+    ss_name << "<c=pink>" << i + 1 << "<c=/>: " << menues[item].items[i];
+    ret.push_back( ss_name.str() );
+  }
+
+  return ret;
+}
+
+/*
   switch (item) {
     case MENU_MINISTERS:
       ret.push_back( menuify("Finance")   );
@@ -150,6 +218,43 @@ std::vector<std::string> Interface::get_menu_options(Menu_item item)
   }
 
   return ret;
+}
+*/
+
+bool Interface::add_menu(Menu_id id, std::string name, ...)
+{
+  int length = tagless_length(name) + 3;  // +3 for "1: "
+  if (posx + length > 62) {
+    debugmsg("Tried to add menu '%s' at posx %d, but that name is too long!",
+             name.c_str(), posx);
+    return false;
+  }
+  Menu tmp_menu;
+  std::stringstream ss_name;
+  ss_name << "<c=pink,blue>" << int(id) << "<c=white,blue>: " << name;
+  tmp_menu.name = ss_name.str();
+  tmp_menu.posx = next_menu_posx;
+  next_menu_posx += length + 2;
+  va_list ap;
+  va_start(ap, name);
+  char *tmpstr;
+  int index = 1;
+  while ( (tmpstr = (char*)(va_arg(ap, char*))) ) {
+    tmp_menu.items.push_back( std::string(tmpstr) );
+  }
+  va_end(ap);
+
+  menus.push_back(tmp_menu);
+  return true;
+}
+
+void Interface::set_menu_str()
+{
+  std::stringstream ss_menus;
+  for (int i = 0; i < menus.size(); i++) {
+    ss_menus << "  " << menus[i].name;
+  }
+  menu_str = ss_menus.str();
 }
 
 std::string menuify(std::string name)
