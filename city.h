@@ -40,7 +40,7 @@ public:
   bool place_keep();
 
   void interface_buildings();
-  void draw_map(cuss::element* e_draw, bool radius_limited = false);
+  void draw_map(cuss::element* e_draw, Point sel, bool radius_limited = false);
   void display_map(Window* w, cuss::interface* i_map, bool interactive = false,
                    bool radius_limited = false);
 

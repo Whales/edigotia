@@ -3,6 +3,7 @@
 #include "cuss.h"
 #include "city.h"
 #include "stringfunc.h"
+#include "keys.h"
 #include <sstream>
 #include <cstdarg> // For the variadic function below
 
@@ -33,23 +34,50 @@ bool Interface::init(City* C)
 
   w_main.init(0, 0, 80, 24);
 
+// Put menus here
+  add_menu(MENU_GAME, "Game",
+"Save & Quit",
+"Quit without saving",
+"About",
+0
+);
+
+  add_menu(MENU_MINISTERS, "Ministers",
+"Finance",
+"Happiness",
+0
+);
+
+  add_menu(MENU_BUILD, "Build",
+"Area",
+"Building",
+0
+);
+
+  set_menu_str();
+
   return true;
 }
 
 void Interface::main_loop()
 {
-  city->draw_map(i_main.find_by_name("draw_map"));
+  sel = Point(4, 4);
+  city_radius = true;
+
   i_main.set_data("text_menu_bar", menu_str);
+
+  set_mode(IMODE_VIEW_MAP);
 
   bool done = false;
   while (!done) {
+    city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius);
     i_main.draw(&w_main);
     w_main.refresh();
     long ch = input();
 
     if (ch == KEY_ESC) {
-      set_mode(IMODE_NULL);
       set_menu(MENU_NULL);
+      set_mode(IMODE_VIEW_MAP);
 
     } else if (ch == '!') {
       set_mode(IMODE_MENU);
@@ -58,11 +86,15 @@ void Interface::main_loop()
     } else {
       handle_key(ch);
     }
+    if (game_state == GAME_QUIT) {
+      done = true;
+    }
   }
 }
 
 void Interface::handle_key(long ch)
 {
+//debugmsg("handle_key");
   if (ch >= '1' && ch <= '9') { // Accessing or using a menu!
 
 /* We start counting at 1 because this is tied to the interface.  All menus and
@@ -74,11 +106,27 @@ void Interface::handle_key(long ch)
       set_menu( Menu_id( menu_index ) );
     } else {
       do_menu_action(cur_menu, menu_index);
+      set_menu( MENU_NULL );
     }
 
   } else {
+//debugmsg("mode %d", cur_mode);
 
     switch (cur_mode) {
+      case IMODE_VIEW_MAP: {
+        Point p = input_direction(ch);
+//debugmsg("Mapviewing; %s", p.str().c_str());
+        if (p.x != -2) {
+          sel += p;
+        } else {  // We didn't hit a direction key!
+          if (ch == '\n') {
+            popup("No info yet!");
+          } else if (ch == 'r' || ch == 'R') {
+            city_radius = !city_radius;
+          }
+        }
+      } break;
+          
 // TODO: Fill this in with all keybindings for all modes.
     }
 
@@ -87,6 +135,7 @@ void Interface::handle_key(long ch)
 
 void Interface::set_mode(Interface_mode mode)
 {
+  cur_mode = mode;
   i_main.clear_data("text_info");
   switch (mode) {
 
@@ -150,8 +199,8 @@ void Interface::set_menu(Menu_id item)
   i_main.add_element(cuss::ELE_DRAWING, "menu_border",
                      posx - 1, 1, sizex + 2, sizey + 1);
 
-  i_main.set_data(menu_name, menu_items);
   i_main.set_selectable(menu_name, false);
+  i_main.add_data(menu_name, menu_items);
 
 // Draw the border... ick, manual drawing, oh well.
   glyph line_ns(LINE_XOXO, c_white, c_black);
@@ -172,6 +221,24 @@ void Interface::set_menu(Menu_id item)
 
 void Interface::do_menu_action(Menu_id menu, int index)
 {
+  switch (menu) {
+    case MENU_GAME:
+      switch (index) {
+        case 1: // Save and quit
+          popup("Can't save yet!");
+          break;
+        case 2: // Just quit
+          game_state = GAME_QUIT;
+          break;
+        case 3: // About
+          popup("Edigotia is (c) 2014 Whales");
+          break;
+      }
+      break;
+
+// TODO: Other menus.
+
+  }
 }
 
 void Interface::minister_finance()
@@ -180,17 +247,19 @@ void Interface::minister_finance()
 
 void Interface::get_menu_info(Menu_id item, std::string& name, int& posx)
 {
-  name = menus[item].name;
-  posx = menus[item].posx;
+  name = menus[item - 1].name;
+  name = remove_color_tags(name);
+  name = name.substr(3);  // Remove "1: "
+  posx = menus[item - 1].posx;
 }
 
 std::vector<std::string> Interface::get_menu_options(Menu_id item)
 {
   std::vector<std::string> ret;
 
-  for (int i = 0; i < menus[item].items.size(); i++) {
+  for (int i = 0; i < menus[item - 1].items.size(); i++) {
     std::stringstream ss_name;
-    ss_name << "<c=pink>" << i + 1 << "<c=/>: " << menus[item].items[i];
+    ss_name << "<c=pink>" << i + 1 << "<c=/>: " << menus[item - 1].items[i];
     ret.push_back( ss_name.str() );
   }
 
@@ -250,9 +319,17 @@ void Interface::set_menu_str()
   ss_menus << "<c=/>";
   menu_str = ss_menus.str();
   int width = i_main.element_width("text_menu_bar");
-  if (menu_str.length() < width) {
+  if (width == -1) {
+    debugmsg("text_menu_bar not found in i_main!");
+    std::vector<std::string> ele_names = i_main.element_names();
+    for (int i = 0; i < ele_names.size(); i++) {
+      debugmsg("'%s'", ele_names[i].c_str());
+    }
+    return;
+  }
+  if (remove_color_tags(menu_str).length() < width) {
     menu_str += "<c=blue,blue>";
-    while (menu_str.length() < width) {
+    while (remove_color_tags(menu_str).length() < width) {
       menu_str += 'x';
     }
   }

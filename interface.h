@@ -9,7 +9,9 @@
 enum Menu_id
 {
   MENU_NULL = 0,
+  MENU_GAME,
   MENU_MINISTERS,
+  MENU_BUILD,
   MENU_MAX
 };
 
@@ -20,6 +22,12 @@ enum Interface_mode
   IMODE_VIEW_MAP,
   IMODE_AREAS,
   IMODE_MAX
+};
+
+enum Game_state
+{
+  GAME_NORMAL,
+  GAME_QUIT
 };
 
 class City;
@@ -80,9 +88,12 @@ private:
   std::string menu_str;
   int next_menu_posx;
 
+  Game_state game_state;
   Interface_mode cur_mode;
 
   City* city;
+  Point sel;
+  bool city_radius;
 
   cuss::interface i_main;
   Window w_main;

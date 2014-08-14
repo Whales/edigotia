@@ -98,7 +98,7 @@ void City::interface_buildings()
   }
 }
 
-void City::draw_map(cuss::element* e_draw, bool radius_limited)
+void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
 {
   if (!e_draw) {
     debugmsg("City::draw_map() called with NULL drawing area.");
@@ -112,7 +112,11 @@ void City::draw_map(cuss::element* e_draw, bool radius_limited)
   for (int i = 0; i < areas.size(); i++) {
     Area* area = &(areas[i]);
     Area_datum* areadata = Area_data[area->type];
-    drawing[area->pos] = areadata->symbol;
+    glyph sym = areadata->symbol;
+    if (area->pos == sel) {
+      sym.bg = c_blue;
+    }
+    drawing[area->pos] = sym;
   }
 
 // Draw any enqueued areas
@@ -120,7 +124,11 @@ void City::draw_map(cuss::element* e_draw, bool radius_limited)
     Area* area = &(area_queue[i]);
     Area_datum* areadata = Area_data[area->type];
     glyph gl = areadata->symbol;
-    gl.bg = c_blue;
+    if (area->pos == sel) {
+      gl.bg = c_blue;
+    } else {
+      gl.bg = c_brown;
+    }
     drawing[area->pos] = gl;
   }
 
@@ -132,6 +140,9 @@ void City::draw_map(cuss::element* e_draw, bool radius_limited)
         glyph gl = map.get_glyph(x, y);
         if (radius_limited && rl_dist( Point(x, y), center) > radius) {
           gl.fg = c_dkgray;
+        }
+        if (pos == sel) {
+          gl.bg = c_blue;
         }
         drawing[pos] = gl;
       }
