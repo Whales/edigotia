@@ -19,8 +19,7 @@ void print_scrollbar(Window *win, int posx, int posy, int length, int offset,
   (ele)->sizey = szy;\
   (ele)->selected = false;\
   (ele)->selectable = selectable;\
-  (ele)->align = ALIGN_LEFT; \
-  (ele)->v_align = ALIGN_TOP
+  (ele)->align = ALIGN_LEFT
 
 std::string cuss::element_type_name(cuss::element_type type)
 {
@@ -275,7 +274,15 @@ void ele_list::draw(Window *win)
   if (!selected)
    hilite = bg;
   if (align == ALIGN_RIGHT) {
-    win->putstr_r(posx, ypos, fg, hilite, sizex, (*list)[index]);
+/* If it's selectable, we need an extra space at the end to compensate for the
+ * scroll bar; otherwise the scroll bar will cover up the last name in the list.
+ * This is hacky but it's good enough for now.
+ */
+    if (selectable) {
+      win->putstr_r(posx, ypos, fg, hilite, sizex, (*list)[index] + " ");
+    } else {
+      win->putstr_r(posx, ypos, fg, hilite, sizex, (*list)[index]);
+    }
   } else if (align == ALIGN_CENTER) {
     win->putstr_c(posx, ypos, fg, hilite, sizex, (*list)[index]);
   } else {
@@ -1351,6 +1358,52 @@ std::vector<std::string> interface::get_str_list(std::string name)
  }
  return ele->get_str_list();
 }
+
+int interface::element_height(std::string name)
+{
+  element* ele = find_by_name(name);
+  if (!ele) {
+    return -1;
+  }
+  return ele->sizey;
+}
+
+int interface::element_width(std::string name)
+{
+  element* ele = find_by_name(name);
+  if (!ele) {
+    return -1;
+  }
+  return ele->sizex;
+}
+
+int interface::element_posx(std::string name)
+{
+  element* ele = find_by_name(name);
+  if (!ele) {
+    return -1;
+  }
+  return ele->posx;
+}
+
+int interface::element_posy(std::string name)
+{
+  element* ele = find_by_name(name);
+  if (!ele) {
+    return -1;
+  }
+  return ele->posy;
+}
+
+Point interface::element_pos(std::string name)
+{
+  element* ele = find_by_name(name);
+  if (!ele) {
+    return Point(-1, -1);
+  }
+  return Point(ele->posx, ele->posy);
+}
+
 
 std::vector<std::string> interface::binding_list()
 {

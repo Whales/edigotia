@@ -33,22 +33,13 @@ bool Interface::init(City* C)
 
   w_main.init(0, 0, 80, 24);
 
-/*
-  if (!i_menu.load_from_file("cuss/menu_bar.cuss")) {
-    debugmsg("Failed to load critical interface file cuss/menu_bar.cuss!");
-    return false;
-  }
-
-  w_menu.init(0, 0, 80, 24);
-*/
-
   return true;
 }
 
 void Interface::main_loop()
 {
   city->draw_map(i_main.find_by_name("draw_map"));
-
+  i_main.set_data("text_menu_bar", menu_str);
 
   bool done = false;
   while (!done) {
@@ -107,7 +98,7 @@ void Interface::set_mode(Interface_mode mode)
     case IMODE_VIEW_MAP:
       i_main.set_data("text_commands", "\
 Use movement keys to scroll.\n\
-<c=pink>Enter<c=/>: Get info on tile
+<c=pink>Enter<c=/>: Get info on tile\n\
 <c=pink>R<c=/>: Toggle control radius");
       break;
 
@@ -199,7 +190,7 @@ std::vector<std::string> Interface::get_menu_options(Menu_id item)
 
   for (int i = 0; i < menus[item].items.size(); i++) {
     std::stringstream ss_name;
-    ss_name << "<c=pink>" << i + 1 << "<c=/>: " << menues[item].items[i];
+    ss_name << "<c=pink>" << i + 1 << "<c=/>: " << menus[item].items[i];
     ret.push_back( ss_name.str() );
   }
 
@@ -224,11 +215,13 @@ std::vector<std::string> Interface::get_menu_options(Menu_id item)
 bool Interface::add_menu(Menu_id id, std::string name, ...)
 {
   int length = tagless_length(name) + 3;  // +3 for "1: "
+/*
   if (posx + length > 62) {
     debugmsg("Tried to add menu '%s' at posx %d, but that name is too long!",
              name.c_str(), posx);
     return false;
   }
+*/
   Menu tmp_menu;
   std::stringstream ss_name;
   ss_name << "<c=pink,blue>" << int(id) << "<c=white,blue>: " << name;
@@ -238,7 +231,6 @@ bool Interface::add_menu(Menu_id id, std::string name, ...)
   va_list ap;
   va_start(ap, name);
   char *tmpstr;
-  int index = 1;
   while ( (tmpstr = (char*)(va_arg(ap, char*))) ) {
     tmp_menu.items.push_back( std::string(tmpstr) );
   }
@@ -251,10 +243,19 @@ bool Interface::add_menu(Menu_id id, std::string name, ...)
 void Interface::set_menu_str()
 {
   std::stringstream ss_menus;
+  ss_menus << "<c=white,blue>";
   for (int i = 0; i < menus.size(); i++) {
     ss_menus << "  " << menus[i].name;
   }
+  ss_menus << "<c=/>";
   menu_str = ss_menus.str();
+  int width = i_main.element_width("text_menu_bar");
+  if (menu_str.length() < width) {
+    menu_str += "<c=blue,blue>";
+    while (menu_str.length() < width) {
+      menu_str += 'x';
+    }
+  }
 }
 
 std::string menuify(std::string name)
