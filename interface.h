@@ -3,6 +3,7 @@
 
 #include "cuss.h"
 #include "window.h"
+#include "area.h"
 #include <vector>
 #include <string>
 
@@ -20,7 +21,6 @@ enum Interface_mode
   IMODE_NULL = 0,
   IMODE_MENU,
   IMODE_VIEW_MAP,
-  IMODE_AREAS,
   IMODE_MAX
 };
 
@@ -71,8 +71,12 @@ private:
   void set_menu(Menu_id item);
   void do_menu_action(Menu_id menu, int index);
 
+// Action functions
+  void enqueue_area();
+
 // Special screens
   void minister_finance();
+  Area_type pick_area();
 
 // Helper / data-storing functions
   void get_menu_info(Menu_id item, std::string& name, int& posx);
@@ -94,6 +98,7 @@ private:
   City* city;
   Point sel;
   bool city_radius;
+  Area_type current_area;
 
   cuss::interface i_main;
   Window w_main;

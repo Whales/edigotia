@@ -34,3 +34,12 @@ std::map<Resource,int> Area::get_maintenance()
 
   return ret;
 }
+
+Building_datum* get_building_for(Area_type area)
+{
+  Area_datum* adat = Area_data[area];
+  if (!adat || adat->building == BUILD_NULL) {
+    return NULL;
+  }
+  return Building_data[ adat->building ];
+}

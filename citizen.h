@@ -1,6 +1,8 @@
 #ifndef _CITIZEN_H_
 #define _CITIZEN_H_
 
+#include <string>
+
 enum Citizen_type
 {
   CIT_NULL = 0,
@@ -12,12 +14,17 @@ enum Citizen_type
   CIT_MAX
 };
 
+Citizen_type lookup_citizen_type(std::string name);
+std::string citizen_type_name(Citizen_type type);
+
 struct Citizen_amount
 {
   Citizen_type type;
   int amount;
 
-  Citizen_amount(Citizen_type T = CIT_NULL, int A = 0) :
+  Citizen_amount() { type = CIT_NULL; amount = 0; }
+
+  Citizen_amount(Citizen_type T, int A = 0) :
     type (T), amount (A) {}
   
 };

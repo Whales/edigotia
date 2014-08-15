@@ -17,6 +17,15 @@ City::City()
     closed_buildings[i] = 0;
   }
 
+  for (int i = 0; i < RES_MAX; i++) {
+    resources[i] = 0;
+  }
+
+  resources[RES_GOLD]  = 5000;
+  resources[RES_FOOD]  = 1000;
+  resources[RES_WOOD]  = 100;
+  resources[RES_STONE] = 100;
+
   radius = 1;
   labor_pool = 0;
 }
@@ -401,6 +410,16 @@ void City::add_area_to_queue(Area_type type, Point location)
 void City::add_area_to_queue(Area area)
 {
   area_queue.push_back(area);
+}
+
+int City::get_total_population()
+{
+  int ret = 0;
+  for (int i = 0; i < CIT_MAX; i++) {
+    ret += population[i].count;
+//debugmsg("%s: %d (%d)", citizen_type_name( Citizen_type(i) ).c_str(), population[i].count, ret);
+  }
+  return ret;
 }
 
 bool City::expend_resources(std::vector<Resource_amount> res_used)

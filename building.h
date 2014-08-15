@@ -31,6 +31,8 @@ enum Building_type
 
 struct Building_datum
 {
+  std::string get_short_description();
+
   int uid;
   std::string name;
   std::vector<Resource_amount> build_costs;
@@ -38,12 +40,12 @@ struct Building_datum
 
   Citizen_amount housing;
 
-  Citizen_type job_class;
-  int jobs;
+  Citizen_amount jobs;
   int build_time;
-  std::vector<Resource_amount> flat_production; // Per job, w/ skill of 5 (max)
+  std::vector<Resource_amount> production; // Per job, w/ skill of 5 (max)
   std::vector<Resource_amount> maintenance_cost;
 
+// Things this building can construct
   std::vector<Resource> buildable;
 };
 

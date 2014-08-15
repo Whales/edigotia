@@ -2,6 +2,7 @@
 #define _RESOURCE_H_
 
 #include "color.h"
+#include <string>
 
 enum Resource
 {
@@ -20,6 +21,9 @@ enum Resource
 
   RES_MAX
 };
+
+Resource lookup_resource(std::string name);
+std::string resource_name(Resource res);
 
 enum Crop_type
 {

@@ -59,7 +59,7 @@ void init_terrain_data()
 
   _ter(TER_HILL);
     _name("Hill");
-    _symbol('n', c_brown);
+    _symbol('=', c_brown);
     _farm(50);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -70,7 +70,7 @@ void init_terrain_data()
 
   _ter(TER_MOUNTAIN);
     _name("Mountain");
-    _symbol('M', c_ltgray);
+    _symbol('^', c_ltgray);
     _farm(5);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
@@ -97,7 +97,7 @@ void init_terrain_data()
 
   _ter(TER_DESERT);
     _name("Desert");
-    _symbol('x', c_yellow);
+    _symbol('~', c_yellow);
     _farm(35);
     _crop(CROP_CACTUS);
     _crop(CROP_SPICEREED);
@@ -105,7 +105,7 @@ void init_terrain_data()
 
   _ter(TER_SWAMP);
     _name("Swamp");
-    _symbol('s', c_cyan);
+    _symbol('~', c_cyan);
     _farm(80);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);

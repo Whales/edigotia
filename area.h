@@ -40,7 +40,6 @@ struct Area_datum
   glyph symbol;
 
   Building_type building;
-
 };
 
 struct Area
@@ -57,5 +56,6 @@ struct Area
 
 extern Area_datum* Area_data[AREA_MAX];
 void init_area_data();
+Building_datum* get_building_for(Area_type area);
 
 #endif

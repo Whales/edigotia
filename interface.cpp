@@ -4,6 +4,7 @@
 #include "city.h"
 #include "stringfunc.h"
 #include "keys.h"
+#include "building.h"
 #include <sstream>
 #include <cstdarg> // For the variadic function below
 
@@ -12,6 +13,9 @@ Interface::Interface()
   cur_menu = MENU_NULL;
   cur_mode = IMODE_NULL;
   next_menu_posx = 2;
+  sel = Point(4, 4);
+  city_radius = true;
+  current_area = AREA_NULL;
 }
 
 Interface::~Interface()
@@ -48,9 +52,9 @@ bool Interface::init(City* C)
 0
 );
 
-  add_menu(MENU_BUILD, "Build",
-"Area",
-"Building",
+  add_menu(MENU_BUILD, "Buildings",
+"Status",
+"Build",
 0
 );
 
@@ -71,6 +75,12 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius);
+    i_main.set_data("num_population",   city->get_total_population());
+    i_main.set_data("num_gold",         city->resources[RES_GOLD]);
+    i_main.set_data("num_food",         city->resources[RES_FOOD]);
+    i_main.set_data("num_wood",         city->resources[RES_WOOD]);
+    i_main.set_data("num_stone",        city->resources[RES_STONE]);
+
     i_main.draw(&w_main);
     w_main.refresh();
     long ch = input();
@@ -118,11 +128,23 @@ void Interface::handle_key(long ch)
 //debugmsg("Mapviewing; %s", p.str().c_str());
         if (p.x != -2) {
           sel += p;
-        } else {  // We didn't hit a direction key!
-          if (ch == '\n') {
+        } else if (ch == '\n') {
+          if (current_area != AREA_NULL) {
+            enqueue_area();
+          } else {
             popup("No info yet!");
-          } else if (ch == 'r' || ch == 'R') {
-            city_radius = !city_radius;
+          }
+        } else if (ch == 'q' || ch == 'Q') {
+          current_area = AREA_NULL;
+          set_mode(IMODE_VIEW_MAP);
+        } else if (ch == 'r' || ch == 'R') {
+          city_radius = !city_radius;
+        } else if (ch == 'b' || ch == 'B') {
+          current_area = pick_area();
+          set_mode(IMODE_VIEW_MAP);
+          Building_datum* build = get_building_for(current_area);
+          if (current_area != AREA_NULL && build) {
+            i_main.set_data("text_info", build->get_short_description());
           }
         }
       } break;
@@ -136,7 +158,7 @@ void Interface::handle_key(long ch)
 void Interface::set_mode(Interface_mode mode)
 {
   cur_mode = mode;
-  i_main.clear_data("text_info");
+  //i_main.clear_data("text_info");
   switch (mode) {
 
     case IMODE_NULL:
@@ -144,19 +166,29 @@ void Interface::set_mode(Interface_mode mode)
       i_main.clear_data("text_commands");
       break;
 
-    case IMODE_VIEW_MAP:
-      i_main.set_data("text_commands", "\
-Use movement keys to scroll.\n\
-<c=pink>Enter<c=/>: Get info on tile\n\
-<c=pink>R<c=/>: Toggle control radius");
-      break;
+    case IMODE_VIEW_MAP: {
+      std::stringstream commands;
+      commands << "Use movement keys to scrolls." << std::endl;
+      if (current_area != AREA_NULL) {
+        commands << "<c=pink>Enter<c=/>: Place " <<
+                    Area_data[current_area]->name << std::endl <<
+                    "<c=pink>Q<c=/>: Cancel " <<
+                    Area_data[current_area]->name << " placement" << std::endl;
+      } else {
+        commands << "<c=pink>Enter<c=/>: Get info on tile" << std::endl;
+      }
+      commands << "<c=pink>R<c=/>: Toggle control radius" << std::endl;
+      commands << "<c=pink>B<c=/>: Build ";
+      if (current_area != AREA_NULL) {
+        commands << "a different ";
+      }
+      commands << "area" << std::endl;
+      commands << "<c=pink>C<c=/>: Close area" << std::endl;
+      commands << "<c=pink>D<c=/>: Destroy area" << std::endl;
 
-    case IMODE_AREAS:
-      i_main.set_data("text_commands", "\
-<c=pink>B<c=/>uild Area\n\
-<c=pink>C<c=/>lose Area\n\
-<c=pink>D<c=/>estroy Area");
-      break;
+      i_main.set_data("text_commands", commands.str());
+
+    } break;
 
   }
 
@@ -221,6 +253,9 @@ void Interface::set_menu(Menu_id item)
 
 void Interface::do_menu_action(Menu_id menu, int index)
 {
+// By default, we fall back into normal map mode.  This is suitable most of the
+// time, but if not you can override it below.
+  set_mode(IMODE_VIEW_MAP);
   switch (menu) {
     case MENU_GAME:
       switch (index) {
@@ -236,13 +271,85 @@ void Interface::do_menu_action(Menu_id menu, int index)
       }
       break;
 
+    case MENU_MINISTERS:
+      break;
+
+    case MENU_BUILD:
+      switch (index) {
+        case 1: // Build area
+          //current_area = pick_area();
+          set_mode(IMODE_VIEW_MAP);
+          break;
+        case 2: // Build building
+          break;
+      }
+      break;
+
 // TODO: Other menus.
 
   }
 }
 
+void Interface::enqueue_area()
+{
+  if (current_area == AREA_NULL) {
+    return;
+  }
+  Building_datum* build = get_building_for(current_area);
+
+  if (city->expend_resources(build->build_costs)) {
+    city->add_area_to_queue(current_area, sel);
+  } else {
+    current_area = AREA_NULL;
+    set_mode(IMODE_VIEW_MAP);
+    i_main.set_data("text_info", "<c=ltred>You do not have the resources to \
+build that!");
+  }
+}
+
 void Interface::minister_finance()
 {
+}
+
+Area_type Interface::pick_area()
+{
+  std::vector<std::string> area_options;
+  i_main.clear_data("text_info");
+  i_main.clear_data("text_options");
+  for (int i = 1; i < AREA_MAX; i++) {
+    std::stringstream option;
+    option << "<c=magenta>";
+    if (i <= 9) {
+      option << i;
+    } else {
+      option << char(i - 10 + 'A');
+    }
+    option << "<c=/>: " << Area_data[i]->name << std::endl;
+    i_main.add_data("text_options", option.str());
+  }
+
+  i_main.draw(&w_main);
+  w_main.refresh();
+
+  while (true) {
+    long ch = input();
+    if (ch == 'q' || ch == 'Q' || ch == KEY_ESC || ch == '0') {
+      i_main.clear_data("text_options");
+      return AREA_NULL;
+    }
+    int sel = -1;
+    if (ch >= '1' && ch <= '9') {
+      sel = ch - '0';
+    } else if (ch >= 'a' && ch <= 'z') {
+      sel = ch - 'a' + 10;
+    } else if (ch >= 'A' && ch <= 'Z') {
+      sel = ch - 'A' + 10;
+    }
+    if (sel >= 1 && sel < AREA_MAX) {
+      i_main.clear_data("text_options");
+      return Area_type(sel);
+    }
+  }
 }
 
 void Interface::get_menu_info(Menu_id item, std::string& name, int& posx)
