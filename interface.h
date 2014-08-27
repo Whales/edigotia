@@ -4,6 +4,7 @@
 #include "cuss.h"
 #include "window.h"
 #include "area.h"
+#include "game.h"
 #include <vector>
 #include <string>
 
@@ -55,7 +56,7 @@ public:
   Interface();
   ~Interface();
 
-  bool init(City* C);
+  bool init(Game* G, City* C);
 
   void main_loop();
 
@@ -95,6 +96,7 @@ private:
   Game_state game_state;
   Interface_mode cur_mode;
 
+  Game* game;
   City* city;
   Point sel;
   bool city_radius;

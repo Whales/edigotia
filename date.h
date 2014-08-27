@@ -39,7 +39,7 @@ public:
   std::string get_month_name();
   std::string get_text(std::string format = "");
 
-  void advance();
+  void advance(int days = 1);
   void standardize(); // Ensure day < 30/31, month < 12, etc
 
 private:

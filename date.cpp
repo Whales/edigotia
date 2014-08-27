@@ -95,7 +95,9 @@ std::string Date::get_text(std::string format)
 
   std::stringstream ret;
   for (int i = 0; i < format.size(); i++) {
+    bool used_tag = false;
     if (format[i] == '#' && i + 1 < format.size()) {
+      used_tag = true;
       switch (format[i + 1]) {
         case 'Y':
           ret << year;
@@ -112,7 +114,13 @@ std::string Date::get_text(std::string format)
         case 'd':
           ret << day;
           break;
+        default:
+          used_tag = false;
+          break;
       }
+    }
+    if (used_tag) {
+      i++;
     } else {
       ret << format[i];
     }
@@ -121,9 +129,10 @@ std::string Date::get_text(std::string format)
   return ret.str();
 }
 
-void Date::advance()
+void Date::advance(int days)
 {
-  day++;
+// days defaults to 1.
+  day += days;
   standardize();
 }
 
@@ -145,7 +154,7 @@ std::string month_name(int month)
     case  9:  return "September";
     case 10:  return "October";
     case 11:  return "November";
-    case 12:  return "december";
+    case 12:  return "December";
     default:  return "SMARCH";
   }
   return "ESCAPED SWITCH";

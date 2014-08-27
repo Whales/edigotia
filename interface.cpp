@@ -16,19 +16,29 @@ Interface::Interface()
   sel = Point(4, 4);
   city_radius = true;
   current_area = AREA_NULL;
+  game = NULL;
+  city = NULL;
 }
 
 Interface::~Interface()
 {
 }
 
-bool Interface::init(City* C)
+bool Interface::init(Game* G, City* C)
 {
-  if (!C) {
+  if (!G) {
+    if (!C) {
+      debugmsg("Interface init'd with NULL game AND NULL city!");
+    } else {
+      debugmsg("Interface init'd with NULL game.");
+    }
+    return false;
+  } else if (!C) {
     debugmsg("Interface init'd with NULL city.");
     return false;
   }
 
+  game = G;
   city = C;
 
   if (!i_main.load_from_file("cuss/interface.cuss")) {
@@ -72,8 +82,11 @@ void Interface::main_loop()
 
   set_mode(IMODE_VIEW_MAP);
 
+  int date_size = i_main.element_width("text_date");
+
   bool done = false;
   while (!done) {
+    i_main.set_data("text_date", game->get_date_str(date_size));
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius);
     i_main.set_data("num_population",   city->get_total_population());
     i_main.set_data("num_gold",         city->resources[RES_GOLD]);
@@ -158,6 +171,7 @@ void Interface::handle_key(long ch)
 void Interface::set_mode(Interface_mode mode)
 {
   cur_mode = mode;
+  i_main.clear_data("text_info"); // TODO: No?
   //i_main.clear_data("text_info");
   switch (mode) {
 
@@ -168,7 +182,7 @@ void Interface::set_mode(Interface_mode mode)
 
     case IMODE_VIEW_MAP: {
       std::stringstream commands;
-      commands << "Use movement keys to scrolls." << std::endl;
+      commands << "Use movement keys to scroll." << std::endl;
       if (current_area != AREA_NULL) {
         commands << "<c=pink>Enter<c=/>: Place " <<
                     Area_data[current_area]->name << std::endl <<
