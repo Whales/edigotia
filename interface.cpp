@@ -109,6 +109,7 @@ void Interface::main_loop()
     } else {
       handle_key(ch);
     }
+
     if (game_state == GAME_QUIT) {
       done = true;
     }
@@ -132,7 +133,7 @@ void Interface::handle_key(long ch)
       set_menu( MENU_NULL );
     }
 
-  } else {
+  } else {  // Not a menu; thus, the action taken depends on our mode.
 //debugmsg("mode %d", cur_mode);
 
     switch (cur_mode) {
@@ -152,13 +153,17 @@ void Interface::handle_key(long ch)
           set_mode(IMODE_VIEW_MAP);
         } else if (ch == 'r' || ch == 'R') {
           city_radius = !city_radius;
-        } else if (ch == 'b' || ch == 'B') {
+        } else if (ch == 'a' || ch == 'A') {
           current_area = pick_area();
           set_mode(IMODE_VIEW_MAP);
           Building_datum* build = get_building_for(current_area);
           if (current_area != AREA_NULL && build) {
             i_main.set_data("text_info", build->get_short_description());
           }
+        } else if (ch == '.') {
+          game->advance_time(1, city);
+        } else if (ch == '>') {
+          game->advance_time(7, city);
         }
       } break;
           
@@ -192,7 +197,7 @@ void Interface::set_mode(Interface_mode mode)
         commands << "<c=pink>Enter<c=/>: Get info on tile" << std::endl;
       }
       commands << "<c=pink>R<c=/>: Toggle control radius" << std::endl;
-      commands << "<c=pink>B<c=/>: Build ";
+      commands << "<c=pink>A<c=/>: Build ";
       if (current_area != AREA_NULL) {
         commands << "a different ";
       }
