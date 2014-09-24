@@ -138,6 +138,23 @@ void Date::advance(int days)
 
 void Date::standardize()
 {
+// First, make sure we have a real month (we'll need it for days_in_month())
+  while (month < 1) {
+    month += 12;
+    year--;
+  }
+  while (month > 12) {
+    month -= 12;
+    year++;
+  }
+  while (day >= days_in_month(month)) {
+    day -= days_in_month(month);
+    month++;
+    if (month >= 13) {
+      month -= 12;
+      year++;
+    }
+  }
 }
 
 std::string month_name(int month)
