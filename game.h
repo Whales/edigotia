@@ -4,6 +4,8 @@
 #include "date.h"
 #include <string>
 
+class City;
+
 class Game
 {
 public:
@@ -14,7 +16,7 @@ public:
   void init();
 
 // Mutators
-  void advance_time(int days = 1);
+  void advance_time(int days = 1, City* city = NULL);
 
 // Accessors
 /* If we pass a length to get_date_str() (i.e. length != -1), then we colorize
