@@ -40,11 +40,19 @@ struct Area_datum
   glyph symbol;
 
   Building_type building;
+
+  Building_datum* get_building_datum();
 };
 
 struct Area
 {
   Area(Area_type T = AREA_NULL, Point P = Point(-1, -1));
+
+  void make_queued(); // Set our construction_left, etc.
+
+  Area_datum* get_area_datum();
+  Building_type get_building_type();
+  Building_datum* get_building_datum();
 
   std::map<Resource,int> get_maintenance();
 
@@ -52,6 +60,7 @@ struct Area
   Point pos;
   int workers;
   bool open;
+  int construction_left;
 };
 
 extern Area_datum* Area_data[AREA_MAX];
