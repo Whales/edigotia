@@ -398,7 +398,15 @@ void City::do_turn()
       }
     }
   }
-        
+// Advance progress on the first area in our queue.
+  if (!area_queue.empty()) {
+    Area* area_to_build = &(area_queue[0]);
+    area_to_build->construction_left--;
+    if (area_to_build->construction_left <= 0) {
+      areas.push_back( area_queue[0] );
+      area_queue.erase( area_queue.begin() );
+    }
+  }
 }
 
 void City::add_area_to_queue(Area_type type, Point location)
@@ -409,6 +417,7 @@ void City::add_area_to_queue(Area_type type, Point location)
 
 void City::add_area_to_queue(Area area)
 {
+  area.make_queued();  // Sets up construction_left.
   area_queue.push_back(area);
 }
 
