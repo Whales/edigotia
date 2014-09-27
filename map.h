@@ -81,6 +81,13 @@ extern Map_type_datum* Map_type_data[MAP_MAX];
 
 void init_map_type_data();
 
+struct Map_tile
+{
+  Terrain_type          ter;
+  std::vector<Crop>     crops;
+  std::vector<Mineral>  minerals;
+};
+
 class City_map
 {
 public:
@@ -93,9 +100,13 @@ public:
 
   glyph get_glyph(int x, int y);
 
+  Map_tile tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
+
+/*
   Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Mineral>  minerals[CITY_MAP_SIZE][CITY_MAP_SIZE];
+*/
 private:
   bool is_oob(int x, int y);
 };

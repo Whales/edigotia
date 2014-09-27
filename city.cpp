@@ -195,9 +195,7 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
 // Draw the map
   for (int x = 0; x < CITY_MAP_SIZE; x++) {
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
-      Terrain_type ter = map.tiles[x][y];
-      Terrain_datum* terdata = Terrain_data[ter];
-      glyph gl = terdata->symbol;
+      glyph gl = map.get_glyph(x, y);
       if (radius_limited && rl_dist( Point(x, y), center) > radius) {
         gl.fg = c_dkgray;
       }
@@ -247,9 +245,7 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
     }
     for (int x = 0; x < CITY_MAP_SIZE; x++) {
       for (int y = 0; y < CITY_MAP_SIZE; y++) {
-        Terrain_type ter = map.tiles[x][y];
-        Terrain_datum* terdata = Terrain_data[ter];
-        glyph gl = terdata->symbol;
+        glyph gl = map.get_glyph(x, y);
         if (radius_limited && rl_dist( Point(x, y), center) > radius) {
           gl.fg = c_dkgray;
         }

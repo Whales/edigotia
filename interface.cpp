@@ -140,7 +140,7 @@ void Interface::handle_key(long ch)
       case IMODE_VIEW_MAP: {
         Point p = input_direction(ch);
 //debugmsg("Mapviewing; %s", p.str().c_str());
-        if (p.x != -2) {
+        if (p.x != -2 && (p.x != 0 || p.y != 0)) {
           sel += p;
         } else if (ch == '\n') {
           if (current_area != AREA_NULL) {

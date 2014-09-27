@@ -137,7 +137,7 @@ void City_map::generate(Map_type type, Direction coast)
           index++;
         }
       }
-      tiles[x][y] = Terrain_type(index);
+      tiles[x][y].ter = Terrain_type(index);
     }
   }
 
@@ -159,24 +159,24 @@ void City_map::generate(Map_type type, Direction coast)
     for (int i = 0; i < CITY_MAP_SIZE; i++) {
       if (coast == DIR_NORTH || coast == DIR_SOUTH) {
         x = i;
-        tiles[x][y2] = TER_OCEAN;
+        tiles[x][y2].ter = TER_OCEAN;
         if (one_in(5)) {
-          tiles[x][y3] = TER_OCEAN;
-          tiles[x][y4] = TER_OCEAN;
+          tiles[x][y3].ter = TER_OCEAN;
+          tiles[x][y4].ter = TER_OCEAN;
         } else if (one_in(3)) {
-          tiles[x][y3] = TER_OCEAN;
+          tiles[x][y3].ter = TER_OCEAN;
         }
       } else {
         y = i;
-        tiles[x2][y] = TER_OCEAN;
+        tiles[x2][y].ter = TER_OCEAN;
         if (one_in(5)) {
-          tiles[x3][y] = TER_OCEAN;
-          tiles[x4][y] = TER_OCEAN;
+          tiles[x3][y].ter = TER_OCEAN;
+          tiles[x4][y].ter = TER_OCEAN;
         } if (one_in(3)) {
-          tiles[x3][y] = TER_OCEAN;
+          tiles[x3][y].ter = TER_OCEAN;
         }
       }
-      tiles[x][y] = TER_OCEAN;
+      tiles[x][y].ter = TER_OCEAN;
     }
 
   } else if (type == MAP_BASIN || type == MAP_CANYON) {
@@ -184,7 +184,7 @@ void City_map::generate(Map_type type, Direction coast)
 //       For now, it's just northwest => southeast
     int x = 0, y = 0;
     while (x < CITY_MAP_SIZE && y < CITY_MAP_SIZE) {
-      tiles[x][y] = TER_RIVER;
+      tiles[x][y].ter = TER_RIVER;
       if (one_in(2)) {
         x++;
       } else {
@@ -199,12 +199,12 @@ void City_map::generate(Map_type type, Direction coast)
     for (int x = CITY_MAP_SIZE / 2 - 2; x <= CITY_MAP_SIZE / 2 +2; x++) {
       for (int y = CITY_MAP_SIZE / 2 - 2; y <= CITY_MAP_SIZE / 2 +2; y++) {
         if (one_in(4)) {
-          tiles[x][y] = TER_DESERT;
+          tiles[x][y].ter = TER_DESERT;
         } else if (one_in(5)) {
-          tiles[x][y] = TER_ROCKY;
+          tiles[x][y].ter = TER_ROCKY;
         } else if ((x == CITY_MAP_SIZE / 2 && y == CITY_MAP_SIZE / 2) ||
                    one_in(2)) {
-          tiles[x][y] = TER_FIELD;
+          tiles[x][y].ter = TER_FIELD;
         }
       }
     }
@@ -229,7 +229,7 @@ glyph City_map::get_glyph(int x, int y)
     return glyph();
   }
 
-  Terrain_type ter = tiles[x][y];
+  Terrain_type ter = tiles[x][y].ter;
   Terrain_datum* terdata = Terrain_data[ter];
   return terdata->symbol;
 }
