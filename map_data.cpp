@@ -36,7 +36,6 @@ void init_terrain_data()
     _symbol('.', c_green);
     _farm(100);
     _crop(CROP_WHEAT);
-    _crop(CROP_CORN);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
     _crop(CROP_AMANITAS);
@@ -49,7 +48,6 @@ void init_terrain_data()
     _symbol(',', c_brown);
     _farm(50);
     _crop(CROP_WHEAT);
-    _crop(CROP_CORN);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
     _crop(CROP_AMANITAS);

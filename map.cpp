@@ -3,6 +3,19 @@
 #include "geometry.h" // For direction
 #include <sstream>
 
+Map_tile::Map_tile()
+{
+  ter = TER_NULL;
+}
+
+Map_tile::~Map_tile()
+{
+}
+
+std::string Map_tile::get_info()
+{
+  std::stringstream ret;
+  ret << Terrain_data[ter].name << std::endl;
 City_map::City_map()
 {
 }
@@ -211,6 +224,8 @@ void City_map::generate(Map_type type, Direction coast)
   }
 
 // Now place some resources...
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
 }
 
 std::string City_map::get_resource_info(int x, int y)
@@ -232,6 +247,15 @@ glyph City_map::get_glyph(int x, int y)
   Terrain_type ter = tiles[x][y].ter;
   Terrain_datum* terdata = Terrain_data[ter];
   return terdata->symbol;
+}
+
+std::string City_map::get_info(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return "Out of Bounds";
+  }
+
+  tiles[x][y].get_info();
 }
 
 bool City_map::is_oob(int x, int y)

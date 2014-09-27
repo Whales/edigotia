@@ -43,7 +43,6 @@ enum Crop
 
 // Food
   CROP_WHEAT,
-  CROP_CORN,
   CROP_CABBAGE,
   CROP_GRAPES,
   CROP_MELON,
