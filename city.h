@@ -45,8 +45,11 @@ public:
                    bool radius_limited = false);
 
   void do_turn();
-  void add_area_to_queue(Area_type type, Point location);
-  void add_area_to_queue(Area area);
+  bool add_area_to_queue(Area_type type, Point location);
+  bool add_area_to_queue(Area area);
+
+  bool inside_radius(int x, int y);
+  bool inside_radius(Point p);
 
   int get_total_population();
 
