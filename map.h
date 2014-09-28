@@ -104,6 +104,7 @@ public:
 
   std::string get_resource_info(int x, int y);
 
+  Terrain_datum* get_terrain_datum(int x, int y);
   glyph get_glyph(int x, int y);
   std::string get_info(int x, int y);
 

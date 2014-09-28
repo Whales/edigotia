@@ -271,6 +271,14 @@ std::string City_map::get_resource_info(int x, int y)
   return ret.str();
 }
 
+Terrain_datum* City_map::get_terrain_datum(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return Terrain_data[TER_NULL]; // Better/safer than returning NULL
+  }
+  return Terrain_data[ tiles[x][y].ter ];
+}
+
 glyph City_map::get_glyph(int x, int y)
 {
   if (is_oob(x, y)) {
