@@ -71,8 +71,11 @@ private:
 // Menus
   void set_menu(Menu_id item);
   void do_menu_action(Menu_id menu, int index);
+// Interface adjustment
+  void set_temp_info(std::string text);
+  void restore_info_text();
 
-// Action functions
+// Game action functions
   void enqueue_area();
 
 // Special screens
@@ -88,20 +91,27 @@ private:
   void set_menu_str();
 
 // DATA
+// Menu info - static except for cur_menu.
   Menu_id cur_menu;
   std::vector<Menu> menus;
   std::string menu_str;
   int next_menu_posx;
 
+// Current mode.
   Game_state game_state;
   Interface_mode cur_mode;
 
+// Pointers to game data.
   Game* game;
   City* city;
+
+// Varius values used in user interaction.
   Point sel;
   bool city_radius;
   Area_type current_area;
+  std::string original_info_text;
 
+// Windows and cuss interfaces.
   cuss::interface i_main;
   Window w_main;
   cuss::interface i_menu;

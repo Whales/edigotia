@@ -98,6 +98,8 @@ void Interface::main_loop()
     w_main.refresh();
     long ch = input();
 
+    restore_info_text();  // Undo temporary change to text_info
+
     if (ch == KEY_ESC) {
       set_menu(MENU_NULL);
       set_mode(IMODE_VIEW_MAP);
@@ -309,6 +311,20 @@ void Interface::do_menu_action(Menu_id menu, int index)
   }
 }
 
+void Interface::set_temp_info(std::string text)
+{
+  original_info_text = i_main.get_str("text_info");
+  i_main.set_data("text_info", text);
+}
+
+void Interface::restore_info_text()
+{
+  if (!original_info_text.empty()) {
+    i_main.set_data("text_info", original_info_text);
+    original_info_text = "";
+  }
+}
+
 void Interface::enqueue_area()
 {
   if (current_area == AREA_NULL) {
@@ -317,12 +333,13 @@ void Interface::enqueue_area()
   Building_datum* build = get_building_for(current_area);
 
   if (city->expend_resources(build->build_costs)) {
-    city->add_area_to_queue(current_area, sel);
+    if (!city->add_area_to_queue(current_area, sel)) {
+      set_temp_info("<c=ltred>You cannot place that there!<c=/>");
+    }
   } else {
     current_area = AREA_NULL;
     set_mode(IMODE_VIEW_MAP);
-    i_main.set_data("text_info", "<c=ltred>You do not have the resources to \
-build that!");
+    set_temp_info("<c=ltred>You do not have the resourcs to build that!<c=/>");
   }
 }
 
