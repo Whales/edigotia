@@ -403,10 +403,10 @@ void City::do_turn()
   }
 }
 
-bool City::add_area_to_queue(Area_type type, Point location)
+Area_queue_status City::add_area_to_queue(Area_type type, Point location)
 {
   if (!inside_radius(location)) {
-    return false;
+    return AREA_QUEUE_OUTSIDE_RADIUS;
   }
   Terrain_datum* ter_dat = map.get_terrain_datum(location.x, location.y);
   bool build_ok = false;
@@ -416,39 +416,20 @@ bool City::add_area_to_queue(Area_type type, Point location)
     }
   }
   if (!build_ok) {
-    return false;
+    return AREA_QUEUE_BAD_TERRAIN;
+  }
+  if (area_at(location)) {
+    return AREA_QUEUE_OCCUPIED;
   }
   Area tmp(type, location);
   return add_area_to_queue(tmp);
 }
 
-bool City::add_area_to_queue(Area area)
+Area_queue_status City::add_area_to_queue(Area area)
 {
   area.make_queued();  // Sets up construction_left.
   area_queue.push_back(area);
-  return true;
-}
-
-bool City::inside_radius(int x, int y)
-{
-  return inside_radius( Point(x, y) );
-}
-
-bool City::inside_radius(Point p)
-{
-  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
-
-  return rl_dist(center, p) <= radius;
-}
-
-int City::get_total_population()
-{
-  int ret = 0;
-  for (int i = 0; i < CIT_MAX; i++) {
-    ret += population[i].count;
-//debugmsg("%s: %d (%d)", citizen_type_name( Citizen_type(i) ).c_str(), population[i].count, ret);
-  }
-  return ret;
+  return AREA_QUEUE_OK;
 }
 
 bool City::expend_resources(std::vector<Resource_amount> res_used)
@@ -484,4 +465,46 @@ bool City::expend_resources(std::map<Resource,int> res_used)
     resources[res] -= it->second;
   }
   return true;
+}
+
+bool City::inside_radius(int x, int y)
+{
+  return inside_radius( Point(x, y) );
+}
+
+bool City::inside_radius(Point p)
+{
+  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+
+  return rl_dist(center, p) <= radius;
+}
+
+Area* City::area_at(int x, int y)
+{
+  return area_at( Point(x, y) );
+}
+
+Area* City::area_at(Point p)
+{
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].pos == p) {
+      return &(areas[i]);
+    }
+  }
+  for (int i = 0; i < area_queue.size(); i++) {
+    if (area_queue[i].pos == p) {
+      return &(area_queue[i]);
+    }
+  }
+  return NULL;
+}
+
+int City::get_total_population()
+{
+  int ret = 0;
+  for (int i = 0; i < CIT_MAX; i++) {
+    ret += population[i].count;
+//debugmsg("%s: %d (%d)", citizen_type_name( Citizen_type(i) ).c_str(), population[i].count, ret);
+  }
+  return ret;
 }
