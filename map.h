@@ -4,6 +4,7 @@
 #include "geometry.h" // For direction
 #include "glyph.h"    // For terrain glyph
 #include "resource.h" // Crops and minerals
+#include "area.h"
 #include <vector>
 #include <string>
 
@@ -38,9 +39,9 @@ struct Terrain_datum
   int farm_percent;
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
-// TODO: List of crops available
-// TODO: List of minables
 // TODO: List of wildlife
+
+  std::vector<Area_type> buildable_areas;
 };
 
 extern Terrain_datum* Terrain_data[TER_MAX];
