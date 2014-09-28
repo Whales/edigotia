@@ -110,14 +110,18 @@ struct Mineral_datum
 
 struct Mineral_amount
 {
+  Mineral_amount() { type = MINERAL_NULL; amount = 0; }
+
   Mineral type;
   int amount;
+
+  Mineral_amount randomize();
 };
 
 extern Crop_datum*    Crop_data   [CROP_MAX];
 extern Mineral_datum* Mineral_data[MINERAL_MAX];
 
-void init_crops_and_minerals();
+void init_crop_and_mineral_data();
 
 struct Resource_amount
 {

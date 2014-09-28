@@ -1,5 +1,14 @@
 #include "resource.h"
 #include "stringfunc.h"
+#include "rng.h"
+
+Mineral_amount Mineral_amount::randomize()
+{
+  Mineral_amount ret;
+  ret.type = type;
+  ret.amount = rng( amount * .8, amount * 1.2);
+  return ret;
+}
 
 Resource lookup_resource(std::string name)
 {
