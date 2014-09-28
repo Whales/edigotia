@@ -146,7 +146,7 @@ void Interface::handle_key(long ch)
           if (current_area != AREA_NULL) {
             enqueue_area();
           } else {
-            popup("No info yet!");
+            popup( city->map.get_info(sel.x, sel.y).c_str() );
           }
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
