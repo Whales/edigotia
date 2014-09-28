@@ -333,13 +333,28 @@ void Interface::enqueue_area()
   Building_datum* build = get_building_for(current_area);
 
   if (city->expend_resources(build->build_costs)) {
-    if (!city->add_area_to_queue(current_area, sel)) {
-      set_temp_info("<c=ltred>You cannot place that there!<c=/>");
+    Area_queue_status stat = city->add_area_to_queue(current_area, sel);
+    if (stat != AREA_QUEUE_OK) {
+      std::stringstream fail;
+      fail << "<c=ltred>";
+      switch (stat) {
+        case AREA_QUEUE_OUTSIDE_RADIUS:
+          fail << "That location is outside your control.";
+          break;
+        case AREA_QUEUE_BAD_TERRAIN:
+          fail << "You cannot build that there.";
+          break;
+        case AREA_QUEUE_OCCUPIED:
+          fail << "There is already an area there.";
+          break;
+      }
+      fail << "<c=/>";
+      set_temp_info(fail.str());
     }
   } else {
     current_area = AREA_NULL;
     set_mode(IMODE_VIEW_MAP);
-    set_temp_info("<c=ltred>You do not have the resourcs to build that!<c=/>");
+    set_temp_info("<c=ltred>You do not have the resources to build that!<c=/>");
   }
 }
 
