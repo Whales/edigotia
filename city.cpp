@@ -408,6 +408,16 @@ bool City::add_area_to_queue(Area_type type, Point location)
   if (!inside_radius(location)) {
     return false;
   }
+  Terrain_datum* ter_dat = map.get_terrain_datum(location.x, location.y);
+  bool build_ok = false;
+  for (int i = 0; !build_ok && i < ter_dat->buildable_areas.size(); i++) {
+    if (type == ter_dat->buildable_areas[i]) {
+      build_ok = true;
+    }
+  }
+  if (!build_ok) {
+    return false;
+  }
   Area tmp(type, location);
   return add_area_to_queue(tmp);
 }
