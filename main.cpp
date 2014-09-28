@@ -4,6 +4,7 @@
 #include "world.h"
 #include "interface.h"
 #include "game.h"
+#include "init.h"
 
 int main()
 {
@@ -14,10 +15,10 @@ int main()
   init_display();
 
 // Init the game data!
-  init_building_data();
-  init_area_data();
-  init_terrain_data();
-  init_map_type_data();
+  if (!init_all_data()) {
+    debugmsg("Failed to init data!");
+    return 1;
+  }
 
 // Generate a world...
   World_map world;
