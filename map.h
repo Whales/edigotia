@@ -86,9 +86,9 @@ struct Map_tile
   Map_tile();
   ~Map_tile();
 
-  Terrain_type          ter;
-  std::vector<Crop>     crops;
-  std::vector<Mineral>  minerals;
+  Terrain_type                ter;
+  std::vector<Crop>           crops;
+  std::vector<Mineral_amount> minerals;
 
   std::string get_info();
 };

@@ -1,6 +1,7 @@
 #include "map.h"
 #include "rng.h"
 #include "geometry.h" // For direction
+#include "window.h" // For debugmsg
 #include <sstream>
 
 Map_tile::Map_tile()
@@ -15,7 +16,21 @@ Map_tile::~Map_tile()
 std::string Map_tile::get_info()
 {
   std::stringstream ret;
-  ret << Terrain_data[ter].name << std::endl;
+
+  ret << Terrain_data[ter]->name << std::endl;
+
+  if (!crops.empty()) {
+    ret << "Crops:";
+    for (int i = 0; i < crops.size(); i++) {
+      ret << " " << Crop_data[ crops[i] ]->name;
+    }
+    ret << std::endl << "Farm Output: " << Terrain_data[ter]->farm_percent <<
+           "%%%%%%%%";
+  }
+
+  return ret.str();
+}
+
 City_map::City_map()
 {
 }
@@ -226,6 +241,24 @@ void City_map::generate(Map_type type, Direction coast)
 // Now place some resources...
   for (int x = 0; x < CITY_MAP_SIZE; x++) {
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      Terrain_datum* ter_dat = Terrain_data[ tiles[x][y].ter ];
+      for (int i = 0; i < ter_dat->crops.size(); i++) {
+        Crop_datum* crop_dat = Crop_data[ ter_dat->crops[i] ];
+        if (!crop_dat) {
+          debugmsg("NULL crop_dat (crop %d)", ter_dat->crops[i]);
+        }
+        if (rng(1, 100) <= crop_dat->percentage) {
+          tiles[x][y].crops.push_back( ter_dat->crops[i] );
+        }
+      }
+      for (int i = 0; i < ter_dat->minerals.size(); i++) {
+        Mineral_datum* mineral_dat = Mineral_data[ ter_dat->minerals[i].type ];
+        if (rng(1, 100) <= mineral_dat->percentage) {
+          tiles[x][y].minerals.push_back( ter_dat->minerals[i].randomize() );
+        }
+      }
+    }
+  }
 }
 
 std::string City_map::get_resource_info(int x, int y)
@@ -252,10 +285,12 @@ glyph City_map::get_glyph(int x, int y)
 std::string City_map::get_info(int x, int y)
 {
   if (is_oob(x, y)) {
-    return "Out of Bounds";
+    std::stringstream ret;
+    ret << "Out of Bounds [" << x << ":" << y << "]";
+    return ret.str();
   }
 
-  tiles[x][y].get_info();
+  return tiles[x][y].get_info();
 }
 
 bool City_map::is_oob(int x, int y)
