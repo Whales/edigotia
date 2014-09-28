@@ -22,7 +22,7 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
   Mineral_data[cur_id]->name = (s)
 
 
-void init_crops_and_minerals()
+void init_crop_and_mineral_data()
 {
   for (int i = 0; i < CROP_MAX; i++) {
     Crop_data[i] = new Crop_datum();
@@ -36,12 +36,6 @@ void init_crops_and_minerals()
   _crop(CROP_WHEAT);
     _cname("wheat");
     _cpercent(100);
-    _type(CROPTYPE_FOOD);
-    _food(10);
-
-  _crop(CROP_CORN);
-    _cname("corn");
-    _cpercent(90);
     _type(CROPTYPE_FOOD);
     _food(10);
 
