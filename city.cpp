@@ -113,7 +113,6 @@ void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
     debugmsg("City::draw_map() called with NULL drawing area.");
     return;
   }
-  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
 
   std::map<Point,glyph,Pointcomp> drawing;
 
@@ -147,7 +146,7 @@ void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
       Point pos(x, y);
       if (drawing.count(pos) == 0) {
         glyph gl = map.get_glyph(x, y);
-        if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+        if (radius_limited && !inside_radius(x, y)) {
           gl.fg = c_dkgray;
         }
         if (pos == sel) {
@@ -176,7 +175,6 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
                        bool radius_limited)
 {
   bool owns_window = false, owns_interface = false;
-  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
   if (!i_map) {
     owns_interface = true;
     i_map = new cuss::interface;
@@ -196,7 +194,7 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
   for (int x = 0; x < CITY_MAP_SIZE; x++) {
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
       glyph gl = map.get_glyph(x, y);
-      if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+      if (radius_limited && !inside_radius(x, y)) {
         gl.fg = c_dkgray;
       }
       i_map->set_data("draw_map", gl, x, y);
@@ -246,7 +244,7 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
     for (int x = 0; x < CITY_MAP_SIZE; x++) {
       for (int y = 0; y < CITY_MAP_SIZE; y++) {
         glyph gl = map.get_glyph(x, y);
-        if (radius_limited && rl_dist( Point(x, y), center) > radius) {
+        if (radius_limited && !inside_radius(x, y)) {
           gl.fg = c_dkgray;
         }
         if (x == pos.x && y == pos.y) {
@@ -405,16 +403,32 @@ void City::do_turn()
   }
 }
 
-void City::add_area_to_queue(Area_type type, Point location)
+bool City::add_area_to_queue(Area_type type, Point location)
 {
+  if (!inside_radius(location)) {
+    return false;
+  }
   Area tmp(type, location);
-  add_area_to_queue(tmp);
+  return add_area_to_queue(tmp);
 }
 
-void City::add_area_to_queue(Area area)
+bool City::add_area_to_queue(Area area)
 {
   area.make_queued();  // Sets up construction_left.
   area_queue.push_back(area);
+  return true;
+}
+
+bool City::inside_radius(int x, int y)
+{
+  return inside_radius( Point(x, y) );
+}
+
+bool City::inside_radius(Point p)
+{
+  Point center(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+
+  return rl_dist(center, p) <= radius;
 }
 
 int City::get_total_population()
