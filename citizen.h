@@ -10,12 +10,12 @@ enum Citizen_type
   CIT_PEASANT,
   CIT_MERCHANT,
   CIT_BURGHER,
-  CIT_NOBLE,
   CIT_MAX
 };
 
 Citizen_type lookup_citizen_type(std::string name);
-std::string citizen_type_name(Citizen_type type);
+std::string citizen_type_name(Citizen_type type, bool plural = false);
+int citizen_food_consumption(Citizen_type type);
 
 struct Citizen_amount
 {

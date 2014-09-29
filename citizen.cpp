@@ -13,17 +13,31 @@ Citizen_type lookup_citizen_type(std::string name)
   return CIT_NULL;
 }
 
-std::string citizen_type_name(Citizen_type type)
+// plural defaults to false
+std::string citizen_type_name(Citizen_type type, bool plural)
 {
   switch (type) {
     case CIT_NULL:      return "NULL";
-    case CIT_SLAVE:     return "slave";
-    case CIT_PEASANT:   return "peasant";
-    case CIT_MERCHANT:  return "merchant";
-    case CIT_BURGHER:   return "burgher";
-    case CIT_NOBLE:     return "noble";
+    case CIT_SLAVE:     return (plural ? "slaves" : "slave");
+    case CIT_PEASANT:   return (plural ? "peasants" : "peasant");
+    case CIT_MERCHANT:  return (plural ? "merchants" : "merchant");
+    case CIT_BURGHER:   return (plural ? "burghers" : "burgher");
     case CIT_MAX:       return "BUG - CIT_MAX";
     default:            return "Unnamed Citizen_type";
   }
   return "BUG - Escaped citizen_type_name() switch";
+}
+
+int citizen_food_consumption(Citizen_type type)
+{
+  switch (type) {
+    case CIT_NULL:      return  0;
+    case CIT_SLAVE:     return 10;
+    case CIT_PEASANT:   return 10;
+    case CIT_MERCHANT:  return 14;
+    case CIT_BURGHER:   return 18;
+    case CIT_MAX:       return  0;
+    default:            return  0;
+  }
+  return 0;
 }
