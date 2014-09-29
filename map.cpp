@@ -261,6 +261,11 @@ void City_map::generate(Map_type type, Direction coast)
   }
 }
 
+std::string City_map::get_resource_info(Point p)
+{
+  return get_resource_info(p.x, p.y);
+}
+
 std::string City_map::get_resource_info(int x, int y)
 {
   if (is_oob(x, y)) {
@@ -271,12 +276,22 @@ std::string City_map::get_resource_info(int x, int y)
   return ret.str();
 }
 
+Terrain_datum* City_map::get_terrain_datum(Point p)
+{
+  return get_terrain_datum(p.x, p.y);
+}
+
 Terrain_datum* City_map::get_terrain_datum(int x, int y)
 {
   if (is_oob(x, y)) {
     return Terrain_data[TER_NULL]; // Better/safer than returning NULL
   }
   return Terrain_data[ tiles[x][y].ter ];
+}
+
+glyph City_map::get_glyph(Point p)
+{
+  return get_glyph(p.x, p.y);
 }
 
 glyph City_map::get_glyph(int x, int y)
@@ -288,6 +303,11 @@ glyph City_map::get_glyph(int x, int y)
   Terrain_type ter = tiles[x][y].ter;
   Terrain_datum* terdata = Terrain_data[ter];
   return terdata->symbol;
+}
+
+std::string City_map::get_info(Point p)
+{
+  return get_info(p.x, p.y);
 }
 
 std::string City_map::get_info(int x, int y)

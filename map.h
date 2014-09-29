@@ -102,10 +102,16 @@ public:
 
   void generate(Map_type type, Direction coast = DIR_NULL);
 
+  std::string get_resource_info(Point p);
   std::string get_resource_info(int x, int y);
 
+  Terrain_datum* get_terrain_datum(Point p);
   Terrain_datum* get_terrain_datum(int x, int y);
+
+  glyph get_glyph(Point p);
   glyph get_glyph(int x, int y);
+
+  std::string get_info(Point p);
   std::string get_info(int x, int y);
 
   Map_tile tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
