@@ -19,10 +19,20 @@ void init_area_data()
   }
   int cur_id = 0;
 
+  _area(AREA_HOVELS);
+    _name("hovels");
+    _symbol('o', c_yellow);
+    _building(BUILD_HOVEL);
+
   _area(AREA_HOUSES);
-    _name("Houses");
+    _name("houses");
     _symbol('o', c_ltgreen);
     _building(BUILD_HOUSE);
+
+  _area(AREA_MANOR);
+    _name("manor");
+    _symbol('o', c_blue);
+    _building(BUILD_MANOR);
 
   _area(AREA_KEEP);
     _name("keep");
