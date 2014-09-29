@@ -62,7 +62,7 @@ bool Interface::init(Game* G, City* C)
 0
 );
 
-  add_menu(MENU_BUILD, "Buildings",
+  add_menu(MENU_BUILDINGS, "Buildings",
 "Status",
 "Build",
 0
@@ -148,7 +148,7 @@ void Interface::handle_key(long ch)
           if (current_area != AREA_NULL) {
             enqueue_area();
           } else {
-            popup( city->map.get_info(sel.x, sel.y).c_str() );
+            popup( city->map.get_info(sel).c_str() );
           }
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
@@ -157,6 +157,7 @@ void Interface::handle_key(long ch)
           city_radius = !city_radius;
         } else if (ch == 'a' || ch == 'A') {
           current_area = pick_area();
+          display_area_stats(current_area);
           set_mode(IMODE_VIEW_MAP);
           Building_datum* build = get_building_for(current_area);
           if (current_area != AREA_NULL && build) {
@@ -295,7 +296,7 @@ void Interface::do_menu_action(Menu_id menu, int index)
     case MENU_MINISTERS:
       break;
 
-    case MENU_BUILD:
+    case MENU_BUILDINGS:
       switch (index) {
         case 1: // Build area
           //current_area = pick_area();
@@ -323,6 +324,70 @@ void Interface::restore_info_text()
     i_main.set_data("text_info", original_info_text);
     original_info_text = "";
   }
+}
+
+void Interface::display_area_stats(Area_type type)
+{
+  i_main.clear_data("text_options");
+
+  std::stringstream stats; // We'll set text_options to this
+
+  Building_datum* build_dat = Area_data[type]->get_building_datum();
+  std::string area_name = Area_data[type]->name;
+
+  switch (type) {
+
+    case AREA_HOVELS:
+    case AREA_HOUSES:
+    case AREA_MANOR:
+    case AREA_KEEP:
+      for (int i = 0; i < build_dat->housing.size(); i++) {
+        Citizen_type cit_type = build_dat->housing[i].type;
+        std::string cit_name = citizen_type_name(cit_type);
+        cit_name = capitalize(cit_name);
+        std::string plural_name = citizen_type_name(cit_type, true);
+        int pop     = city->get_total_population(cit_type);
+        int housing = city->get_total_housing(cit_type);
+  
+        stats << "<c=white>" << cit_name << " population: " << pop << "<c=/>" <<
+                 std::endl;
+        stats << "<c=white>" << cit_name << " housing:    ";
+        if (pop == housing) {
+          stats << "<c=yellow>";
+        } else if (pop > housing) {
+          stats << "<c=ltred>";
+        }
+        stats << housing << "<c=/>" << std::endl;
+  
+        stats << "<c=white>" << capitalize(area_name) << " provide";
+        if (build_dat->plural) {
+          stats << "s";
+        }
+        stats << " housing for " << build_dat->housing[i].amount << " " <<
+                 plural_name << "<c=/>" << std::endl << std::endl;
+      }
+      break;
+
+    case AREA_FARM:
+      stats << "Food consumed each day: " << city->get_food_consumption() <<
+               std::endl;
+      stats << "Food produced each day: " << city->get_food_production();
+      break;
+
+    case AREA_QUARRY:
+      break;
+
+    case AREA_MINE:
+      break;  // TODO: Info on available minerals?
+
+    case AREA_BARRACKS:
+      stats << "Number of soldiers: " << city->get_military_count() <<
+               std::endl;
+      stats << "Soldiers supported: " << city->get_military_supported();
+      break;
+  }
+
+  i_main.set_data("text_options", stats.str());
 }
 
 void Interface::enqueue_area()
