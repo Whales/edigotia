@@ -13,7 +13,7 @@ enum Menu_id
   MENU_NULL = 0,
   MENU_GAME,
   MENU_MINISTERS,
-  MENU_BUILD,
+  MENU_BUILDINGS,
   MENU_MAX
 };
 
@@ -66,31 +66,66 @@ private:
  * ! always sets mode to Menu and menu to NULL.
  */
   void handle_key(long ch);
-// Modes
-  void set_mode(Interface_mode mode);
-// Menus
-  void set_menu(Menu_id item);
-  void do_menu_action(Menu_id menu, int index);
-// Interface adjustment
-  void set_temp_info(std::string text);
-  void restore_info_text();
 
-// Game action functions
+
+// *** Modes ***
+
+// Set the current mode
+  void set_mode(Interface_mode mode);
+
+
+// *** Menus ***
+
+// Open the specified menu; if item == MENU_NULL, close all menus.
+  void set_menu(Menu_id item);
+// Perform the action bound to the given menu item
+  void do_menu_action(Menu_id menu, int index);
+
+
+// *** Interface adjustment ***
+
+// Sets text_info to the given text and store the previous text
+  void set_temp_info(std::string text);
+// Reset text_info to the previous text (original_info_text)
+  void restore_info_text();
+// Displays city stats relevant to the given Area_type.
+// For instance, for a farm, display the current food production/consumption
+// For houses, display current housing needs
+  void display_area_stats(Area_type type);
+
+
+// *** Game action functions ***
+
+// Attempt to add current_area to the city's build queue
   void enqueue_area();
 
-// Special screens
+
+// *** Special screens ***
+
+// Finance minister, displays information on income/expenditures
   void minister_finance();
+// Pick an area to build
   Area_type pick_area();
 
-// Helper / data-storing functions
+
+// *** Helper / data-storing functions ***
+
+// Stores the name and position (on menu bar) of the given menu in name & posx
   void get_menu_info(Menu_id item, std::string& name, int& posx);
+// Returns the list of options in the specified menu
   std::vector<std::string> get_menu_options(Menu_id item);
 
-// Setup functions
+
+// *** Setup functions ***
+
+// Adds a menu to the menu bar.  Returns false if there's no room for it.
+// The variadic parameters are a null-terminated set of strings; each one is an
+// option in this menu.
   bool add_menu(Menu_id id, std::string name, ...);
+// Sets the string to be stored in the menu bar
   void set_menu_str();
 
-// DATA
+// *** DATA ***
 // Menu info - static except for cur_menu.
   Menu_id cur_menu;
   std::vector<Menu> menus;
@@ -98,7 +133,7 @@ private:
   int next_menu_posx;
 
 // Current mode.
-  Game_state game_state;
+  Game_state game_state; // e.g. "quit"
   Interface_mode cur_mode;
 
 // Pointers to game data.
@@ -106,10 +141,10 @@ private:
   City* city;
 
 // Varius values used in user interaction.
-  Point sel;
-  bool city_radius;
-  Area_type current_area;
-  std::string original_info_text;
+  Point sel;  // Point in map currently highlighted
+  bool city_radius; // If true, gray out map tiles outside of radius of control
+  Area_type current_area; // Current area to be built
+  std::string original_info_text; // Original text of text_info, to be restored
 
 // Windows and cuss interfaces.
   cuss::interface i_main;
