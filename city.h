@@ -2,6 +2,7 @@
 #define _CITY_H_
 
 #include "citizen.h"
+#include "military.h"
 #include "building.h"
 #include "area.h"
 #include "map.h"
@@ -58,11 +59,19 @@ public:
   Area* area_at(int x, int y);
   Area* area_at(Point p);
 
-  int get_total_population();
+  int get_total_population(Citizen_type type = CIT_NULL);
+  int get_total_housing(Citizen_type type = CIT_NULL);
+
+  int get_military_count();
+  int get_military_supported();
+
+  int get_food_consumption(Citizen_type type = CIT_NULL);
+  int get_food_production();
 
 // Data
   Citizens population[CIT_MAX];
-  //int population[CIT_MAX];
+  std::vector<Military_unit> units_stationed;
+
   int open_buildings[BUILD_MAX];
   int closed_buildings[BUILD_MAX];
   int resources[RES_MAX];

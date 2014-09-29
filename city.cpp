@@ -145,8 +145,8 @@ void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
       Point pos(x, y);
       if (drawing.count(pos) == 0) {
-        glyph gl = map.get_glyph(x, y);
-        if (radius_limited && !inside_radius(x, y)) {
+        glyph gl = map.get_glyph(pos);
+        if (radius_limited && !inside_radius(pos)) {
           gl.fg = c_dkgray;
         }
         if (pos == sel) {
@@ -239,7 +239,7 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
     if (building == AREA_NULL) {
       i_map->clear_data("text_info");
     } else {
-      i_map->set_data( "text_info", map.get_resource_info(pos.x, pos.y) );
+      i_map->set_data( "text_info", map.get_resource_info(pos) );
     }
     for (int x = 0; x < CITY_MAP_SIZE; x++) {
       for (int y = 0; y < CITY_MAP_SIZE; y++) {
@@ -408,7 +408,7 @@ Area_queue_status City::add_area_to_queue(Area_type type, Point location)
   if (!inside_radius(location)) {
     return AREA_QUEUE_OUTSIDE_RADIUS;
   }
-  Terrain_datum* ter_dat = map.get_terrain_datum(location.x, location.y);
+  Terrain_datum* ter_dat = map.get_terrain_datum(location);
   bool build_ok = false;
   for (int i = 0; !build_ok && i < ter_dat->buildable_areas.size(); i++) {
     if (type == ter_dat->buildable_areas[i]) {
@@ -499,12 +499,75 @@ Area* City::area_at(Point p)
   return NULL;
 }
 
-int City::get_total_population()
+// type defaults to CIT_NULL
+int City::get_total_population(Citizen_type type)
+{
+  if (type == CIT_NULL) {
+    int ret = 0;
+    for (int i = 0; i < CIT_MAX; i++) {
+      ret += population[i].count;
+    }
+    return ret;
+  }
+  return population[type].count;
+}
+
+// type defaults to CIT_NULL
+int City::get_total_housing(Citizen_type type)
 {
   int ret = 0;
-  for (int i = 0; i < CIT_MAX; i++) {
-    ret += population[i].count;
-//debugmsg("%s: %d (%d)", citizen_type_name( Citizen_type(i) ).c_str(), population[i].count, ret);
+  for (int i = 0; i < areas.size(); i++) {
+    Building_datum* build_dat = areas[i].get_building_datum();
+    if (build_dat) {
+      for (int n = 0; n < build_dat->housing.size(); n++) {
+        if (type == CIT_NULL || type == build_dat->housing[n].type) {
+          ret += build_dat->housing[n].amount;
+        }
+      }
+    }
+  }
+// TODO: Also include buildings not associated with an area?
+  return ret;
+}
+
+int City::get_military_count()
+{
+  int ret = 0;
+  for (int i = 0; i < units_stationed.size(); i++) {
+    ret += units_stationed[i].count;
   }
   return ret;
+}
+
+int City::get_military_supported()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    Building_datum* build_dat = areas[i].get_building_datum();
+    if (build_dat) {
+      ret += build_dat->military_support;
+    }
+  }
+// TODO: Also include buildings not associated with an area?
+
+  return ret;
+}
+
+// type defaults to CIT_NULL
+int City::get_food_consumption(Citizen_type type)
+{
+  if (type == CIT_NULL) {
+    int ret = 0;
+    for (int i = 0; i < CIT_MAX; i++) {
+      ret += population[i].count * citizen_food_consumption( Citizen_type(i) );
+    }
+    return ret;
+  }
+  return population[type].count * citizen_food_consumption( type );
+}
+
+// TODO: This function.
+int City::get_food_production()
+{
+  return 0;
 }
