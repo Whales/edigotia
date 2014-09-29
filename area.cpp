@@ -42,7 +42,7 @@ Building_datum* Area::get_building_datum()
 {
   Area_datum* datum = get_area_datum();
   if (!datum) {
-    return NULL;
+    return Building_data[BUILD_NULL]; // Safer than returning NULL
   }
   return datum->get_building_datum();
 }
