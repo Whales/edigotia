@@ -31,14 +31,19 @@ enum Building_type
 
 struct Building_datum
 {
+  Building_datum();
+  ~Building_datum();
+
   std::string get_short_description();
 
   int uid;
   std::string name;
+  bool plural;  // If true, name is treated as a plural
   std::vector<Resource_amount> build_costs;
   int upkeep;
 
-  Citizen_amount housing;
+  std::vector<Citizen_amount> housing;
+  int military_support;
 
   Citizen_amount jobs;
   int build_time;
