@@ -419,6 +419,92 @@ mineral = MINERAL_NULL!");
     debugmsg("World_map::add_resource() called with crop AND mineral!");
     return;
   }
+  if (origin.x < 0               || origin.y < 0 ||
+      origin.x >= WORLD_MAP_SIZE || origin.y >= WORLD_MAP_SIZE) {
+    debugmsg("World_map::add_resource() called with origin %s.",
+             origin.str().c_str());
+    return;
+  }
+
+// Basically, we're doing the same thing as add_continent(); set the "level" at
+// our origin to a high amount, slope downwards in all directions.
+  std::vector<Point> active;
+  std::vector<Point> placement;
+  active.push_back(origin);
+  placement.push_back(origin);
+
+  int level[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      level[x][y] = 0;
+    }
+  }
+
+  level[origin.x][origin.y] = 100;
+  int step = 100 / radius;
+
+  while (!active.empty()) {
+    std::vector<Point> new_points;
+    while (!active.empty()) {
+      int index = rng(0, active.size() - 1);
+      Point p = active[index];
+
+      for (int i = 0; i < 4; i++) {
+        int x, y;
+        switch (i) {
+          case 0: x = p.x - 1; y = p.y;     break;
+          case 1: x = p.x + 1; y = p.y;     break;
+          case 2: x = p.x;     y = p.y - 1; break;
+          case 3: x = p.x;     y = p.y + 1; break;
+        }
+        if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE &&
+            level[x][y] <= 0) {
+          level[x][y] = level[p.x][p.y];
+          if (one_in(30)) {
+            level[x][y] -= rng(0, 100);
+          } else if (!one_in(10)) {
+            level[x][y] -= rng(0, step * 2);
+          }
+          if (level[x][y] > 0) {
+            new_points.push_back(Point(x, y));
+            placement.push_back (Point(x, y));
+          } else {
+            level[x][y] = 0;
+          }
+        }
+      }
+      active.erase(active.begin() + index);
+    }
+    active = new_points;
+  }
+
+// Now place our resource on all points in placement
+  for (int i = 0; i < placement.size(); i++) {
+    int x = placement[i].x, y = placement[i].y;
+    if (crop != CROP_NULL) {
+// Check if we already exist
+      bool found = false;
+      for (int n = 0; !found && n < crops[x][y].size(); n++) {
+        if ((crops[x][y])[n] == crop) {
+          found = true;
+        }
+      }
+      if (!found) {
+        crops[x][y].push_back(crop);
+      }
+    } else {  // Placing mineral, not crop.
+// Check if we already exist
+      bool found = false;
+      for (int n = 0; !found && n < minerals[x][y].size(); n++) {
+        if ((minerals[x][y])[n] == mineral) {
+          found = true;
+        }
+      }
+      if (!found) {
+        minerals[x][y].push_back(mineral);
+      }
+    }
+  }
 }
 
 Point World_map::draw(Window* w_map)
