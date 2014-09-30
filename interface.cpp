@@ -94,6 +94,10 @@ void Interface::main_loop()
     i_main.set_data("num_wood",         city->resources[RES_WOOD]);
     i_main.set_data("num_stone",        city->resources[RES_STONE]);
 
+    if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
+      display_area_stats(current_area);
+    }
+
     i_main.draw(&w_main);
     w_main.refresh();
     long ch = input();
@@ -335,6 +339,8 @@ void Interface::display_area_stats(Area_type type)
   Building_datum* build_dat = Area_data[type]->get_building_datum();
   std::string area_name = Area_data[type]->name;
 
+  Map_tile* tile = city->map.get_tile(sel);
+
   switch (type) {
 
     case AREA_HOVELS:
@@ -371,7 +377,11 @@ void Interface::display_area_stats(Area_type type)
     case AREA_FARM:
       stats << "Food consumed each day: " << city->get_food_consumption() <<
                std::endl;
-      stats << "Food produced each day: " << city->get_food_production();
+      stats << "Food produced each day: " << city->get_food_production() <<
+               std::endl;
+      stats << tile->get_terrain_name() << " farmability: " <<
+               tile->get_farmability() << "%%%%" << std::endl;
+      stats << "Crops here: " << tile->get_crop_info();
       break;
 
     case AREA_QUARRY:
