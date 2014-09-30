@@ -110,7 +110,10 @@ struct Mineral_datum
 
 struct Mineral_amount
 {
-  Mineral_amount() { type = MINERAL_NULL; amount = 0; }
+  Mineral_amount(Mineral T = MINERAL_NULL, int A = 0) :
+    type (T),
+    amount (A)
+    {}
 
   Mineral type;
   int amount;
