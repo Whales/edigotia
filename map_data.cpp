@@ -32,6 +32,10 @@ void init_terrain_data()
     _name("tundra");
     _symbol('*', c_white);
     _farm(10);
+    _mineral(MINERAL_TIN,       300);
+    _mineral(MINERAL_COPPER,    300);
+    _mineral(MINERAL_GOLD,      800);
+    _mineral(MINERAL_COAL,     1000);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
@@ -64,10 +68,17 @@ void init_terrain_data()
     _crop(CROP_DEATHCAP);
     _crop(CROP_HEMP);
     _crop(CROP_HAY);
+    _mineral(MINERAL_STONE,   10000);
+    _mineral(MINERAL_TIN,       500);
+    _mineral(MINERAL_COPPER,   1000);
+    _mineral(MINERAL_IRON,     1000);
+    _mineral(MINERAL_GOLD,      200);
+    _mineral(MINERAL_COAL,      500);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_QUARRY);
+    _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_HILL);
@@ -80,6 +91,12 @@ void init_terrain_data()
     _crop(CROP_MELON);
     _crop(CROP_TOBACCO);
     _crop(CROP_HEMP);
+    _mineral(MINERAL_STONE,      -1);
+    _mineral(MINERAL_TIN,      2000);
+    _mineral(MINERAL_COPPER,   5000);
+    _mineral(MINERAL_IRON,     5000);
+    _mineral(MINERAL_GOLD,     1500);
+    _mineral(MINERAL_COAL,     4000);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
@@ -93,6 +110,12 @@ void init_terrain_data()
     _farm(5);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
+    _mineral(MINERAL_STONE,      -1);
+    _mineral(MINERAL_TIN,      5000);
+    _mineral(MINERAL_COPPER,  10000);
+    _mineral(MINERAL_IRON,    10000);
+    _mineral(MINERAL_GOLD,     2000);
+    _mineral(MINERAL_COAL,     8000);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
@@ -107,6 +130,7 @@ void init_terrain_data()
     _crop(CROP_AMANITAS);
     _crop(CROP_DEATHCAP);
     _crop(CROP_CINNAMON);
+    _mineral(MINERAL_COAL,     4000);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
 
@@ -114,6 +138,8 @@ void init_terrain_data()
     _name("River");
     _symbol('#', c_blue);
     _farm(0);
+    _mineral(MINERAL_COPPER,    100);
+    _mineral(MINERAL_GOLD,      100);
 // Nothing is buildable on river! (maybe docks later on)
 
   _ter(TER_OCEAN);
@@ -129,6 +155,9 @@ void init_terrain_data()
     _crop(CROP_CACTUS);
     _crop(CROP_SPICEREED);
     _crop(CROP_SCORPICON);
+    _mineral(MINERAL_COPPER,    800);
+    _mineral(MINERAL_IRON,      500);
+    _mineral(MINERAL_GOLD,      100);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
@@ -144,6 +173,8 @@ void init_terrain_data()
     _crop(CROP_CINNAMON);
     _crop(CROP_AYAHUASCA);
     _crop(CROP_VIPERVINE);
+    _mineral(MINERAL_IRON,     2000);
+    _mineral(MINERAL_COAL,     5000);
     _buildable(AREA_HOUSES);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
