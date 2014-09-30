@@ -37,7 +37,14 @@ public:
 private:
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river    (Point origin);
-  void add_crop     (Point origin,
+  void add_crop     (Point origin, Crop crop,       int radius);
+  void add_mineral  (Point origin, Mineral mineral, int radius);
+/* add_crop() and add_mineral() are both basically the same function, so rather
+ * than rewrite it, add_resource() does both.  If crop != CROP_NULL it will
+ * place crop, otherwise it will place mineral.  If both are null (or neither
+ * are), it will return without doing anything.
+ */
+  void add_resource (Point origin, Crop crop, Mineral mineral, int radius);
 
 };
 

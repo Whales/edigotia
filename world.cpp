@@ -182,11 +182,38 @@ void World_map::generate()
   }
 
 // ... aaaand set up crops/minerals.
-  int blob_size = 25; // Just a guess for now.
   for (int i = 1; i < CROP_MAX; i++) {
+    int blob_radius = rng(15, 30);  // Approx. length of the radius of our blob
     Crop crop = Crop(i);
+// Calculate the total number of blobs of the given size that'd fit in the world
+    int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
+    total_blobs /= (blob_radius * blob_radius);
+// Place an appropriate percentage of the total blobs
+    int num_blobs = total_blobs * Crop_data[crop]->percentage;
+    num_blobs /= 100;
+// Now place the blobs.
+    for (int n = 0; n < num_blobs; n++) {
+      Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      add_crop(p, crop, blob_radius);
+    }
   }
-    
+
+// Exact same thing, but for minerals.
+  for (int i = 1; i < MINERAL_MAX; i++) {
+    int blob_radius = rng(15, 30);  // Approx. length of the radius of our blob
+    Mineral mineral = Mineral(i);
+// Calculate the total number of blobs of the given size that'd fit in the world
+    int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
+    total_blobs /= (blob_radius * blob_radius);
+// Place an appropriate percentage of the total blobs
+    int num_blobs = total_blobs * Mineral_data[mineral]->percentage;
+    num_blobs /= 100;
+// Now place the blobs.
+    for (int n = 0; n < num_blobs; n++) {
+      Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      add_mineral(p, mineral, blob_radius);
+    }
+  }
 
 // Fix clustered rivers
 /*
@@ -369,6 +396,29 @@ void World_map::add_river(Point origin)
 */
   }
 
+}
+
+void World_map::add_crop(Point origin, Crop crop, int radius)
+{
+  add_resource(origin, crop, MINERAL_NULL, radius);
+}
+
+void World_map::add_mineral(Point origin, Mineral mineral, int radius)
+{
+  add_resource(origin, CROP_NULL, mineral, radius);
+}
+
+void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
+                             int radius)
+{
+  if (crop == CROP_NULL && mineral == MINERAL_NULL) {
+    debugmsg("World_map::add_resource() called with crop = CROP_NULL and \
+mineral = MINERAL_NULL!");
+    return;
+  } else if (crop != CROP_NULL && mineral != MINERAL_NULL) {
+    debugmsg("World_map::add_resource() called with crop AND mineral!");
+    return;
+  }
 }
 
 Point World_map::draw(Window* w_map)
