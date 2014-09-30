@@ -35,31 +35,31 @@ void init_crop_and_mineral_data()
 
   _crop(CROP_WHEAT);
     _cname("wheat");
-    _cpercent(95);
+    _cpercent(90);
     _type(CROPTYPE_FOOD);
     _food(10);
 
   _crop(CROP_CABBAGE);
     _cname("cabbage");
-    _cpercent(80);
+    _cpercent(70);
     _type(CROPTYPE_FOOD);
     _food(12);
 
   _crop(CROP_GRAPES);
     _cname("grapes");
-    _cpercent(35);
+    _cpercent(30);
     _type(CROPTYPE_FOOD);
     _food(5);
 
   _crop(CROP_MELON);
     _cname("melon");
-    _cpercent(50);
+    _cpercent(40);
     _type(CROPTYPE_FOOD);
     _food(8);
 
   _crop(CROP_RICE);
     _cname("rice");
-    _cpercent(95);
+    _cpercent(90);
     _type(CROPTYPE_FOOD);
     _food(10);
 
@@ -71,63 +71,63 @@ void init_crop_and_mineral_data()
 
   _crop(CROP_PEPPER);
     _cname("pepper");
-    _cpercent(80);
+    _cpercent(60);
     _type(CROPTYPE_SPICE);
     _food(2);
 
   _crop(CROP_CINNAMON);
     _cname("cinnamon");
-    _cpercent(60);
+    _cpercent(40);
     _type(CROPTYPE_SPICE);
 
   _crop(CROP_TOBACCO);
     _cname("tobacco");
-    _cpercent(40);
+    _cpercent(30);
     _type(CROPTYPE_DRUG);
 
   _crop(CROP_AMANITAS);
     _cname("amanitas");
-    _cpercent(20);
+    _cpercent(10);
     _type(CROPTYPE_DRUG);
 
   _crop(CROP_AYAHUASCA);
     _cname("ayahuasca");
-    _cpercent(20);
+    _cpercent(10);
     _type(CROPTYPE_DRUG);
 
   _crop(CROP_SPICEREED);
     _cname("spicereed");
-    _cpercent(10);
+    _cpercent(8);
     _type(CROPTYPE_DRUG);
 
   _crop(CROP_DEATHCAP);
     _cname("deathcap");
-    _cpercent(10);
+    _cpercent(7);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_VIPERVINE);
     _cname("vipervine");
-    _cpercent(25);
+    _cpercent(10);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_SCORPICON);
     _cname("scorpicon");
-    _cpercent(10);
+    _cpercent(7);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_COTTON);
     _cname("cotton");
-    _cpercent(80);
+    _cpercent(70);
     _type(CROPTYPE_MATERIAL);
 
   _crop(CROP_HEMP);
     _cname("hemp");
-    _cpercent(70);
+    _cpercent(60);
     _type(CROPTYPE_MATERIAL);
 
   _crop(CROP_HAY);
     _cname("hay");
-    _cpercent(95);
+    _cpercent(90);
     _type(CROPTYPE_OTHER);
 
 
@@ -139,15 +139,15 @@ void init_crop_and_mineral_data()
 
   _mineral(MINERAL_TIN);
     _mname("tin");
-    _mpercent(80);
+    _mpercent(70);
 
   _mineral(MINERAL_COPPER);
     _mname("copper");
-    _mpercent(60);
+    _mpercent(50);
 
   _mineral(MINERAL_IRON);
     _mname("iron");
-    _mpercent(50);
+    _mpercent(70);
 
   _mineral(MINERAL_GOLD);
     _mname("gold");
