@@ -2,7 +2,9 @@
 #include "rng.h"
 #include "geometry.h"
 #include "window.h"
+#include <sstream>
 #include <vector>
+#include <math.h>
 
 World_map::World_map()
 {
@@ -182,17 +184,24 @@ void World_map::generate()
   }
 
 // ... aaaand set up crops/minerals.
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      crops   [x][y] = 0;
+      minerals[x][y] = 0;
+    }
+  }
   for (int i = 1; i < CROP_MAX; i++) {
-    int blob_radius = rng(15, 30);  // Approx. length of the radius of our blob
     Crop crop = Crop(i);
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= (blob_radius * blob_radius);
+    total_blobs /= 900; // 900 is the average size of a blob
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * Crop_data[crop]->percentage;
     num_blobs /= 100;
+    //debugmsg("%s blobs: %d", Crop_data[crop]->name.c_str(), num_blobs);
 // Now place the blobs.
     for (int n = 0; n < num_blobs; n++) {
+      int blob_radius = rng(20, 40);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
       add_crop(p, crop, blob_radius);
     }
@@ -200,16 +209,17 @@ void World_map::generate()
 
 // Exact same thing, but for minerals.
   for (int i = 1; i < MINERAL_MAX; i++) {
-    int blob_radius = rng(15, 30);  // Approx. length of the radius of our blob
     Mineral mineral = Mineral(i);
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= (blob_radius * blob_radius);
+    total_blobs /= 900;  // 900 is the average size of a blob
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * Mineral_data[mineral]->percentage;
     num_blobs /= 100;
+    //debugmsg("%s blobs: %d", Mineral_data[mineral]->name.c_str(), num_blobs);
 // Now place the blobs.
     for (int n = 0; n < num_blobs; n++) {
+      int blob_radius = rng(20, 40);// Approx. length of the radius of our blob
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
       add_mineral(p, mineral, blob_radius);
     }
@@ -400,11 +410,13 @@ void World_map::add_river(Point origin)
 
 void World_map::add_crop(Point origin, Crop crop, int radius)
 {
+  //crops.push_back( Crop_area(crop, origin, radius) );
   add_resource(origin, crop, MINERAL_NULL, radius);
 }
 
 void World_map::add_mineral(Point origin, Mineral mineral, int radius)
 {
+  //minerals.push_back( Mineral_area(mineral, origin, radius) );
   add_resource(origin, CROP_NULL, mineral, radius);
 }
 
@@ -463,7 +475,7 @@ mineral = MINERAL_NULL!");
           if (one_in(30)) {
             level[x][y] -= rng(0, 100);
           } else if (!one_in(10)) {
-            level[x][y] -= rng(0, step * 2);
+            level[x][y] -= rng(step, step * 2);
           }
           if (level[x][y] > 0) {
             new_points.push_back(Point(x, y));
@@ -478,30 +490,21 @@ mineral = MINERAL_NULL!");
     active = new_points;
   }
 
+//debugmsg("Placed %d tiles.", placement.size());
 // Now place our resource on all points in placement
   for (int i = 0; i < placement.size(); i++) {
     int x = placement[i].x, y = placement[i].y;
     if (crop != CROP_NULL) {
 // Check if we already exist
-      bool found = false;
-      for (int n = 0; !found && n < crops[x][y].size(); n++) {
-        if ((crops[x][y])[n] == crop) {
-          found = true;
-        }
-      }
+      bool found = crops[x][y] & int(pow(2, crop));
       if (!found) {
-        crops[x][y].push_back(crop);
+        crops[x][y] |= int(pow(2, crop));
       }
     } else {  // Placing mineral, not crop.
 // Check if we already exist
-      bool found = false;
-      for (int n = 0; !found && n < minerals[x][y].size(); n++) {
-        if ((minerals[x][y])[n] == mineral) {
-          found = true;
-        }
-      }
+      bool found = minerals[x][y] & int(pow(2, mineral));
       if (!found) {
-        minerals[x][y].push_back(mineral);
+        minerals[x][y] |= int(pow(2, mineral));
       }
     }
   }
@@ -630,6 +633,21 @@ Point World_map::draw(Window* w_map)
         pos.x++;
         pos.y++;
         break;
+
+      case '?': {
+        std::stringstream resource_ss;
+        std::vector<Crop> crops_here = crops_at(pos);
+        std::vector<Mineral> minerals_here = minerals_at(pos);
+        resource_ss << "Crops: ";
+        for (int i = 0; i < crops_here.size(); i++) {
+          resource_ss << Crop_data[crops_here[i]]->name << " ";
+        }
+        resource_ss << std::endl << "Minerals: ";
+        for (int i = 0; i < minerals_here.size(); i++) {
+          resource_ss << Mineral_data[minerals_here[i]]->name << " ";
+        }
+        debugmsg( resource_ss.str().c_str() );
+      } break;
       case KEY_ESC:
       case '\n':
         if (owns_window) {
@@ -668,4 +686,72 @@ Direction World_map::coast_from(int x, int y)
     return DIR_NULL;
   }
   return candidates[ rng(0, candidates.size() - 1) ];
+}
+
+std::vector<Crop> World_map::crops_at(int x, int y)
+{
+  return crops_at( Point(x, y) );
+}
+
+std::vector<Mineral> World_map::minerals_at(int x, int y)
+{
+  return minerals_at( Point(x, y) );
+}
+
+std::vector<Crop> World_map::crops_at(Point p)
+{
+  std::vector<Crop> ret;
+  for (int i = 0; i < CROP_MAX; i++) {
+    if (crops[p.x][p.y] & int(pow(2, i))) {
+      ret.push_back( Crop(i) );
+    }
+  }
+  return ret;
+/*
+  for (int i = 0; i < crops.size(); i++) {
+    if (rl_dist(p, crops[i].origin) <= crops[i].radius) {
+// Inside radius; ensure that this crop isn't already in ret
+      Crop crop = crops[i].crop;
+      bool found = false;
+      for (int n = 0; !found && n < ret.size(); n++) {
+        if (ret[n] == crop) {
+          found = true;
+        }
+      }
+      if (!found) {
+        ret.push_back(crop);
+      }
+    }
+  }
+  return ret;
+*/
+}
+
+std::vector<Mineral> World_map::minerals_at(Point p)
+{
+  std::vector<Mineral> ret;
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    if (minerals[p.x][p.y] & int(pow(2, i))) {
+      ret.push_back( Mineral(i) );
+    }
+  }
+  return ret;
+/*
+  for (int i = 0; i < minerals.size(); i++) {
+    if (rl_dist(p, minerals[i].origin) <= minerals[i].radius) {
+// Inside radius; ensure that this mineral isn't already in ret
+      Mineral mineral = minerals[i].mineral;
+      bool found = false;
+      for (int n = 0; !found && n < ret.size(); n++) {
+        if (ret[n] == mineral) {
+          found = true;
+        }
+      }
+      if (!found) {
+        ret.push_back(mineral);
+      }
+    }
+  }
+  return ret;
+*/
 }
