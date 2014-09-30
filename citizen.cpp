@@ -31,13 +31,13 @@ std::string citizen_type_name(Citizen_type type, bool plural)
 int citizen_food_consumption(Citizen_type type)
 {
   switch (type) {
-    case CIT_NULL:      return  0;
-    case CIT_SLAVE:     return 10;
-    case CIT_PEASANT:   return 10;
-    case CIT_MERCHANT:  return 14;
-    case CIT_BURGHER:   return 18;
-    case CIT_MAX:       return  0;
-    default:            return  0;
+    case CIT_NULL:      return   0;
+    case CIT_SLAVE:     return 100;
+    case CIT_PEASANT:   return 100;
+    case CIT_MERCHANT:  return 140;
+    case CIT_BURGHER:   return 180;
+    case CIT_MAX:       return   0;
+    default:            return   0;
   }
   return 0;
 }

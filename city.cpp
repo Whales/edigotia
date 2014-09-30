@@ -559,7 +559,9 @@ int City::get_food_consumption(Citizen_type type)
   if (type == CIT_NULL) {
     int ret = 0;
     for (int i = 0; i < CIT_MAX; i++) {
-      ret += population[i].count * citizen_food_consumption( Citizen_type(i) );
+      int a = population[i].count * citizen_food_consumption( Citizen_type(i) );
+      a /= 100;
+      ret += a;
     }
     return ret;
   }
