@@ -135,19 +135,25 @@ void init_crop_and_mineral_data()
 
   _mineral(MINERAL_STONE);
     _mname("stone");
+    _mpercent(98);
 
   _mineral(MINERAL_TIN);
     _mname("tin");
+    _mpercent(80);
 
   _mineral(MINERAL_COPPER);
     _mname("copper");
+    _mpercent(60);
 
   _mineral(MINERAL_IRON);
     _mname("iron");
+    _mpercent(50);
 
   _mineral(MINERAL_GOLD);
     _mname("gold");
+    _mpercent(4);
 
   _mineral(MINERAL_COAL);
     _mname("coal");
+    _mpercent(20);
 }
