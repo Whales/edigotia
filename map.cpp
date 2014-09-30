@@ -13,6 +13,11 @@ Map_tile::~Map_tile()
 {
 }
 
+std::string Map_tile::get_terrain_name()
+{
+  return Terrain_data[ter]->name;
+}
+
 std::string Map_tile::get_info()
 {
   std::stringstream ret;
@@ -20,15 +25,31 @@ std::string Map_tile::get_info()
   ret << Terrain_data[ter]->name << std::endl;
 
   if (!crops.empty()) {
-    ret << "Crops:";
-    for (int i = 0; i < crops.size(); i++) {
-      ret << " " << Crop_data[ crops[i] ]->name;
-    }
-    ret << std::endl << "Farm Output: " << Terrain_data[ter]->farm_percent <<
-           "%%%%%%%%";
+    ret << "Crops: " << get_crop_info() << std::endl;
+    ret << "Farm Output: " << get_farmability() << "%%%%%%%%";
   }
 
   return ret.str();
+}
+
+std::string Map_tile::get_crop_info()
+{
+  if (crops.empty()) {
+    return std::string();
+  }
+  std::stringstream ret;
+  for (int i = 0; i < crops.size(); i++) {
+    ret << Crop_data[ crops[i] ]->name;
+    if (i < crops.size() - 1) {
+      ret << " ";
+    }
+  }
+  return ret.str();
+}
+
+int Map_tile::get_farmability()
+{
+  return Terrain_data[ter]->farm_percent;
 }
 
 City_map::City_map()
@@ -259,6 +280,19 @@ void City_map::generate(Map_type type, Direction coast)
       }
     }
   }
+}
+
+Map_tile* City_map::get_tile(Point p)
+{
+  return get_tile(p.x, p.y);
+}
+
+Map_tile* City_map::get_tile(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return NULL;
+  }
+  return &(tiles[x][y]);
 }
 
 std::string City_map::get_resource_info(Point p)

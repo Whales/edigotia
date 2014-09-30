@@ -91,7 +91,11 @@ struct Map_tile
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
 
+  std::string get_terrain_name();
   std::string get_info();
+  std::string get_crop_info();
+
+  int get_farmability();
 };
 
 class City_map
@@ -101,6 +105,9 @@ public:
   ~City_map();
 
   void generate(Map_type type, Direction coast = DIR_NULL);
+
+  Map_tile* get_tile(Point p);
+  Map_tile* get_tile(int x, int y);
 
   std::string get_resource_info(Point p);
   std::string get_resource_info(int x, int y);
@@ -114,15 +121,18 @@ public:
   std::string get_info(Point p);
   std::string get_info(int x, int y);
 
-  Map_tile tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
-
 /*
   Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Mineral>  minerals[CITY_MAP_SIZE][CITY_MAP_SIZE] ;
 */
+
 private:
+
+  Map_tile tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
+
   bool is_oob(int x, int y);
+
 };
 
 #endif
