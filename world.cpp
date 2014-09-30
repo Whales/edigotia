@@ -132,55 +132,6 @@ void World_map::generate()
     }
   }
 
-// "Flavor" continents
-/*
-  for (int i = 0; i < continents.size(); i++) {
-    int flavor = rng(1, 20);
-    int shift = rng(20, 40);
-
-    for (int x = 0; x < WORLD_MAP_SIZE; x++) {
-      for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-
-        int match = (continent_id[x][y] == i);
-        for (int n = 0; !match && n < joined_continents[i].size(); n++) {
-          if (joined_continents[i][n] == continent_id[x][y]) {
-            match = true;
-          }
-        }
-        if (match) {
-          switch (flavor) {
-
-            case 1: // High-altitude!
-              altitude[x][y] += shift;
-              if (one_in(10)) {
-                altitude[x][y] += rng(10, 30);
-              }
-              break;
-
-            case 2: // Low-altitude!
-              altitude[x][y] -= shift;
-              if (altitude[x][y] < 1) {
-                altitude[x][y] = 1;
-              }
-              break;
-
-            case 3: // Rainy!
-              rainfall[x][y] += rng(30, 40);
-              break;
-
-            case 4: // Dry!
-              rainfall[x][y] -= rng(40, 50);
-              break;
-
-            default:
-              break;
-          }
-        }
-      }
-    }
-  }
-*/
-
 // Finally, set terrain based on altitude & rainfall
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
@@ -229,6 +180,13 @@ void World_map::generate()
       }
     }
   }
+
+// ... aaaand set up crops/minerals.
+  int blob_size = 25; // Just a guess for now.
+  for (int i = 1; i < CROP_MAX; i++) {
+    Crop crop = Crop(i);
+  }
+    
 
 // Fix clustered rivers
 /*
