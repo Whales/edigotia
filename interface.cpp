@@ -360,7 +360,7 @@ void Interface::display_area_stats(Area_type type)
         stats << housing << "<c=/>" << std::endl;
   
         stats << "<c=white>" << capitalize(area_name) << " provide";
-        if (build_dat->plural) {
+        if (!build_dat->plural) {
           stats << "s";
         }
         stats << " housing for " << build_dat->housing[i].amount << " " <<
