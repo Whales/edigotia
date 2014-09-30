@@ -35,7 +35,7 @@ void init_crop_and_mineral_data()
 
   _crop(CROP_WHEAT);
     _cname("wheat");
-    _cpercent(100);
+    _cpercent(95);
     _type(CROPTYPE_FOOD);
     _food(10);
 
@@ -59,7 +59,7 @@ void init_crop_and_mineral_data()
 
   _crop(CROP_RICE);
     _cname("rice");
-    _cpercent(100);
+    _cpercent(95);
     _type(CROPTYPE_FOOD);
     _food(10);
 
@@ -127,7 +127,7 @@ void init_crop_and_mineral_data()
 
   _crop(CROP_HAY);
     _cname("hay");
-    _cpercent(100);
+    _cpercent(95);
     _type(CROPTYPE_OTHER);
 
 
