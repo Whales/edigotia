@@ -23,6 +23,29 @@ int main()
 // Generate a world...
   World_map world;
   world.generate();
+  int land = world.land_count();
+  int size = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
+  float land_percent = float((100.0 * float(land)) / size);
+  debugmsg("Land tiles: %d/%d (%f percent)", land, size, land_percent);
+  for (int i = 0; i < CROP_MAX; i++) {
+    Crop crop = Crop(i);
+    int crop_count = world.crop_count(crop);
+    float crop_percent = float((100.0 * float(crop_count)) / size);
+    float crop_land_percent = float((100.0 * float(crop_count)) / land);
+    debugmsg("%s: %d/%d/%d (%f/%f percent, should be %d)",
+             Crop_data[crop]->name.c_str(), crop_count, land, size,
+             crop_land_percent, crop_percent, Crop_data[crop]->percentage);
+  }
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    Mineral mineral = Mineral(i);
+    int mineral_count = world.mineral_count(mineral);
+    float mineral_percent = float((100.0 * float(mineral_count)) / size);
+    float mineral_land_percent = float((100.0 * float(mineral_count)) / land);
+    debugmsg("%s: %d/%d/%d (%f/%f percent, should be %d)",
+             Mineral_data[mineral]->name.c_str(), mineral_count, land, size,
+             mineral_land_percent, mineral_percent,
+             Mineral_data[mineral]->percentage);
+  }
 // ... for now, we always start by picking a location for a new city.
   Point p = world.draw();
 
