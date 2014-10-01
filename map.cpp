@@ -300,7 +300,11 @@ void City_map::generate(Map_type type,
         if (!mineral_dat) {
           debugmsg("NULL mineral_dat (mineral %d)", mineral);
         }
-        if (mineral_assigned) {
+// Some terrains have an infinite amount of a mineral (e.g. hills & stone)
+// In this case, we leave it unchanged (obviously) and always assign it (obvs)
+        if (min_amount.is_infinite()) {
+          tiles[x][y].minerals.push_back( min_amount );
+        } else if (mineral_assigned) {
           tiles[x][y].minerals.push_back( min_amount.randomize() );
         } else if (rng(1, 150) <= mineral_dat->percentage) {
           tiles[x][y].minerals.push_back( min_amount.make_small() );
