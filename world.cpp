@@ -748,6 +748,24 @@ int World_map::mineral_count(Mineral mineral)
   return ret;
 }
 
+Map_type World_map::get_map_type(Point p)
+{
+  return get_map_type(p.x, p.y);
+}
+
+Map_type World_map::get_map_type(int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+    return MAP_NULL;
+  }
+  return tiles[x][y];
+}
+  
+Direction World_map::coast_from(Point p)
+{
+  return coast_from(p.x, p.y);
+}
+
 Direction World_map::coast_from(int x, int y)
 {
   if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
@@ -773,68 +791,68 @@ Direction World_map::coast_from(int x, int y)
   return candidates[ rng(0, candidates.size() - 1) ];
 }
 
-std::vector<Crop> World_map::crops_at(int x, int y)
-{
-  return crops_at( Point(x, y) );
-}
-
-std::vector<Mineral> World_map::minerals_at(int x, int y)
-{
-  return minerals_at( Point(x, y) );
-}
-
 std::vector<Crop> World_map::crops_at(Point p)
+{
+  return crops_at( Point(p.x, p.y) );
+}
+
+std::vector<Mineral> World_map::minerals_at(Point p)
+{
+  return minerals_at( Point(p.x, p.y) );
+}
+
+std::vector<Crop> World_map::crops_at(int x, int y)
 {
   std::vector<Crop> ret;
   for (int i = 1; i < CROP_MAX; i++) {
-    if (has_crop( Crop(i), p )) {
+    if (has_crop( Crop(i), x, y )) {
       ret.push_back( Crop(i) );
     }
   }
   return ret;
 }
 
-std::vector<Mineral> World_map::minerals_at(Point p)
+std::vector<Mineral> World_map::minerals_at(int x, int y)
 {
   std::vector<Mineral> ret;
   for (int i = 1; i < MINERAL_MAX; i++) {
-    if (has_mineral( Mineral(i), p )) {
+    if (has_mineral( Mineral(i), x, y )) {
       ret.push_back( Mineral(i) );
     }
   }
   return ret;
 }
 
-bool World_map::has_crop(Crop crop, int x, int y)
-{
-  return has_crop(crop, Point(x, y));
-}
-
-bool World_map::has_mineral(Mineral mineral, int x, int y)
-{
-  return has_mineral(mineral, Point(x, y));
-}
-
 bool World_map::has_crop(Crop crop, Point p)
 {
-  if (p.x < 0 || p.x >= WORLD_MAP_SIZE ||
-      p.y < 0 || p.y >= WORLD_MAP_SIZE) {
-    return false;
-  }
-  if (crop == CROP_NULL && crops[p.x][p.y] > 1) {
-    return true;
-  }
-  return (crops[p.x][p.y] & int(pow(2, crop)));
+  return has_crop(crop, p.x, p.y);
 }
 
 bool World_map::has_mineral(Mineral mineral, Point p)
 {
-  if (p.x < 0 || p.x >= WORLD_MAP_SIZE ||
-      p.y < 0 || p.y >= WORLD_MAP_SIZE) {
+  return has_mineral(mineral, p.x, p.y);
+}
+
+bool World_map::has_crop(Crop crop, int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE ||
+      y < 0 || y >= WORLD_MAP_SIZE) {
     return false;
   }
-  if (mineral == MINERAL_NULL && minerals[p.x][p.y] > 1) {
+  if (crop == CROP_NULL && crops[x][y] > 1) {
     return true;
   }
-  return (minerals[p.x][p.y] & int(pow(2, mineral)));
+  return (crops[x][y] & int(pow(2, crop)));
+}
+
+bool World_map::has_mineral(Mineral mineral, int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE ||
+      y < 0 || y >= WORLD_MAP_SIZE) {
+    return false;
+  }
+  if (mineral == MINERAL_NULL && minerals[x][y] > 1) {
+    return true;
+  }
+  return (minerals[x][y] & int(pow(2, mineral)));
 }

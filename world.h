@@ -28,24 +28,18 @@ public:
   int crop_count(Crop crop = CROP_NULL);
   int mineral_count(Mineral mineral = MINERAL_NULL);
 
-  Direction coast_from(int x, int y);
-  std::vector<Crop>    crops_at   (int x, int y);
-  std::vector<Mineral> minerals_at(int x, int y);
+  Map_type get_map_type(Point p);
+  Map_type get_map_type(int x, int y);
+  Direction coast_from (int x, int y);
+  Direction coast_from (Point p);
   std::vector<Crop>    crops_at   (Point p);
   std::vector<Mineral> minerals_at(Point p);
-  bool has_crop   (Crop crop,       int x, int y);
-  bool has_mineral(Mineral mineral, int x, int y);
+  std::vector<Crop>    crops_at   (int x, int y);
+  std::vector<Mineral> minerals_at(int x, int y);
   bool has_crop   (Crop crop,       Point p);
   bool has_mineral(Mineral mineral, Point p);
-
-  Map_type tiles                [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int altitude                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int rainfall                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int temperature               [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int continent_id              [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  bool river                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int crops                     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int minerals                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  bool has_crop   (Crop crop,       int x, int y);
+  bool has_mineral(Mineral mineral, int x, int y);
 
   std::vector<Point> continents;
   std::map<int, std::vector<int> > joined_continents;
@@ -61,6 +55,15 @@ private:
  * are), it will return without doing anything.
  */
   void add_resource (Point origin, Crop crop, Mineral mineral, int radius);
+
+  Map_type tiles                [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int altitude                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int rainfall                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int temperature               [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int continent_id              [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  bool river                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int crops                     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int minerals                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 
 };
 
