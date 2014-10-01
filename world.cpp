@@ -191,25 +191,37 @@ void World_map::generate()
     }
   }
   for (int i = 1; i < CROP_MAX; i++) {
-    popup_nowait("Crops: %d / %d  ", i, CROP_MAX - 1);
     Crop crop = Crop(i);
     Crop_datum* crop_dat = Crop_data[crop];
     int min_radius = crop_dat->percentage / 5;
     if (min_radius < 2) {
       min_radius = 2;
     }
-    int max_radius = crop_dat->percentage / 1.5;
+    int max_radius = crop_dat->percentage / 2;
     int avg_radius = (min_radius + max_radius) / 2;
     int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
     total_blobs /= avg_size;
+    if (crop_dat->percentage < 20) {
+      total_blobs *= .6;
+    } else if (crop_dat->percentage > 90) {
+      total_blobs *= 1.2;
+    }
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * crop_dat->percentage;
     num_blobs /= 100;
     //debugmsg("%s blobs: %d", Crop_data[crop]->name.c_str(), num_blobs);
 // Now place the blobs.
+    int checkpoint = num_blobs / 20;  // 5% checkpoints
+    if (crop_dat->percentage >= 90) {
+      max_radius += 8;
+    }
     for (int n = 0; n < num_blobs; n++) {
+      if (n % checkpoint == 1) {
+        popup_nowait("Crops: %d / %d  \nPlacing %d blobs [%d%%%%%%%%]",
+                     i, CROP_MAX - 1, num_blobs, (100 * n) / num_blobs);
+      }
       int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
       add_crop(p, crop, radius);
@@ -218,25 +230,37 @@ void World_map::generate()
 
 // Exact same thing, but for minerals.
   for (int i = 1; i < MINERAL_MAX; i++) {
-    popup_nowait("Minerals: %d / %d  ", i, MINERAL_MAX - 1);
     Mineral mineral = Mineral(i);
     Mineral_datum* mineral_dat = Mineral_data[mineral];
     int min_radius = mineral_dat->percentage / 5;
     if (min_radius < 2) {
       min_radius = 2;
     }
-    int max_radius = mineral_dat->percentage / 1.5;
+    int max_radius = mineral_dat->percentage / 2;
     int avg_radius = (min_radius + max_radius) / 2;
     int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= avg_size;
+    total_blobs /= avg_size * 1.2;
+    if (mineral_dat->percentage < 20) {
+      total_blobs *= .6;
+    } else if (mineral_dat->percentage > 90) {
+      total_blobs *= 1.2;
+    }
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * mineral_dat->percentage;
     num_blobs /= 100;
     //debugmsg("%s blobs: %d", Mineral_data[mineral]->name.c_str(), num_blobs);
+    if (mineral_dat->percentage >= 90) {
+      max_radius += 8;
+    }
 // Now place the blobs.
+    int checkpoint = num_blobs / 20;  // 5% checkpoints
     for (int n = 0; n < num_blobs; n++) {
+      if (n % checkpoint == 1) {
+        popup_nowait("Minerals: %d / %d  \nPlacing %d blobs [%d%%%%%%%%]",
+                     i, MINERAL_MAX - 1, num_blobs, (100 * n) / num_blobs);
+      }
       int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
       add_mineral(p, mineral, radius);
