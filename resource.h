@@ -108,6 +108,7 @@ struct Mineral_datum
   Mineral_datum() { percentage = 0; }
 };
 
+#define INFINITE_MINERAL -99
 struct Mineral_amount
 {
   Mineral_amount(Mineral T = MINERAL_NULL, int A = 0) :
@@ -118,7 +119,7 @@ struct Mineral_amount
   Mineral type;
   int amount;
 
-  
+  bool is_infinite(); // True if amount == INFINITE_MINERAL
 // Returns this, with the amount set to 10%- 20% of the original.
   Mineral_amount make_small();
 // Returns this, with the amount set to 80%-120% of the original.

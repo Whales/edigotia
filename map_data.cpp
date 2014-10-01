@@ -91,7 +91,7 @@ void init_terrain_data()
     _crop(CROP_MELON);
     _crop(CROP_TOBACCO);
     _crop(CROP_HEMP);
-    _mineral(MINERAL_STONE,      -1);
+    _mineral(MINERAL_STONE, INFINITE_MINERAL);
     _mineral(MINERAL_TIN,      2000);
     _mineral(MINERAL_COPPER,   5000);
     _mineral(MINERAL_IRON,     5000);
@@ -110,7 +110,7 @@ void init_terrain_data()
     _farm(5);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
-    _mineral(MINERAL_STONE,      -1);
+    _mineral(MINERAL_STONE, INFINITE_MINERAL);
     _mineral(MINERAL_TIN,      5000);
     _mineral(MINERAL_COPPER,  10000);
     _mineral(MINERAL_IRON,    10000);

@@ -2,6 +2,11 @@
 #include "stringfunc.h"
 #include "rng.h"
 
+bool Mineral_amount::is_infinite()
+{
+  return (amount == INFINITE_MINERAL);
+}
+
 Mineral_amount Mineral_amount::make_small()
 {
   Mineral_amount ret;
