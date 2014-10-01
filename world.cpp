@@ -191,37 +191,55 @@ void World_map::generate()
     }
   }
   for (int i = 1; i < CROP_MAX; i++) {
+    popup_nowait("Crops: %d / %d  ", i, CROP_MAX - 1);
     Crop crop = Crop(i);
+    Crop_datum* crop_dat = Crop_data[crop];
+    int min_radius = crop_dat->percentage / 5;
+    if (min_radius < 2) {
+      min_radius = 2;
+    }
+    int max_radius = crop_dat->percentage / 1.5;
+    int avg_radius = (min_radius + max_radius) / 2;
+    int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= 900; // 900 is the average size of a blob
+    total_blobs /= avg_size;
 // Place an appropriate percentage of the total blobs
-    int num_blobs = total_blobs * Crop_data[crop]->percentage;
+    int num_blobs = total_blobs * crop_dat->percentage;
     num_blobs /= 100;
     //debugmsg("%s blobs: %d", Crop_data[crop]->name.c_str(), num_blobs);
 // Now place the blobs.
     for (int n = 0; n < num_blobs; n++) {
-      int blob_radius = rng(20, 40);
+      int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
-      add_crop(p, crop, blob_radius);
+      add_crop(p, crop, radius);
     }
   }
 
 // Exact same thing, but for minerals.
   for (int i = 1; i < MINERAL_MAX; i++) {
+    popup_nowait("Minerals: %d / %d  ", i, MINERAL_MAX - 1);
     Mineral mineral = Mineral(i);
+    Mineral_datum* mineral_dat = Mineral_data[mineral];
+    int min_radius = mineral_dat->percentage / 5;
+    if (min_radius < 2) {
+      min_radius = 2;
+    }
+    int max_radius = mineral_dat->percentage / 1.5;
+    int avg_radius = (min_radius + max_radius) / 2;
+    int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
     int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= 900;  // 900 is the average size of a blob
+    total_blobs /= avg_size;
 // Place an appropriate percentage of the total blobs
-    int num_blobs = total_blobs * Mineral_data[mineral]->percentage;
+    int num_blobs = total_blobs * mineral_dat->percentage;
     num_blobs /= 100;
     //debugmsg("%s blobs: %d", Mineral_data[mineral]->name.c_str(), num_blobs);
 // Now place the blobs.
     for (int n = 0; n < num_blobs; n++) {
-      int blob_radius = rng(20, 40);// Approx. length of the radius of our blob
+      int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
-      add_mineral(p, mineral, blob_radius);
+      add_mineral(p, mineral, radius);
     }
   }
 
@@ -744,7 +762,7 @@ std::vector<Mineral> World_map::minerals_at(int x, int y)
 std::vector<Crop> World_map::crops_at(Point p)
 {
   std::vector<Crop> ret;
-  for (int i = 0; i < CROP_MAX; i++) {
+  for (int i = 1; i < CROP_MAX; i++) {
     if (has_crop( Crop(i), p )) {
       ret.push_back( Crop(i) );
     }
@@ -755,7 +773,7 @@ std::vector<Crop> World_map::crops_at(Point p)
 std::vector<Mineral> World_map::minerals_at(Point p)
 {
   std::vector<Mineral> ret;
-  for (int i = 0; i < MINERAL_MAX; i++) {
+  for (int i = 1; i < MINERAL_MAX; i++) {
     if (has_mineral( Mineral(i), p )) {
       ret.push_back( Mineral(i) );
     }
@@ -779,7 +797,7 @@ bool World_map::has_crop(Crop crop, Point p)
       p.y < 0 || p.y >= WORLD_MAP_SIZE) {
     return false;
   }
-  if (crop == CROP_NULL && crops[p.x][p.y] != 0) {
+  if (crop == CROP_NULL && crops[p.x][p.y] > 1) {
     return true;
   }
   return (crops[p.x][p.y] & int(pow(2, crop)));
@@ -791,7 +809,7 @@ bool World_map::has_mineral(Mineral mineral, Point p)
       p.y < 0 || p.y >= WORLD_MAP_SIZE) {
     return false;
   }
-  if (mineral == MINERAL_NULL && minerals[p.x][p.y] != 0) {
+  if (mineral == MINERAL_NULL && minerals[p.x][p.y] > 1) {
     return true;
   }
   return (minerals[p.x][p.y] & int(pow(2, mineral)));
