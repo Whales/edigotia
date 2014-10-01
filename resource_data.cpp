@@ -33,6 +33,9 @@ void init_crop_and_mineral_data()
 
   int cur_id = 0;
 
+  _crop(CROP_NULL);
+    _cname("any crop");
+
   _crop(CROP_WHEAT);
     _cname("wheat");
     _cpercent(90);
@@ -132,6 +135,9 @@ void init_crop_and_mineral_data()
 
 
 // Minerals
+
+  _mineral(MINERAL_NULL);
+    _mname("any mineral");
 
   _mineral(MINERAL_STONE);
     _mname("stone");
