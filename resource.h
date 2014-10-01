@@ -37,6 +37,9 @@ enum Crop_type
   CROPTYPE_MAX
 };
 
+Crop_type lookup_crop_type(std::string name);
+std::string crop_type_name(Crop_type type);
+
 enum Crop
 {
   CROP_NULL = 0,
@@ -108,7 +111,22 @@ struct Mineral_datum
   Mineral_datum() { percentage = 0; }
 };
 
-#define INFINITE_MINERAL -99
+
+#define INFINITE_RESOURCE -99
+
+struct Crop_amount
+{
+  Crop_amount(Crop T = CROP_NULL, int A = 0) :
+    type (T),
+    amount (A)
+    {}
+
+  Crop type;
+  int amount;
+
+  bool is_infinite(); // True if amount == INFINITE_RESOURCE
+};
+
 struct Mineral_amount
 {
   Mineral_amount(Mineral T = MINERAL_NULL, int A = 0) :
@@ -119,7 +137,7 @@ struct Mineral_amount
   Mineral type;
   int amount;
 
-  bool is_infinite(); // True if amount == INFINITE_MINERAL
+  bool is_infinite(); // True if amount == INFINITE_RESOURCE
 // Returns this, with the amount set to 10%- 20% of the original.
   Mineral_amount make_small();
 // Returns this, with the amount set to 80%-120% of the original.
