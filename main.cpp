@@ -47,8 +47,8 @@ int main()
       p = world.draw();
       crops    = world.crops_at   (p);
       minerals = world.minerals_at(p);
-      city.map.generate(world.get_map_type(p), crops, minerals,
-                        world.coast_from(p) );
+      city.map.generate( world.get_map_type(p), crops, minerals,
+                         world.coast_from(p) );
     }
   }
 
