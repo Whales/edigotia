@@ -21,6 +21,7 @@ void Area::make_queued()
     return;
   }
 
+  open = false;
   construction_left = bd_data->build_time;
 }
 
