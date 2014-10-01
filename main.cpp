@@ -38,8 +38,8 @@ int main()
   City city;
   std::vector<Crop>    crops    = world.crops_at   (p);
   std::vector<Mineral> minerals = world.minerals_at(p);
-  city.map.generate( world.tiles[p.x][p.y], crops, minerals,
-                     world.coast_from(p.x, p.y)             );
+  city.map.generate( world.get_map_type(p), crops, minerals,
+                     world.coast_from(p) );
   bool placed = false;
   while (!placed) {
     placed = city.place_keep();
@@ -47,8 +47,8 @@ int main()
       p = world.draw();
       crops    = world.crops_at   (p);
       minerals = world.minerals_at(p);
-      city.map.generate( world.tiles[p.x][p.y], crops, minerals,
-                         world.coast_from(p.x, p.y)             );
+      city.map.generate(world.get_map_type(p), crops, minerals,
+                        world.coast_from(p) );
     }
   }
 
