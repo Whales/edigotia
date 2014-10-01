@@ -20,11 +20,23 @@ public:
 
   Point draw(Window* w_map = NULL);
 
+  int land_count(); // Returns the number of tiles that are not ocean
+/* crop_count() and mineral_count() return the number of tiles with the
+ * specified crop/mineral.  If it's omitted (or {CROP,MINERAL}_NULL is passed)
+ * then they return the number of tiles with ANY crop/mineral.
+ */
+  int crop_count(Crop crop = CROP_NULL);
+  int mineral_count(Mineral mineral = MINERAL_NULL);
+
   Direction coast_from(int x, int y);
   std::vector<Crop>    crops_at   (int x, int y);
   std::vector<Mineral> minerals_at(int x, int y);
   std::vector<Crop>    crops_at   (Point p);
   std::vector<Mineral> minerals_at(Point p);
+  bool has_crop   (Crop crop,       int x, int y);
+  bool has_mineral(Mineral mineral, int x, int y);
+  bool has_crop   (Crop crop,       Point p);
+  bool has_mineral(Mineral mineral, Point p);
 
   Map_type tiles                [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
