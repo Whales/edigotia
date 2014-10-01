@@ -53,20 +53,37 @@ public:
   bool expend_resources(std::map<Resource,int> resources);
 
 // Data functions
+
+// Map-related functions
   bool inside_radius(int x, int y);
   bool inside_radius(Point p);
 
   Area* area_at(int x, int y);
   Area* area_at(Point p);
 
+// Population/housing-related functions
   int get_total_population(Citizen_type type = CIT_NULL);
   int get_total_housing(Citizen_type type = CIT_NULL);
 
   int get_military_count();
   int get_military_supported();
 
+// Building/Area-related functions
+  int get_number_of_buildings(Building_type type = BUILD_NULL);
+  int get_number_of_areas    (Area_type     type = AREA_NULL);
+  int get_fields_worked();
+  int get_empty_fields();
+
+// Resource-related functions
+  int get_resource_amount(Resource res);
   int get_food_consumption(Citizen_type type = CIT_NULL);
   int get_food_production();
+
+  std::vector<Crop_amount> get_crops_grown();
+
+// Trade-related functions
+  int get_import(Resource res);
+  int get_export(Resource res);
 
 // Data
   Citizens population[CIT_MAX];
@@ -78,6 +95,7 @@ public:
 
   int radius;
 
+  std::vector<Building> buildings;
   std::vector<Area> areas;
   std::vector<Area> area_queue;
   int labor_pool;
