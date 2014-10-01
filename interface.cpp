@@ -437,6 +437,56 @@ void Interface::minister_finance()
 {
 }
 
+void Interface::minister_food()
+{
+  Window w_food(0, 0, 80, 24);
+  cuss::interface i_food;
+  if (!i_food.load_from_file("cuss/food.cuss")) {
+    return;
+  }
+
+  i_food.select("list_crops");
+
+// These values and fields are static during the life of this interface.
+  int food_import = city->get_import(RES_FOOD);
+  int food_consumed = city->get_food_consumption();
+  int food_export = city->get_export(RES_FOOD);
+
+  i_food.set_data("num_farms", city->get_number_of_buildings(BUILD_FARM));
+  i_food.set_data("num_food_stored", city->get_resource_amount(RES_FOOD));
+  i_food.set_data("num_food_imported", food_import);
+  i_food.set_data("num_food_consumed", food_consumed);
+  i_food.set_data("num_food_exported", food_export);
+
+  bool done = false;
+  while (!done) {
+// These values and fields may change before we exit this interface.
+    int fields_worked = city->get_fields_worked();
+    int fields_empty  = city->get_empty_fields();
+    int food_grown    = city->get_food_production();
+
+    int net_food   = food_grown + food_imported - food_exported - food_consumed;
+
+    std::vector<Crop_amount> crops_grown = city->get_crops_grown;
+    std::vector<std::string> crop_names, crop_types, crop_foods, crop_amounts;
+    for (int i = 0; i < crops_grown.size(); i++) {
+      Crop_datum* crop_dat = Crop_data[crops_grown[i].type];
+      crop_names.push_back  ( crop_dat->name );
+      crop_types.push_back  ( crop_type_name( crop_dat->type ) );
+      crop_foods.push_back  ( itos( crop_dat->food ) );
+      crop_amounts.push_back( itos( crops_grown[i].amount ) );
+    }
+    i_food.set_data("list_crop_name",  crop_names);
+    i_food.set_data("list_crop_type",  crop_types);
+    i_food.set_data("list_crop_food",  crop_foods);
+    i_food.set_data("list_crop_grown", crop_amounts);
+    i_food.set_data("num_fields_worked", fields_worked);
+    i_food.set_data("num_fields_empty",  fields_empty);
+    i_food.set_data("num_food_grown",    food_grown);
+  }
+
+}
+
 Area_type Interface::pick_area()
 {
   std::vector<std::string> area_options;
