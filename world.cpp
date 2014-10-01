@@ -793,12 +793,12 @@ Direction World_map::coast_from(int x, int y)
 
 std::vector<Crop> World_map::crops_at(Point p)
 {
-  return crops_at( Point(p.x, p.y) );
+  return crops_at( p.x, p.y );
 }
 
 std::vector<Mineral> World_map::minerals_at(Point p)
 {
-  return minerals_at( Point(p.x, p.y) );
+  return minerals_at( p.x, p.y );
 }
 
 std::vector<Crop> World_map::crops_at(int x, int y)
