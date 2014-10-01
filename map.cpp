@@ -91,7 +91,7 @@ void City_map::generate(Map_type type,
       chance[TER_HILL]      = 14;
       chance[TER_MOUNTAIN]  =  1;
       chance[TER_FOREST]    =  2;
-      chance[TER_DESERT]    =  3;
+      chance[TER_DESERT]    =  6;
       break;
     case MAP_FOREST:
       chance[TER_FIELD]     =  5;
