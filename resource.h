@@ -118,6 +118,10 @@ struct Mineral_amount
   Mineral type;
   int amount;
 
+  
+// Returns this, with the amount set to 10%- 20% of the original.
+  Mineral_amount make_small();
+// Returns this, with the amount set to 80%-120% of the original.
   Mineral_amount randomize();
 };
 

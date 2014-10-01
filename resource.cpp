@@ -2,6 +2,14 @@
 #include "stringfunc.h"
 #include "rng.h"
 
+Mineral_amount Mineral_amount::make_small()
+{
+  Mineral_amount ret;
+  ret.type = type;
+  ret.amount = rng( amount * .1, amount * .2);
+  return ret;
+}
+
 Mineral_amount Mineral_amount::randomize()
 {
   Mineral_amount ret;
