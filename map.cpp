@@ -60,9 +60,11 @@ City_map::~City_map()
 {
 }
 
-void City_map::generate(Map_type type, Direction coast)
+void City_map::generate(Map_type type,
+                        std::vector<Crop> crops, std::vector<Mineral> minerals,
+                        Direction coast)
 {
-  int chance[TER_MAX];
+  int chance[TER_MAX];  // Relative chance for each terrain type to appear.
   int total_chance = 0;
   for (int i = 0; i < TER_MAX; i++) {
     chance[i] = 0;
@@ -240,7 +242,7 @@ void City_map::generate(Map_type type, Direction coast)
         y++;
       }
     }
-  } else if (type == MAP_OCEAN){
+  } else if (type == MAP_OCEAN) {
 // Obviously, not every ocean tile is going to have a prominent center isle;
 // however since this is specifically for cities on ocean tiles, let's always
 // give an island.
@@ -264,18 +266,44 @@ void City_map::generate(Map_type type, Direction coast)
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
       Terrain_datum* ter_dat = Terrain_data[ tiles[x][y].ter ];
       for (int i = 0; i < ter_dat->crops.size(); i++) {
-        Crop_datum* crop_dat = Crop_data[ ter_dat->crops[i] ];
-        if (!crop_dat) {
-          debugmsg("NULL crop_dat (crop %d)", ter_dat->crops[i]);
+// Check if the world map assigned us this crop.
+        Crop crop = ter_dat->crops[i];
+        bool crop_assigned = false;
+        for (int n = 0; !crop_assigned && n < crops.size(); n++) {
+          if (crops[n] == crop) {
+            crop_assigned = true;
+          }
         }
-        if (rng(1, 100) <= crop_dat->percentage) {
-          tiles[x][y].crops.push_back( ter_dat->crops[i] );
+// Only assign the crop if we got it from the world map, or on a small chance
+        Crop_datum* crop_dat = Crop_data[crop];
+        if (!crop_dat) {
+          debugmsg("NULL crop_dat (crop %d)", crop);
+        }
+        if (crop_assigned ||
+            (rng(1, 100) <= crop_dat->percentage &&
+             rng(1, 100) <= crop_dat->percentage &&
+             rng(1, 100) <= crop_dat->percentage   )) {
+          tiles[x][y].crops.push_back(crop);
         }
       }
       for (int i = 0; i < ter_dat->minerals.size(); i++) {
-        Mineral_datum* mineral_dat = Mineral_data[ ter_dat->minerals[i].type ];
-        if (rng(1, 100) <= mineral_dat->percentage) {
-          tiles[x][y].minerals.push_back( ter_dat->minerals[i].randomize() );
+        Mineral_amount min_amount = ter_dat->minerals[i];
+        Mineral mineral = min_amount.type;
+// Check if the world map assigned us this mineral.
+        bool mineral_assigned = false;
+        for (int n = 0; !mineral_assigned && n < minerals.size(); n++) {
+          if (minerals[n] == mineral) {
+            mineral_assigned = true;
+          }
+        }
+        Mineral_datum* mineral_dat = Mineral_data[mineral];
+        if (!mineral_dat) {
+          debugmsg("NULL mineral_dat (mineral %d)", mineral);
+        }
+        if (mineral_assigned) {
+          tiles[x][y].minerals.push_back( min_amount.randomize() );
+        } else if (rng(1, 150) <= mineral_dat->percentage) {
+          tiles[x][y].minerals.push_back( min_amount.make_small() );
         }
       }
     }

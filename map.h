@@ -104,7 +104,14 @@ public:
   City_map();
   ~City_map();
 
-  void generate(Map_type type, Direction coast = DIR_NULL);
+/* crops and minerals are derived from the world map, and are a list of the
+ * resources that are plentiful here and should be placed in all eligable tiles.
+ * Other resources may be present, but they should not necessarily appear in all
+ * tiles, and they should appear in smaller amounts.
+ */
+  void generate(Map_type type,
+                std::vector<Crop> crops, std::vector<Mineral> minerals,
+                Direction coast = DIR_NULL);
 
   Map_tile* get_tile(Point p);
   Map_tile* get_tile(int x, int y);
@@ -130,6 +137,13 @@ public:
 private:
 
   Map_tile tiles[CITY_MAP_SIZE][CITY_MAP_SIZE];
+
+/* These are derived from the world map; they're the resources that we have
+ * notable/large amounts of.  Other resources (particularly minerals) may be
+ * available, but only in small quantities if at all.
+ */
+  std::vector<Crop>    bonus_crops;
+  std::vector<Mineral> bonus_minerals;
 
   bool is_oob(int x, int y);
 
