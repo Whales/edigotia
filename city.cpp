@@ -397,6 +397,7 @@ void City::do_turn()
     Area* area_to_build = &(area_queue[0]);
     area_to_build->construction_left--;
     if (area_to_build->construction_left <= 0) {
+      area_queue[0].open = true;
       areas.push_back( area_queue[0] );
       area_queue.erase( area_queue.begin() );
     }
@@ -526,7 +527,17 @@ int City::get_total_housing(Citizen_type type)
       }
     }
   }
-// TODO: Also include buildings not associated with an area?
+  for (int i = 0; i < buildings.size(); i++) {
+    Building_datum* build_dat = buildings[i].get_building_datum();
+    if (build_dat) {
+      for (int n = 0; n < build_dat->housing.size(); n++) {
+        if (type == CIT_NULL || type == build_dat->housing[n].type) {
+          ret += build_dat->housing[n].amount;
+        }
+      }
+    }
+  }
+
   return ret;
 }
 
@@ -548,9 +559,73 @@ int City::get_military_supported()
       ret += build_dat->military_support;
     }
   }
-// TODO: Also include buildings not associated with an area?
+  for (int i = 0; i < buildings.size(); i++) {
+    Building_datum* build_dat = buildings[i].get_building_datum();
+    if (build_dat) {
+      ret += build_dat->military_support;
+    }
+  }
 
   return ret;
+}
+
+int City::get_number_of_buildings(Building_type type = BUILD_NULL)
+{
+  int ret = 0;
+  for (int i = 0; i < buildings.size(); i++) {
+    if (type == BUILD_NULL || buildings[i].type == type) {
+      ret++;
+    }
+  }
+  for (int i = 0; i < areas.size(); i++) {
+    Building_type area_build = areas[i].get_building_type();
+    if (area_build != BUILD_NULL &&
+        (type == BUILD_NULL || area_build == type)) {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+int City::get_number_of_areas(Area_type type)
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (type == AREA_NULL || areas[i].type == type) {
+      ret++;
+    }
+  }
+  return ret;
+}
+
+int City::get_fields_work()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open && areas[i].type == AREA_FARM) {
+      ret += areas[i].workers;
+    }
+  }
+  return ret;
+}
+
+int City::get_empty_fields()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open && areas[i].type == AREA_FARM) {
+      Building_datum* build_dat = areas[i].get_building_datum();
+      if (build_dat && areas[i].workers < build_dat->jobs.amount) {
+        ret += build_dat->jobs.amount - areas[i].workers;
+      }
+    }
+  }
+  return ret;
+}
+
+int City::get_resource_amount(Resource res)
+{
+  return resources[res];
 }
 
 // type defaults to CIT_NULL
@@ -570,6 +645,25 @@ int City::get_food_consumption(Citizen_type type)
 
 // TODO: This function.
 int City::get_food_production()
+{
+  return 0;
+}
+
+// TODO: This function.
+std::vector<Crop_amount> City::get_crops_grown()
+{
+  std::vector<Crop_amount> ret;
+  return ret;
+}
+
+// TODO: This function.
+int City::get_import(Resource res)
+{
+  return 0;
+}
+
+// TODO: This function.
+int City:;get_export(Resource res)
 {
   return 0;
 }
