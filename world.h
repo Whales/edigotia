@@ -41,9 +41,6 @@ public:
   bool has_crop   (Crop crop,       int x, int y);
   bool has_mineral(Mineral mineral, int x, int y);
 
-  std::vector<Point> continents;
-  std::map<int, std::vector<int> > joined_continents;
-
 private:
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river    (Point origin);
@@ -64,6 +61,9 @@ private:
   bool river                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int crops                     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int minerals                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+
+  std::vector<Point> continents;
+  std::map<int, std::vector<int> > joined_continents;
 
 };
 
