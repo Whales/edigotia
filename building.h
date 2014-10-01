@@ -57,6 +57,9 @@ struct Building_datum
 struct Building
 {
   Building_type type;
+  int workers;
+
+  Building_datum* get_building_datum();
 };
 
 extern Building_datum* Building_data[BUILD_MAX];
