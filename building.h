@@ -56,10 +56,33 @@ struct Building_datum
 
 struct Building
 {
+  Building();
+  ~Building();
+
+  void set_type(Building_type new_type);
+
   Building_type type;
   int workers;
 
-  Building_datum* get_building_datum();
+/* build_queue is a list of things this building will produce; when the building
+ * is not currently building anything, it looks at the first item in the queue
+ * and starts building that.  Once it finishes, it decreases that item's amount
+ * by 1 (unless the amount is infinite), removes the item if the amount is now
+ * 0, and looks for a new item to build.  If we do not have the resources to
+ * build the first item in the queue, we look at the second and so on.  If we do
+ * not have the resources to build ANY items in the queue (and the queue is not
+ * empty), we generate an alert telling the player that nothing is buildable.
+ * If the queue is empty but the building has workers, we generate an alert
+ * telling the player that the building is idle.
+ */
+  std::vector<Resource_amount> build_queue;
+
+// Basically for farms only
+  std::vector<Crop> crops_grown;
+// Basically for mines only
+  std::vector<Mineral> minerals_mined;
+
+  Building_datum* get_building_datum(); // Building_data[type]
 };
 
 extern Building_datum* Building_data[BUILD_MAX];
