@@ -448,26 +448,27 @@ void Interface::minister_food()
   i_food.select("list_crops");
 
 // These values and fields are static during the life of this interface.
-  int food_import = city->get_import(RES_FOOD);
+  int food_imported = city->get_import(RES_FOOD);
   int food_consumed = city->get_food_consumption();
-  int food_export = city->get_export(RES_FOOD);
+  int food_exported = city->get_export(RES_FOOD);
 
   i_food.set_data("num_farms", city->get_number_of_buildings(BUILD_FARM));
   i_food.set_data("num_food_stored", city->get_resource_amount(RES_FOOD));
-  i_food.set_data("num_food_imported", food_import);
+  i_food.set_data("num_food_imported", food_imported);
   i_food.set_data("num_food_consumed", food_consumed);
-  i_food.set_data("num_food_exported", food_export);
+  i_food.set_data("num_food_exported", food_exported);
 
   bool done = false;
   while (!done) {
 // These values and fields may change before we exit this interface.
+// So we set them inside the loop.
     int fields_worked = city->get_fields_worked();
     int fields_empty  = city->get_empty_fields();
     int food_grown    = city->get_food_production();
 
     int net_food   = food_grown + food_imported - food_exported - food_consumed;
 
-    std::vector<Crop_amount> crops_grown = city->get_crops_grown;
+    std::vector<Crop_amount> crops_grown = city->get_crops_grown();
     std::vector<std::string> crop_names, crop_types, crop_foods, crop_amounts;
     for (int i = 0; i < crops_grown.size(); i++) {
       Crop_datum* crop_dat = Crop_data[crops_grown[i].type];
