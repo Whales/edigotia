@@ -33,7 +33,7 @@ Building_datum* Building_data[BUILD_MAX];
 #define _jobs(t, n) \
   Building_data[cur_id]->jobs = Citizen_amount((t), (n))
 
-#define _flat(t, n) \
+#define _produces(t, n) \
   Building_data[cur_id]->production.push_back( Resource_amount( (t), (n) ))
 
 #define _buildable(t) \
@@ -90,7 +90,7 @@ void init_building_data()
     _build_time(1);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
-    _flat(RES_FARMING, 10);
+    _produces(RES_FARMING, 10);
 
   _build(BUILD_QUARRY);
     _name("quarry");
@@ -98,7 +98,7 @@ void init_building_data()
     _build_time(5);
     _upkeep(2);
     _jobs(CIT_PEASANT, 10);
-    _flat(RES_STONE, 5);
+    _produces(RES_STONE, 5);
 
   _build(BUILD_MINE);
     _name("mine");
@@ -107,21 +107,21 @@ void init_building_data()
     _build_time(10);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
-    _flat(RES_MINING, 10);
+    _produces(RES_MINING, 10);
 
   _build(BUILD_CAMP);
     _name("hunting camp");
     _cost(RES_GOLD, 50);
     _build_time(1);
     _jobs(CIT_PEASANT, 10);
-    _flat(RES_HUNTING, 10);
+    _produces(RES_HUNTING, 10);
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
     _cost(RES_GOLD, 100);
     _build_time(5);
     _jobs(CIT_PEASANT, 10);
-    _flat(RES_LOGGING, 10);
+    _produces(RES_LOGGING, 10);
 
   _build(BUILD_BARRACKS);
     _name("barracks");
