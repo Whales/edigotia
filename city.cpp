@@ -569,7 +569,7 @@ int City::get_military_supported()
   return ret;
 }
 
-int City::get_number_of_buildings(Building_type type = BUILD_NULL)
+int City::get_number_of_buildings(Building_type type)
 {
   int ret = 0;
   for (int i = 0; i < buildings.size(); i++) {
@@ -598,12 +598,12 @@ int City::get_number_of_areas(Area_type type)
   return ret;
 }
 
-int City::get_fields_work()
+int City::get_fields_worked()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].open && areas[i].type == AREA_FARM) {
-      ret += areas[i].workers;
+      ret += areas[i].building.workers;
     }
   }
   return ret;
@@ -615,8 +615,8 @@ int City::get_empty_fields()
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].open && areas[i].type == AREA_FARM) {
       Building_datum* build_dat = areas[i].get_building_datum();
-      if (build_dat && areas[i].workers < build_dat->jobs.amount) {
-        ret += build_dat->jobs.amount - areas[i].workers;
+      if (build_dat && areas[i].building.workers < build_dat->jobs.amount) {
+        ret += build_dat->jobs.amount - areas[i].building.workers;
       }
     }
   }
@@ -663,7 +663,7 @@ int City::get_import(Resource res)
 }
 
 // TODO: This function.
-int City:;get_export(Resource res)
+int City::get_export(Resource res)
 {
   return 0;
 }
