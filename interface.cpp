@@ -177,7 +177,6 @@ void Interface::handle_key(long ch)
           
 // TODO: Fill this in with all keybindings for all modes.
     }
-
   }
 }
 
