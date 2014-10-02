@@ -211,19 +211,19 @@ void World_map::generate()
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * crop_dat->percentage;
     num_blobs /= 100;
-    //debugmsg("%s blobs: %d", Crop_data[crop]->name.c_str(), num_blobs);
-// Now place the blobs.
-    int checkpoint = num_blobs / 20;  // 5% checkpoints
     if (crop_dat->percentage >= 90) {
       max_radius += 8;
     }
+// Now place the blobs.
+    int checkpoint = num_blobs / 20;  // 5% checkpoints
     for (int n = 0; n < num_blobs; n++) {
       if (n % checkpoint == 1) {
         popup_nowait("\
 Generating World...\n\
-Crops: %d / %d  \n\
+Crop %d / %d (%s)  \n\
 Placing %d blobs [%d%%%%%%%%]",
-                     i, CROP_MAX - 1, num_blobs, (100 * n) / num_blobs);
+                     i, CROP_MAX - 1, Crop_data[crop]->name.c_str(),
+                     num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
@@ -253,7 +253,6 @@ Placing %d blobs [%d%%%%%%%%]",
 // Place an appropriate percentage of the total blobs
     int num_blobs = total_blobs * mineral_dat->percentage;
     num_blobs /= 100;
-    //debugmsg("%s blobs: %d", Mineral_data[mineral]->name.c_str(), num_blobs);
     if (mineral_dat->percentage >= 90) {
       max_radius += 8;
     }
@@ -263,9 +262,10 @@ Placing %d blobs [%d%%%%%%%%]",
       if (n % checkpoint == 1) {
         popup_nowait("\
 Generating World...\n\
-Minerals: %d / %d  \n\
+Minerals: %d / %d (%s)  \n\
 Placing %d blobs [%d%%%%%%%%]",
-                     i, MINERAL_MAX - 1, num_blobs, (100 * n) / num_blobs);
+                     i, MINERAL_MAX - 1, Mineral_data[mineral]->name.c_str(),
+                     num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
@@ -545,16 +545,10 @@ mineral = MINERAL_NULL!");
     if (tiles[x][y] != MAP_NULL && tiles[x][y] != MAP_OCEAN) {
       if (crop != CROP_NULL) {
   // Check if we already exist
-        bool found = crops[x][y] & int(pow(2, crop));
-        if (!found) {
-          crops[x][y] |= int(pow(2, crop));
-        }
+        crops[x][y] |= int(pow(2, crop));
       } else {  // Placing mineral, not crop.
   // Check if we already exist
-        bool found = minerals[x][y] & int(pow(2, mineral));
-        if (!found) {
-          minerals[x][y] |= int(pow(2, mineral));
-        }
+        minerals[x][y] |= int(pow(2, mineral));
       }
     }
   }
@@ -578,6 +572,11 @@ Point World_map::draw(Window* w_map)
   pos.x -= (xdim / 2);
   pos.y -= (ydim / 2);
 
+  bool hilite_crops = false;
+  Crop crop_hilited = CROP_NULL;
+  bool hilite_minerals = false;
+  Mineral mineral_hilited = MINERAL_NULL;
+
   while (true) {
     for (int x = pos.x; x < pos.x + xdim; x++) {
       for (int y = pos.y; y < pos.y + ydim; y++) {
@@ -587,6 +586,10 @@ Point World_map::draw(Window* w_map)
           glyph gl = data->symbol;
           if (x == pos.x + xdim / 2 && y == pos.y + ydim / 2) {
             gl = gl.hilite(c_blue);
+          } else if (hilite_crops && has_crop(crop_hilited, x, y)) {
+            gl = gl.hilite(c_green);
+          } else if (hilite_minerals && has_mineral(mineral_hilited, x, y)) {
+            gl = gl.hilite(c_red);
           }
           w_map->putglyph(x - pos.x, y - pos.y, gl);
         } else {
@@ -683,11 +686,17 @@ Point World_map::draw(Window* w_map)
         pos.x++;
         pos.y++;
         break;
+      case '0':
+        pos.x = 0;
+        pos.y = 0;
+        break;
 
       case '?': {
+        Point res_pos(pos.x + xdim / 2, pos.y + ydim / 2);
         std::stringstream resource_ss;
-        std::vector<Crop> crops_here = crops_at(pos);
-        std::vector<Mineral> minerals_here = minerals_at(pos);
+        std::vector<Crop>    crops_here    = crops_at(res_pos);
+        std::vector<Mineral> minerals_here = minerals_at(res_pos);
+        resource_ss << "Position: " << res_pos.str() << std::endl;
         resource_ss << "Crops: ";
         for (int i = 0; i < crops_here.size(); i++) {
           resource_ss << Crop_data[crops_here[i]]->name << " ";
@@ -696,8 +705,61 @@ Point World_map::draw(Window* w_map)
         for (int i = 0; i < minerals_here.size(); i++) {
           resource_ss << Mineral_data[minerals_here[i]]->name << " ";
         }
+        resource_ss << std::endl <<
+                       "Crop code "    << crops   [res_pos.x][res_pos.y] <<
+                       std::endl <<
+                       "Mineral code " << minerals[res_pos.x][res_pos.y];
         debugmsg( resource_ss.str().c_str() );
       } break;
+
+      case 'c':
+      case 'C': {
+        std::string crop_name = string_input_popup("hilite crop:");
+        Crop hilited = CROP_NULL;
+        bool do_hilite = true;
+        if (!crop_name.empty()) {
+          hilited = search_for_crop(crop_name);
+          if (hilited == CROP_NULL) {
+            popup("%s not found.");
+            do_hilite = false;
+          }
+        }
+        if (do_hilite) {
+          hilite_crops = true;
+          hilite_minerals = false;
+          crop_hilited = hilited;
+        } else {
+          hilite_crops = false;
+        }
+      } break;
+
+      case 'm':
+      case 'M': {
+        std::string mineral_name = string_input_popup("hilite mineral:");
+        Mineral hilited = MINERAL_NULL;
+        bool do_hilite = true;
+        if (!mineral_name.empty()) {
+          hilited = search_for_mineral(mineral_name);
+          if (hilited == MINERAL_NULL) {
+            popup("%s not found.");
+            do_hilite = false;
+          }
+        }
+        if (do_hilite) {
+          hilite_minerals = true;
+          hilite_crops = false;
+          mineral_hilited = hilited;
+        } else {
+          hilite_minerals = false;
+        }
+      } break;
+
+      case 't':
+      case 'T':
+        hilite_crops    = false;
+        hilite_minerals = false;
+        break;
+      
       case KEY_ESC:
       case '\n':
         if (owns_window) {
