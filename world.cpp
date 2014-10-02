@@ -219,7 +219,10 @@ void World_map::generate()
     }
     for (int n = 0; n < num_blobs; n++) {
       if (n % checkpoint == 1) {
-        popup_nowait("Crops: %d / %d  \nPlacing %d blobs [%d%%%%%%%%]",
+        popup_nowait("\
+Generating World...\n\
+Crops: %d / %d  \n\
+Placing %d blobs [%d%%%%%%%%]",
                      i, CROP_MAX - 1, num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
@@ -258,7 +261,10 @@ void World_map::generate()
     int checkpoint = num_blobs / 20;  // 5% checkpoints
     for (int n = 0; n < num_blobs; n++) {
       if (n % checkpoint == 1) {
-        popup_nowait("Minerals: %d / %d  \nPlacing %d blobs [%d%%%%%%%%]",
+        popup_nowait("\
+Generating World...\n\
+Minerals: %d / %d  \n\
+Placing %d blobs [%d%%%%%%%%]",
                      i, MINERAL_MAX - 1, num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
