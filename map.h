@@ -128,6 +128,9 @@ public:
   std::string get_info(Point p);
   std::string get_info(int x, int y);
 
+  int get_farmability(Point p);
+  int get_farmability(int x, int y);
+
 /*
   Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
   std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];

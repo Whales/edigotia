@@ -387,6 +387,19 @@ std::string City_map::get_info(int x, int y)
   return tiles[x][y].get_info();
 }
 
+int City_map::get_farmability(Point p)
+{
+  return get_farmability(p.x, p.y);
+}
+
+int City_map::get_farmability(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return 0;
+  }
+  return tiles[x][y].get_farmability();
+}
+
 bool City_map::is_oob(int x, int y)
 {
   return (x < 0 || x >= CITY_MAP_SIZE || y < 0 || y >= CITY_MAP_SIZE);
