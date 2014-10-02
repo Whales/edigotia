@@ -18,6 +18,9 @@ public:
 
   void generate();
 
+  bool save_to_file  (std::string filename);
+  bool load_from_file(std::string filename);
+
   Point draw(Window* w_map = NULL);
 
   int land_count(); // Returns the number of tiles that are not ocean

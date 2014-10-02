@@ -4,7 +4,8 @@
 #include "window.h"
 #include <sstream>
 #include <vector>
-#include <math.h>
+#include <math.h> // for pow(), used in reading/writing crops and minerals
+#include <fstream>
 
 World_map::World_map()
 {
@@ -301,6 +302,65 @@ Placing %d blobs [%d%%%%%%%%]",
     tiles[swamps[i].x][swamps[i].y] = MAP_SWAMP;
   }
 */
+}
+
+bool World_map::save_to_file(std::string filename)
+{
+  if (filename.empty()) {
+    return false;
+  }
+  std::ofstream fout;
+  fout.open(filename.c_str());
+  if (!fout.is_open()) {
+    return false;
+  }
+  fout << continents.size() << " ";
+  for (int i = 0; i < continents.size(); i++) {
+    fout << continents[i].x << " " << continents[i].y << " ";
+  }
+  fout << std::endl;
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      fout << tiles       [x][y] << " " <<
+              continent_id[x][y] << " " << // Not sure if we really need this
+              crops       [x][y] << " " <<
+              minerals    [x][y] << " ";
+    }
+    fout << std::endl;
+  }
+  fout.close();
+  return true;
+}
+
+bool World_map::load_from_file(std::string filename)
+{
+  if (filename.empty()) {
+    return false;
+  }
+  std::ifstream fin;
+  fin.open(filename.c_str());
+  if (!fin.is_open()) {
+    return false;
+  }
+  int num_continents;
+  fin >> num_continents;
+  for (int i = 0; i < num_continents; i++) {
+    Point p;
+    fin >> p.x >> p.y;
+    continents.push_back(p);
+  }
+  int tmp_map_type;
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      fin >> tmp_map_type >>
+             continent_id[x][y] >>
+             crops[x][y] >>
+             minerals[x][y];
+      tiles[x][y] = Map_type(tmp_map_type);
+    }
+  }
+  fin.close();
+  return true;
 }
 
 void World_map::add_continent(Point origin, int height, int step, int id)
