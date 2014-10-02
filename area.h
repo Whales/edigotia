@@ -58,11 +58,26 @@ struct Area
 
   std::map<Resource,int> get_maintenance();
 
+// DATA
   Area_type type;
-  Point pos;
-  int workers;
+
+/* If open is false, this area is inactive and is treated as though it doesn't
+ * exist for all purposes.  When we enqueue an area to our building queue, open
+ * is set to false, and construction_left is set to its type construction time.
+ * Each day, the area at the top of the queue has its construction_left
+ * decreased by an appropriate amount (usually 1); once it hits 0, it's removed
+ * from the construction queue, open is set to true, and it's added to the
+ * City's area vector.
+ */
   bool open;
   int construction_left;
+
+// Our position on the City_map.
+  Point pos;
+
+// Since areas function as buildings too, we create a Building item to track
+// everything a building does.
+  Building my_building;
 };
 
 extern Area_datum* Area_data[AREA_MAX];
