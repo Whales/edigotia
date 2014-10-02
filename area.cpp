@@ -9,6 +9,7 @@ Building_datum* Area_datum::get_building_datum()
 Area::Area(Area_type T, Point P)
 {
   type = T;
+  building.set_type(get_building_type());
   pos = P;
   open = true;
   construction_left = 0;

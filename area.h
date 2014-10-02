@@ -77,7 +77,7 @@ struct Area
 
 // Since areas function as buildings too, we create a Building item to track
 // everything a building does.
-  Building my_building;
+  Building building;
 };
 
 extern Area_datum* Area_data[AREA_MAX];
