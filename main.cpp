@@ -26,7 +26,7 @@ int main()
   World_map world;
   world.generate();
 // Tool for debugging / testing the amount of resources in the world.
-  check_world_resources(&world);
+  //check_world_resources(&world);
 // ... for now, we always start by picking a location for a new city.
   Point p = world.draw();
 
