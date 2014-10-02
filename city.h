@@ -48,6 +48,7 @@ public:
 // Changes
   Area_queue_status add_area_to_queue(Area_type type, Point location);
   Area_queue_status add_area_to_queue(Area area);
+  void add_open_area(Area area);  // Move it from queue to areas.
 
   bool expend_resources(std::vector<Resource_amount> resources);
   bool expend_resources(std::map<Resource,int> resources);

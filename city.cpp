@@ -397,8 +397,7 @@ void City::do_turn()
     Area* area_to_build = &(area_queue[0]);
     area_to_build->construction_left--;
     if (area_to_build->construction_left <= 0) {
-      area_queue[0].open = true;
-      areas.push_back( area_queue[0] );
+      add_open_area(area_queue[0]);
       area_queue.erase( area_queue.begin() );
     }
   }
@@ -431,6 +430,32 @@ Area_queue_status City::add_area_to_queue(Area area)
   area.make_queued();  // Sets up construction_left.
   area_queue.push_back(area);
   return AREA_QUEUE_OK;
+}
+
+void City::add_open_area(Area area)
+{
+// Set it as open
+  area.open = true;
+// Figure out how many crops per field we get
+  Building_datum* build_dat = area.get_building_datum();
+  if (!build_dat) {
+    debugmsg("NULL Building_data* in City::open_area (%s).",
+             area.get_name().c_str());
+  }
+// Look for RES_FARMING output.
+  int farming = 0;
+  for (int i = 0; farming == 0 && i < build_dat->production.size(); i++) {
+    if (build_dat->production[i].type == RES_FARMING) {
+      farming = build_dat->production[i].amount;
+    }
+  }
+  if (farming > 0) {
+    Map_tile* tile_here = map.get_tile(area.pos);
+    farming = (farming * tile_here->get_farmability()) / 100;
+// TODO: Further modify farming based on racial ability.
+    area.building.field_output = farming;
+  }
+  areas.push_back( area );
 }
 
 bool City::expend_resources(std::vector<Resource_amount> res_used)
@@ -653,6 +678,37 @@ int City::get_food_production()
 std::vector<Crop_amount> City::get_crops_grown()
 {
   std::vector<Crop_amount> ret;
+// Look for any areas with buildings that provide RES_FARMING
+  for (int i = 0; i < areas.size(); i++) {
+    Building* build = &(areas[i].building);
+    int num_workers = build->workers;
+    if (num_workers > 0) {
+      Building_datum* build_dat = areas[i].get_building_datum();
+      bool found_farming = false;
+      for (int n = 0; !found_farming && n < build_dat->production.size(); n++) {
+        if (build_dat->production[n].type == RES_FARMING) {
+          found_farming = true;
+        }
+      }
+      if (found_farming) {  // This place produces crops!
+        for (int n = 0; n < num_workers && n < build->crops_grown.size(); n++) {
+// Check if we already have that crop in ret
+          Crop crop = build->crops_grown[n];
+          bool found_crop = false;
+          for (int m = 0; !found_crop && m < ret.size(); m++) {
+            if (ret[m].type == crop) {
+              found_crop = true;
+              ret[m].amount++;
+            }
+          }
+          if (!found_crop) { // Didn't combine it, so add it to the list
+            ret.push_back( Crop_amount(crop, 1) );
+          }
+        }
+      } // if (found_farming)
+    } // if (num_workers > 0)
+  } // for (int i = 0; i < areas.size(); i++)
+
   return ret;
 }
 
