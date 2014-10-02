@@ -106,6 +106,8 @@ private:
   void minister_finance();
 // Food minister, define what crops to grow and other food options
   void minister_food();
+// Happiness minister, view morale information and do things to alter it
+  void minister_morale();
 // Pick an area to build
   Area_type pick_area();
 
