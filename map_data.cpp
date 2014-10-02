@@ -60,7 +60,7 @@ void init_terrain_data()
   _ter(TER_ROCKY);
     _name("Rocky");
     _symbol(',', c_brown);
-    _farm(50);
+    _farm(60);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
@@ -107,7 +107,7 @@ void init_terrain_data()
   _ter(TER_MOUNTAIN);
     _name("Mountain");
     _symbol('^', c_ltgray);
-    _farm(5);
+    _farm(10);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
@@ -124,7 +124,7 @@ void init_terrain_data()
   _ter(TER_FOREST);
     _name("Forest");
     _symbol('7', c_ltgreen);
-    _farm(10);
+    _farm(20);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
     _crop(CROP_AMANITAS);
@@ -151,7 +151,7 @@ void init_terrain_data()
   _ter(TER_DESERT);
     _name("Desert");
     _symbol('~', c_yellow);
-    _farm(25);
+    _farm(30);
     _crop(CROP_CACTUS);
     _crop(CROP_SPICEREED);
     _crop(CROP_SCORPICON);
