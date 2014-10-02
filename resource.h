@@ -114,6 +114,19 @@ struct Mineral_datum
 
 #define INFINITE_RESOURCE -99
 
+struct Resource_amount
+{
+  Resource_amount(Resource R = RES_NULL, int A = 0) :
+    type (R),
+    amount (A)
+    {}
+
+  Resource type;
+  int amount;
+
+  bool is_infinite(); // True if amount == INFINITE_RESOURCE
+};
+
 struct Crop_amount
 {
   Crop_amount(Crop T = CROP_NULL, int A = 0) :
@@ -148,13 +161,5 @@ extern Crop_datum*    Crop_data   [CROP_MAX];
 extern Mineral_datum* Mineral_data[MINERAL_MAX];
 
 void init_crop_and_mineral_data();
-
-struct Resource_amount
-{
-  Resource type;
-  int amount;
-
-  Resource_amount(Resource T, int A) : type (T), amount (A) {}
-};
 
 #endif

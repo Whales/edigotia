@@ -2,6 +2,11 @@
 #include "stringfunc.h"
 #include "rng.h"
 
+bool Resource_amount::is_infinite()
+{
+  return (amount == INFINITE_RESOURCE);
+}
+
 bool Crop_amount::is_infinite()
 {
   return (amount == INFINITE_RESOURCE);
