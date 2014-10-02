@@ -48,7 +48,7 @@ bool Interface::init(Game* G, City* C)
 
   w_main.init(0, 0, 80, 24);
 
-// Put menus here
+// Menu setup!  Put menus here.
   add_menu(MENU_GAME, "Game",
 "Save & Quit",
 "Quit without saving",
@@ -58,7 +58,8 @@ bool Interface::init(Game* G, City* C)
 
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
-"Happiness",
+"Food",
+"Morale",
 0
 );
 
@@ -298,13 +299,22 @@ void Interface::do_menu_action(Menu_id menu, int index)
       break;
 
     case MENU_MINISTERS:
+      switch (index) {
+        case 1: // Finance minister
+          minister_finance();
+          break;
+        case 2: // Food minister
+          minister_food();
+          break;
+        case 3: // Morale minister
+          minister_morale();
+          break;
+      }
       break;
 
     case MENU_BUILDINGS:
       switch (index) {
-        case 1: // Build area
-          //current_area = pick_area();
-          set_mode(IMODE_VIEW_MAP);
+        case 1: // View buildings
           break;
         case 2: // Build building
           break;
@@ -448,15 +458,44 @@ void Interface::minister_food()
   i_food.select("list_crops");
 
 // These values and fields are static during the life of this interface.
+  int num_farms     = city->get_number_of_buildings(BUILD_FARM);
+  int food_stored   = city->get_resource_amount(RES_FOOD);
   int food_imported = city->get_import(RES_FOOD);
   int food_consumed = city->get_food_consumption();
   int food_exported = city->get_export(RES_FOOD);
 
-  i_food.set_data("num_farms", city->get_number_of_buildings(BUILD_FARM));
-  i_food.set_data("num_food_stored", city->get_resource_amount(RES_FOOD));
+  i_food.set_data("num_farms",         num_farms);
+  if (num_farms == 0) {
+    i_food.set_data("num_farms", c_red);
+  }
+
+  i_food.set_data("num_food_stored",   food_stored);
+  if (food_stored == 0) {
+    i_food.set_data("num_food_stored", c_red);
+  } else {
+    i_food.set_data("num_food_stored", c_ltcyan);
+  }
+
   i_food.set_data("num_food_imported", food_imported);
+  if (food_imported > 0) {
+    i_food.set_data("num_food_imported", c_ltgreen);
+  } else {
+    i_food.set_data("num_food_imported", c_dkgray);
+  }
+
   i_food.set_data("num_food_consumed", food_consumed);
+  if (food_consumed > 0) {
+    i_food.set_data("num_food_consumed", c_ltred);
+  } else {
+    i_food.set_data("num_food_consumed", c_dkgray);
+  }
+
   i_food.set_data("num_food_exported", food_exported);
+  if (food_exported > 0) {
+    i_food.set_data("num_food_exported", c_ltred);
+  } else {
+    i_food.set_data("num_food_exported", c_dkgray);
+  }
 
   bool done = false;
   while (!done) {
@@ -466,7 +505,7 @@ void Interface::minister_food()
     int fields_empty  = city->get_empty_fields();
     int food_grown    = city->get_food_production();
 
-    int net_food   = food_grown + food_imported - food_exported - food_consumed;
+    int net_food = food_grown + food_imported - food_exported - food_consumed;
 
     std::vector<Crop_amount> crops_grown = city->get_crops_grown();
     std::vector<std::string> crop_names, crop_types, crop_foods, crop_amounts;
@@ -477,15 +516,52 @@ void Interface::minister_food()
       crop_foods.push_back  ( itos( crop_dat->food ) );
       crop_amounts.push_back( itos( crops_grown[i].amount ) );
     }
-    i_food.set_data("list_crop_name",  crop_names);
-    i_food.set_data("list_crop_type",  crop_types);
-    i_food.set_data("list_crop_food",  crop_foods);
-    i_food.set_data("list_crop_grown", crop_amounts);
+    i_food.set_data("list_crop_name",    crop_names);
+    i_food.set_data("list_crop_type",    crop_types);
+    i_food.set_data("list_crop_food",    crop_foods);
+    i_food.set_data("list_crop_grown",   crop_amounts);
+
     i_food.set_data("num_fields_worked", fields_worked);
-    i_food.set_data("num_fields_empty",  fields_empty);
-    i_food.set_data("num_food_grown",    food_grown);
+    if (fields_worked == 0 && num_farms > 0) {
+      i_food.set_data("num_fields_worked", c_red);
+    }
+
+    i_food.set_data("num_fields_empty", fields_empty);
+    if (fields_empty > 0 && num_farms > 0) {
+      i_food.set_data("num_fields_empty", c_yellow);
+    }
+    
+    i_food.set_data("num_food_grown", food_grown);
+    if (food_grown > 0) {
+      i_food.set_data("num_food_grown", c_ltgreen);
+    } else {
+      i_food.set_data("num_food_grown", c_dkgray);
+    }
+
+    i_food.set_data("num_net_food", net_food);
+    if (net_food < 0) {
+      i_food.set_data("num_net_food", c_ltred);
+    } else if (net_food > 0) {
+      i_food.set_data("num_net_food", c_ltgreen);
+    }
+
+    i_food.draw(&w_food);
+    w_food.refresh();
+
+    long ch = input();
+    switch (ch) {
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
+        done = true;
+        break;
+    }
   }
 
+}
+
+void Interface::minister_morale()
+{
 }
 
 Area_type Interface::pick_area()
