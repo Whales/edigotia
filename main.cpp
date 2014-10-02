@@ -24,7 +24,7 @@ int main()
 
 // Generate a world...
   World_map world;
-  world.generate();
+  world.load_from_file("world.sav");
 // Tool for debugging / testing the amount of resources in the world.
   //check_world_resources(&world);
 // ... for now, we always start by picking a location for a new city.
