@@ -111,6 +111,8 @@ struct Mineral_datum
   Mineral_datum() { percentage = 0; }
 };
 
+Crop search_for_crop(std::string name);
+Mineral search_for_mineral(std::string name);
 
 #define INFINITE_RESOURCE -99
 

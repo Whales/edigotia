@@ -95,3 +95,27 @@ std::string crop_type_name(Crop_type type)
   }
   return "BUG - Escaped crop_type_name() switch";
 }
+
+Crop search_for_crop(std::string name)
+{
+  name = no_caps( trim(name) );
+  for (int i = 1; i < CROP_MAX; i++) {
+    Crop ret = Crop(i);
+    if (Crop_data[ret]->name.find(name) != std::string::npos) {
+      return ret;
+    }
+  }
+  return CROP_NULL;
+}
+
+Mineral search_for_mineral(std::string name)
+{
+  name = no_caps( trim(name) );
+  for (int i = 1; i < MINERAL_MAX; i++) {
+    Mineral ret = Mineral(i);
+    if (Mineral_data[ret]->name.find(name) != std::string::npos) {
+      return ret;
+    }
+  }
+  return MINERAL_NULL;
+}
