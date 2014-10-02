@@ -9,7 +9,7 @@ food </> 80 24 14 1 BG </> 0 0 80 24 0 0 0 327 0 0 4194412 9 0 0 1 4194424 9 0 0
 5 num_food_stored </> 59 6 6 1 0 1 0 0
 5 num_food_grown </> 59 7 6 1 0 1 0 0
 5 num_food_imported </> 59 8 6 1 0 1 0 0
-5 num_food_consumed </> 59 9 6 1 0 0 -1 0
+5 num_food_consumed </> 59 9 6 1 0 1 -1 0
 5 num_food_exported </> 59 10 6 1 0 1 0 0
 5 num_net_food </> 59 11 6 1 0 1 0 0
 0 
