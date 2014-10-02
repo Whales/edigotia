@@ -34,7 +34,7 @@ Building_datum* Building_data[BUILD_MAX];
   Building_data[cur_id]->jobs = Citizen_amount((t), (n))
 
 #define _produces(t, n) \
-  Building_data[cur_id]->production.push_back( Resource_amount( (t), (n) ))
+  Building_data[cur_id]->add_production( (t), (n) )
 
 #define _buildable(t) \
   Building_data[cur_id]->buildable.push_back( (t) )
@@ -131,86 +131,4 @@ void init_building_data()
     _build_time(14);
     _military(50);
 
-}
-
-Building_datum::Building_datum()
-{
-  uid = -1;
-  plural = false;
-  upkeep = 0;
-  military_support = 0;
-  build_time = 0;
-}
-
-Building_datum::~Building_datum()
-{
-}
-
-std::string Building_datum::get_short_description()
-{
-  std::stringstream ret;
-
-  ret << "<c=white>" << name << "<c=/>" << std::endl;
-
-  ret << "<c=yellow>Build time: " << build_time << " days.<c=/>" << std::endl;
-  if (!build_costs.empty()) {
-    ret << "<c=yellow>Build cost: ";
-    for (int i = 0; i < build_costs.size(); i++) {
-      ret << resource_name( build_costs[i].type ) << " x " <<
-             build_costs[i].amount;
-      if (i + 1 < build_costs.size()) {
-        ret << ", ";
-      }
-    }
-    ret << "<c=/>" << std::endl;
-  }
-
-  if (!maintenance_cost.empty()) {
-    ret << "<c=ltred>Maintenance cost: ";
-    for (int i = 0; i < maintenance_cost.size(); i++) {
-      ret << resource_name( maintenance_cost[i].type ) << " x " <<
-             maintenance_cost[i].amount;
-      if (i + 1 < maintenance_cost.size()) {
-        ret << ", ";
-      }
-    }
-    ret << "<c=/>" << std::endl;
-  }
-
-  if (!housing.empty()) {
-    ret << "<c=brown>Houses ";
-    for (int i = 0; i < housing.size(); i++) {
-      std::string cit_name = citizen_type_name(housing[i].type, true);
-      ret << housing[i].amount << " " << cit_name << "<c=/>" << std::endl;
-    }
-  }
-
-  if (jobs.amount > 0) {
-    ret << "<c=cyan>Employs " << jobs.amount << " " <<
-           citizen_type_name(jobs.type) << "s.<c=/>" << std::endl;
-    if (!production.empty()) {
-      ret << "<c=ltgreen>Each worker produces: ";
-      for (int i = 0; i < production.size(); i++) {
-        ret << resource_name( production[i].type ) << " x " <<
-               production[i].amount;
-        if (i + 1 < production.size()) {
-          ret << ", ";
-        }
-      }
-      ret << "<c=/>" << std::endl;
-    }
-  }
-
-  if (!buildable.empty()) {
-    ret << "<c=ltblue>Constructs: ";
-    for (int i = 0; i < buildable.size(); i++) {
-      ret << resource_name( buildable[i] );
-      if (i + 1 < buildable.size()) {
-        ret << ", ";
-      }
-    }
-    ret << "<c=/>" << std::endl;
-  }
-
-  return ret.str();
 }

@@ -52,6 +52,9 @@ struct Building_datum
 
 // Things this building can construct
   std::vector<Resource> buildable;
+
+// Setup functions
+  bool add_production(Resource type, int amount);
 };
 
 struct Building
@@ -78,6 +81,7 @@ struct Building
   std::vector<Resource_amount> build_queue;
 
 // Basically for farms only
+  int field_output; // How much of each crop does a single field output?
   std::vector<Crop> crops_grown;
 // Basically for mines only
   std::vector<Mineral> minerals_mined;
