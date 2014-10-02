@@ -53,6 +53,7 @@ struct Area
   void make_queued(); // Set our construction_left, etc.
 
   Area_datum* get_area_datum();
+  std::string get_name();
   Building_type get_building_type();
   Building_datum* get_building_datum();
 

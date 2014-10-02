@@ -31,6 +31,11 @@ Area_datum* Area::get_area_datum()
   return Area_data[type];
 }
 
+std::string Area::get_name()
+{
+  return Area_data[type]->name;
+}
+
 Building_type Area::get_building_type()
 {
   Area_datum* datum = get_area_datum();
