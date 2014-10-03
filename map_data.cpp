@@ -92,8 +92,6 @@ void init_terrain_data()
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
-    _crop(CROP_AMANITAS);
-    _crop(CROP_DEATHCAP);
     _crop(CROP_COTTON);
     _crop(CROP_HAY);
     _buildable(AREA_HOVELS);
@@ -110,8 +108,6 @@ void init_terrain_data()
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
-    _crop(CROP_AMANITAS);
-    _crop(CROP_DEATHCAP);
     _crop(CROP_HEMP);
     _crop(CROP_HAY);
     _mineral(MINERAL_STONE,   10000);
