@@ -395,7 +395,8 @@ void City::do_turn()
  */
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].open) {
-      if (!expend_resources( areas[i].get_maintenance() )) {
+      std::map<Resource,int> maintenance = areas[i].get_maintenance();
+      if (!expend_resources( maintenance )) {
         areas[i].open = false;
       }
     }
