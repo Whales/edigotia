@@ -33,12 +33,39 @@ public:
 
   Map_type get_map_type(Point p);
   Map_type get_map_type(int x, int y);
-  Direction coast_from (int x, int y);
-  Direction coast_from (Point p);
+
+// true if the Map_datum has is_river == true
+  bool is_river(Point p);
+  bool is_river(int x, int y);
+// true if the Map_datum has is_water == true
+  bool is_water(Point p);
+  bool is_water(int x, int y);
+
+  Direction coast_from     (Point p);
+  Direction coast_from     (int x, int y);
+/* river_{start,end}_for() tells us what direction the river starts and ends for
+ * the given point - like coast_from(), this is for City_map generation.
+ * river_start_for() looks northwest, west/north, northeast, southwest for a
+ * river (in that order).
+ * river_end_for() looks southeast, south/east, southwest, northeast for a river
+ * or ocean (in that order).
+ * Obviously they should never return the same value.  I made river_start_for()
+ * check northwest before southwest because we DON'T want randomization between
+ * those two - we can only guarantee that these two functions won't return the
+ * same value if the order the overlapping tiles are checked in is NOT random.
+ * (Also because I think in real life rivers are more likely to run from the
+ * northeast than from the southwest.)
+ */
+  Direction_full river_start_for(Point p);
+  Direction_full river_start_for(int x, int y);
+  Direction_full river_end_for  (Point p);
+  Direction_full river_end_for  (int x, int y);
+
   std::vector<Crop>    crops_at   (Point p);
   std::vector<Mineral> minerals_at(Point p);
   std::vector<Crop>    crops_at   (int x, int y);
   std::vector<Mineral> minerals_at(int x, int y);
+
   bool has_crop   (Crop crop,       Point p);
   bool has_mineral(Mineral mineral, Point p);
   bool has_crop   (Crop crop,       int x, int y);
