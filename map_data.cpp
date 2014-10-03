@@ -192,6 +192,13 @@ void init_terrain_data()
     _mineral(MINERAL_GOLD,      100);
 // Nothing is buildable on river! (maybe docks later on)
 
+  _ter(TER_LAKE);
+    _name("Lake");
+    _symbol('#', c_cyan);
+    _farm(0);
+    _mineral(MINERAL_GOLD, 250);
+// Nothing is buildable on lake!
+
   _ter(TER_OCEAN);
     _name("Ocean");
     _symbol('#', c_ltblue);
