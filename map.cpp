@@ -264,6 +264,12 @@ void City_map::generate(Map_type type,
 // Now place some resources...
   for (int x = 0; x < CITY_MAP_SIZE; x++) {
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
+/* For safety's sake - sometimes if we examine a map, decide not to build a city
+ * there, then return to the same map, this becomes relevent because the old
+ * resources are still there from the first generation.
+ */
+      tiles[x][y].crops.clear();
+      tiles[x][y].minerals.clear();
       Terrain_datum* ter_dat = Terrain_data[ tiles[x][y].ter ];
       for (int i = 0; i < ter_dat->crops.size(); i++) {
 // Check if the world map assigned us this crop.
