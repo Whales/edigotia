@@ -8,8 +8,10 @@
 #include <vector>
 #include <string>
 
+// How big the city map is to a side.
 #define CITY_MAP_SIZE 9
 
+// Terrain_type is the basic tile for City_map and is linked to a Terrain_datum
 enum Terrain_type
 {
   TER_NULL = 0,
@@ -27,7 +29,8 @@ enum Terrain_type
   TER_FOREST,     // Great for hunting, abundant wood
 
   TER_RIVER,      // Good for fishing
-  TER_OCEAN,      // Good for fishing
+  TER_LAKE,       // Very good for fishing
+  TER_OCEAN,      // Great for fishing
 
   TER_DESERT,     // Bad for most everything, but some unique crops
   TER_SWAMP,      // Bad for most everything, but some unique crops
@@ -49,9 +52,12 @@ struct Terrain_datum
   std::vector<Area_type> buildable_areas;
 };
 
+// Defined in map_data.cpp
 extern Terrain_datum* Terrain_data[TER_MAX];
 void init_terrain_data();
 
+// Map_type defines what your City_map looks like.  It's also used as the basic
+// tile for World_map.
 enum Map_type
 {
   MAP_NULL = 0,
@@ -82,12 +88,21 @@ enum Map_type
 
 struct Map_type_datum
 {
+  Map_type_datum()
+  {
+    name = "NULL"; is_water = false; is_river = false;
+    symbol = glyph('x', c_red, c_ltgray);
+  }
+
   std::string name;
+  bool is_water;
+  bool is_river;
   glyph symbol;
+
 };
 
+// Defined in map_type_data.cpp
 extern Map_type_datum* Map_type_data[MAP_MAX];
-
 void init_map_type_data();
 
 struct Map_tile
@@ -95,15 +110,15 @@ struct Map_tile
   Map_tile();
   ~Map_tile();
 
-  Terrain_type                ter;
-  std::vector<Crop>           crops;
-  std::vector<Mineral_amount> minerals;
-
   std::string get_terrain_name();
   std::string get_info();
   std::string get_crop_info();
 
   int get_farmability();
+
+  Terrain_type                ter;
+  std::vector<Crop>           crops;
+  std::vector<Mineral_amount> minerals;
 };
 
 class City_map
@@ -119,7 +134,9 @@ public:
  */
   void generate(Map_type type,
                 std::vector<Crop> crops, std::vector<Mineral> minerals,
-                Direction coast = DIR_NULL);
+                Direction coast = DIR_NULL,
+                Direction_full river_start = DIRFULL_NULL,
+                Direction_full river_end = DIRFULL_NULL);
 
   Map_tile* get_tile(Point p);
   Map_tile* get_tile(int x, int y);
