@@ -39,6 +39,7 @@ enum Crop_type
 
 Crop_type lookup_crop_type(std::string name);
 std::string crop_type_name(Crop_type type);
+nc_color crop_type_color(Crop_type type);
 
 enum Crop
 {
@@ -107,8 +108,9 @@ struct Mineral_datum
 {
   std::string name;
   int percentage;
+  nc_color color;
 
-  Mineral_datum() { percentage = 0; }
+  Mineral_datum() { percentage = 0; color = c_ltgray; }
 };
 
 Crop search_for_crop(std::string name);

@@ -96,6 +96,22 @@ std::string crop_type_name(Crop_type type)
   return "BUG - Escaped crop_type_name() switch";
 }
 
+nc_color crop_type_color(Crop_type type)
+{
+  switch (type) {
+    case CROPTYPE_NULL:     return c_ltgray;
+    case CROPTYPE_FOOD:     return c_ltgreen;
+    case CROPTYPE_SPICE:    return c_yellow;
+    case CROPTYPE_DRUG:     return c_magenta;
+    case CROPTYPE_POISON:   return c_ltred;
+    case CROPTYPE_MATERIAL: return c_ltblue;
+    case CROPTYPE_OTHER:    return c_brown;
+    case CROPTYPE_MAX:      return c_ltgray;
+    default:                return c_ltgray;
+  }
+  return c_ltgray;
+}
+
 Crop search_for_crop(std::string name)
 {
   name = no_caps( trim(name) );
