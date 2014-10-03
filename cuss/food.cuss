@@ -6,16 +6,16 @@ food </> 80 24 18 1 BG </> 0 0 80 24 0 0 0 629 0 0 4194412 9 0 0 1 4194424 9 0 0
 3 list_crop_type </> 20 12 9 11 0 1 27749 0 
 3 list_crop_food </> 29 12 6 11 0 1 164566128 0 
 3 list_crop_grown </> 35 12 6 11 0 1 164484568 0 
-5 num_farms </> 58 1 6 1 0 1 0 0
-5 num_fields_worked </> 58 2 6 1 0 1 0 0
-5 num_fields_empty </> 58 3 6 1 0 1 0 0
-5 num_free_peasants </> 58 4 6 1 0 1 0 0
-5 num_food_stored </> 58 6 6 1 0 1 0 0
-5 num_food_grown </> 58 7 6 1 0 1 0 0
-5 num_food_imported </> 58 8 6 1 0 1 0 0
-5 num_food_consumed </> 58 9 6 1 0 1 -1 0
-5 num_food_exported </> 58 10 6 1 0 1 0 0
-5 num_net_food </> 58 11 6 1 0 1 0 0
+5 num_farms </> 58 1 7 1 0 1 0 0
+5 num_fields_worked </> 58 2 7 1 0 1 0 0
+5 num_fields_empty </> 58 3 7 1 0 1 0 0
+5 num_free_peasants </> 58 4 7 1 0 1 0 0
+5 num_food_stored </> 58 6 7 1 0 1 0 0
+5 num_food_grown </> 58 7 7 1 0 1 0 0
+5 num_food_imported </> 58 8 7 1 0 1 0 0
+5 num_food_consumed </> 58 9 7 1 0 1 -1 0
+5 num_food_exported </> 58 10 7 1 0 1 0 0
+5 num_net_food </> 58 11 7 1 0 1 0 0
 8 9 1  </> 0 0
 10 1  </> 0 0
 50 5 <S> </> 1 0
