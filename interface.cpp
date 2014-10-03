@@ -150,6 +150,17 @@ void Interface::handle_key(long ch)
 //debugmsg("Mapviewing; %s", p.str().c_str());
         if (p.x != -2 && (p.x != 0 || p.y != 0)) {
           sel += p;
+          if (sel.x < 0) {
+            sel.x = 0;
+          } else if (sel.x >= CITY_MAP_SIZE) {
+            sel.x = CITY_MAP_SIZE - 1;
+          }
+          if (sel.y < 0) {
+            sel.y = 0;
+          } else if (sel.y >= CITY_MAP_SIZE) {
+            sel.y = CITY_MAP_SIZE - 1;
+          }
+
         } else if (ch == '\n') {
           if (current_area != AREA_NULL) {
             enqueue_area();
