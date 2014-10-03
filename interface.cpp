@@ -510,6 +510,12 @@ void Interface::minister_food()
     }
   }
 
+  i_food.set_data("list_farms",        farm_terrain);
+  i_food.set_data("list_farm_output",  farm_output);
+  i_food.set_data("list_empty_fields", farm_fields);
+
+  i_food.select("list_farms");
+
   bool done = false;
   while (!done) {
 // These values and fields may change before we exit this interface.
