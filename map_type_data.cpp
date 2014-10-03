@@ -44,9 +44,17 @@ void init_map_type_data()
     _name("foothills");
     _symbol('n', c_brown);
 
+  _ter(MAP_ICY_FOOTHILLS);
+    _name("icy foothills");
+    _symbol('n', c_ltcyan);
+
   _ter(MAP_MOUNTAINOUS);
     _name("mountain range");
     _symbol('M', c_ltgray);
+
+  _ter(MAP_ICY_MOUNTAIN);
+    _name("icy mountain");
+    _symbol('M', c_white);
 
   _ter(MAP_BASIN);
     _name("river basin");
@@ -55,6 +63,10 @@ void init_map_type_data()
   _ter(MAP_CANYON);
     _name("canyon");
     _symbol('S', c_ltblue);
+
+  _ter(MAP_GLACIER);
+    _name("glacier");
+    _symbol('S', c_ltcyan);
 
   _ter(MAP_COASTAL);
     _name("coastal");
