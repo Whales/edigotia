@@ -8,6 +8,25 @@
 #include <vector>
 #include <map>
 
+Citizens::Citizens()
+{
+  count = 0;
+  employed = 0;
+  wealth = 0;
+}
+
+Citizens::~Citizens()
+{
+}
+
+int Citizens::get_unemployed()
+{
+  if (employed >= count) {
+    return 0;
+  }
+  return count - employed;
+}
+
 City::City()
 {
   population[CIT_PEASANT].count  = 100;
@@ -499,6 +518,50 @@ bool City::expend_resources(std::map<Resource,int> res_used)
   return true;
 }
 
+bool City::employ_citizens(Citizen_type type, int amount, Building* job_site)
+{
+// Several checks to ensure we can make this assignment
+  if (!job_site) {
+    return false;
+  }
+  if (type == CIT_NULL) {
+    return false; // Gotta be a real class.
+  }
+  if (population[type].get_unemployed() < amount) {
+    return false;
+  }
+  if (job_site->get_available_jobs(type) < amount) {
+    return false;
+  }
+
+// Okay!  We can do it!
+  population[type].employed += amount;
+  job_site->workers += amount;
+  return true;
+}
+
+bool City::fire_citizens(Citizen_type type, int amount, Building* job_site)
+{
+// Several checks to ensure we can make this assignment
+  if (!job_site) {
+    return false;
+  }
+  if (type == CIT_NULL) {
+    return false; // Gotta be a real class.
+  }
+  if (population[type].count < amount) {
+    return false;
+  }
+  if (job_site->get_filled_jobs(type) < amount) {
+    return false;
+  }
+
+// Okay!  We can do it!
+  population[type].employed -= amount;
+  job_site->workers -= amount;
+  return true;
+}
+
 bool City::inside_radius(int x, int y)
 {
   return inside_radius( Point(x, y) );
@@ -542,6 +605,19 @@ int City::get_total_population(Citizen_type type)
     return ret;
   }
   return population[type].count;
+}
+
+// type defaults to CIT_NULL
+int City::get_unemployed_citizens(Citizen_type type)
+{
+  if (type == CIT_NULL) {
+    int ret = 0;
+    for (int i = 0; i < CIT_MAX; i++) {
+      ret += population[i].get_unemployed();
+    }
+    return ret;
+  }
+  return population[type].get_unemployed();
 }
 
 // type defaults to CIT_NULL

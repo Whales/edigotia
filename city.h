@@ -12,10 +12,14 @@
 
 struct Citizens
 {
+  Citizens();
+  ~Citizens();
+
   int count;
+  int employed;
   int wealth;
 
-  Citizens() { count = 0; wealth = 0; }
+  int get_unemployed();
 };
 
 enum Area_queue_status
@@ -53,6 +57,9 @@ public:
   bool expend_resources(std::vector<Resource_amount> resources);
   bool expend_resources(std::map<Resource,int> resources);
 
+  bool employ_citizens(Citizen_type type, int amount, Building* job_site);
+  bool fire_citizens  (Citizen_type type, int amount, Building* job_site);
+
 // Data functions
 
 // Map-related functions
@@ -62,8 +69,11 @@ public:
   Area* area_at(int x, int y);
   Area* area_at(Point p);
 
-// Population/housing-related functions
+// Citizens/population/housing-related functions
   int get_total_population(Citizen_type type = CIT_NULL);
+// Returns the number of citizens in the given class currently without a job.
+  int get_unemployed_citizens(Citizen_type type = CIT_NULL);
+
   int get_total_housing(Citizen_type type = CIT_NULL);
 
   int get_military_count();
