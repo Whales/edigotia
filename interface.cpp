@@ -521,8 +521,9 @@ void Interface::minister_food()
  * list back to 0, making it impossible to select any other crop.
  */
   int farm_index = 0;
+  Area* cur_farm = NULL;
   if (!farms.empty()) {
-    Area* cur_farm = farms[ farm_index ];
+    cur_farm = farms[ farm_index ];
     list_farm_crops(cur_farm, i_food);
   }
 
@@ -563,24 +564,82 @@ void Interface::minister_food()
       i_food.set_data("num_net_food", c_ltgreen);
     }
 
+    int free_peasants = city->get_unemployed_citizens(CIT_PEASANT);
+    i_food.set_data("num_free_peasants", free_peasants);
+    if (fields_empty == 0) {  // We don't care since all fields are used
+      i_food.set_data("num_free_peasants", c_dkgray);
+    } else {  // We care since we could utilize a field
+      if (free_peasants == 0) {
+        i_food.set_data("num_free_peasants", c_red);
+      } else {
+        i_food.set_data("num_free_peasants", c_ltgreen);
+      }
+    }
+
 // Check if we selected a new farm.
     int new_farm_index = i_food.get_int("list_farms");
     if (new_farm_index != farm_index && new_farm_index >= 0 &&
         new_farm_index < farms.size()) {
       farm_index = new_farm_index;
-      Area* cur_farm = farms[farm_index];
+      cur_farm = farms[farm_index];
       list_farm_crops(cur_farm, i_food);
     }
 
     i_food.draw(&w_food);
     w_food.refresh();
 
+    int crop_change = 0;
     long ch = input();
     switch (ch) {
       case KEY_ESC:
       case 'q':
       case 'Q':
         done = true;
+        break;
+      case KEY_LEFT:
+      case 'h':
+      case 'H':
+      case '4':
+      case '-':
+        crop_change = -2;
+// Intentionally fall through...
+      case KEY_RIGHT:
+      case 'l':
+      case 'L':
+      case '+': {
+        bool did_it = false;  // Track if changes (& interface will need update)
+        int crop_index = i_food.get_int("list_crop_name");
+        crop_change++;  // If it was -2, it's now -1; otherwise, it's now +1
+// These keys are only meaningful if list_crop_name is selected.
+        if (i_food.selected()->name == "list_crop_name") {
+          Building* farm_build = &(cur_farm->building);
+          if (crop_index >= 0 && crop_index < farm_build->crops_grown.size()) {
+            if (crop_change < 0) {
+              crop_change = 0 - crop_change;  // Absolute value that bitch
+              if (farm_build->crops_grown[crop_index].amount >= crop_change &&
+                city->fire_citizens(CIT_PEASANT, crop_change, farm_build)) {
+                farm_build->crops_grown[crop_index].amount -= crop_change;
+                did_it = true;
+              }
+            } else if (crop_change > 0 &&
+                       farm_build->get_empty_fields() >= crop_change &&
+                       city->employ_citizens(CIT_PEASANT, crop_change,
+                                             farm_build)) {
+              farm_build->crops_grown[crop_index].amount += crop_change;
+              did_it = true;
+            }
+          }
+        }
+        if (did_it) {
+          list_farm_crops(cur_farm, i_food);
+// Reset our position in the list to what it was previously!
+          i_food.set_data("list_crop_name", crop_index);
+        }
+      } break;
+          
+          
+      default:
+        i_food.handle_action(ch);
         break;
     }
   }
