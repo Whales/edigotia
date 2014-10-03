@@ -138,6 +138,7 @@ void Interface::handle_key(long ch)
     } else {
       do_menu_action(cur_menu, menu_index);
       set_menu( MENU_NULL );
+      set_mode( IMODE_VIEW_MAP ); // Get out of menu mode
     }
 
   } else {  // Not a menu; thus, the action taken depends on our mode.
