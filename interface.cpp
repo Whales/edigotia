@@ -514,9 +514,22 @@ void Interface::minister_food()
   i_food.set_data("list_farm_output",  farm_output);
   i_food.set_data("list_empty_fields", farm_fields);
 
+/* We also need to list crops grown at the currently-selected farm.
+ * We always start by selecting farms[0]; later on, if we select a new farm,
+ * we'll update the list.  We don't want to update the list on every cycle of
+ * the loop because that'll clear list_crop_name and move the cursor in that
+ * list back to 0, making it impossible to select any other crop.
+ */
+  int farm_index = 0;
+  if (!farms.empty()) {
+    Area* cur_farm = farms[ farm_index ];
+    list_farm_crops(cur_farm, i_food);
+  }
+
   i_food.select("list_farms");
 
   bool done = false;
+
   while (!done) {
 // These values and fields may change before we exit this interface.
 // So we set them inside the loop.
@@ -525,20 +538,6 @@ void Interface::minister_food()
     int food_grown    = city->get_food_production();
 
     int net_food = food_grown + food_imported - food_exported - food_consumed;
-
-    std::vector<Crop_amount> crops_grown = city->get_crops_grown();
-    std::vector<std::string> crop_names, crop_types, crop_foods, crop_amounts;
-    for (int i = 0; i < crops_grown.size(); i++) {
-      Crop_datum* crop_dat = Crop_data[crops_grown[i].type];
-      crop_names.push_back  ( crop_dat->name );
-      crop_types.push_back  ( crop_type_name( crop_dat->type ) );
-      crop_foods.push_back  ( itos( crop_dat->food ) );
-      crop_amounts.push_back( itos( crops_grown[i].amount ) );
-    }
-    i_food.set_data("list_crop_name",    crop_names);
-    i_food.set_data("list_crop_type",    crop_types);
-    i_food.set_data("list_crop_food",    crop_foods);
-    i_food.set_data("list_crop_grown",   crop_amounts);
 
     i_food.set_data("num_fields_worked", fields_worked);
     if (fields_worked == 0 && num_farms > 0) {
@@ -564,6 +563,15 @@ void Interface::minister_food()
       i_food.set_data("num_net_food", c_ltgreen);
     }
 
+// Check if we selected a new farm.
+    int new_farm_index = i_food.get_int("list_farms");
+    if (new_farm_index != farm_index && new_farm_index >= 0 &&
+        new_farm_index < farms.size()) {
+      farm_index = new_farm_index;
+      Area* cur_farm = farms[farm_index];
+      list_farm_crops(cur_farm, i_food);
+    }
+
     i_food.draw(&w_food);
     w_food.refresh();
 
@@ -577,6 +585,25 @@ void Interface::minister_food()
     }
   }
 
+}
+
+void Interface::list_farm_crops(Area* cur_farm, cuss::interface& i_food)
+{
+// List crops grown at cur_farm
+  std::vector<std::string> crop_names, crop_types, crop_food, crop_grown;
+  Building* farm_build = &(cur_farm->building);
+  for (int i = 0; i < farm_build->crops_grown.size(); i++) {
+    Crop_amount cur_crop = farm_build->crops_grown[i];
+    Crop_datum* crop_dat = Crop_data[cur_crop.type];
+    crop_names.push_back(crop_dat->name);
+    crop_types.push_back( crop_type_name( crop_dat->type ) );
+    crop_food.push_back ( itos( crop_dat->food ) );
+    crop_grown.push_back( itos( cur_crop.amount ) );
+  }
+  i_food.set_data("list_crop_name",  crop_names);
+  i_food.set_data("list_crop_type",  crop_types);
+  i_food.set_data("list_crop_food",  crop_food );
+  i_food.set_data("list_crop_grown", crop_grown);
 }
 
 void Interface::minister_morale()
