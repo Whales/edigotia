@@ -543,11 +543,19 @@ void Interface::minister_food()
     i_food.set_data("num_fields_worked", fields_worked);
     if (fields_worked == 0 && num_farms > 0) {
       i_food.set_data("num_fields_worked", c_red);
+    } else if (num_farms == 0) {
+      i_food.set_data("num_fields_worked", c_dkgray);
+    } else {
+      i_food.set_data("num_fields_worked", c_ltgray);
     }
 
     i_food.set_data("num_fields_empty", fields_empty);
     if (fields_empty > 0 && num_farms > 0) {
       i_food.set_data("num_fields_empty", c_yellow);
+    } else if (num_farms == 0) {
+      i_food.set_data("num_fields_empty", c_dkgray);
+    } else {
+      i_food.set_data("num_fields_empty", c_ltgray);
     }
     
     i_food.set_data("num_food_grown", food_grown);
@@ -562,6 +570,8 @@ void Interface::minister_food()
       i_food.set_data("num_net_food", c_ltred);
     } else if (net_food > 0) {
       i_food.set_data("num_net_food", c_ltgreen);
+    } else {
+      i_food.set_data("num_net_food", c_ltblue);
     }
 
     int free_peasants = city->get_unemployed_citizens(CIT_PEASANT);
@@ -654,9 +664,11 @@ void Interface::list_farm_crops(Area* cur_farm, cuss::interface& i_food)
   for (int i = 0; i < farm_build->crops_grown.size(); i++) {
     Crop_amount cur_crop = farm_build->crops_grown[i];
     Crop_datum* crop_dat = Crop_data[cur_crop.type];
+    int crop_food_amount = crop_dat->food * farm_build->field_output;
+
     crop_names.push_back(crop_dat->name);
     crop_types.push_back( crop_type_name( crop_dat->type ) );
-    crop_food.push_back ( itos( crop_dat->food ) );
+    crop_food.push_back ( itos( crop_food_amount ) );
     crop_grown.push_back( itos( cur_crop.amount ) );
   }
   i_food.set_data("list_crop_name",  crop_names);
