@@ -742,21 +742,25 @@ int City::get_food_consumption(Citizen_type type)
     int ret = 0;
     for (int i = 0; i < CIT_MAX; i++) {
       int a = population[i].count * citizen_food_consumption( Citizen_type(i) );
-      a /= 100;
       ret += a;
     }
     return ret;
   }
-  return population[type].count * citizen_food_consumption( type );
+  return (population[type].count * citizen_food_consumption( type ));
 }
 
 // TODO: This function.
 int City::get_food_production()
 {
-  return 0;
+  int ret = 0;
+  std::vector<Crop_amount> crops_grown = get_crops_grown();
+  for (int i = 0; i < crops_grown.size(); i++) {
+    Crop_amount crop = crops_grown[i];
+    ret += crop.amount * Crop_data[crop.type]->food;
+  }
+  return ret;
 }
 
-// TODO: This function.
 std::vector<Crop_amount> City::get_crops_grown()
 {
   std::vector<Crop_amount> ret;
@@ -776,22 +780,25 @@ std::vector<Crop_amount> City::get_crops_grown()
         for (int n = 0; n < build->crops_grown.size(); n++) {
 // Check if we already have that crop in ret
           if (build->crops_grown[n].amount > 0) {
-            Crop crop = build->crops_grown[n].type;
+            Crop_amount crop = build->crops_grown[n];
+            crop.amount *= build->field_output;
             bool found_crop = false;
             for (int m = 0; !found_crop && m < ret.size(); m++) {
-              if (ret[m].type == crop) {
+              if (ret[m].type == crop.type) {
                 found_crop = true;
-                ret[m].amount += build->crops_grown[n].amount;
+                ret[m].amount += crop.amount;
               }
             }
             if (!found_crop) { // Didn't combine it, so add it to the list
-              ret.push_back( build->crops_grown[n] );
+              ret.push_back( crop );
             }
           }
         }
       } // if (found_farming)
     } // if (num_workers > 0)
   } // for (int i = 0; i < areas.size(); i++)
+
+// TODO: Buildings (not from areas) that provide RES_FARMING?
 
   return ret;
 }
