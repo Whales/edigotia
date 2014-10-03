@@ -14,7 +14,10 @@ enum Terrain_type
 {
   TER_NULL = 0,
 
-  TER_TUNDRA,     // Not good for much - some oil
+  TER_TUNDRA,     // Not good for much - some coal
+  TER_ICY_HILL,   // Frozen hill, good for mining & that's all
+  TER_ICY_MOUNTAIN, // Bitterly cold mountain, near useless!
+  TER_GLACIER,    // Frozen river, useless
 
   TER_FIELD,      // Good for farming
   TER_ROCKY,      // OK for farming, good for quarry, OK for mining
@@ -26,8 +29,10 @@ enum Terrain_type
   TER_RIVER,      // Good for fishing
   TER_OCEAN,      // Good for fishing
 
-  TER_DESERT,     // Bad for most everything
-  TER_SWAMP,      // Bad for most everything
+  TER_DESERT,     // Bad for most everything, but some unique crops
+  TER_SWAMP,      // Bad for most everything, but some unique crops
+
+  TER_ICE,        // From icecap - nearly useless
 
   TER_MAX
 };
@@ -60,10 +65,13 @@ enum Map_type
   MAP_SWAMP,        // Mostly swamp
 
   MAP_FOOTHILLS,    // Mostly hills and mountains
+  MAP_ICY_FOOTHILLS,// Frozen hills and mountains
   MAP_MOUNTAINOUS,  // Almost all mountains
+  MAP_ICY_MOUNTAIN, // The most forbidding of all terrains!
 
   MAP_BASIN,        // River, then fields and swamp
   MAP_CANYON,       // River, then mountains and hills
+  MAP_GLACIER,      // Frozen river
 
   MAP_COASTAL,      // Ocean along one side
   MAP_OCEAN,        // Almost all ocean, occasional island
