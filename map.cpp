@@ -62,7 +62,8 @@ City_map::~City_map()
 
 void City_map::generate(Map_type type,
                         std::vector<Crop> crops, std::vector<Mineral> minerals,
-                        Direction coast)
+                        Direction coast,
+                        Direction_full river_start, Direction_full river_end)
 {
   int chance[TER_MAX];  // Relative chance for each terrain type to appear.
   int total_chance = 0;
@@ -278,7 +279,8 @@ void City_map::generate(Map_type type,
       tiles[x][y].ter = TER_OCEAN;
     }
 
-  } else if (type == MAP_BASIN || type == MAP_CANYON || type == MAP_GLACIER) {
+  }
+  if (Map_type_data[type]->is_river) {
 // TODO: Do we need to specify which direction the river travels?
 //       For now, it's just northwest => southeast
     Terrain_type river_type = TER_RIVER;
@@ -286,21 +288,135 @@ void City_map::generate(Map_type type,
       river_type = TER_GLACIER;
     }
     int x = 0, y = 0;
-    while (x < CITY_MAP_SIZE && y < CITY_MAP_SIZE) {
-      tiles[x][y].ter = river_type;
-      if (one_in(2)) {
-        x++;
-      } else {
-        y++;
-      }
+    int dx = 1, dy = 1;
+    int mid = CITY_MAP_SIZE / 2, end = CITY_MAP_SIZE - 1;
+    bool lake = false;
+    switch (river_start) {
+      case DIRFULL_NORTHWEST: x = 0;    y = 0;    break;
+      case DIRFULL_WEST:      x = 0;    y = mid;  break;
+      case DIRFULL_NORTH:     x = mid;  y = 0;    break;
+      case DIRFULL_SOUTHWEST: x = 0;    y = end;  break;
+      case DIRFULL_NORTHEAST: x = end;  y = 0;    break;
+
+/* Special case!  There's a river coming in but nowhere for it to go... that
+ * makes this a LAKE!  COOOOOOL.  So stick a blob of lake somewhere and send our
+ * river towards it.
+ */
+      case DIRFULL_NULL:
+        lake = true;
+// We need to set x/y based on river_end, and treat that as the start.
+        switch (river_end) {
+          case DIRFULL_SOUTHEAST: x = end;  y = end;  break;
+          case DIRFULL_SOUTH:     x = mid;  y = end;  break;
+          case DIRFULL_EAST:      x = end;  y = mid;  break;
+          case DIRFULL_SOUTHWEST: x =   0;  y = end;  break;
+          case DIRFULL_NORTHEAST: x = end;  y =   0;  break;
+
+// Not a lake after all! :(  Should never happen.
+          case DIRFULL_NULL:
+            lake = false;
+            break;
+        }
+        break;
     }
+
+// Figure out what direction to move in based on where the river should end.
+    switch (river_end) {
+      case DIRFULL_SOUTHEAST: dx =  1;  dy =  1;  break;
+      case DIRFULL_SOUTH:     dx =  0;  dy =  1;  break;
+      case DIRFULL_EAST:      dx =  1;  dy =  0;  break;
+      case DIRFULL_SOUTHWEST: dx = -1;  dy =  1;  break;
+      case DIRFULL_NORTHEAST: dx =  1;  dy = -1;  break;
+
+/* Special case!  There's a river coming in but nowhere for it to go... that
+ * makes this a LAKE!  COOOOOOL.  So stick a blob of lake somewhere and send our
+ * river towards it.
+ */
+      case DIRFULL_NULL:
+        lake = true;
+        break;
+    }
+
+// If x or y were set to the middle of the side, we can actually randomize their
+// starting position a little bit.
+    if (x == mid) {
+      x += rng(0 - CITY_MAP_SIZE / 3, CITY_MAP_SIZE / 3);
+    }
+    if (y == mid) {
+      y += rng(0 - CITY_MAP_SIZE / 3, CITY_MAP_SIZE / 3);
+    }
+
+    if (lake) {
+      int lake_x = rng(1, CITY_MAP_SIZE - 3),
+          lake_y = rng(1, CITY_MAP_SIZE - 3);
+// Store the center tile in a buffer just in case the lake overwrites it
+      Terrain_type buffer = tiles[CITY_MAP_SIZE / 2][CITY_MAP_SIZE / 2].ter;
+      tiles[lake_x    ][lake_y    ].ter = TER_LAKE;
+      tiles[lake_x + 1][lake_y    ].ter = TER_LAKE;
+      tiles[lake_x    ][lake_y + 1].ter = TER_LAKE;
+      tiles[lake_x + 1][lake_y + 1].ter = TER_LAKE;
+      tiles[CITY_MAP_SIZE / 2][CITY_MAP_SIZE / 2].ter = buffer;
+      while (x < lake_x || x > lake_x + 1 || y < lake_y || y > lake_y + 1) {
+        if (tiles[x][y].ter != TER_OCEAN) {
+          tiles[x][y].ter = river_type;
+        }
+        if (one_in(2)) {
+          if (x < lake_x) {
+            x++;
+          } else if (x > lake_x + 1) {
+            x--;
+          }
+        } else {
+          if (y < lake_y) {
+            y++;
+          } else if (y > lake_y + 1) {
+            y--;
+          }
+        }
+      }
+
+    } else { // Not a lake BOOOOO GIMME A LAKE
+
+      while (x >= 0 && y >= 0 && x < CITY_MAP_SIZE && y < CITY_MAP_SIZE) {
+// Don't replace ocean with river!
+        if (tiles[x][y].ter != TER_OCEAN) {
+          tiles[x][y].ter = river_type;
+        }
+        if (one_in(2)) {
+          if (dx == 0) {
+            if (x == 0) {
+              x++;
+            } else if (x == CITY_MAP_SIZE - 1) {
+              x--;
+            } else {  // Random move
+              x += (one_in(2) ? 1 : -1);
+            }
+          } else {
+            x += dx;
+          }
+        } else {
+          if (dy == 0) {
+            if (y == 0) {
+              y++;
+            } else if (y == CITY_MAP_SIZE - 1) {
+              y--;
+            } else {  // Random move
+              y += (one_in(2) ? 1 : -1);
+            }
+          } else {
+            y += dy;
+          }
+        } // End of "move x or y?" block
+      } // while (x >= 0 && y >= 0 && x < CITY_MAP_SIZE && y < CITY_MAP_SIZE)
+    } // (!lake)
+
   } else if (type == MAP_OCEAN) {
 // Obviously, not every ocean tile is going to have a prominent center isle;
 // however since this is specifically for cities on ocean tiles, let's always
 // give an island.
 // TODO: Except if we have mermen, don't do this?
-    for (int x = CITY_MAP_SIZE / 2 - 2; x <= CITY_MAP_SIZE / 2 +2; x++) {
-      for (int y = CITY_MAP_SIZE / 2 - 2; y <= CITY_MAP_SIZE / 2 +2; y++) {
+    for (int x = CITY_MAP_SIZE / 2 - 2; x <= CITY_MAP_SIZE / 2 + 2; x++) {
+      for (int y = CITY_MAP_SIZE / 2 - 2; y <= CITY_MAP_SIZE / 2 + 2; y++) {
         if (one_in(4)) {
           tiles[x][y].ter = TER_DESERT;
         } else if (one_in(5)) {
