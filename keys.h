@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 
-Point input_direction(long ch); // Returns "one step in direction bound to ch"
+// Returns "one step in direction bound to ch"
+Point input_direction(long ch, bool accept_capitals = false);
 
 #endif
