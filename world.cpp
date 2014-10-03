@@ -823,6 +823,13 @@ Point World_map::draw(Window* w_map)
           hilite_crops    = false;
           hilite_minerals = false;
           break;
+
+        case '?':
+          debugmsg("%s\nRiver Start: %s\nRiver End:   %s",
+                   (is_river(center) ? "River" : "Not River"),
+                   Direction_name(river_start_for(center)).c_str(),
+                   Direction_name(river_end_for  (center)).c_str());
+          break;
         
         case KEY_ESC:
         case '\n':
@@ -893,6 +900,28 @@ Map_type World_map::get_map_type(int x, int y)
   }
   return tiles[x][y];
 }
+
+bool World_map::is_river(Point p)
+{
+  return is_river(p.x, p.y);
+}
+
+bool World_map::is_river(int x, int y)
+{
+  Map_type type = get_map_type(x, y);
+  return Map_type_data[type]->is_river;
+}
+  
+bool World_map::is_water(Point p)
+{
+  return is_water(p.x, p.y);
+}
+
+bool World_map::is_water(int x, int y)
+{
+  Map_type type = get_map_type(x, y);
+  return Map_type_data[type]->is_water;
+}
   
 Direction World_map::coast_from(Point p)
 {
@@ -905,16 +934,16 @@ Direction World_map::coast_from(int x, int y)
     return DIR_NULL;
   }
   std::vector<Direction> candidates;
-  if (x > 0 && tiles[x - 1][y] == MAP_OCEAN) {
+  if (get_map_type(x - 1, y) == MAP_OCEAN) {
     candidates.push_back(DIR_WEST);
   }
-  if (x < WORLD_MAP_SIZE - 1 && tiles[x + 1][y] == MAP_OCEAN) {
+  if (get_map_type(x + 1, y) == MAP_OCEAN) {
     candidates.push_back(DIR_EAST);
   }
-  if (y > 0 && tiles[x][y - 1] == MAP_OCEAN) {
+  if (get_map_type(x, y - 1) == MAP_OCEAN) {
     candidates.push_back(DIR_NORTH);
   }
-  if (y < WORLD_MAP_SIZE - 1 && tiles[x][y + 1] == MAP_OCEAN) {
+  if (get_map_type(x, y + 1) == MAP_OCEAN) {
     candidates.push_back(DIR_SOUTH);
   }
 
@@ -922,6 +951,76 @@ Direction World_map::coast_from(int x, int y)
     return DIR_NULL;
   }
   return candidates[ rng(0, candidates.size() - 1) ];
+}
+
+Direction_full World_map::river_start_for(Point p)
+{
+  return river_start_for(p.x, p.y);
+}
+
+Direction_full World_map::river_start_for(int x, int y)
+{
+// Sanity check!
+  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+    return DIRFULL_NULL;
+  }
+// Check in this order: northwest, west/north (random), southwest, northeast
+  if (is_water(x - 1, y - 1)) {
+    return DIRFULL_NORTHWEST;
+  }
+  std::vector<Direction_full> options;
+  if (is_water(x - 1, y)) {
+    options.push_back(DIRFULL_WEST);
+  }
+  if (is_water(x, y - 1)) {
+    options.push_back(DIRFULL_NORTH);
+  }
+  if (!options.empty()) {
+    return options[ rng(0, options.size() - 1) ];
+  }
+  if (is_water(x + 1, y - 1)) {
+    return DIRFULL_NORTHEAST;
+  }
+  if (is_water(x - 1, y + 1)) {
+    return DIRFULL_SOUTHWEST;
+  }
+  return DIRFULL_NULL;
+}
+
+Direction_full World_map::river_end_for(Point p)
+{
+  return river_end_for(p.x, p.y);
+}
+
+Direction_full World_map::river_end_for(int x, int y)
+{
+// Sanity check!
+  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+    return DIRFULL_NULL;
+  }
+// Check in this order: southeast, south/east (random), southwest, northeast
+// Check river_start_for() to ensure we don't return the same value!
+  if (is_water(x + 1, y + 1)) {
+    return DIRFULL_SOUTHEAST;
+  }
+  std::vector<Direction_full> options;
+  if (is_water(x, y + 1)) {
+    options.push_back(DIRFULL_SOUTH);
+  }
+  if (is_water(x + 1, y)) {
+    options.push_back(DIRFULL_EAST);
+  }
+  if (!options.empty()) {
+    return options[ rng(0, options.size() - 1) ];
+  }
+  Direction_full river_start = river_start_for(x, y);
+  if (is_water(x - 1, y + 1) && river_start != DIRFULL_SOUTHWEST) {
+    return DIRFULL_SOUTHWEST;
+  }
+  if (is_water(x + 1, y - 1) && river_start != DIRFULL_NORTHEAST) {
+    return DIRFULL_NORTHEAST;
+  }
+  return DIRFULL_NULL;
 }
 
 std::vector<Crop> World_map::crops_at(Point p)
