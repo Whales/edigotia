@@ -77,6 +77,7 @@ void City_map::generate(Map_type type,
       chance[TER_MOUNTAIN]  =  3;
       chance[TER_FOREST]    =  5;
       break;
+
     case MAP_PLAINS:
       chance[TER_FIELD]     = 75;
       chance[TER_ROCKY]     = 14;
@@ -85,6 +86,7 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    =  9;
       chance[TER_SWAMP]     =  1;
       break;
+
     case MAP_WASTELAND:
       chance[TER_FIELD]     =  8;
       chance[TER_ROCKY]     = 60;
@@ -93,6 +95,7 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    =  2;
       chance[TER_DESERT]    =  6;
       break;
+
     case MAP_FOREST:
       chance[TER_FIELD]     =  5;
       chance[TER_ROCKY]     =  4;
@@ -101,6 +104,7 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    = 45;
       chance[TER_SWAMP]     =  6;
       break;
+
     case MAP_FOOTHILLS:
       chance[TER_FIELD]     =  8;
       chance[TER_ROCKY]     = 20;
@@ -109,6 +113,31 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    =  4;
       chance[TER_DESERT]    =  1;
       break;
+
+    case MAP_ICY_FOOTHILLS:
+      chance[TER_TUNDRA]       =  20;
+      chance[TER_ROCKY]        =   3;
+      chance[TER_ICY_HILL]     = 100;
+      chance[TER_ICY_MOUNTAIN] =  25;
+      chance[TER_FOREST]       =   1;
+      break;
+
+    case MAP_MOUNTAINOUS:
+      chance[TER_FIELD]     =  1;
+      chance[TER_ROCKY]     = 10;
+      chance[TER_HILL]      = 24;
+      chance[TER_MOUNTAIN]  = 60;
+      chance[TER_FOREST]    =  3;
+      chance[TER_DESERT]    =  1;
+      break;
+
+    case MAP_ICY_MOUNTAIN:
+      chance[TER_TUNDRA]       =   4;
+      chance[TER_ROCKY]        =   1;
+      chance[TER_ICY_HILL]     =  50;
+      chance[TER_ICY_MOUNTAIN] = 200;
+      break;
+
     case MAP_BASIN:
       chance[TER_FIELD]     = 80;
       chance[TER_ROCKY]     =  4;
@@ -117,6 +146,7 @@ void City_map::generate(Map_type type,
       chance[TER_SWAMP]     =  7;
 // We'll stick in a river later
       break;
+
     case MAP_CANYON:
       chance[TER_FIELD]     =  2;
       chance[TER_ROCKY]     = 12;
@@ -126,14 +156,16 @@ void City_map::generate(Map_type type,
       chance[TER_SWAMP]     =  1;
 // We'll stick in a river later
       break;
-    case MAP_MOUNTAINOUS:
-      chance[TER_FIELD]     =  1;
+
+    case MAP_GLACIER:
+      chance[TER_TUNDRA]    = 60;
       chance[TER_ROCKY]     = 10;
-      chance[TER_HILL]      = 24;
-      chance[TER_MOUNTAIN]  = 60;
-      chance[TER_FOREST]    =  3;
-      chance[TER_DESERT]    =  1;
+      chance[TER_HILL]      =  3;
+      chance[TER_MOUNTAIN]  =  3;
+      chance[TER_FOREST]    =  5;
+// We'll stick in a glacier later
       break;
+
     case MAP_COASTAL:
       chance[TER_FIELD]     = 30;
       chance[TER_ROCKY]     = 10;
@@ -141,6 +173,7 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    =  6;
       chance[TER_SWAMP]     =  5;
       break;
+
     case MAP_SWAMP:
       chance[TER_FIELD]     =  4;
       chance[TER_ROCKY]     =  6;
@@ -149,6 +182,7 @@ void City_map::generate(Map_type type,
       chance[TER_FOREST]    =  7;
       chance[TER_SWAMP]     = 40;
       break;
+
     case MAP_DESERT:
       chance[TER_FIELD]     =  1;
       chance[TER_ROCKY]     = 15;
@@ -156,12 +190,18 @@ void City_map::generate(Map_type type,
       chance[TER_MOUNTAIN]  =  4;
       chance[TER_DESERT]    = 60;
       break;
+
     case MAP_OCEAN:
       chance[TER_FIELD]     =  1;
       chance[TER_MOUNTAIN]  =  1;
       chance[TER_DESERT]    =  2;
       chance[TER_OCEAN]     = 80;
       break;
+
+    case MAP_ICECAP:
+      chance[TER_ICE]       = 40;
+      chance[TER_TUNDRA]    =  5;
+      chance[TER_FOREST]    =  1;
   }
 
   if (type != MAP_OCEAN && coast != DIR_NULL) {  // Alter chances a bit.
@@ -230,12 +270,16 @@ void City_map::generate(Map_type type,
       tiles[x][y].ter = TER_OCEAN;
     }
 
-  } else if (type == MAP_BASIN || type == MAP_CANYON) {
+  } else if (type == MAP_BASIN || type == MAP_CANYON || type == MAP_GLACIER) {
 // TODO: Do we need to specify which direction the river travels?
 //       For now, it's just northwest => southeast
+    Terrain_type river_type = TER_RIVER;
+    if (type == MAP_GLACIER) {
+      river_type = TER_GLACIER;
+    }
     int x = 0, y = 0;
     while (x < CITY_MAP_SIZE && y < CITY_MAP_SIZE) {
-      tiles[x][y].ter = TER_RIVER;
+      tiles[x][y].ter = river_type;
       if (one_in(2)) {
         x++;
       } else {
