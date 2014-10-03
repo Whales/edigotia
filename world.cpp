@@ -2,6 +2,8 @@
 #include "rng.h"
 #include "geometry.h"
 #include "window.h"
+#include "cuss.h"
+#include "keys.h" // for input_direction()
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow(), used in reading/writing crops and minerals
@@ -140,19 +142,29 @@ void World_map::generate()
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       if (altitude[x][y] >= 80) {
         if (river[x][y]) {
-          tiles[x][y] = MAP_CANYON;
+          if (temperature[x][y] <= 20) {
+            tiles[x][y] = MAP_GLACIER;
+          } else {
+            tiles[x][y] = MAP_CANYON;
+          }
+        } else if (temperature[x][y] <= 20) {
+          tiles[x][y] = MAP_ICY_MOUNTAIN;
         } else {
           tiles[x][y] = MAP_MOUNTAINOUS;
         }
       } else if (altitude[x][y] >= 55) {
         if (river[x][y]) {
-          if (altitude[x][y] >= rng(60, 85) || temperature[x][y] <= 20) {
+          if (temperature[x][y] <= 20) {
+            tiles[x][y] = MAP_GLACIER;
+          } else if (altitude[x][y] >= rng(60, 85)) {
             tiles[x][y] = MAP_CANYON;
           } else {
             tiles[x][y] = MAP_BASIN;
           }
         } else if (rainfall[x][y] > altitude[x][y]) {
           tiles[x][y] = MAP_FOREST;
+        } else if (temperature[x][y] <= 20) {
+          tiles[x][y] = MAP_ICY_FOOTHILLS;
         } else {
           tiles[x][y] = MAP_FOOTHILLS;
         }
@@ -162,13 +174,19 @@ void World_map::generate()
         } else {
           tiles[x][y] = MAP_OCEAN;
         }
-      } else {
-        if (temperature[x][y] <= 20) {
+      } else { // Flat terrain is dependant on temperature & rainfall
+        if (river[x][y]) {
+          if (temperature[x][y] <= 20) {
+            tiles[x][y] = MAP_GLACIER;
+          } else if (rainfall[x][y] >= 50) {  // "50" was "55", shld we revert?
+            tiles[x][y] = MAP_SWAMP;
+          } else {
+            tiles[x][y] = MAP_BASIN;
+          }
+        } else if (temperature[x][y] <= 20) {
           tiles[x][y] = MAP_TUNDRA;
         } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
-        } else if (river[x][y] && temperature[x][y] > 20) {
-          tiles[x][y] = MAP_BASIN;
         } else if (rainfall[x][y] >= 45) {
           tiles[x][y] = MAP_FOREST;
         } else if (rainfall[x][y] >= 30) {
@@ -216,9 +234,9 @@ void World_map::generate()
       max_radius += 8;
     }
 // Now place the blobs.
-    int checkpoint = num_blobs / 20;  // 5% checkpoints
     for (int n = 0; n < num_blobs; n++) {
-      if (n % checkpoint == 1) {
+      int percent = (100 * n) / num_blobs;
+      if (percent >= 10 && percent % 5 == 0) {
         popup_nowait("\
 Generating World...\n\
 Crop %d / %d (%s)  \n\
@@ -258,9 +276,9 @@ Placing %d blobs [%d%%%%%%%%]",
       max_radius += 8;
     }
 // Now place the blobs.
-    int checkpoint = num_blobs / 20;  // 5% checkpoints
     for (int n = 0; n < num_blobs; n++) {
-      if (n % checkpoint == 1) {
+      int percent = (100 * n) / num_blobs;
+      if (percent >= 10 && percent % 5 == 0) {
         popup_nowait("\
 Generating World...\n\
 Minerals: %d / %d (%s)  \n\
@@ -617,14 +635,27 @@ mineral = MINERAL_NULL!");
 Point World_map::draw(Window* w_map)
 {
   bool owns_window = false;
+  int screen_x, screen_y;
+  get_screen_dims(screen_x, screen_y);
   int xdim, ydim;
   if (w_map == NULL) {
     owns_window = true;
-    get_screen_dims(xdim, ydim);
+    xdim = screen_x - 26;
+    ydim = screen_y;
     w_map = new Window(0, 0, xdim, ydim);
   } else {
     xdim = w_map->sizex();
     ydim = w_map->sizey();
+  }
+
+  Window* w_legend = NULL;
+  cuss::interface i_legend;
+  if (owns_window) {
+    if (!i_legend.load_from_file("cuss/world_legend.cuss")) {
+      delete w_map;
+      return Point();
+    }
+    w_legend = new Window(xdim, 0, 26, ydim);
   }
 
   int cur_cont = 0;
@@ -638,17 +669,23 @@ Point World_map::draw(Window* w_map)
   Mineral mineral_hilited = MINERAL_NULL;
 
   while (true) {
+    Point center(pos.x + xdim / 2, pos.y + ydim / 2);
     for (int x = pos.x; x < pos.x + xdim; x++) {
       for (int y = pos.y; y < pos.y + ydim; y++) {
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
           Map_type_datum* data = Map_type_data[type];
           glyph gl = data->symbol;
+          bool do_crop_hilite = (hilite_crops && has_crop(crop_hilited, x, y));
+          bool do_mineral_hilite = (hilite_minerals &&
+                                    has_mineral(mineral_hilited, x, y));
           if (x == pos.x + xdim / 2 && y == pos.y + ydim / 2) {
             gl = gl.hilite(c_blue);
-          } else if (hilite_crops && has_crop(crop_hilited, x, y)) {
+          } else if (do_crop_hilite && do_mineral_hilite) {
+            gl = gl.hilite(c_cyan);
+          } else if (do_crop_hilite) {
             gl = gl.hilite(c_green);
-          } else if (hilite_minerals && has_mineral(mineral_hilited, x, y)) {
+          } else if (do_mineral_hilite) {
             gl = gl.hilite(c_red);
           }
           w_map->putglyph(x - pos.x, y - pos.y, gl);
@@ -657,180 +694,154 @@ Point World_map::draw(Window* w_map)
         }
       }
     }
+// Now draw the legend, if we have one
+    if (w_legend) {
+      Map_type type = get_map_type(center);
+      Map_type_datum* data = Map_type_data[type];
+      i_legend.set_data("text_position", center.str());
+      i_legend.set_data("text_position", c_white);
+      i_legend.set_data("text_map_type", data->name);
+      i_legend.set_data("text_map_type", data->symbol.fg);
+/* We want two crops/minerals per line, so I split the text fields into two.
+ * Each one has its own stringstream; so we put the first crop/mineral into the
+ * left stringstream/field, the second into the right, etc.
+ */
+      std::stringstream crops_left_ss,  minerals_left_ss,
+                        crops_right_ss, minerals_right_ss;
+      std::vector<Crop>    crops_here    = crops_at(center);
+      std::vector<Mineral> minerals_here = minerals_at(center);
+      for (int i = 0; i < crops_here.size(); i++) {
+        std::stringstream* crop_ss;
+        if (i % 2 == 0) {
+          crop_ss = &(crops_left_ss);
+        } else {
+          crop_ss = &(crops_right_ss);
+        }
+        Crop_datum* crop_dat = Crop_data[crops_here[i]];
+        nc_color crop_color = crop_type_color(crop_dat->type);
+        (*crop_ss) << "<c=" << color_tag(crop_color) << ">" << crop_dat->name <<
+                      "<c=/>" << std::endl;
+      }
+      for (int i = 0; i < minerals_here.size(); i++) {
+        std::stringstream* mineral_ss;
+        if (i % 2 == 0) {
+          mineral_ss = &(minerals_left_ss);
+        } else {
+          mineral_ss = &(minerals_right_ss);
+        }
+        Mineral_datum* mineral_dat = Mineral_data[minerals_here[i]];
+        nc_color mineral_color = mineral_dat->color;
+        (*mineral_ss) << "<c=" << color_tag(mineral_color) << ">" <<
+                         mineral_dat->name << "<c=/>" << std::endl;
+      }
+      i_legend.set_data("text_crops_here_left",     crops_left_ss.str());
+      i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
+      i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
+      i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
+      i_legend.draw(w_legend);
+      w_legend->refresh();
+    }
+
     w_map->refresh();
+
     long ch = getch();
-    switch (ch) {
-      case '>':
-        if (cur_cont >= continents.size() - 1) {
-          cur_cont = 0;
-        } else {
-          cur_cont++;
-        }
-        pos.x = continents[cur_cont].x - (xdim / 2);
-        pos.y = continents[cur_cont].y - (ydim / 2);
-        break;
-      case '<':
-        if (cur_cont <= 0) {
-          cur_cont = continents.size() - 1;
-        } else {
-          cur_cont--;
-        }
-        pos.x = continents[cur_cont].x - (xdim / 2);
-        pos.y = continents[cur_cont].y - (ydim / 2);
-        break;
-      case 'Y':
-        pos.x -= 10;
-        pos.y -= 10;
-        break;
-      case 'K':
-        pos.y -= 10;
-        break;
-      case 'U':
-        pos.x += 10;
-        pos.y -= 10;
-        break;
-      case 'H':
-        pos.x -= 10;
-        break;
-      case 'L':
-        pos.x += 10;
-        break;
-      case 'B':
-        pos.x -= 10;
-        pos.y += 10;
-        break;
-      case 'J':
-        pos.y += 10;
-        break;
-      case 'N':
-        pos.x += 10;
-        pos.y += 10;
-        break;
-      case 'y':
-      case '7':
-        pos.x--;
-        pos.y--;
-        break;
-      case 'k':
-      case '8':
-      case KEY_UP:
-        pos.y--;
-        break;
-      case 'u':
-      case '9':
-        pos.x++;
-        pos.y--;
-        break;
-      case 'h':
-      case '4':
-      case KEY_LEFT:
-        pos.x--;
-        break;
-      case 'l':
-      case '6':
-      case KEY_RIGHT:
-        pos.x++;
-        break;
-      case 'b':
-      case '1':
-        pos.x--;
-        pos.y++;
-        break;
-      case 'j':
-      case '2':
-      case KEY_DOWN:
-        pos.y++;
-        break;
-      case 'n':
-      case '3':
-        pos.x++;
-        pos.y++;
-        break;
-      case '0':
-        pos.x = 0;
-        pos.y = 0;
-        break;
+// true in input_direction() means we accept capital letters
+    Point move_dir = input_direction(ch, true);
+// ...but we want capital letters to move TEN tiles in the given direction.
+// If ch was not a movement key, move_dir.x will equal -2.
+    if (move_dir.x != -2 && ch >= 'A' && ch <= 'Z') {
+      move_dir.x *= 10;
+      move_dir.y *= 10;
+    }
+    if (move_dir.x != -2) {
+      pos += move_dir;
+    } else {
+      switch (ch) {
+        case '0':
+          pos.x = 0;
+          pos.y = 0;
+          break;
 
-      case '?': {
-        Point res_pos(pos.x + xdim / 2, pos.y + ydim / 2);
-        std::stringstream resource_ss;
-        std::vector<Crop>    crops_here    = crops_at(res_pos);
-        std::vector<Mineral> minerals_here = minerals_at(res_pos);
-        resource_ss << "Position: " << res_pos.str() << std::endl;
-        resource_ss << "Crops: ";
-        for (int i = 0; i < crops_here.size(); i++) {
-          resource_ss << Crop_data[crops_here[i]]->name << " ";
-        }
-        resource_ss << std::endl << "Minerals: ";
-        for (int i = 0; i < minerals_here.size(); i++) {
-          resource_ss << Mineral_data[minerals_here[i]]->name << " ";
-        }
-        resource_ss << std::endl <<
-                       "Crop code "    << crops   [res_pos.x][res_pos.y] <<
-                       std::endl <<
-                       "Mineral code " << minerals[res_pos.x][res_pos.y];
-        debugmsg( resource_ss.str().c_str() );
-      } break;
-
-      case 'c':
-      case 'C': {
-        std::string crop_name = string_input_popup("hilite crop:");
-        Crop hilited = CROP_NULL;
-        bool do_hilite = true;
-        if (!crop_name.empty()) {
-          hilited = search_for_crop(crop_name);
-          if (hilited == CROP_NULL) {
-            popup("%s not found.");
-            do_hilite = false;
+        case '>':
+          if (cur_cont >= continents.size() - 1) {
+            cur_cont = 0;
+          } else {
+            cur_cont++;
           }
-        }
-        if (do_hilite) {
-          hilite_crops = true;
-          hilite_minerals = false;
-          crop_hilited = hilited;
-        } else {
-          hilite_crops = false;
-        }
-      } break;
+          pos.x = continents[cur_cont].x - (xdim / 2);
+          pos.y = continents[cur_cont].y - (ydim / 2);
+          break;
 
-      case 'm':
-      case 'M': {
-        std::string mineral_name = string_input_popup("hilite mineral:");
-        Mineral hilited = MINERAL_NULL;
-        bool do_hilite = true;
-        if (!mineral_name.empty()) {
-          hilited = search_for_mineral(mineral_name);
-          if (hilited == MINERAL_NULL) {
-            popup("%s not found.");
-            do_hilite = false;
+        case '<':
+          if (cur_cont <= 0) {
+            cur_cont = continents.size() - 1;
+          } else {
+            cur_cont--;
           }
-        }
-        if (do_hilite) {
-          hilite_minerals = true;
-          hilite_crops = false;
-          mineral_hilited = hilited;
-        } else {
+          pos.x = continents[cur_cont].x - (xdim / 2);
+          pos.y = continents[cur_cont].y - (ydim / 2);
+          break;
+  
+        case 'c':
+        case 'C': {
+          std::string crop_name = string_input_popup("hilite crop:");
+          Crop hilited = CROP_NULL;
+          bool do_hilite = true;
+          if (!crop_name.empty()) {
+            hilited = search_for_crop(crop_name);
+            if (hilited == CROP_NULL) {
+              popup("%s not found.");
+              do_hilite = false;
+            }
+          }
+          if (do_hilite) {
+            hilite_crops = true;
+            //hilite_minerals = false;
+            crop_hilited = hilited;
+          } else {
+            hilite_crops = false;
+          }
+        } break;
+  
+        case 'm':
+        case 'M': {
+          std::string mineral_name = string_input_popup("hilite mineral:");
+          Mineral hilited = MINERAL_NULL;
+          bool do_hilite = true;
+          if (!mineral_name.empty()) {
+            hilited = search_for_mineral(mineral_name);
+            if (hilited == MINERAL_NULL) {
+              popup("%s not found.");
+              do_hilite = false;
+            }
+          }
+          if (do_hilite) {
+            hilite_minerals = true;
+            //hilite_crops = false;
+            mineral_hilited = hilited;
+          } else {
+            hilite_minerals = false;
+          }
+        } break;
+  
+        case 't':
+        case 'T':
+          hilite_crops    = false;
           hilite_minerals = false;
-        }
-      } break;
-
-      case 't':
-      case 'T':
-        hilite_crops    = false;
-        hilite_minerals = false;
-        break;
-      
-      case KEY_ESC:
-      case '\n':
-        if (owns_window) {
-          delete w_map;
-        }
-        if (ch == '\n') {
-          pos.x += (xdim / 2);
-          pos.y += (ydim / 2);
-          return pos;
-        }
-        return Point(-1, -1);
+          break;
+        
+        case KEY_ESC:
+        case '\n':
+          if (owns_window) {
+            delete w_map;
+          }
+          if (ch == '\n') {
+            pos.x += (xdim / 2);
+            pos.y += (ydim / 2);
+            return pos;
+          }
+          return Point(-1, -1);
+      }
     }
   }
 }
