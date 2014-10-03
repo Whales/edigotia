@@ -412,6 +412,47 @@ void City::do_turn()
       }
     }
   }
+
+// Import resources.
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource import = Resource(i);
+    resources[import] += get_import(import);
+  }
+
+// Produce / eat food.
+  resources[RES_FOOD] += get_food_production();
+  int food_consumed = get_food_consumption();
+  if (resources[RES_FOOD] >= food_consumed) {
+    resources[RES_FOOD] -= food_consumed;
+  } else {
+// The upper classes get to eat first.
+// TODO: Allow a law which changes this?
+    for (int i = CIT_MAX - 1; i > CIT_NULL; i--) {
+      Citizen_type cit_type = Citizen_type(i);
+      int type_consumption = get_food_consumption(cit_type);
+      if (resources[RES_FOOD] >= type_consumption)  {
+        resources[RES_FOOD] -= type_consumption;
+      } else {
+        //int food_deficit = type_consumption - resources[RES_FOOD];
+        resources[RES_FOOD] = 0;
+// TODO: Starvation!
+      }
+    }
+  }
+
+// The last resource transaction we should do is exporting resources, since it's
+// presumably the one with the least consequences.
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource res_export = Resource(i);
+    int export_amt = get_export(res_export);
+    if (resources[res_export] >= export_amt) {
+      resources[res_export] += export_amt;
+    } else {
+// TODO: consequences for failure to export
+    }
+  }
+
+
 // Advance progress on the first area in our queue.
   if (!area_queue.empty()) {
     Area* area_to_build = &(area_queue[0]);
