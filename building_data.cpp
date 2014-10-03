@@ -89,7 +89,7 @@ void init_building_data()
     _cost(RES_GOLD, 100);
     _build_time(1);
     _upkeep(3);
-    _jobs(CIT_PEASANT, 10);
+    _jobs(CIT_PEASANT, 5);
     _produces(RES_FARMING, 10);
 
   _build(BUILD_QUARRY);
