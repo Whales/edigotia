@@ -212,11 +212,8 @@ void World_map::generate()
   for (int i = 1; i < CROP_MAX; i++) {
     Crop crop = Crop(i);
     Crop_datum* crop_dat = Crop_data[crop];
-    int min_radius = crop_dat->percentage / 5;
-    if (min_radius < 2) {
-      min_radius = 2;
-    }
-    int max_radius = crop_dat->percentage / 2;
+    int min_radius =  5 + (crop_dat->percentage / 6);
+    int max_radius = 10 + (crop_dat->percentage / 2);
     int avg_radius = (min_radius + max_radius) / 2;
     int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
@@ -254,11 +251,8 @@ Placing %d blobs [%d%%%%%%%%]",
   for (int i = 1; i < MINERAL_MAX; i++) {
     Mineral mineral = Mineral(i);
     Mineral_datum* mineral_dat = Mineral_data[mineral];
-    int min_radius = mineral_dat->percentage / 5;
-    if (min_radius < 2) {
-      min_radius = 2;
-    }
-    int max_radius = mineral_dat->percentage / 2;
+    int min_radius =  5 + (mineral_dat->percentage / 6);
+    int max_radius = 10 + (mineral_dat->percentage / 2);
     int avg_radius = (min_radius + max_radius) / 2;
     int avg_size   = avg_radius * avg_radius;
 // Calculate the total number of blobs of the given size that'd fit in the world
