@@ -504,16 +504,26 @@ void Interface::minister_food()
     if (city->areas[i].produces_resource(RES_FARMING)) {
       Point area_loc = city->areas[i].pos;
       Building* build = &(city->areas[i].building);
+      std::stringstream output_ss;
+      std::stringstream empty_fields_ss;
+      int empty_fields = build->get_empty_fields();
+
+      output_ss << build->field_output << "0%%%%";
+      if (empty_fields > 0) {
+        empty_fields_ss << "<c=ltgreen>" << empty_fields << "<c=/>";
+      } else {
+        empty_fields_ss << empty_fields;
+      }
       farms.push_back( &(city->areas[i]) );
       farm_terrain.push_back( city->map.get_terrain_name(area_loc) );
-      farm_output.push_back( itos(build->field_output) );
-      farm_fields.push_back( itos(build->get_empty_fields()) );
+      farm_output.push_back( output_ss.str() );
+      farm_fields.push_back( empty_fields_ss.str() );
     }
   }
 
-  i_food.set_data("list_farms",        farm_terrain);
-  i_food.set_data("list_farm_output",  farm_output);
-  i_food.set_data("list_empty_fields", farm_fields);
+  i_food.ref_data("list_farms",        &farm_terrain);
+  i_food.ref_data("list_farm_output",  &farm_output);
+  i_food.ref_data("list_empty_fields", &farm_fields);
 
 /* We also need to list crops grown at the currently-selected farm.
  * We always start by selecting farms[0]; later on, if we select a new farm,
@@ -540,6 +550,11 @@ void Interface::minister_food()
     int food_grown    = city->get_food_production();
 
     int net_food = food_grown + food_imported - food_exported - food_consumed;
+
+    int days_left = -1;
+    if (net_food < 0) {
+      days_left = food_stored / (0 - net_food);
+    }
 
     i_food.set_data("num_fields_worked", fields_worked);
     if (fields_worked == 0 && num_farms > 0) {
@@ -586,6 +601,21 @@ void Interface::minister_food()
         i_food.set_data("num_free_peasants", c_ltgreen);
       }
     }
+
+    std::stringstream days_left_ss;
+    if (days_left == -1) { // We'll never run out of food at this rate!
+      days_left_ss << "<c=dkgray>N/A<c=/>";
+    } else {
+      if (days_left < 10) {
+        days_left_ss << "<c=ltred>";
+      } else if (days_left < 25) {
+        days_left_ss << "<c=red>";
+      } else {
+        days_left_ss << "<c=yellow>";
+      }
+      days_left_ss << days_left << "<c=/>";
+    }
+    i_food.set_data("text_days_left", days_left_ss.str());
 
 // Check if we selected a new farm.
     int new_farm_index = i_food.get_int("list_farms");
@@ -645,6 +675,16 @@ void Interface::minister_food()
           list_farm_crops(cur_farm, i_food);
 // Reset our position in the list to what it was previously!
           i_food.set_data("list_crop_name", crop_index);
+// Fix the list of empty fields
+          std::stringstream empty_fields_ss;
+          Building* build = &(farms[farm_index]->building);
+          int empty_fields = build->get_empty_fields();
+          if (empty_fields > 0) {
+            empty_fields_ss << "<c=ltgreen>" << empty_fields << "<c=/>";
+          } else {
+            empty_fields_ss << empty_fields;
+          }
+          farm_fields[farm_index] = empty_fields_ss.str();
         }
       } break;
           
