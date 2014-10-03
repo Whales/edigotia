@@ -28,7 +28,11 @@ int Building::get_empty_fields()
     return 0;
   }
   int max_fields = get_jobs();
-  return (max_fields - crops_grown.size());
+  int fields_used = 0;
+  for (int i = 0; i < crops_grown.size(); i++) {
+    fields_used += crops_grown[i].amount;
+  }
+  return (max_fields - fields_used);
 }
 
 Building_datum* Building::get_building_datum()
