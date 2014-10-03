@@ -76,6 +76,11 @@ std::map<Resource,int> Area::get_maintenance()
   return ret;
 }
 
+bool Area::produces_resource(Resource res)
+{
+  return (open && get_building_datum()->produces_resource(res));
+}
+
 Building_datum* get_building_for(Area_type area)
 {
   Area_datum* adat = Area_data[area];

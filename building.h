@@ -34,7 +34,13 @@ struct Building_datum
   Building_datum();
   ~Building_datum();
 
+// Data functions
   std::string get_short_description();
+  bool produces_resource(Resource res);
+  int get_jobs(Citizen_type cit_type = CIT_NULL);
+
+// Setup functions
+  bool add_production(Resource type, int amount);
 
   int uid;
   std::string name;
@@ -53,8 +59,6 @@ struct Building_datum
 // Things this building can construct
   std::vector<Resource> buildable;
 
-// Setup functions
-  bool add_production(Resource type, int amount);
 };
 
 struct Building
@@ -63,6 +67,10 @@ struct Building
   ~Building();
 
   void set_type(Building_type new_type);
+
+  Building_datum* get_building_datum();
+  bool produces_resource(Resource res);
+  int get_jobs(Citizen_type cit_type = CIT_NULL);
 
   Building_type type;
   int workers;
@@ -81,12 +89,12 @@ struct Building
   std::vector<Resource_amount> build_queue;
 
 // Basically for farms only
+  int get_empty_fields();
   int field_output; // How much of each crop does a single field output?
   std::vector<Crop> crops_grown;
 // Basically for mines only
   std::vector<Mineral> minerals_mined;
 
-  Building_datum* get_building_datum(); // Building_data[type]
 };
 
 extern Building_datum* Building_data[BUILD_MAX];

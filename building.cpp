@@ -22,9 +22,30 @@ void Building::set_type(Building_type new_type)
   minerals_mined.clear();
 }
 
+int Building::get_empty_fields()
+{
+  if (!produces_resource(RES_FARMING)) {
+    return 0;
+  }
+  int max_fields = get_jobs();
+  return (max_fields - crops_grown.size());
+}
+
 Building_datum* Building::get_building_datum()
 {
   return Building_data[type];
+}
+
+bool Building::produces_resource(Resource res)
+{
+  Building_datum* build_dat = get_building_datum();
+  return build_dat->produces_resource(res);
+}
+
+// cit_type defaults to CIT_NULL
+int Building::get_jobs(Citizen_type cit_type)
+{
+  return get_building_datum()->get_jobs(cit_type);
 }
 
 Building_datum::Building_datum()
@@ -107,6 +128,25 @@ std::string Building_datum::get_short_description()
   }
 
   return ret.str();
+}
+
+bool Building_datum::produces_resource(Resource res)
+{
+  for (int i = 0; i < production.size(); i++) {
+    if (production[i].type == res) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// cit_type defaults to CIT_NULL
+int Building_datum::get_jobs(Citizen_type cit_type)
+{
+  if (cit_type == CIT_NULL || cit_type == jobs.type) {
+    return jobs.amount;
+  }
+  return 0;
 }
 
 bool Building_datum::add_production(Resource type, int amount)

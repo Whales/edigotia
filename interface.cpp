@@ -496,6 +496,20 @@ void Interface::minister_food()
     i_food.set_data("num_food_exported", c_dkgray);
   }
 
+// Set up a list of farms.
+  std::vector<std::string> farm_terrain, farm_output, farm_fields;
+  std::vector<Area*> farms;
+  for (int i = 0; i < city->areas.size(); i++) {
+    if (city->areas[i].produces_resource(RES_FARMING)) {
+      Point area_loc = city->areas[i].pos;
+      Building* build = &(city->areas[i].building);
+      farms.push_back( &(city->areas[i]) );
+      farm_terrain.push_back( city->map.get_terrain_name(area_loc) );
+      farm_output.push_back( itos(build->field_output) );
+      farm_fields.push_back( itos(build->get_empty_fields()) );
+    }
+  }
+
   bool done = false;
   while (!done) {
 // These values and fields may change before we exit this interface.

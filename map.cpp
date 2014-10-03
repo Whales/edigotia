@@ -355,6 +355,19 @@ Terrain_datum* City_map::get_terrain_datum(int x, int y)
   return Terrain_data[ tiles[x][y].ter ];
 }
 
+std::string City_map::get_terrain_name(Point p)
+{
+  return get_terrain_name(p.x, p.y);
+}
+
+std::string City_map::get_terrain_name(int x, int y)
+{
+  if (is_oob(x, y)) {
+    return "Out of bounds";
+  }
+  return tiles[x][y].get_terrain_name();
+}
+
 glyph City_map::get_glyph(Point p)
 {
   return get_glyph(p.x, p.y);

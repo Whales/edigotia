@@ -59,6 +59,8 @@ struct Area
 
   std::map<Resource,int> get_maintenance();
 
+  bool produces_resource(Resource res);
+
 // DATA
   Area_type type;
 
