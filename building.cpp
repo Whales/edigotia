@@ -27,7 +27,7 @@ int Building::get_empty_fields()
   if (!produces_resource(RES_FARMING)) {
     return 0;
   }
-  int max_fields = get_jobs();
+  int max_fields = get_total_jobs();
   int fields_used = 0;
   for (int i = 0; i < crops_grown.size(); i++) {
     fields_used += crops_grown[i].amount;
@@ -47,9 +47,29 @@ bool Building::produces_resource(Resource res)
 }
 
 // cit_type defaults to CIT_NULL
-int Building::get_jobs(Citizen_type cit_type)
+int Building::get_total_jobs(Citizen_type cit_type)
 {
-  return get_building_datum()->get_jobs(cit_type);
+  return get_building_datum()->get_total_jobs(cit_type);
+}
+
+// cit_type defaults to CIT_NULL
+int Building::get_available_jobs(Citizen_type cit_type)
+{
+  int total = get_total_jobs(cit_type);
+  if (workers >= total) {
+    return 0;
+  }
+  return total - workers;
+}
+
+// cit_type defaults to CIT_NULL
+int Building::get_filled_jobs(Citizen_type cit_type)
+{
+// Ensure that we actually hire citizens of that type
+  if (cit_type != CIT_NULL && get_total_jobs(cit_type) == 0) {
+    return 0;
+  }
+  return workers;
 }
 
 Building_datum::Building_datum()
@@ -145,7 +165,7 @@ bool Building_datum::produces_resource(Resource res)
 }
 
 // cit_type defaults to CIT_NULL
-int Building_datum::get_jobs(Citizen_type cit_type)
+int Building_datum::get_total_jobs(Citizen_type cit_type)
 {
   if (cit_type == CIT_NULL || cit_type == jobs.type) {
     return jobs.amount;
