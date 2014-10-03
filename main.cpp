@@ -5,6 +5,7 @@
 #include "interface.h"
 #include "game.h"
 #include "init.h"
+#include "files.h"  // For file_exists()
 
 void check_world_resources(World_map* world);
 
@@ -24,13 +25,19 @@ int main()
 
 // Generate a world...
   World_map world;
-  world.load_from_file("world.sav");
+  if (!file_exists("world.sav") || query_yn("Generate new world?")) {
+    world.generate();
+    world.save_to_file("world.sav");
+  } else {
+    world.load_from_file("world.sav");
+  }
 // Tool for debugging / testing the amount of resources in the world.
   //check_world_resources(&world);
 // ... for now, we always start by picking a location for a new city.
   Point p = world.draw();
 
   if (p.x == -1) {  // We hit ESC
+    endwin();
     return 0;
   }
 
