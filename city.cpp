@@ -41,9 +41,9 @@ City::City()
   }
 
   resources[RES_GOLD]  = 5000;
-  resources[RES_FOOD]  = 1000;
-  resources[RES_WOOD]  = 100;
-  resources[RES_STONE] = 100;
+  resources[RES_FOOD]  = 5000;
+  resources[RES_WOOD]  =  100;
+  resources[RES_STONE] =  100;
 
   radius = 1;
   labor_pool = 0;
