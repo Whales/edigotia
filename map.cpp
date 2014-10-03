@@ -71,11 +71,13 @@ void City_map::generate(Map_type type,
   }
   switch (type) {
     case MAP_TUNDRA:
-      chance[TER_TUNDRA]    = 60;
-      chance[TER_ROCKY]     =  1;
-      chance[TER_HILL]      =  3;
-      chance[TER_MOUNTAIN]  =  3;
-      chance[TER_FOREST]    =  5;
+      chance[TER_TUNDRA]        = 100;
+      chance[TER_ROCKY]         =   1;
+      chance[TER_HILL]          =   5;
+      chance[TER_ICY_HILL]      =   2;
+      chance[TER_MOUNTAIN]      =   5;
+      chance[TER_ICY_MOUNTAIN]  =   2;
+      chance[TER_FOREST]        =   5;
       break;
 
     case MAP_PLAINS:
@@ -115,10 +117,12 @@ void City_map::generate(Map_type type,
       break;
 
     case MAP_ICY_FOOTHILLS:
-      chance[TER_TUNDRA]       =  20;
-      chance[TER_ROCKY]        =   3;
+      chance[TER_TUNDRA]       =  60;
+      chance[TER_ROCKY]        =  10;
+      chance[TER_HILL]         =  40;
       chance[TER_ICY_HILL]     = 100;
-      chance[TER_ICY_MOUNTAIN] =  25;
+      chance[TER_MOUNTAIN]     =   8;
+      chance[TER_ICY_MOUNTAIN] =  22;
       chance[TER_FOREST]       =   1;
       break;
 
@@ -132,9 +136,11 @@ void City_map::generate(Map_type type,
       break;
 
     case MAP_ICY_MOUNTAIN:
-      chance[TER_TUNDRA]       =   4;
-      chance[TER_ROCKY]        =   1;
-      chance[TER_ICY_HILL]     =  50;
+      chance[TER_TUNDRA]       =   7;
+      chance[TER_ROCKY]        =   3;
+      chance[TER_HILL]         =  30;
+      chance[TER_ICY_HILL]     =  60;
+      chance[TER_MOUNTAIN]     =  20;
       chance[TER_ICY_MOUNTAIN] = 200;
       break;
 
@@ -158,11 +164,13 @@ void City_map::generate(Map_type type,
       break;
 
     case MAP_GLACIER:
-      chance[TER_TUNDRA]    = 60;
-      chance[TER_ROCKY]     = 10;
-      chance[TER_HILL]      =  3;
-      chance[TER_MOUNTAIN]  =  3;
-      chance[TER_FOREST]    =  5;
+      chance[TER_TUNDRA]       = 60;
+      chance[TER_ROCKY]        = 10;
+      chance[TER_HILL]         =  3;
+      chance[TER_ICY_HILL]     =  3;
+      chance[TER_MOUNTAIN]     =  3;
+      chance[TER_ICY_MOUNTAIN] =  3;
+      chance[TER_FOREST]       =  5;
 // We'll stick in a glacier later
       break;
 
