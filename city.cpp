@@ -454,6 +454,12 @@ void City::add_open_area(Area area)
     farming = (farming * tile_here->get_farmability()) / 100;
 // TODO: Further modify farming based on racial ability.
     area.building.field_output = farming;
+// Set up area.building's list of crops based on what's available here.
+    area.building.crops_grown.clear();
+    std::vector<Crop> crops_here = map.get_tile(area.pos)->crops;
+    for (int i = 0; i < crops_here.size(); i++) {
+      area.building.crops_grown.push_back( Crop_amount( crops_here[i], 0 ) );
+    }
   }
   areas.push_back( area );
 }
@@ -691,18 +697,20 @@ std::vector<Crop_amount> City::get_crops_grown()
         }
       }
       if (found_farming) {  // This place produces crops!
-        for (int n = 0; n < num_workers && n < build->crops_grown.size(); n++) {
+        for (int n = 0; n < build->crops_grown.size(); n++) {
 // Check if we already have that crop in ret
-          Crop crop = build->crops_grown[n];
-          bool found_crop = false;
-          for (int m = 0; !found_crop && m < ret.size(); m++) {
-            if (ret[m].type == crop) {
-              found_crop = true;
-              ret[m].amount++;
+          if (build->crops_grown[n].amount > 0) {
+            Crop crop = build->crops_grown[n].type;
+            bool found_crop = false;
+            for (int m = 0; !found_crop && m < ret.size(); m++) {
+              if (ret[m].type == crop) {
+                found_crop = true;
+                ret[m].amount += build->crops_grown[n].amount;
+              }
             }
-          }
-          if (!found_crop) { // Didn't combine it, so add it to the list
-            ret.push_back( Crop_amount(crop, 1) );
+            if (!found_crop) { // Didn't combine it, so add it to the list
+              ret.push_back( build->crops_grown[n] );
+            }
           }
         }
       } // if (found_farming)
