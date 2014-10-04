@@ -47,7 +47,7 @@ void init_terrain_data()
 
   _ter(TER_ICY_HILL);
     _name("icy hill");
-    _symbol('n', c_ltgray);
+    _symbol('=', c_ltgray);
     _farm(0);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      2000);
@@ -171,7 +171,7 @@ void init_terrain_data()
 
   _ter(TER_FOREST);
     _name("Forest");
-    _symbol('7', c_ltgreen);
+    _symbol(';', c_ltgreen);
     _farm(20);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
