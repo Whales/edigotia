@@ -18,10 +18,14 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
   cur_id = (n)
 #define _mpercent(s) \
   Mineral_data[cur_id]->percentage = (s)
+#define _mvalue(s) \
+  Mineral_data[cur_id]->value = (s)
 #define _mname(s) \
   Mineral_data[cur_id]->name = (s)
 #define _mcolor(c) \
   Mineral_data[cur_id]->color = (c)
+#define _mhidden() \
+  Mineral_data[cur_id]->hidden = true
 
 
 void init_crop_and_mineral_data()
@@ -145,30 +149,41 @@ void init_crop_and_mineral_data()
   _mineral(MINERAL_STONE);
     _mname("stone");
     _mpercent(98);
+    _mvalue(1);
     _mcolor(c_white);
 
   _mineral(MINERAL_TIN);
     _mname("tin");
     _mpercent(70);
+    _mvalue(10);
     _mcolor(c_ltcyan);
+    _mhidden();
 
   _mineral(MINERAL_COPPER);
     _mname("copper");
     _mpercent(50);
+    _mvalue(60);
     _mcolor(c_ltred);
+    _mhidden();
 
   _mineral(MINERAL_IRON);
     _mname("iron");
     _mpercent(70);
+    _mvalue(50);
     _mcolor(c_cyan);
+    _mhidden();
 
   _mineral(MINERAL_GOLD);
     _mname("gold");
     _mpercent(4);
+    _mvalue(100);
     _mcolor(c_yellow);
+    _mhidden();
 
   _mineral(MINERAL_COAL);
     _mname("coal");
     _mpercent(20);
+    _mvalue(80);
     _mcolor(c_dkgray);
+    _mhidden();
 }
