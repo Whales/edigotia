@@ -27,9 +27,28 @@ int Citizens::get_unemployed()
   return count - employed;
 }
 
+int Citizens::get_income()
+{
+// Obviously, don't include income from government jobs (i.e. areas/buildings)
+  int ret = 0;
+
+// Idle citizens do produce income though!
+  int idle = get_unemployed();
+  ret += (idle * citizen_idle_income(type)) / 100;
+
+// TODO: Other sources of income?
+
+  return ret;
+}
+  
+
 City::City()
 {
-  population[CIT_PEASANT].count  = 100;
+  for (int i = 0; i < CIT_MAX; i++) {
+    population[i].type = Citizen_type(i);
+  }
+
+  population[CIT_PEASANT].count = 100;
 
   for (int i = 0; i < BUILD_MAX; i++) {
     open_buildings[i]   = 0;
@@ -747,6 +766,20 @@ int City::get_number_of_areas(Area_type type)
   return ret;
 }
 
+int City::get_total_maintenance()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open) {
+      ret += areas[i].get_building_datum()->upkeep;
+    }
+  }
+  for (int i = 0; i < buildings.size(); i++) {
+    ret += buildings[i].get_building_datum()->upkeep;
+  }
+  return ret;
+}
+
 int City::get_fields_worked()
 {
   int ret = 0;
@@ -778,6 +811,58 @@ int City::get_resource_amount(Resource res)
 }
 
 // type defaults to CIT_NULL
+int City::get_total_wages(Citizen_type type)
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    Building_datum* build_dat = areas[i].get_building_datum();
+    int workers = areas[i].building.workers;
+    if (workers > 0 && (type == CIT_NULL || type == build_dat->jobs.type)) {
+      ret += build_dat->wages * workers;
+    }
+  }
+  for (int i = 0; i < buildings.size(); i++) {
+    Building_datum* build_dat = buildings[i].get_building_datum();
+    int workers = buildings[i].workers;
+    if (workers > 0 && (type == CIT_NULL || type == build_dat->jobs.type)) {
+      ret += build_dat->wages * workers;
+    }
+  }
+// Wages are reported in 1/10th of a gold, so we need to divide by 10!
+  return ret / 10;
+}
+
+// TODO: This function, for real
+int City::get_military_expense()
+{
+  int ret = 0;
+  for (int i = 0; i < units_stationed.size(); i++) {
+    ret += units_stationed[i].count / 5;
+  }
+  return ret;
+}
+
+// type defaults to CIT_NULL
+int City::get_taxes(Citizen_type type)
+{
+  if (type == CIT_NULL) {
+    int ret = 0;
+    for (int i = 1; i < CIT_MAX; i++) {
+      ret += get_taxes( Citizen_type(i) );
+    }
+    return ret;
+  }
+
+  return (population[type].get_income() * tax_rate[type]) / 100;
+}
+
+// TODO: This function
+int City::get_corruption_percentage()
+{
+  return 10;
+}
+
+// type defaults to CIT_NULL
 int City::get_food_consumption(Citizen_type type)
 {
   if (type == CIT_NULL) {
@@ -791,7 +876,6 @@ int City::get_food_consumption(Citizen_type type)
   return (population[type].count * citizen_food_consumption( type ));
 }
 
-// TODO: This function.
 int City::get_food_production()
 {
   int ret = 0;
@@ -844,6 +928,61 @@ std::vector<Crop_amount> City::get_crops_grown()
 
   return ret;
 }
+
+// mineral defaults to MINERAL_NULL
+int City::get_mine_production(Mineral mineral)
+{
+  std::map<Mineral,int> all_minerals = get_minerals_mined();
+  if (mineral == MINERAL_NULL) {
+    int ret = 0;
+    for (std::map<Mineral,int>::iterator it = all_minerals.begin();
+         it != all_minerals.end();
+         it++) {
+      ret += it->second;
+    }
+    return ret;
+  }
+  if (all_minerals.count(mineral)) {
+    return all_minerals[mineral];
+  }
+  return 0;
+}
+
+std::map<Mineral,int> City::get_minerals_mined()
+{
+  std::map<Mineral,int> ret;
+// Look for any buildings that provide RES_MINING
+  for (int i = 0; i < areas.size(); i++) {
+    Building* build = &(areas[i].building);
+    int num_workers = build->workers;
+    if (num_workers > 0) {
+      Building_datum* build_dat = areas[i].get_building_datum();
+// Check each item in the production list for RES_MINING
+      bool found_mining = false;
+      for (int n = 0; !found_mining && n < build_dat->production.size(); n++) {
+        if (build_dat->production[n].type == RES_MINING) {
+          found_mining = true;
+        }
+      }
+      if (found_mining) {  // This place produces minerals!
+        for (int n = 0; n < build->minerals_mined.size(); n++) {
+// Add each mineral to ret
+          if (build->minerals_mined[n].amount > 0) {
+            Mineral_amount mineral = build->minerals_mined[n];
+            if (ret.count(mineral.type)) {
+              ret[mineral.type] += mineral.amount;
+            } else {
+              ret[mineral.type] = mineral.amount;
+            }
+          }
+        }
+      } // if (found_mining)
+    } // if (num_workers > 0)
+  } // for (int i = 0; i < areas.size(); i++)
+
+  return ret;
+}
+  
 
 // TODO: This function.
 int City::get_import(Resource res)

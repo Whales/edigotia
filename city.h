@@ -15,11 +15,14 @@ struct Citizens
   Citizens();
   ~Citizens();
 
+  Citizen_type type;
+
   int count;
   int employed;
   int wealth;
 
   int get_unemployed();
+  int get_income();
 };
 
 enum Area_queue_status
@@ -82,15 +85,27 @@ public:
 // Building/Area-related functions
   int get_number_of_buildings(Building_type type = BUILD_NULL);
   int get_number_of_areas    (Area_type     type = AREA_NULL);
+  int get_total_maintenance();
   int get_fields_worked();
   int get_empty_fields();
 
 // Resource-related functions
   int get_resource_amount(Resource res);
+
+  // General finance
+  int get_total_wages(Citizen_type type = CIT_NULL);
+  int get_military_expense();
+  int get_taxes(Citizen_type type = CIT_NULL);
+  int get_corruption_percentage();
+
+  // Crops & food
   int get_food_consumption(Citizen_type type = CIT_NULL);
   int get_food_production();
-
   std::vector<Crop_amount> get_crops_grown();
+
+  // Mining
+  int get_mine_production(Mineral mineral = MINERAL_NULL);
+  std::map<Mineral,int> get_minerals_mined();
 
 // Trade-related functions
   int get_import(Resource res);
@@ -102,7 +117,10 @@ public:
 
   int open_buildings[BUILD_MAX];
   int closed_buildings[BUILD_MAX];
+
   int resources[RES_MAX];
+
+  int tax_rate[CIT_MAX];
 
   int radius;
 
