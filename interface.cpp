@@ -460,11 +460,11 @@ void Interface::minister_finance()
 
 void Interface::minister_food()
 {
-  Window w_food(0, 0, 80, 24);
   cuss::interface i_food;
   if (!i_food.load_from_file("cuss/food.cuss")) {
     return;
   }
+  Window w_food(0, 0, 80, 24);
 
   i_food.select("list_crops");
 
