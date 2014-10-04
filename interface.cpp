@@ -59,6 +59,7 @@ bool Interface::init(Game* G, City* C)
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
 "Food",
+"Mining",
 "Morale",
 0
 );
@@ -317,7 +318,10 @@ void Interface::do_menu_action(Menu_id menu, int index)
         case 2: // Food minister
           minister_food();
           break;
-        case 3: // Morale minister
+        case 3: // Mining minister
+          minister_mining();
+          break;
+        case 4: // Morale minister
           minister_morale();
           break;
       }
@@ -519,7 +523,7 @@ void Interface::minister_finance()
 // We now know enough to calculate the total gross income...
   income_total = income_taxes + income_trade + income_mining;
 // ... which lets us calculate the total lost to corruption.
-  expense_corruption = (income_total*(100 - city->get_corruption_percentage()));
+  expense_corruption = income_total * city->get_corruption_percentage();
   expense_corruption /= 100;
 
 // Calculate maintenace
@@ -634,8 +638,6 @@ void Interface::minister_food()
     return;
   }
   Window w_food(0, 0, 80, 24);
-
-  i_food.select("list_crops");
 
 // These values and fields are static during the life of this interface.
   int num_farms     = city->get_number_of_buildings(BUILD_FARM);
@@ -817,6 +819,7 @@ void Interface::minister_food()
       case 'Q':
         done = true;
         break;
+
       case KEY_LEFT:
       case 'h':
       case 'H':
@@ -824,6 +827,7 @@ void Interface::minister_food()
       case '-':
         crop_change = -2;
 // Intentionally fall through...
+
       case KEY_RIGHT:
       case 'l':
       case 'L':
@@ -831,17 +835,27 @@ void Interface::minister_food()
         bool did_it = false;  // Track if changes (& interface will need update)
         int crop_index = i_food.get_int("list_crop_name");
         crop_change++;  // If it was -2, it's now -1; otherwise, it's now +1
+
 // These keys are only meaningful if list_crop_name is selected.
         if (i_food.selected()->name == "list_crop_name") {
           Building* farm_build = &(cur_farm->building);
+
+// Validate our crop index...
           if (crop_index >= 0 && crop_index < farm_build->crops_grown.size()) {
-            if (crop_change < 0) {
+
+            if (crop_change < 0) { // We're firing workers
               crop_change = 0 - crop_change;  // Absolute value that bitch
+
+// To decrease farming, we have to be able to fire an appropriate number of
+// peasants from this farm... so make sure we can!
               if (farm_build->crops_grown[crop_index].amount >= crop_change &&
                 city->fire_citizens(CIT_PEASANT, crop_change, farm_build)) {
                 farm_build->crops_grown[crop_index].amount -= crop_change;
                 did_it = true;
               }
+
+// To increase farming, we have to be able to hire and appropriate number of 
+// peasants to work at this farm... so make sure we can!
             } else if (crop_change > 0 &&
                        farm_build->get_empty_fields() >= crop_change &&
                        city->employ_citizens(CIT_PEASANT, crop_change,
@@ -849,9 +863,11 @@ void Interface::minister_food()
               farm_build->crops_grown[crop_index].amount += crop_change;
               did_it = true;
             }
-          }
-        }
-        if (did_it) {
+
+          } // crop_index validation
+        } // if (i_food.selected()->name == "list_crop_name")
+
+        if (did_it) { // We actually changed # of crops!  Update interface.
           list_farm_crops(cur_farm, i_food);
 // Reset our position in the list to what it was previously!
           i_food.set_data("list_crop_name", crop_index);
@@ -866,9 +882,8 @@ void Interface::minister_food()
           }
           farm_fields[farm_index] = empty_fields_ss.str();
         }
-      } break;
-          
-          
+      } break; // "Changing # of crop" block
+
       default:
         i_food.handle_action(ch);
         break;
@@ -896,6 +911,232 @@ void Interface::list_farm_crops(Area* cur_farm, cuss::interface& i_food)
   i_food.set_data("list_crop_type",  crop_types);
   i_food.set_data("list_crop_food",  crop_food );
   i_food.set_data("list_crop_grown", crop_grown);
+}
+
+void Interface::minister_mining()
+{
+  cuss::interface i_mining;
+  if (!i_mining.load_from_file("cuss/mining.cuss")) {
+    return;
+  }
+  Window w_mining(0, 0, 80, 24);
+
+  int num_mines = city->get_number_of_buildings(BUILD_MINE);
+  i_mining.set_data("num_mines", num_mines);
+  if (num_mines == 0) {
+    i_mining.set_data("num_mines", c_red);
+  }
+
+// Set up a list of mines.
+  std::vector<std::string> mine_terrain, mine_shafts;
+  std::vector<Area*> mines;
+  for (int i = 0; i < city->areas.size(); i++) {
+    if (city->areas[i].produces_resource(RES_MINING)) {
+      Point area_loc = city->areas[i].pos;
+      Building* build = &(city->areas[i].building);
+
+      std::stringstream empty_shafts_ss;
+      int empty_shafts = build->get_empty_shafts();
+      if (empty_shafts > 0) {
+        empty_shafts_ss << "<c=ltgreen>" << empty_shafts << "<c=/>";
+      } else {
+        empty_shafts_ss << empty_shafts;
+      }
+
+      mines.push_back( &(city->areas[i]) );
+      mine_terrain.push_back( city->map.get_terrain_name(area_loc) );
+      mine_shafts.push_back( empty_shafts_ss.str() );
+    }
+  }
+
+  i_mining.ref_data("list_mines",       &mine_terrain);
+  i_mining.ref_data("list_free_shafts", &mine_shafts);
+
+/* We also need to list minerals mined at the currently-selected mine.
+ * We always start by selecting mines[0]; later on, if we select a new mine,
+ * we'll update the list.  We don't want to update the list on every cycle of
+ * the loop because that'll clear list_mineral_name and move the cursor in that
+ * list back to 0, making it impossible to select any other mineral.
+ */
+  int mine_index = 0;
+  Area* cur_mine = NULL;
+/* Since several of a mine's minerals may be hidden, they won't be displayed
+ * in the interface.  Thus, we need a way to link the ones that are displayed to
+ * the actual indices of the Mineral_amounts in the building.  mineral_indices
+ * does that job.  Its size is the same as the displayed minerals, and each int
+ * in the vector is the index of the actual Mineral_amount from the building.
+ * Example: assuming the first two minerals are hidden, mineral_indices[0] will
+ * store 2 - because the first displayed mineral refers to the third stored
+ * mineral.
+ * list_mine_minerals() sets mineral_indices.
+ */
+  std::vector<int> mineral_indices;
+  if (!mines.empty()) {
+    cur_mine = mines[ mine_index ];
+    list_mine_minerals(cur_mine, mineral_indices, i_mining);
+  }
+
+  i_mining.select("list_mines");
+
+  bool done = false;
+
+  while (!done) {
+    int shafts_worked = city->get_shafts_worked();
+    int free_shafts   = city->get_free_shafts();
+    int free_peasants = city->get_unemployed_citizens(CIT_PEASANT);
+
+    i_mining.set_data("num_shafts_worked", shafts_worked);
+    if (shafts_worked == 0 && num_mines > 0) {
+      i_mining.set_data("num_shafts_worked", c_red);
+    } else if (num_mines == 0) {
+      i_mining.set_data("num_shafts_worked", c_dkgray);
+    } else {
+      i_mining.set_data("num_shafts_worked", c_ltgray);
+    }
+
+    i_mining.set_data("num_free_shafts", free_shafts);
+    if (free_shafts > 0 && num_mines > 0) {
+      i_mining.set_data("num_free_shafts", c_yellow);
+    } else if (num_mines == 0) {
+      i_mining.set_data("num_free_shafts", c_dkgray);
+    } else {
+      i_mining.set_data("num_free_shafts", c_ltgray);
+    }
+    
+    i_mining.set_data("num_free_peasants", free_peasants);
+    if (free_shafts == 0) {  // We don't care since all shafts are used
+      i_mining.set_data("num_free_peasants", c_dkgray);
+    } else {  // We care since we could utilize a shaft
+      if (free_peasants == 0) {
+        i_mining.set_data("num_free_peasants", c_red);
+      } else {
+        i_mining.set_data("num_free_peasants", c_ltgreen);
+      }
+    }
+
+// Check if we selected a new mine.
+    int new_mine_index = i_mining.get_int("list_mines");
+    if (new_mine_index != mine_index && new_mine_index >= 0 &&
+        new_mine_index < mines.size()) {
+      mine_index = new_mine_index;
+      cur_mine = mines[mine_index];
+      list_mine_minerals(cur_mine, mineral_indices, i_mining);
+    }
+
+    i_mining.draw(&w_mining);
+    w_mining.refresh();
+
+    int mineral_change = 0;
+    long ch = input();
+    switch (ch) {
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
+        done = true;
+        break;
+
+      case KEY_LEFT:
+      case 'h':
+      case 'H':
+      case '4':
+      case '-':
+        mineral_change = -2;
+// Intentionally fall through...
+
+      case KEY_RIGHT:
+      case 'l':
+      case 'L':
+      case '+': {
+        bool did_it = false;  // Track if changes (& interface will need update)
+        int mineral_index = i_mining.get_int("list_mineral_name");
+        mineral_change++;  // If it was -2, it's now -1; otherwise, it's now +1
+// These keys are only meaningful if list_mineral_name is selected.
+        if (i_mining.selected()->name == "list_mineral_name") {
+          Building* mine_build = &(cur_mine->building);
+
+// Validate our mineral index
+          if (mineral_index >= 0 && mineral_index < mineral_indices.size()) {
+
+// The Mineral_amount we're changing - we need to refer to mineral_indices to
+// get the actual index for the building!
+            int ind = mineral_indices[mineral_index];
+            Mineral_amount* mining_changed = &(mine_build->minerals_mined[ind]);
+
+            if (mineral_change < 0) { // Decreasing amount mined
+              mineral_change = 0 - mineral_change;  // Absolute value that bitch
+
+// To decrease mining, we have to be able to fire an appropriate number of
+// peasants from this mine... so make sure we can!
+              if (mining_changed->amount >= mineral_change &&
+                city->fire_citizens(CIT_PEASANT, mineral_change, mine_build)) {
+                mining_changed->amount -= mineral_change;
+                did_it = true;
+              }
+
+// To increase mining, we have to be able to hire an appropriate number of
+// peasants to work at this mine... so make sure we can!
+            } else if (mineral_change > 0 &&
+                       mine_build->get_empty_shafts() >= mineral_change &&
+                       city->employ_citizens(CIT_PEASANT, mineral_change,
+                                             mine_build)) {
+              mining_changed->amount += mineral_change;
+              did_it = true;
+            }
+
+          } // mineral index validation
+        } // if (i_mining.selected()->name == "list_mineral_name")
+
+        if (did_it) { // We actually changed a # of minerals!  Update interface.
+          list_mine_minerals(cur_mine, mineral_indices, i_mining);
+// Reset our position in the list to what it was previously!
+          i_mining.set_data("list_mineral_name", mineral_index);
+// Fix the list of empty shafts
+          std::stringstream empty_shafts_ss;
+          Building* build = &(mines[mine_index]->building);
+          int empty_shafts = build->get_empty_shafts();
+          if (empty_shafts > 0) {
+            empty_shafts_ss << "<c=ltgreen>" << empty_shafts << "<c=/>";
+          } else {
+            empty_shafts_ss << empty_shafts;
+          }
+          mine_shafts[mine_index] = empty_shafts_ss.str();
+        }
+      } break; // "Changing # of minerals" block
+          
+          
+      default:
+        i_mining.handle_action(ch);
+        break;
+    }
+  }
+
+}
+
+void Interface::list_mine_minerals(Area* cur_mine,
+                                   std::vector<int>& mineral_indices,
+                                   cuss::interface& i_mining)
+{
+// Clear mineral_indices - we'll be setting it up from scratch
+  mineral_indices.clear();
+// List minerals mined at cur_mine
+  std::vector<std::string> mineral_names, mineral_value, mineral_mined;
+  Building* mine_build = &(cur_mine->building);
+  for (int i = 0; i < mine_build->minerals_mined.size(); i++) {
+    Mineral_amount cur_mineral = mine_build->minerals_mined[i];
+    if (cur_mineral.amount != HIDDEN_RESOURCE) {
+      Mineral_datum* mineral_dat = Mineral_data[cur_mineral.type];
+
+// TODO: Adjust value due to market forces?
+
+      mineral_indices.push_back(i);
+      mineral_names.push_back(mineral_dat->name);
+      mineral_value.push_back( itos( mineral_dat->value ) );
+      mineral_mined.push_back( itos( cur_mineral.amount ) );
+    }
+  }
+  i_mining.set_data("list_mineral_name",  mineral_names);
+  i_mining.set_data("list_mineral_value", mineral_value );
+  i_mining.set_data("list_mineral_mined", mineral_mined);
 }
 
 void Interface::minister_morale()

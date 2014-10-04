@@ -106,8 +106,13 @@ private:
   void minister_finance();
 // Food minister, define what crops to grow and other food options
   void minister_food();
-// Helper functions for minister_food()
+  // Helper functions for minister_food()
   void list_farm_crops(Area* cur_farm, cuss::interface& i_food);
+// Mine minister, define what minerals to mine and view stats
+  void minister_mining();
+  // Helper functions for minister_mining()
+  void list_mine_minerals(Area* cur_mine, std::vector<int>& mineral_indices,
+                          cuss::interface& i_mining);
 // Happiness minister, view morale information and do things to alter it
   void minister_morale();
 // Pick an area to build
