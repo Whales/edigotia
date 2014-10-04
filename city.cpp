@@ -4,6 +4,7 @@
 #include "building.h"
 #include "stringfunc.h"
 #include "geometry.h"
+#include "rng.h"
 #include <sstream>
 #include <vector>
 #include <map>
@@ -471,6 +472,27 @@ void City::do_turn()
     }
   }
 
+// Allow mines to discover new materials.
+// TODO: Make this better (put in its own function?)
+  for (int i = 0; i < areas.size(); i++) {
+    Building* area_build = &(areas[i].building);
+    for (int n = 0; n < area_build->minerals_mined.size(); n++) {
+      Mineral_amount* min_amt = &(area_build->minerals_mined[n]);
+      Map_tile* tile_here = map.get_tile( areas[i].pos );
+      int amount_buried = 0;
+      if (tile_here) {
+        amount_buried = tile_here->get_mineral_amount(min_amt->type);
+      }
+      if (min_amt->amount == HIDDEN_RESOURCE &&
+          (amount_buried == INFINITE_RESOURCE ||
+           rng(1, 20000) < amount_buried)) {
+// TODO: Announce mineral discovery!
+        popup("Discovered %s!", Mineral_data[min_amt->type]->name.c_str());
+        min_amt->amount = 0;
+      }
+    }
+  }
+        
 
 // Advance progress on the first area in our queue.
   if (!area_queue.empty()) {
@@ -522,7 +544,9 @@ void City::add_open_area(Area area)
     debugmsg("NULL Building_data* in City::open_area (%s).",
              area.get_name().c_str());
   }
-// Look for RES_FARMING output.
+
+// Farms are set up specially.
+// Check if this area produces RES_FARMING.
   int farming = 0;
   for (int i = 0; farming == 0 && i < build_dat->production.size(); i++) {
     if (build_dat->production[i].type == RES_FARMING) {
@@ -541,6 +565,36 @@ void City::add_open_area(Area area)
       area.building.crops_grown.push_back( Crop_amount( crops_here[i], 0 ) );
     }
   }
+
+// Mines are set up specially.
+// Check if this area produces RES_MINING.
+  int mining = 0;
+  for (int i = 0; mining == 0 && i < build_dat->production.size(); i++) {
+    if (build_dat->production[i].type == RES_MINING) {
+      mining = build_dat->production[i].amount;
+    }
+  }
+  if (mining > 0) {
+// Set up area.building's list of minerals based on what's available here.
+    area.building.minerals_mined.clear();
+    std::vector<Mineral_amount> mins_here = map.get_tile(area.pos)->minerals;
+    for (int i = 0; i < mins_here.size(); i++) {
+      Mineral mineral = mins_here[i].type;
+/* An amount of HIDDEN_RESOURCE means that this mineral will be hidden (gasp)
+ * from the player until it's discovered by random chance (or spells etc).  At
+ * that point the amount will be changed to 0, and the player can increase it
+ * further to indicate that they wish to mine more.
+ * Note that almost all minerals are hidden (stone is not).
+ */
+      int mineral_amount = 0;
+      if (Mineral_data[mineral]->hidden) {
+        mineral_amount = HIDDEN_RESOURCE;
+      }
+      Mineral_amount tmp_amount( mineral, mineral_amount );
+      area.building.minerals_mined.push_back(tmp_amount);
+    }
+  }
+
   areas.push_back( area );
 }
 
@@ -796,6 +850,31 @@ int City::get_empty_fields()
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].open && areas[i].type == AREA_FARM) {
+      Building_datum* build_dat = areas[i].get_building_datum();
+      if (build_dat && areas[i].building.workers < build_dat->jobs.amount) {
+        ret += build_dat->jobs.amount - areas[i].building.workers;
+      }
+    }
+  }
+  return ret;
+}
+
+int City::get_shafts_worked()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open && areas[i].type == AREA_MINE) {
+      ret += areas[i].building.workers;
+    }
+  }
+  return ret;
+}
+
+int City::get_free_shafts()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open && areas[i].type == AREA_MINE) {
       Building_datum* build_dat = areas[i].get_building_datum();
       if (build_dat && areas[i].building.workers < build_dat->jobs.amount) {
         ret += build_dat->jobs.amount - areas[i].building.workers;

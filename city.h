@@ -88,6 +88,8 @@ public:
   int get_total_maintenance();
   int get_fields_worked();
   int get_empty_fields();
+  int get_shafts_worked();
+  int get_free_shafts();
 
 // Resource-related functions
   int get_resource_amount(Resource res);
