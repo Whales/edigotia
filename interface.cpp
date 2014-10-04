@@ -456,6 +456,175 @@ void Interface::enqueue_area()
 
 void Interface::minister_finance()
 {
+  cuss::interface i_finance;
+  if (!i_finance.load_from_file("cuss/finance.cuss")) {
+    return;
+  }
+  Window w_finance(0, 0, 80, 24);
+
+  bool done = false;
+
+  int current_gold = city->get_resource_amount(RES_GOLD);
+  i_finance.ref_data("num_gold", &current_gold);
+
+  int income_taxes = 0, income_trade = 0, income_mining = 0, income_total = 0;
+  i_finance.ref_data("num_income",        &income_total);
+  i_finance.ref_data("num_income_taxes",  &income_taxes);
+  i_finance.ref_data("num_income_trade",  &income_trade);
+  i_finance.ref_data("num_income_mining", &income_mining);
+
+  int expense_wages = 0, expense_trade = 0, expense_maintenance = 0,
+      expense_corruption = 0, expense_military = 0, expense_total = 0;
+  i_finance.ref_data("num_expenses",            &expense_total);
+  i_finance.ref_data("num_expense_wages",       &expense_wages);
+  i_finance.ref_data("num_expense_trade",       &expense_trade);
+  i_finance.ref_data("num_expense_maintenance", &expense_maintenance);
+  i_finance.ref_data("num_expense_corruption",  &expense_corruption);
+  i_finance.ref_data("num_expense_military",    &expense_military);
+
+  int net_income = 0;
+  i_finance.ref_data("num_net", &net_income);
+
+  int citizen_wealth  [CIT_MAX];
+  int citizen_income  [CIT_MAX];
+  int citizen_tax_rate[CIT_MAX];
+  int citizen_taxes   [CIT_MAX];
+  for (int i = 1; i < CIT_MAX; i++) {
+    Citizen_type cit_type = Citizen_type(i);
+    Citizens* citizens = &(city->population[cit_type]);
+    std::stringstream wealth_name, income_name, tax_rate_name, taxes_name;
+
+    wealth_name   << "num_wealth_"   << citizen_type_name(cit_type);
+    income_name   << "num_income_"   << citizen_type_name(cit_type);
+    tax_rate_name << "num_tax_rate_" << citizen_type_name(cit_type);
+    taxes_name    << "num_taxes_"    << citizen_type_name(cit_type);
+
+    citizen_wealth  [i] = citizens->wealth;
+    citizen_income  [i] = citizens->get_income();
+    citizen_tax_rate[i] = city->tax_rate[cit_type];
+    citizen_taxes   [i] = city->get_taxes(cit_type);
+
+    i_finance.ref_data(wealth_name.str(),   &(citizen_wealth  [i]));
+    i_finance.ref_data(income_name.str(),   &(citizen_income  [i]));
+    i_finance.ref_data(tax_rate_name.str(), &(citizen_tax_rate[i]));
+    i_finance.ref_data(taxes_name.str(),    &(citizen_taxes   [i]));
+
+    income_taxes += citizen_taxes[i];
+  }
+
+// TODO: Calculate trade income & expenses
+
+  income_mining = city->get_mine_production(MINERAL_GOLD);
+
+// We now know enough to calculate the total gross income...
+  income_total = income_taxes + income_trade + income_mining;
+// ... which lets us calculate the total lost to corruption.
+  expense_corruption = (income_total*(100 - city->get_corruption_percentage()));
+  expense_corruption /= 100;
+
+// Calculate maintenace
+  expense_maintenance = city->get_total_maintenance();
+
+// Calculate wages
+  expense_wages = city->get_total_wages();
+
+// Military expenditure
+  expense_military = city->get_military_expense();
+
+// Now we have total gross expenses...
+  expense_total = expense_wages + expense_trade + expense_maintenance +
+                  expense_corruption + expense_military;
+// ... and our net income.
+  net_income = income_total - expense_total;
+
+  while (!done) {
+// Set colors.
+    if (current_gold == 0) {
+      i_finance.set_data("num_gold", c_red);
+    } else {
+      i_finance.set_data("num_gold", c_ltgray);
+    }
+
+    if (income_total == 0) {
+      i_finance.set_data("num_income", c_red);
+    } else {
+      i_finance.set_data("num_income", c_ltgreen);
+    }
+
+    if (expense_total == 0) {
+      i_finance.set_data("num_expenses", c_ltblue);
+    } else {
+      i_finance.set_data("num_expenses", c_ltred);
+    }
+
+    if (net_income < 0) {
+      i_finance.set_data("num_net", c_ltred);
+    } else if (net_income > 0) {
+      i_finance.set_data("num_net", c_ltgreen);
+    } else {
+      i_finance.set_data("num_net", c_blue);
+    }
+
+    if (income_taxes > 0) {
+      i_finance.set_data("num_income_taxes", c_ltgreen);
+    } else {
+      i_finance.set_data("num_income_taxes", c_dkgray);
+    }
+
+    if (income_trade > 0) {
+      i_finance.set_data("num_income_trade", c_ltgreen);
+    } else {
+      i_finance.set_data("num_income_trade", c_dkgray);
+    }
+
+    if (income_mining > 0) {
+      i_finance.set_data("num_income_mining", c_ltgreen);
+    } else {
+      i_finance.set_data("num_income_mining", c_dkgray);
+    }
+
+    if (expense_wages > 0) {
+      i_finance.set_data("num_expense_wages", c_ltred);
+    } else {
+      i_finance.set_data("num_expense_wages", c_dkgray);
+    }
+
+    if (expense_trade > 0) {
+      i_finance.set_data("num_expense_trade", c_ltred);
+    } else {
+      i_finance.set_data("num_expense_trade", c_dkgray);
+    }
+
+    if (expense_maintenance > 0) {
+      i_finance.set_data("num_expense_maintenance", c_ltred);
+    } else {
+      i_finance.set_data("num_expense_maintenance", c_dkgray);
+    }
+
+    if (expense_corruption > 0) {
+      i_finance.set_data("num_expense_corruption", c_ltred);
+    } else {
+      i_finance.set_data("num_expense_corruption", c_dkgray);
+    }
+
+    if (expense_military > 0) {
+      i_finance.set_data("num_expense_military", c_ltred);
+    } else {
+      i_finance.set_data("num_expense_military", c_dkgray);
+    }
+
+    i_finance.draw(&w_finance);
+    w_finance.refresh();
+
+    long ch = getch();
+
+    switch (ch) {
+      case 'q':
+      case 'Q':
+      case KEY_ESC:
+        done = true;
+    }
+  }
 }
 
 void Interface::minister_food()
