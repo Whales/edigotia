@@ -98,6 +98,7 @@ struct Building
   int field_output; // How much of each crop does a single field output?
   std::vector<Crop_amount> crops_grown;
 // Basically for mines only
+  int get_empty_shafts();
   std::vector<Mineral_amount> minerals_mined;
 
 };

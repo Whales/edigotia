@@ -35,6 +35,21 @@ int Building::get_empty_fields()
   return (max_fields - fields_used);
 }
 
+int Building::get_empty_shafts()
+{
+  if (!produces_resource(RES_MINING)) {
+    return 0;
+  }
+  int max_shafts = get_total_jobs();
+  int shafts_used = 0;
+  for (int i = 0; i < minerals_mined.size(); i++) {
+    if (minerals_mined[i].amount != HIDDEN_RESOURCE) {
+      shafts_used += minerals_mined[i].amount;
+    }
+  }
+  return (max_shafts - shafts_used);
+}
+
 Building_datum* Building::get_building_datum()
 {
   return Building_data[type];
