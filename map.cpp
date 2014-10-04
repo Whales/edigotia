@@ -52,6 +52,16 @@ int Map_tile::get_farmability()
   return Terrain_data[ter]->farm_percent;
 }
 
+int Map_tile::get_mineral_amount(Mineral mineral)
+{
+  for (int i = 0; i < minerals.size(); i++) {
+    if (minerals[i].type == mineral) {
+      return minerals[i].amount;
+    }
+  }
+  return 0;
+}
+
 City_map::City_map()
 {
 }

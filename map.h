@@ -116,6 +116,8 @@ struct Map_tile
 
   int get_farmability();
 
+  int get_mineral_amount(Mineral mineral);
+
   Terrain_type                ter;
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
@@ -158,12 +160,6 @@ public:
 
   int get_farmability(Point p);
   int get_farmability(int x, int y);
-
-/*
-  Terrain_type          tiles   [CITY_MAP_SIZE][CITY_MAP_SIZE];
-  std::vector<Crop>     crops   [CITY_MAP_SIZE][CITY_MAP_SIZE];
-  std::vector<Mineral>  minerals[CITY_MAP_SIZE][CITY_MAP_SIZE] ;
-*/
 
 private:
 
