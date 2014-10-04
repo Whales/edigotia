@@ -33,6 +33,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _jobs(t, n) \
   Building_data[cur_id]->jobs = Citizen_amount((t), (n))
 
+#define _wages(n) \
+  Building_data[cur_id]->wages = (n)
+
 #define _produces(t, n) \
   Building_data[cur_id]->add_production( (t), (n) )
 
@@ -90,6 +93,7 @@ void init_building_data()
     _build_time(1);
     _upkeep(1);
     _jobs(CIT_PEASANT, 5);
+    _wages(1);
     _produces(RES_FARMING, 10);
 
   _build(BUILD_QUARRY);
@@ -98,6 +102,7 @@ void init_building_data()
     _build_time(5);
     _upkeep(2);
     _jobs(CIT_PEASANT, 10);
+    _wages(1);
     _produces(RES_STONE, 5);
 
   _build(BUILD_MINE);
@@ -107,6 +112,7 @@ void init_building_data()
     _build_time(10);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
+    _wages(2);
     _produces(RES_MINING, 10);
 
   _build(BUILD_CAMP);
@@ -114,6 +120,7 @@ void init_building_data()
     _cost(RES_GOLD, 50);
     _build_time(1);
     _jobs(CIT_PEASANT, 10);
+    _wages(2);
     _produces(RES_HUNTING, 10);
 
   _build(BUILD_SAWMILL);
@@ -122,6 +129,7 @@ void init_building_data()
     _build_time(5);
     _upkeep(2);
     _jobs(CIT_PEASANT, 10);
+    _wages(2);
     _produces(RES_LOGGING, 10);
 
   _build(BUILD_BARRACKS);
