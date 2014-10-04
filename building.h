@@ -52,6 +52,8 @@ struct Building_datum
   int military_support;
 
   Citizen_amount jobs;
+  int wages;  // Measured in 1/10th of a gold!
+
   int build_time;
   std::vector<Resource_amount> production; // Per job, w/ skill of 5 (max)
   std::vector<Resource_amount> maintenance_cost;
@@ -96,7 +98,7 @@ struct Building
   int field_output; // How much of each crop does a single field output?
   std::vector<Crop_amount> crops_grown;
 // Basically for mines only
-  std::vector<Mineral> minerals_mined;
+  std::vector<Mineral_amount> minerals_mined;
 
 };
 
