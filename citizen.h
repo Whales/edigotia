@@ -16,6 +16,7 @@ enum Citizen_type
 Citizen_type lookup_citizen_type(std::string name);
 std::string citizen_type_name(Citizen_type type, bool plural = false);
 int citizen_food_consumption(Citizen_type type);
+int citizen_idle_income(Citizen_type type); // Per 100 citizens.
 
 struct Citizen_amount
 {
