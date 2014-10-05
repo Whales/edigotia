@@ -439,6 +439,10 @@ void City::do_turn()
   }
 
 // Produce minerals.
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
+    }
+  }
   std::map<Mineral,int> minerals_produced = get_minerals_mined(),
                         minerals_used     = get_minerals_used();
 
@@ -1053,35 +1057,25 @@ std::vector<Crop_amount> City::get_crops_grown()
 // Look for any areas with buildings that provide RES_FARMING
   for (int i = 0; i < areas.size(); i++) {
     Building* build = &(areas[i].building);
-    int num_workers = build->workers;
-    if (num_workers > 0) {
-      Building_datum* build_dat = areas[i].get_building_datum();
-      bool found_farming = false;
-      for (int n = 0; !found_farming && n < build_dat->production.size(); n++) {
-        if (build_dat->production[n].type == RES_FARMING) {
-          found_farming = true;
-        }
-      }
-      if (found_farming) {  // This place produces crops!
-        for (int n = 0; n < build->crops_grown.size(); n++) {
+    if (build->workers > 0 && areas[i].produces_resource(RES_FARMING)) {
+      for (int n = 0; n < build->crops_grown.size(); n++) {
 // Check if we already have that crop in ret
-          if (build->crops_grown[n].amount > 0) {
-            Crop_amount crop = build->crops_grown[n];
-            crop.amount *= build->field_output;
-            bool found_crop = false;
-            for (int m = 0; !found_crop && m < ret.size(); m++) {
-              if (ret[m].type == crop.type) {
-                found_crop = true;
-                ret[m].amount += crop.amount;
-              }
-            }
-            if (!found_crop) { // Didn't combine it, so add it to the list
-              ret.push_back( crop );
+        if (build->crops_grown[n].amount > 0) {
+          Crop_amount crop = build->crops_grown[n];
+          crop.amount *= build->field_output;
+          bool found_crop = false;
+          for (int m = 0; !found_crop && m < ret.size(); m++) {
+            if (ret[m].type == crop.type) {
+              found_crop = true;
+              ret[m].amount += crop.amount;
             }
           }
+          if (!found_crop) { // Didn't combine it, so add it to the list
+            ret.push_back( crop );
+          }
         }
-      } // if (found_farming)
-    } // if (num_workers > 0)
+      }
+    } // if (build->workers > 0 && areas[i].produces_resource(RES_FARMING))
   } // for (int i = 0; i < areas.size(); i++)
 
 // TODO: Buildings (not from areas) that provide RES_FARMING?
@@ -1114,31 +1108,20 @@ std::map<Mineral,int> City::get_minerals_mined()
 // Look for any buildings that provide RES_MINING
   for (int i = 0; i < areas.size(); i++) {
     Building* build = &(areas[i].building);
-    int num_workers = build->workers;
-    if (num_workers > 0) {
-      Building_datum* build_dat = areas[i].get_building_datum();
-// Check each item in the production list for RES_MINING
-      bool found_mining = false;
-      for (int n = 0; !found_mining && n < build_dat->production.size(); n++) {
-        if (build_dat->production[n].type == RES_MINING) {
-          found_mining = true;
-        }
-      }
-      if (found_mining) {  // This place produces minerals!
-        for (int n = 0; n < build->minerals_mined.size(); n++) {
+    if (build->workers > 0 && areas[i].produces_resource(RES_MINING)) {
+      for (int n = 0; n < build->minerals_mined.size(); n++) {
 // Add each mineral to ret
-          if (build->minerals_mined[n].amount > 0) {
-            Mineral_amount mineral = build->minerals_mined[n];
-            mineral.amount *= build->shaft_output;
-            if (ret.count(mineral.type)) {
-              ret[mineral.type] += mineral.amount;
-            } else {
-              ret[mineral.type] = mineral.amount;
-            }
+        if (build->minerals_mined[n].amount > 0) {
+          Mineral_amount mineral = build->minerals_mined[n];
+          mineral.amount *= build->shaft_output;
+          if (ret.count(mineral.type)) {
+            ret[mineral.type] += mineral.amount;
+          } else {
+            ret[mineral.type] = mineral.amount;
           }
         }
-      } // if (found_mining)
-    } // if (num_workers > 0)
+      }
+    } // if (build->workers > 0 && areas[i].produces_resource(RES_MINING))
   } // for (int i = 0; i < areas.size(); i++)
 
   return ret;
