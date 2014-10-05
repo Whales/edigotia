@@ -92,10 +92,10 @@ void Interface::main_loop()
     i_main.set_data("text_date", game->get_date_str(date_size));
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius);
     i_main.set_data("num_population",   city->get_total_population());
-    i_main.set_data("num_gold",         city->resources[RES_GOLD]);
-    i_main.set_data("num_food",         city->resources[RES_FOOD]);
-    i_main.set_data("num_wood",         city->resources[RES_WOOD]);
-    i_main.set_data("num_stone",        city->resources[RES_STONE]);
+    i_main.set_data("num_gold",         city->get_resource_amount(RES_GOLD) );
+    i_main.set_data("num_food",         city->get_resource_amount(RES_FOOD) );
+    i_main.set_data("num_wood",         city->get_resource_amount(RES_WOOD) );
+    i_main.set_data("num_stone",        city->get_resource_amount(RES_STONE));
 
     if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
       display_area_stats(current_area);
@@ -1001,10 +1001,11 @@ void Interface::minister_mining()
     }
     used_ss << amount << "<c=/>";
 
-    if (city->minerals[mineral] == 0) {
+    int amount_stored = city->get_mineral_amount(mineral);
+    if (amount_stored == 0) {
       stored_ss << "<c=dkgray>";
     }
-    stored_ss << city->minerals[mineral] << "<c=/>";
+    stored_ss << amount_stored << "<c=/>";
 
     i_mining.add_data("list_total_used",   used_ss.str()  );
     i_mining.add_data("list_total_stored", stored_ss.str());
