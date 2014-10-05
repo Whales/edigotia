@@ -18,6 +18,11 @@ std::string Map_tile::get_terrain_name()
   return Terrain_data[ter]->name;
 }
 
+glyph Map_tile::get_glyph()
+{
+  return Terrain_data[ter]->symbol;
+}
+
 std::string Map_tile::get_info()
 {
   std::stringstream ret;
@@ -563,9 +568,7 @@ glyph City_map::get_glyph(int x, int y)
     return glyph();
   }
 
-  Terrain_type ter = tiles[x][y].ter;
-  Terrain_datum* terdata = Terrain_data[ter];
-  return terdata->symbol;
+  return tiles[x][y].get_glyph();
 }
 
 std::string City_map::get_info(Point p)
