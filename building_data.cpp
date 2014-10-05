@@ -113,7 +113,7 @@ void init_building_data()
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
     _wages(2);
-    _produces(RES_MINING, 10);
+    _produces(RES_MINING, 1);
 
   _build(BUILD_CAMP);
     _name("hunting camp");
@@ -130,7 +130,7 @@ void init_building_data()
     _upkeep(2);
     _jobs(CIT_PEASANT, 10);
     _wages(2);
-    _produces(RES_LOGGING, 10);
+    _produces(RES_LOGGING, 1);
 
   _build(BUILD_BARRACKS);
     _name("barracks");
