@@ -368,6 +368,7 @@ void Interface::display_area_stats(Area_type type)
   std::string area_name = Area_data[type]->name;
 
   Map_tile* tile = city->map.get_tile(sel);
+  Terrain_datum* ter_dat = city->map.get_terrain_datum(sel);
 
   switch (type) {
 
@@ -416,7 +417,40 @@ void Interface::display_area_stats(Area_type type)
       break;
 
     case AREA_MINE:
-      break;  // TODO: Info on available minerals?
+      if (ter_dat->minerals.empty()) {
+        stats << "<c=dkgray>" << ter_dat->name << " does not contain any " <<
+                 "minerals." << "<c=/>";
+      } else {
+        stats << ter_dat->name << " contains: " << std::endl;
+        for (int i = 0; i < ter_dat->minerals.size(); i++) {
+          Mineral_amount min_amt = ter_dat->minerals[i];
+          Mineral_datum* min_dat = Mineral_data[min_amt.type];
+          stats << capitalize( mineral_amount_ranking(min_amt) ) <<
+                   "<c=" << color_tag(min_dat->color) << ">" <<
+                   min_dat->name << "<c=/>";
+          if (i < ter_dat->minerals.size() - 1) {
+            stats << "," << std::endl;
+          }
+        }
+      }
+      break;
+
+    case AREA_SAWMILL:
+      if (ter_dat->wood_max == 0) {
+        stats << "<c=yellow>" << ter_dat->name << " contains no wood.";
+      } else if (ter_dat->wood_min == ter_dat->wood_max) {
+        if (ter_dat->wood_max >= 1000) {
+          stats << "<c=ltgreen>";
+        }
+        stats << ter_dat->name << " contains " << ter_dat->wood_min << " wood.";
+      } else {
+        if (ter_dat->wood_max >= 1000) {
+          stats << "<c=ltgreen>";
+        }
+        stats << ter_dat->name << " contains between " << ter_dat->wood_min <<
+               " and " << ter_dat->wood_max << " wood.";
+      }
+      break;
 
     case AREA_BARRACKS:
       stats << "Number of soldiers: " << city->get_military_count() <<
