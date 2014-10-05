@@ -59,6 +59,9 @@ City::City()
   for (int i = 0; i < RES_MAX; i++) {
     resources[i] = 0;
   }
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    minerals[i] = 0;
+  }
 
   resources[RES_GOLD]  = 5000;
   resources[RES_FOOD]  = 5000;
