@@ -28,6 +28,7 @@ enum Area_type
   AREA_FARM,
   AREA_QUARRY,
   AREA_MINE,
+  AREA_SAWMILL,
 
 // Military
   AREA_BARRACKS,

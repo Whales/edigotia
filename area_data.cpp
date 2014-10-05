@@ -51,8 +51,13 @@ void init_area_data()
 
   _area(AREA_MINE);
     _name("mine");
-    _symbol('M', c_brown);
+    _symbol('M', c_yellow);
     _building(BUILD_MINE);
+
+  _area(AREA_SAWMILL);
+    _name("sawmill");
+    _symbol('M', c_brown);
+    _building(BUILD_SAWMILL);
 
   _area(AREA_BARRACKS);
     _name("barracks");
