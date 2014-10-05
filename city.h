@@ -57,6 +57,7 @@ public:
   Area_queue_status add_area_to_queue(Area area);
   void add_open_area(Area area);  // Move it from queue to areas.
 
+  bool expend_resource(Resource res, int amount);
   bool expend_resources(std::vector<Resource_amount> resources);
   bool expend_resources(std::map<Resource,int> resources);
 
@@ -93,12 +94,14 @@ public:
 
 // Resource-related functions
   int get_resource_amount(Resource res);
+  int get_mineral_amount (Mineral  min);
 
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);
   int get_military_expense();
   int get_taxes(Citizen_type type = CIT_NULL);
   int get_corruption_percentage();
+  int get_corruption_amount();
 
   // Crops & food
   int get_food_consumption(Citizen_type type = CIT_NULL);
