@@ -1064,7 +1064,13 @@ std::map<Mineral,int> City::get_minerals_mined()
 
   return ret;
 }
-  
+
+// TODO: This function.
+std::map<Mineral,int> City::get_minerals_used()
+{
+  std::map<Mineral,int> ret;
+  return ret;
+}
 
 // TODO: This function.
 int City::get_import(Resource res)

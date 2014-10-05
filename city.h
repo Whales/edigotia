@@ -108,6 +108,7 @@ public:
   // Mining
   int get_mine_production(Mineral mineral = MINERAL_NULL);
   std::map<Mineral,int> get_minerals_mined();
+  std::map<Mineral,int> get_minerals_used();
 
 // Trade-related functions
   int get_import(Resource res);
