@@ -7,6 +7,7 @@
 #include "building.h"
 #include <sstream>
 #include <cstdarg> // For the variadic function below
+#include <map>
 
 Interface::Interface()
 {
@@ -302,7 +303,9 @@ void Interface::do_menu_action(Menu_id menu, int index)
           popup("Can't save yet!");
           break;
         case 2: // Just quit
-          game_state = GAME_QUIT;
+          if (query_yn("Really quit?")) {
+            game_state = GAME_QUIT;
+          }
           break;
         case 3: // About
           popup("Edigotia is (c) 2014 Whales");
@@ -518,7 +521,7 @@ void Interface::minister_finance()
 
 // TODO: Calculate trade income & expenses
 
-  income_mining = city->get_mine_production(MINERAL_GOLD);
+  income_mining = city->get_amount_mined(MINERAL_GOLD);
 
 // We now know enough to calculate the total gross income...
   income_total = income_taxes + income_trade + income_mining;
@@ -943,8 +946,11 @@ void Interface::minister_mining()
         empty_shafts_ss << empty_shafts;
       }
 
+      std::stringstream mine_terrain_ss;
+      std::string terrain_name = city->map.get_terrain_name(area_loc);
+
       mines.push_back( &(city->areas[i]) );
-      mine_terrain.push_back( city->map.get_terrain_name(area_loc) );
+      mine_terrain.push_back( terrain_name );
       mine_shafts.push_back( empty_shafts_ss.str() );
     }
   }
@@ -974,6 +980,34 @@ void Interface::minister_mining()
   if (!mines.empty()) {
     cur_mine = mines[ mine_index ];
     list_mine_minerals(cur_mine, mineral_indices, i_mining);
+  }
+
+  std::map<Mineral,int> minerals_used = city->get_minerals_used();
+
+// Minerals used shouldn't change during this function, so we can set it here.
+  for (int i = 1; i < MINERAL_MAX; i++) {
+    Mineral mineral = Mineral(i);
+    Mineral_datum* min_dat = Mineral_data[mineral];
+
+    std::stringstream mineral_ss;
+    mineral_ss << "<c=" << color_tag(min_dat->color) << ">" << min_dat->name <<
+                  "<c=/>";
+    i_mining.add_data("list_master_minerals", mineral_ss.str());
+
+    std::stringstream used_ss, stored_ss;
+    int amount = (minerals_used.count(mineral) ? minerals_used[mineral] : 0);
+    if (amount == 0) {
+      used_ss << "<c=dkgray>";
+    }
+    used_ss << amount << "<c=/>";
+
+    if (city->minerals[mineral] == 0) {
+      stored_ss << "<c=dkgray>";
+    }
+    stored_ss << city->minerals[mineral] << "<c=/>";
+
+    i_mining.add_data("list_total_used",   used_ss.str()  );
+    i_mining.add_data("list_total_stored", stored_ss.str());
   }
 
   i_mining.select("list_mines");
@@ -1021,6 +1055,19 @@ void Interface::minister_mining()
       mine_index = new_mine_index;
       cur_mine = mines[mine_index];
       list_mine_minerals(cur_mine, mineral_indices, i_mining);
+    }
+
+// Set up amount mined
+    i_mining.clear_data("list_total_mined");
+    for (int i = 1; i < MINERAL_MAX; i++) {
+      Mineral min = Mineral(i);
+      int amount = city->get_amount_mined(min);
+      std::stringstream amount_ss;
+      if (amount == 0) {
+        amount_ss << "<c=dkgray>";
+      }
+      amount_ss << amount << "<c=/>";
+      i_mining.add_data("list_total_mined", amount_ss.str());
     }
 
     i_mining.draw(&w_mining);
