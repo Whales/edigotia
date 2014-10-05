@@ -10,6 +10,9 @@ Terrain_datum* Terrain_data[TER_MAX];
   Terrain_data[cur_id]->symbol = glyph((c), (f), (c_black))
 #define _farm(n) \
   Terrain_data[cur_id]->farm_percent = (n)
+#define _wood(a, b) \
+  Terrain_data[cur_id]->wood_min = (a); \
+  Terrain_data[cur_id]->wood_max = (b)
 #define _crop(c) \
   Terrain_data[cur_id]->crops.push_back( (c) )
 #define _mineral(m, a) \
@@ -89,6 +92,7 @@ void init_terrain_data()
     _name("Field");
     _symbol('.', c_green);
     _farm(100);
+    _wood(0, 80);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
@@ -105,6 +109,7 @@ void init_terrain_data()
     _name("Rocky");
     _symbol(',', c_brown);
     _farm(60);
+    _wood(0, 40);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
@@ -129,6 +134,7 @@ void init_terrain_data()
     _name("Hill");
     _symbol('=', c_brown);
     _farm(50);
+    _wood(0, 30);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_GRAPES);
@@ -173,6 +179,7 @@ void init_terrain_data()
     _name("Forest");
     _symbol(';', c_ltgreen);
     _farm(20);
+    _wood(2000, 8000);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
     _crop(CROP_AMANITAS);
@@ -227,6 +234,7 @@ void init_terrain_data()
     _name("Swamp");
     _symbol('~', c_cyan);
     _farm(80);
+    _wood(500, 4000);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);
     _crop(CROP_CINNAMON);
