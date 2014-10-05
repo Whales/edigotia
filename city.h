@@ -121,6 +121,7 @@ public:
   int closed_buildings[BUILD_MAX];
 
   int resources[RES_MAX];
+  int minerals[MINERAL_MAX];
 
   int tax_rate[CIT_MAX];
 
