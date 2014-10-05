@@ -111,9 +111,9 @@ void init_building_data()
     _cost(RES_WOOD, 50);
     _build_time(10);
     _upkeep(3);
-    _jobs(CIT_PEASANT, 10);
+    _jobs(CIT_PEASANT, 6);
     _wages(2);
-    _produces(RES_MINING, 1);
+    _produces(RES_MINING, 5);
 
   _build(BUILD_CAMP);
     _name("hunting camp");
@@ -121,7 +121,7 @@ void init_building_data()
     _build_time(1);
     _jobs(CIT_PEASANT, 10);
     _wages(2);
-    _produces(RES_HUNTING, 10);
+    _produces(RES_HUNTING, 5);
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
@@ -130,7 +130,7 @@ void init_building_data()
     _upkeep(2);
     _jobs(CIT_PEASANT, 10);
     _wages(2);
-    _produces(RES_LOGGING, 1);
+    _produces(RES_LOGGING, 5);
 
   _build(BUILD_BARRACKS);
     _name("barracks");
