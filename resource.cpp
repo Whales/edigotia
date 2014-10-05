@@ -135,3 +135,30 @@ Mineral search_for_mineral(std::string name)
   }
   return MINERAL_NULL;
 }
+
+std::string mineral_amount_ranking(Mineral_amount min_amt)
+{
+  if (min_amt.amount == INFINITE_RESOURCE) {
+    return "unlimited ";
+  }
+  if (min_amt.type == MINERAL_NULL || min_amt.type == MINERAL_MAX) {
+    return "";
+  }
+
+  if (min_amt.amount <=   100) {
+    return "trace ";
+  }
+  if (min_amt.amount <=   500) {
+    return "a little ";
+  }
+  if (min_amt.amount <=  2000) {
+    return "some ";
+  }
+  if (min_amt.amount <=  5000) {
+    return "lots of ";
+  }
+  if (min_amt.amount <=  8000) {
+    return "tons of ";
+  }
+  return "a huge amount of ";
+}

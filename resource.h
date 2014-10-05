@@ -175,6 +175,10 @@ struct Mineral_amount
   Mineral_amount randomize();
 };
 
+// Returns a description of the amount of mineral there.
+// E.g. "Trace ", "Little ", "Some ", "Lots of ", "Tons of ", etc
+std::string mineral_amount_ranking(Mineral_amount min_amt);
+
 extern Crop_datum*    Crop_data   [CROP_MAX];
 extern Mineral_datum* Mineral_data[MINERAL_MAX];
 
