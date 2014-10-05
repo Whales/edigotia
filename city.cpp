@@ -441,21 +441,41 @@ void City::do_turn()
 // Produce minerals.
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
-    }
-  }
-  std::map<Mineral,int> minerals_produced = get_minerals_mined(),
-                        minerals_used     = get_minerals_used();
-
-  std::map<Mineral,int> net_minerals;
-  for (int i = 0; i < MINERAL_MAX; i++) {
-    Mineral min = Mineral(i);
-    int produced = (minerals_produced.count(min) ? minerals_produced[min] : 0);
-    int used     = (minerals_used.count(min)     ? minerals_used[min]     : 0);
-
-    minerals[min] += (produced - used);
-    if (minerals[min] < 0) {
-// TODO: Consequences for insufficient minerals!
-      minerals[min] = 0;
+      Building* mine_building = &(areas[i].building);
+      Point mine_pos = areas[i].pos;
+      Map_tile* tile = map.get_tile(mine_pos);
+      for (int n = 0; n < mine_building->minerals_mined.size(); n++) {
+        Mineral_amount min_mined = mine_building->minerals_mined[n];
+        if (min_mined.amount > 0) {
+          int workers = min_mined.amount; // In case we need to fire them; below
+          min_mined.amount *= mine_building->shaft_output;
+// Check that the terrain still has enough of that resource!
+          bool found_mineral = false;
+          for (int m = 0; !found_mineral && m < tile->minerals.size(); m++) {
+            if (tile->minerals[m].type == min_mined.type) {
+              found_mineral = true;
+              Mineral_amount* tile_min = &(tile->minerals[m]);
+              if (tile_min->amount == INFINITE_RESOURCE) {
+                minerals[min_mined.type] += min_mined.amount;
+              } else if (tile_min->amount < min_mined.amount) {
+// TODO: Add an alert for the player that we've exhausted this source of mineral
+                minerals[min_mined.type] += tile_min->amount;
+                tile->minerals.erase( tile->minerals.begin() + m );
+// Fire any workers associated with that mineral.
+// TODO: Don't hardcode CIT_PEASANT, even though it's a perfectly OK assumption
+                fire_citizens(CIT_PEASANT, workers, mine_building);
+                mine_building->minerals_mined.erase(
+                  mine_building->minerals_mined.begin() + n
+                );
+                n--;
+              } else {
+                minerals[min_mined.type] += min_mined.amount;
+                tile_min->amount -= min_mined.amount;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
