@@ -611,14 +611,15 @@ void City::add_open_area(Area area)
   }
   if (farming > 0) {
     Map_tile* tile_here = map.get_tile(area.pos);
+    Building* farm_bld = &(area.building);
     farming = (farming * tile_here->get_farmability()) / 100;
 // TODO: Further modify farming based on racial ability.
-    area.building.field_output = farming;
+    farm_bld->field_output = farming;
 // Set up area.building's list of crops based on what's available here.
-    area.building.crops_grown.clear();
+    farm_bld->crops_grown.clear();
     std::vector<Crop> crops_here = map.get_tile(area.pos)->crops;
     for (int i = 0; i < crops_here.size(); i++) {
-      area.building.crops_grown.push_back( Crop_amount( crops_here[i], 0 ) );
+      farm_bld->crops_grown.push_back( Crop_amount( crops_here[i], 0 ) );
     }
   }
 
