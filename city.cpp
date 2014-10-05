@@ -411,31 +411,6 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
 
 void City::do_turn()
 {
-// First, deduct maintenance/wages for all areas
-/* TODO:  This could be better.  It could be the case that while we can't afford
- *        these costs NOW, we WILL be able to afford them after collecting
- *        resources from areas & buildings.
- */
-  for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open) {
-      std::map<Resource,int> maintenance = areas[i].get_maintenance();
-      if (!expend_resources( maintenance )) {
-        areas[i].open = false;
-      }
-    }
-  }
-// Ditto for buildings (and ditto for the TODO)
-  for (int i = 0; i < BUILD_MAX; i++) {
-    int bd_num = open_buildings[i];
-    for (int n = 0; n < bd_num; n++) {
-      Building_datum* bd = Building_data[i];
-      if (!expend_resources( bd->maintenance_cost )) {
-        open_buildings[i]--;
-        closed_buildings[i]++;
-      }
-    }
-  }
-
 // Import resources.
   for (int i = 1; i < RES_MAX; i++) {
     Resource import = Resource(i);
@@ -459,6 +434,60 @@ void City::do_turn()
         //int food_deficit = type_consumption - resources[RES_FOOD];
         resources[RES_FOOD] = 0;
 // TODO: Starvation!
+      }
+    }
+  }
+
+// Produce minerals.
+  std::map<Mineral,int> minerals_produced = get_minerals_mined(),
+                        minerals_used     = get_minerals_used();
+
+  std::map<Mineral,int> net_minerals;
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    Mineral min = Mineral(i);
+    int produced = (minerals_produced.count(min) ? minerals_produced[min] : 0);
+    int used     = (minerals_used.count(min)     ? minerals_used[min]     : 0);
+
+    minerals[min] += (produced - used);
+    if (minerals[min] < 0) {
+// TODO: Consequences for insufficient minerals!
+      minerals[min] = 0;
+    }
+  }
+
+// Pay wages.
+  int wages = get_total_wages();
+  if (!expend_resource(RES_GOLD, wages)) {
+// TODO: Consequences for failure to pay wages!
+    resources[RES_GOLD] = 0;
+    minerals[MINERAL_GOLD] = 0;
+  }
+
+// Lose gold to corruption.
+  int corruption = get_corruption_amount();
+  if (!expend_resource(RES_GOLD, corruption)) {
+    resources[RES_GOLD] = 0;
+    minerals[MINERAL_GOLD] = 0;
+// TODO: Consequences for failure to pay corruption?
+  }
+
+// Deduct maintenance for all areas
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open) {
+      std::map<Resource,int> maintenance = areas[i].get_maintenance();
+      if (!expend_resources( maintenance )) {
+        areas[i].open = false;
+      }
+    }
+  }
+// Ditto for buildings (and ditto for the TODO)
+  for (int i = 0; i < BUILD_MAX; i++) {
+    int bd_num = open_buildings[i];
+    for (int n = 0; n < bd_num; n++) {
+      Building_datum* bd = Building_data[i];
+      if (!expend_resources( bd->maintenance_cost )) {
+        open_buildings[i]--;
+        closed_buildings[i]++;
       }
     }
   }
@@ -601,12 +630,19 @@ void City::add_open_area(Area area)
   areas.push_back( area );
 }
 
+bool City::expend_resource(Resource res, int amount)
+{
+  std::vector<Resource_amount> res_vec;
+  res_vec.push_back( Resource_amount(res, amount) );
+  return expend_resources(res_vec);
+}
+
 bool City::expend_resources(std::vector<Resource_amount> res_used)
 {
 // First, check if we have enough
   for (int i = 0; i < res_used.size(); i++) {
     Resource res = res_used[i].type;
-    if (resources[res] < res_used[i].amount) {
+    if (get_resource_amount(res) < res_used[i].amount) {
       return false;
     }
   }
@@ -614,6 +650,13 @@ bool City::expend_resources(std::vector<Resource_amount> res_used)
   for (int i = 0; i < res_used.size(); i++) {
     Resource res = res_used[i].type;
     resources[res] -= res_used[i].amount;
+    if (res == RES_GOLD && resources[res] < 0) {
+      minerals[MINERAL_GOLD] += resources[res];
+      resources[res] = 0;
+    } else if (res == RES_STONE && resources[res] < 0) {
+      minerals[MINERAL_STONE] += resources[res];
+      resources[res] = 0;
+    }
   }
   return true;
 }
@@ -624,7 +667,7 @@ bool City::expend_resources(std::map<Resource,int> res_used)
 // First, check if we have enough
   for (it = res_used.begin(); it != res_used.end(); it++) {
     Resource res = it->first;
-    if (resources[res] < it->second) {
+    if (get_resource_amount(res) < it->second) {
       return false;
     }
   }
@@ -632,6 +675,13 @@ bool City::expend_resources(std::map<Resource,int> res_used)
   for (it = res_used.begin(); it != res_used.end(); it++) {
     Resource res = it->first;
     resources[res] -= it->second;
+    if (res == RES_GOLD && resources[res] < 0) {
+      minerals[MINERAL_GOLD] += resources[res];
+      resources[res] = 0;
+    } else if (res == RES_STONE && resources[res] < 0) {
+      minerals[MINERAL_STONE] += resources[res];
+      resources[res] = 0;
+    }
   }
   return true;
 }
@@ -889,7 +939,24 @@ int City::get_free_shafts()
 
 int City::get_resource_amount(Resource res)
 {
+  if (res == RES_GOLD) {
+    return resources[res] + minerals[MINERAL_GOLD];
+  }
+  if (res == RES_STONE) {
+    return resources[res] + minerals[MINERAL_STONE];
+  }
   return resources[res];
+}
+
+int City::get_mineral_amount(Mineral min)
+{
+  if (min == MINERAL_GOLD) {
+    return minerals[min] + resources[RES_GOLD];
+  }
+  if (min == MINERAL_STONE) {
+    return minerals[min] + resources[RES_STONE];
+  }
+  return minerals[min];
 }
 
 // type defaults to CIT_NULL
@@ -942,6 +1009,16 @@ int City::get_taxes(Citizen_type type)
 int City::get_corruption_percentage()
 {
   return 10;
+}
+
+int City::get_corruption_amount()
+{
+  int percentage = get_corruption_percentage();
+  int income = get_taxes() + get_import(RES_GOLD) +
+               get_amount_mined(MINERAL_GOLD);
+  int lost = income * percentage;
+  lost /= 100;  // Since percentage is reported as an int from 0 to 100.
+  return lost;
 }
 
 // type defaults to CIT_NULL
