@@ -42,9 +42,19 @@ enum Terrain_type
 
 struct Terrain_datum
 {
+  Terrain_datum()
+  {
+    name = "Unknown";
+    symbol = glyph('x', c_red, c_white);
+    farm_percent = 0;
+    wood_min = 0;
+    wood_max = 0;
+  };
+
   std::string name;
   glyph symbol;
   int farm_percent;
+  int wood_min, wood_max;
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
 // TODO: List of wildlife
@@ -110,16 +120,18 @@ struct Map_tile
   Map_tile();
   ~Map_tile();
 
-  std::string get_terrain_name();
-  glyph       get_glyph();
-  std::string get_info();
-  std::string get_crop_info();
+  Terrain_datum* get_terrain_datum();
+  std::string    get_terrain_name();
+  glyph          get_glyph();
+  std::string    get_info();
+  std::string    get_crop_info();
 
   int get_farmability();
 
   int get_mineral_amount(Mineral mineral);
 
-  Terrain_type                ter;
+  Terrain_type ter;
+  int wood;
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
 };
