@@ -608,6 +608,7 @@ void City::add_open_area(Area area)
   }
   if (mining > 0) {
 // Set up area.building's list of minerals based on what's available here.
+    area.building.shaft_output = mining;
     area.building.minerals_mined.clear();
     std::vector<Mineral_amount> mins_here = map.get_tile(area.pos)->minerals;
     for (int i = 0; i < mins_here.size(); i++) {
@@ -1128,6 +1129,7 @@ std::map<Mineral,int> City::get_minerals_mined()
 // Add each mineral to ret
           if (build->minerals_mined[n].amount > 0) {
             Mineral_amount mineral = build->minerals_mined[n];
+            mineral.amount *= build->shaft_output;
             if (ret.count(mineral.type)) {
               ret[mineral.type] += mineral.amount;
             } else {

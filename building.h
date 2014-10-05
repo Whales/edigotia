@@ -99,6 +99,7 @@ struct Building
   std::vector<Crop_amount> crops_grown;
 // Basically for mines only
   int get_empty_shafts();
+  int shaft_output; // How much of each mineral does a single shaft output?
   std::vector<Mineral_amount> minerals_mined;
 
 };

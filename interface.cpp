@@ -1176,10 +1176,11 @@ void Interface::list_mine_minerals(Area* cur_mine,
 
 // TODO: Adjust value due to market forces?
 
+      int amount = cur_mineral.amount * mine_build->shaft_output;
       mineral_indices.push_back(i);
       mineral_names.push_back(mineral_dat->name);
       mineral_value.push_back( itos( mineral_dat->value ) );
-      mineral_mined.push_back( itos( cur_mineral.amount ) );
+      mineral_mined.push_back( itos( amount ) );
     }
   }
   i_mining.set_data("list_mineral_name",  mineral_names);
