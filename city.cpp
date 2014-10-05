@@ -1012,7 +1012,7 @@ std::vector<Crop_amount> City::get_crops_grown()
 }
 
 // mineral defaults to MINERAL_NULL
-int City::get_mine_production(Mineral mineral)
+int City::get_amount_mined(Mineral mineral)
 {
   std::map<Mineral,int> all_minerals = get_minerals_mined();
   if (mineral == MINERAL_NULL) {

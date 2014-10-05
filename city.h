@@ -106,7 +106,7 @@ public:
   std::vector<Crop_amount> get_crops_grown();
 
   // Mining
-  int get_mine_production(Mineral mineral = MINERAL_NULL);
+  int get_amount_mined(Mineral mineral = MINERAL_NULL);
   std::map<Mineral,int> get_minerals_mined();
   std::map<Mineral,int> get_minerals_used();
 
