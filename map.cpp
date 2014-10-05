@@ -13,6 +13,11 @@ Map_tile::~Map_tile()
 {
 }
 
+Terrain_datum* Map_tile::get_terrain_datum()
+{
+  return Terrain_data[ter];
+}
+
 std::string Map_tile::get_terrain_name()
 {
   return Terrain_data[ter]->name;
@@ -444,6 +449,14 @@ void City_map::generate(Map_type type,
     }
   }
 
+// Set up wood content.
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      Terrain_datum* ter_dat = tiles[x][y].get_terrain_datum();
+      tiles[x][y].wood = rng(ter_dat->wood_min, ter_dat->wood_max);
+    }
+  }
+  
 // Now place some resources...
   for (int x = 0; x < CITY_MAP_SIZE; x++) {
     for (int y = 0; y < CITY_MAP_SIZE; y++) {
@@ -541,7 +554,7 @@ Terrain_datum* City_map::get_terrain_datum(int x, int y)
   if (is_oob(x, y)) {
     return Terrain_data[TER_NULL]; // Better/safer than returning NULL
   }
-  return Terrain_data[ tiles[x][y].ter ];
+  return tiles[x][y].get_terrain_datum();
 }
 
 std::string City_map::get_terrain_name(Point p)
