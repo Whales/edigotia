@@ -111,6 +111,7 @@ struct Map_tile
   ~Map_tile();
 
   std::string get_terrain_name();
+  glyph       get_glyph();
   std::string get_info();
   std::string get_crop_info();
 
