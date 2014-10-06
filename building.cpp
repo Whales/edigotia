@@ -5,6 +5,7 @@
 
 Building::Building()
 {
+  pos = Point(-1, -1);
   type = BUILD_NULL;
   workers = 0;
   field_output = 0;
@@ -55,6 +56,11 @@ Building_datum* Building::get_building_datum()
   return Building_data[type];
 }
 
+std::string Building::get_name()
+{
+  return get_building_datum()->name;
+}
+
 bool Building::produces_resource(Resource res)
 {
   Building_datum* build_dat = get_building_datum();
@@ -91,6 +97,16 @@ int Building::get_filled_jobs(Citizen_type cit_type)
     return 0;
   }
   return workers;
+}
+
+Citizen_type Building::get_job_citizen_type()
+{
+  return get_building_datum()->jobs.type;
+}
+
+int Building::get_upkeep()
+{
+  return get_building_datum()->upkeep;
 }
 
 Building_datum::Building_datum()

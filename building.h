@@ -1,10 +1,11 @@
 #ifndef _BUILDING_H_
 #define _BUILDING_H_
 
-#include <string>
-#include <vector>
 #include "citizen.h"
 #include "resource.h"
+#include "geometry.h"
+#include <string>
+#include <vector>
 
 enum Building_type
 {
@@ -38,7 +39,7 @@ struct Building_datum
   std::string get_short_description();
   bool produces_resource(Resource res);
   int  amount_produced  (Resource res);
-  int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
+  int  get_total_jobs   (Citizen_type cit_type = CIT_NULL);
 
 // Setup functions
   bool add_production(Resource type, int amount);
@@ -72,12 +73,18 @@ struct Building
   void set_type(Building_type new_type);
 
   Building_datum* get_building_datum();
+  std::string get_name();
   bool produces_resource(Resource res);
   int  amount_produced  (Resource res);
 
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
   int get_available_jobs(Citizen_type cit_type = CIT_NULL);
   int get_filled_jobs   (Citizen_type cit_type = CIT_NULL);
+  Citizen_type get_job_citizen_type();
+
+  int get_upkeep();
+
+  Point pos;  // Position of the area we belong to, if any.
 
   Building_type type;
   int workers;
