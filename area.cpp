@@ -87,6 +87,14 @@ bool Area::produces_resource(Resource res)
   return (open && get_building_datum()->produces_resource(res));
 }
 
+int Area::amount_produced(Resource res)
+{
+  if (!open) {
+    return 0;
+  }
+  return get_building_datum()->amount_produced(res);
+}
+
 Building_datum* get_building_for(Area_type area)
 {
   Area_datum* adat = Area_data[area];
