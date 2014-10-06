@@ -179,6 +179,8 @@ struct Mineral_amount
 // E.g. "Trace ", "Little ", "Some ", "Lots of ", "Tons of ", etc
 std::string mineral_amount_ranking(Mineral_amount min_amt);
 
+std::string trees_amount_ranking(int wood);
+
 extern Crop_datum*    Crop_data   [CROP_MAX];
 extern Mineral_datum* Mineral_data[MINERAL_MAX];
 

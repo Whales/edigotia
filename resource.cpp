@@ -139,26 +139,50 @@ Mineral search_for_mineral(std::string name)
 std::string mineral_amount_ranking(Mineral_amount min_amt)
 {
   if (min_amt.amount == INFINITE_RESOURCE) {
-    return "unlimited ";
+    return "unlimited";
   }
   if (min_amt.type == MINERAL_NULL || min_amt.type == MINERAL_MAX) {
     return "";
   }
 
   if (min_amt.amount <=   100) {
-    return "trace ";
+    return "trace";
   }
   if (min_amt.amount <=   500) {
-    return "a little ";
+    return "a little";
   }
   if (min_amt.amount <=  2000) {
-    return "some ";
+    return "some";
   }
   if (min_amt.amount <=  5000) {
-    return "lots of ";
+    return "lots of";
   }
   if (min_amt.amount <=  8000) {
-    return "tons of ";
+    return "tons of";
   }
-  return "a huge amount of ";
+  return "a huge amount of";
+}
+
+// "<return> trees"
+std::string trees_amount_ranking(int wood)
+{
+  if (wood == 0) {
+    return "no";
+  }
+  if (wood < 50) {
+    return "very few";
+  }
+  if (wood < 100) {
+    return "few";
+  }
+  if (wood < 1000) {
+    return "many";
+  }
+  if (wood < 3000) {
+    return "dense";
+  }
+  if (wood < 5000) {
+    return "very dense";
+  }
+  return "overgrown with";
 }
