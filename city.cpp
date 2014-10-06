@@ -165,6 +165,8 @@ void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
     glyph sym = areadata->symbol;
     if (area->pos == sel) {
       sym.bg = c_blue;
+    } else if (!area->open) {
+      sym.bg = c_ltgray;
     }
     drawing[area->pos] = sym;
   }
@@ -438,7 +440,7 @@ void City::do_turn()
     }
   }
 
-// Produce minerals.
+// Produce minerals and wood.
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
       Building* mine_building = &(areas[i].building);
@@ -472,11 +474,30 @@ void City::do_turn()
                 minerals[min_mined.type] += min_mined.amount;
                 tile_min->amount -= min_mined.amount;
               }
-            }
-          }
-        }
+            } // if (tile->minerals[m].type == min_mined.type)
+          } // for (int m = 0; !found_mineral && m < tile->minerals.size(); m++)
+        } // if (min_mined.amount > 0)
+      } // for (int n = 0; n < mine_building->minerals_mined.size(); n++)
+    } // if (areas[i].produces_resource(RES_MINING))
+
+    if (areas[i].produces_resource(RES_LOGGING)) { // Sawmill etc
+      Building* sawmill_bldg = &(areas[i].building);
+      Point mine_pos = areas[i].pos;
+      Map_tile* tile = map.get_tile(mine_pos);
+      int wood_produced = (sawmill_bldg->workers *
+                           sawmill_bldg->amount_produced(RES_LOGGING));
+      if (tile->wood < wood_produced) {
+// TODO: Add a message alerting the player that the wood is exhausted.
+        resources[RES_WOOD] += tile->wood;
+        tile->wood = 0;
+        tile->clear_wood();
+        fire_citizens(CIT_PEASANT, sawmill_bldg->workers, sawmill_bldg);
+        areas[i].open = false;
+      } else {
+        resources[RES_WOOD] += wood_produced;
+        tile->wood -= wood_produced;
       }
-    }
+    } // if (areas[i].produces_resource(RES_LOGGING))
   }
 
 // Pay wages.
@@ -786,6 +807,24 @@ Area* City::area_at(Point p)
     }
   }
   return NULL;
+}
+
+std::string City::get_map_info(Point p)
+{
+  std::stringstream ret;
+  ret << map.get_info(p);
+  Area* area = area_at(p);
+  if (area) {
+    ret << std::endl;
+    ret << area->get_name();
+    if (area->construction_left > 0) {
+      ret << " (<c=brown>Under Construction<c=/>)";
+    } else if (!area->open) {
+      ret << " (<c=red>Closed<c=/>)";
+    }
+  }
+
+  return ret.str();
 }
 
 // type defaults to CIT_NULL

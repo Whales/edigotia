@@ -73,6 +73,8 @@ public:
   Area* area_at(int x, int y);
   Area* area_at(Point p);
 
+  std::string get_map_info(Point p);
+
 // Citizens/population/housing-related functions
   int get_total_population(Citizen_type type = CIT_NULL);
 // Returns the number of citizens in the given class currently without a job.
