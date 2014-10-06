@@ -333,6 +333,7 @@ void Interface::do_menu_action(Menu_id menu, int index)
     case MENU_BUILDINGS:
       switch (index) {
         case 1: // View buildings
+          building_status();
           break;
         case 2: // Build building
           break;
@@ -1210,6 +1211,140 @@ void Interface::list_mine_minerals(Area* cur_mine,
 
 void Interface::minister_morale()
 {
+}
+
+void Interface::building_status()
+{
+  cuss::interface i_buildings;
+  if (!i_buildings.load_from_file("cuss/buildings.cuss")) {
+    return;
+  }
+  Window w_buildings(0, 0, 80, 24);
+
+  std::vector<Building*> buildings = city->get_all_buildings();
+
+  std::vector<std::string> building_names, workers, max_workers, worker_class;
+
+  for (int i = 0; i < buildings.size(); i++) {
+    Building* bldg = buildings[i];
+    std::stringstream name_ss, workers_ss, max_workers_ss, worker_class_ss;
+    
+    name_ss << capitalize( bldg->get_name() );
+    if (bldg->pos.x != -1) {  // It's an area building
+      name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
+    }
+
+    if (bldg->get_total_jobs() == 0) {
+      workers_ss      << "<c=dkgray>";
+      max_workers_ss  << "<c=dkgray>";
+      worker_class_ss << "<c=dkgray>";
+    } else if (bldg->workers == 0) {
+      workers_ss << "<c=red>";
+    }
+
+    workers_ss     << bldg->workers          << "<c=/>";
+    max_workers_ss << bldg->get_total_jobs() << "<c=/>";
+
+    if (bldg->get_total_jobs() == 0) {
+      worker_class_ss << "N/A";
+    } else {
+      Citizen_type cit_type = bldg->get_job_citizen_type();
+      worker_class_ss << capitalize( citizen_type_name( cit_type ) ) << "<c=/>";
+    }
+
+    building_names.push_back(name_ss.str()        );
+    workers.push_back       (workers_ss.str()     );
+    max_workers.push_back   (max_workers_ss.str() );
+    worker_class.push_back  (worker_class_ss.str());
+  }
+
+  i_buildings.set_data("list_building_names", building_names);
+  i_buildings.set_data("list_workers",        workers       );
+  i_buildings.set_data("list_max_workers",    max_workers   );
+  i_buildings.set_data("list_worker_class",   worker_class  );
+
+  int free_peasants  = city->get_unemployed_citizens(CIT_PEASANT );
+  int free_merchants = city->get_unemployed_citizens(CIT_MERCHANT);
+  int free_burghers  = city->get_unemployed_citizens(CIT_BURGHER );
+  i_buildings.set_data("num_free_peasants",  free_peasants );
+  i_buildings.set_data("num_free_merchants", free_merchants);
+  i_buildings.set_data("num_free_burghers",  free_burghers );
+
+  i_buildings.select("list_building_names");
+
+  int index = -1;
+  Building* cur_bldg = NULL;
+  if (!buildings.empty()) {
+    cur_bldg = buildings[0];
+  }
+  bool done = false;
+
+  while (!done) {
+// Check if we selected a new building
+    int new_index = i_buildings.get_int("list_building_names");
+
+    if (new_index != index && new_index >= 0 && new_index < buildings.size()) {
+// We selected a new building!  Update information.
+      index = new_index;
+      cur_bldg = buildings[index];
+      Building_datum* bldg_dat = cur_bldg->get_building_datum();
+
+      i_buildings.set_data("num_maintenance", cur_bldg->get_upkeep());
+      if (cur_bldg->get_upkeep() == 0) {
+        i_buildings.set_data("num_maintenance", c_dkgray);
+      } else {
+        i_buildings.set_data("num_maintenance", c_red);
+      }
+
+      i_buildings.clear_data("text_benefits_label");
+      i_buildings.clear_data("text_benefits");
+
+// TODO: This assumes we don't offer jobs AND housing - may not always be true
+      if (cur_bldg->get_total_jobs() > 0) { // Jobs, not housing
+        i_buildings.set_data("text_benefits_label", "<c=yellow>Produces:<c=/>");
+        std::stringstream production_ss;
+        production_ss << "<c=ltgray>";
+        for (int i = 0; i < bldg_dat->production.size(); i++) {
+          Resource_amount res_amt = bldg_dat->production[i];
+
+          production_ss << capitalize( resource_name(res_amt.type) ) << " x " <<
+                           res_amt.amount << std::endl;
+        }
+        production_ss << "<c=/>";
+        i_buildings.set_data("text_benefits", production_ss.str());
+
+      } else { // Housing, not jobs
+
+        i_buildings.set_data("text_benefits_label", "<c=yellow>Housing:<c=/>");
+        std::stringstream housing_ss;
+        housing_ss << "<c=ltgray>";
+        for (int i = 0; i < bldg_dat->housing.size(); i++) {
+          Citizen_amount cit_amt = bldg_dat->housing[i];
+          housing_ss << capitalize( citizen_type_name(cit_amt.type) ) << ": " <<
+                        cit_amt.amount << std::endl;
+        }
+        housing_ss << "<c=/>";
+        i_buildings.set_data("text_benefits", housing_ss.str());
+
+      }
+    } // End of updating info on newly-selected building
+
+    i_buildings.draw(&w_buildings);
+    w_buildings.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+      case 'q':
+      case 'Q':
+      case KEY_ESC:
+        done = true;
+
+      default:
+        i_buildings.handle_action(ch);
+        break;
+    }
+  } // while (!done)
 }
 
 Area_type Interface::pick_area()

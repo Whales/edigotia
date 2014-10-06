@@ -115,6 +115,8 @@ private:
                           cuss::interface& i_mining);
 // Happiness minister, view morale information and do things to alter it
   void minister_morale();
+// Info on buildings; allows player to hire workers.
+  void building_status();
 // Pick an area to build
   Area_type pick_area();
 
