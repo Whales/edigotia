@@ -94,9 +94,7 @@ bool City::place_keep()
     w_map.refresh();
     long ch = getch();
     if (ch == 'Y' || ch == 'y') {
-      Area keep;
-      keep.type = AREA_KEEP;
-      keep.pos = Point(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2);
+      Area keep(AREA_KEEP, Point(CITY_MAP_SIZE / 2, CITY_MAP_SIZE / 2));;
       areas.push_back(keep);
       return true;
     } else if (ch == 'n' || ch == 'N') {
@@ -904,6 +902,21 @@ int City::get_military_supported()
     if (build_dat) {
       ret += build_dat->military_support;
     }
+  }
+
+  return ret;
+}
+
+std::vector<Building*> City::get_all_buildings()
+{
+  std::vector<Building*> ret;
+// First, open areas.
+  for (int i = 0; i < areas.size(); i++) {
+    ret.push_back( &(areas[i].building) );
+  }
+// Then, actual buildings.
+  for (int i = 0; i < buildings.size(); i++) {
+    ret.push_back( &(buildings[i]) );
   }
 
   return ret;

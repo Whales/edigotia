@@ -86,6 +86,7 @@ public:
   int get_military_supported();
 
 // Building/Area-related functions
+  std::vector<Building*> get_all_buildings();
   int get_number_of_buildings(Building_type type = BUILD_NULL);
   int get_number_of_areas    (Area_type     type = AREA_NULL);
   int get_total_maintenance();
