@@ -167,7 +167,7 @@ void Interface::handle_key(long ch)
           if (current_area != AREA_NULL) {
             enqueue_area();
           } else {
-            popup( city->map.get_info(sel).c_str() );
+            popup( city->get_map_info(sel).c_str() );
           }
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
@@ -425,9 +425,8 @@ void Interface::display_area_stats(Area_type type)
         for (int i = 0; i < ter_dat->minerals.size(); i++) {
           Mineral_amount min_amt = ter_dat->minerals[i];
           Mineral_datum* min_dat = Mineral_data[min_amt.type];
-          stats << capitalize( mineral_amount_ranking(min_amt) ) <<
-                   "<c=" << color_tag(min_dat->color) << ">" <<
-                   min_dat->name << "<c=/>";
+          stats << capitalize( mineral_amount_ranking(min_amt) ) << " <c=" << 
+                   color_tag(min_dat->color) << ">" << min_dat->name << "<c=/>";
           if (i < ter_dat->minerals.size() - 1) {
             stats << "," << std::endl;
           }
@@ -436,20 +435,7 @@ void Interface::display_area_stats(Area_type type)
       break;
 
     case AREA_SAWMILL:
-      if (ter_dat->wood_max == 0) {
-        stats << "<c=yellow>" << ter_dat->name << " contains no wood.";
-      } else if (ter_dat->wood_min == ter_dat->wood_max) {
-        if (ter_dat->wood_max >= 1000) {
-          stats << "<c=ltgreen>";
-        }
-        stats << ter_dat->name << " contains " << ter_dat->wood_min << " wood.";
-      } else {
-        if (ter_dat->wood_max >= 1000) {
-          stats << "<c=ltgreen>";
-        }
-        stats << ter_dat->name << " contains between " << ter_dat->wood_min <<
-               " and " << ter_dat->wood_max << " wood.";
-      }
+      stats << capitalize(trees_amount_ranking(tile->wood)) << " trees.";
       break;
 
     case AREA_BARRACKS:
