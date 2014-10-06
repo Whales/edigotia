@@ -128,7 +128,7 @@ void init_building_data()
     _cost(RES_GOLD, 100);
     _build_time(5);
     _upkeep(2);
-    _jobs(CIT_PEASANT, 10);
+    _jobs(CIT_PEASANT, 5);
     _wages(2);
     _produces(RES_LOGGING, 5);
 
