@@ -2,6 +2,7 @@
 #include "rng.h"
 #include "geometry.h" // For direction
 #include "window.h" // For debugmsg
+#include "stringfunc.h" // for capitalize()
 #include <sstream>
 
 Map_tile::Map_tile()
@@ -32,11 +33,17 @@ std::string Map_tile::get_info()
 {
   std::stringstream ret;
 
-  ret << Terrain_data[ter]->name << std::endl;
+  ret << Terrain_data[ter]->name;
 
   if (!crops.empty()) {
+    ret << std::endl;
     ret << "Crops: " << get_crop_info() << std::endl;
     ret << "Farm Output: " << get_farmability() << "%%%%%%%%";
+  }
+
+  if (wood > 0) {
+    ret << std::endl;
+    ret << capitalize(trees_amount_ranking(wood)) << " trees";
   }
 
   return ret.str();
@@ -70,6 +77,17 @@ int Map_tile::get_mineral_amount(Mineral mineral)
     }
   }
   return 0;
+}
+
+void Map_tile::clear_wood()
+{
+  Terrain_datum* ter_dat = get_terrain_datum();
+  if (ter_dat->wood_cleared_type == TER_NULL) { // Doesn't change.
+    return;
+  }
+  ter = ter_dat->wood_cleared_type;
+  wood = 0;
+// No other changes necessary; we retain the crops/minerals of our previous type
 }
 
 City_map::City_map()

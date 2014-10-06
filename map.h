@@ -27,6 +27,7 @@ enum Terrain_type
   TER_MOUNTAIN,   // Great for mining, OK for quarry
 
   TER_FOREST,     // Great for hunting, abundant wood
+  TER_BARREN,     // Appears when forest is cleared; OK for farming
 
   TER_RIVER,      // Good for fishing
   TER_LAKE,       // Very good for fishing
@@ -49,12 +50,17 @@ struct Terrain_datum
     farm_percent = 0;
     wood_min = 0;
     wood_max = 0;
+    wood_cleared_type = TER_NULL;
   };
 
   std::string name;
   glyph symbol;
+
   int farm_percent;
   int wood_min, wood_max;
+
+  Terrain_type wood_cleared_type; // What to become when wood is cleared out.
+
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
 // TODO: List of wildlife
@@ -129,6 +135,8 @@ struct Map_tile
   int get_farmability();
 
   int get_mineral_amount(Mineral mineral);
+
+  void clear_wood();  // Become whatever we become when wood is cleared out.
 
   Terrain_type ter;
   int wood;
