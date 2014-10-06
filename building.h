@@ -37,6 +37,7 @@ struct Building_datum
 // Data functions
   std::string get_short_description();
   bool produces_resource(Resource res);
+  int  amount_produced  (Resource res);
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
 
 // Setup functions
@@ -72,6 +73,7 @@ struct Building
 
   Building_datum* get_building_datum();
   bool produces_resource(Resource res);
+  int  amount_produced  (Resource res);
 
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
   int get_available_jobs(Citizen_type cit_type = CIT_NULL);

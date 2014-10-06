@@ -61,6 +61,12 @@ bool Building::produces_resource(Resource res)
   return build_dat->produces_resource(res);
 }
 
+int Building::amount_produced(Resource res)
+{
+  Building_datum* build_dat = get_building_datum();
+  return build_dat->amount_produced(res);
+}
+
 // cit_type defaults to CIT_NULL
 int Building::get_total_jobs(Citizen_type cit_type)
 {
@@ -177,6 +183,17 @@ bool Building_datum::produces_resource(Resource res)
     }
   }
   return false;
+}
+
+int Building_datum::amount_produced(Resource res)
+{
+  int ret = 0;
+  for (int i = 0; i < production.size(); i++) {
+    if (production[i].type == res) {
+      ret += production[i].amount;
+    }
+  }
+  return ret;
 }
 
 // cit_type defaults to CIT_NULL
