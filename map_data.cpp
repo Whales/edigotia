@@ -13,6 +13,8 @@ Terrain_datum* Terrain_data[TER_MAX];
 #define _wood(a, b) \
   Terrain_data[cur_id]->wood_min = (a); \
   Terrain_data[cur_id]->wood_max = (b)
+#define _wood_cleared(t) \
+  Terrain_data[cur_id]->wood_cleared_type = (t)
 #define _crop(c) \
   Terrain_data[cur_id]->crops.push_back( (c) )
 #define _mineral(m, a) \
@@ -103,6 +105,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_ROCKY);
@@ -128,6 +131,7 @@ void init_terrain_data()
     _buildable(AREA_FARM);
     _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
+    _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_HILL);
@@ -154,6 +158,7 @@ void init_terrain_data()
     _buildable(AREA_FARM);
     _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
+    _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_MOUNTAIN);
@@ -180,16 +185,40 @@ void init_terrain_data()
     _symbol(';', c_ltgreen);
     _farm(20);
     _wood(2000, 8000);
+    _wood_cleared(TER_BARREN);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
     _crop(CROP_AMANITAS);
     _crop(CROP_DEATHCAP);
     _crop(CROP_CINNAMON);
+    _mineral(MINERAL_STONE,    1500);
     _mineral(MINERAL_COAL,     4000);
     _buildable(AREA_HOVELS);
 // Houses and manors take up too much space to be built in a forest!
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_SAWMILL);
+
+// TER_BARREN should only appear after a forest has been totally cleared.
+  _ter(TER_BARREN);
+    _name("Barren");
+    _symbol(':', c_brown);
+    _farm(70);
+    _crop(CROP_CABBAGE);
+    _crop(CROP_MELON);
+    _crop(CROP_AMANITAS);
+    _crop(CROP_DEATHCAP);
+    _crop(CROP_CINNAMON);
+    _mineral(MINERAL_STONE,    1500);
+    _mineral(MINERAL_COAL,     4000);
+    _buildable(AREA_HOVELS);
+    _buildable(AREA_HOUSES);
+    _buildable(AREA_MANOR);
+    _buildable(AREA_KEEP);
+    _buildable(AREA_FARM);
+    _buildable(AREA_QUARRY);
+    _buildable(AREA_MINE);
+    _buildable(AREA_BARRACKS);
 
   _ter(TER_RIVER);
     _name("River");
@@ -247,6 +276,8 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_QUARRY);
+    _buildable(AREA_MINE);
+    _buildable(AREA_SAWMILL);
 
   _ter(TER_ICE);
     _name("Ice");
