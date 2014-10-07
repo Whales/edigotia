@@ -147,7 +147,7 @@ void Date::standardize()
     month -= 12;
     year++;
   }
-  while (day >= days_in_month(month)) {
+  while (day > days_in_month(month)) {
     day -= days_in_month(month);
     month++;
     if (month >= 13) {
