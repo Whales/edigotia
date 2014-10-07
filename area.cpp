@@ -57,30 +57,7 @@ Building_datum* Area::get_building_datum()
 
 std::map<Resource,int> Area::get_maintenance()
 {
-  std::map<Resource,int> ret;
-
-  Building_datum* bd_data = get_building_datum();
-
-  if (!bd_data) {  // Should never ever happen, but why not
-    return ret;
-  }
-
-  for (int i = 0; i < bd_data->maintenance_cost.size(); i++) {
-    Resource_amount res = bd_data->maintenance_cost[i];
-    if (ret.count(res.type)) {
-      ret[res.type] += res.amount;
-    } else {
-      ret[res.type] = res.amount;
-    }
-  }
-
-  if (ret.count(RES_GOLD)) {
-    ret[RES_GOLD] += bd_data->upkeep;
-  } else {
-    ret[RES_GOLD] = bd_data->upkeep;
-  }
-
-  return ret;
+  return building.get_maintenance();
 }
 
 bool Area::produces_resource(Resource res)
