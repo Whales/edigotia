@@ -855,6 +855,7 @@ void Interface::minister_food()
       case KEY_RIGHT:
       case 'l':
       case 'L':
+      case '=':
       case '+': {
         bool did_it = false;  // Track if changes (& interface will need update)
         int crop_index = i_food.get_int("list_crop_name");
@@ -1115,6 +1116,7 @@ void Interface::minister_mining()
       case KEY_RIGHT:
       case 'l':
       case 'L':
+      case '=':
       case '+': {
         bool did_it = false;  // Track if changes (& interface will need update)
         int mineral_index = i_mining.get_int("list_mineral_name");
@@ -1259,16 +1261,16 @@ void Interface::building_status()
   }
 
   i_buildings.set_data("list_building_names", building_names);
-  i_buildings.set_data("list_workers",        workers       );
+  i_buildings.ref_data("list_workers",        &workers      );
   i_buildings.set_data("list_max_workers",    max_workers   );
   i_buildings.set_data("list_worker_class",   worker_class  );
 
   int free_peasants  = city->get_unemployed_citizens(CIT_PEASANT );
   int free_merchants = city->get_unemployed_citizens(CIT_MERCHANT);
   int free_burghers  = city->get_unemployed_citizens(CIT_BURGHER );
-  i_buildings.set_data("num_free_peasants",  free_peasants );
-  i_buildings.set_data("num_free_merchants", free_merchants);
-  i_buildings.set_data("num_free_burghers",  free_burghers );
+  i_buildings.ref_data("num_free_peasants",  &free_peasants );
+  i_buildings.ref_data("num_free_merchants", &free_merchants);
+  i_buildings.ref_data("num_free_burghers",  &free_burghers );
 
   i_buildings.select("list_building_names");
 
@@ -1339,6 +1341,71 @@ void Interface::building_status()
       case 'Q':
       case KEY_ESC:
         done = true;
+        break;
+
+      case KEY_RIGHT:
+      case 'l':
+      case 'L':
+      case '=':
+      case '+':
+// Can't add workers for mines or farms - that's done via ministers
+        if (cur_bldg->type == BUILD_FARM) {
+          popup("To add workers to a farm, use the Minister of Food.");
+
+        } else if (cur_bldg->type == BUILD_MINE) {
+          popup("To add workers to a mine, use the Minister of Mining.");
+
+        } else {
+          Citizen_type cit_type = cur_bldg->get_job_citizen_type();
+          if (city->employ_citizens(cit_type, 1, cur_bldg)) {
+            std::stringstream workers_ss;
+            if (cur_bldg->get_total_jobs() == 0) {
+              workers_ss << "<c=dkgray>";
+            } else if (cur_bldg->workers == 0) {
+              workers_ss << "<c=red>";
+            }
+            workers_ss << cur_bldg->workers          << "<c=/>";
+            workers[index] = workers_ss.str();
+
+            switch (cit_type) {
+              case CIT_PEASANT:   free_peasants--;  break;
+              case CIT_MERCHANT:  free_merchants--; break;
+              case CIT_BURGHER:   free_burghers--;  break;
+            }
+          }
+        }
+        break;
+
+      case KEY_LEFT:
+      case 'h':
+      case 'H':
+      case '-':
+// Can't add workers for mines or farms - that's done via ministers
+        if (cur_bldg->type == BUILD_FARM) {
+          popup("To remove workers from a farm, use the Minister of Food.");
+
+        } else if (cur_bldg->type == BUILD_MINE) {
+          popup("To remove workers from a mine, use the Minister of Mining.");
+
+        } else {
+          Citizen_type cit_type = cur_bldg->get_job_citizen_type();
+          if (city->fire_citizens(cit_type, 1, cur_bldg)) {
+            std::stringstream workers_ss;
+            if (cur_bldg->get_total_jobs() == 0) {
+              workers_ss << "<c=dkgray>";
+            } else if (cur_bldg->workers == 0) {
+              workers_ss << "<c=red>";
+            }
+            workers_ss << cur_bldg->workers          << "<c=/>";
+            workers[index] = workers_ss.str();
+            switch (cit_type) {
+              case CIT_PEASANT:   free_peasants++;  break;
+              case CIT_MERCHANT:  free_merchants++; break;
+              case CIT_BURGHER:   free_burghers++;  break;
+            }
+          }
+        }
+        break;
 
       default:
         i_buildings.handle_action(ch);
