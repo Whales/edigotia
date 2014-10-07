@@ -109,6 +109,34 @@ int Building::get_upkeep()
   return get_building_datum()->upkeep;
 }
 
+std::map<Resource,int> Building::get_maintenance()
+{
+  std::map<Resource,int> ret;
+
+  Building_datum* bd_data = get_building_datum();
+
+  if (!bd_data) {  // Should never ever happen, but why not
+    return ret;
+  }
+
+  for (int i = 0; i < bd_data->maintenance_cost.size(); i++) {
+    Resource_amount res = bd_data->maintenance_cost[i];
+    if (ret.count(res.type)) {
+      ret[res.type] += res.amount;
+    } else {
+      ret[res.type] = res.amount;
+    }
+  }
+
+  if (ret.count(RES_GOLD)) {
+    ret[RES_GOLD] += bd_data->upkeep;
+  } else {
+    ret[RES_GOLD] = bd_data->upkeep;
+  }
+
+  return ret;
+}
+
 Building_datum::Building_datum()
 {
   uid = -1;

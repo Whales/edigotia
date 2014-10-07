@@ -6,6 +6,7 @@
 #include "geometry.h"
 #include <string>
 #include <vector>
+#include <map>
 
 enum Building_type
 {
@@ -48,7 +49,7 @@ struct Building_datum
   std::string name;
   bool plural;  // If true, name is treated as a plural
   std::vector<Resource_amount> build_costs;
-  int upkeep;
+  int upkeep; // Daily cost in gold, measured in 1/10th of a gold
 
   std::vector<Citizen_amount> housing;
   int military_support;
@@ -83,6 +84,7 @@ struct Building
   Citizen_type get_job_citizen_type();
 
   int get_upkeep();
+  std::map<Resource,int> get_maintenance();
 
   Point pos;  // Position of the area we belong to, if any.
 
