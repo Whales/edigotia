@@ -57,7 +57,7 @@ void init_building_data()
     _cost(RES_GOLD, 100);
     _cost(RES_WOOD, 10);
     _build_time(3);
-    _upkeep(1);
+    _upkeep(5);
     _housing(CIT_PEASANT, 100);
 
   _build(BUILD_HOUSE);
@@ -66,7 +66,7 @@ void init_building_data()
     _cost(RES_GOLD, 400);
     _cost(RES_WOOD, 20);
     _build_time(10);
-    _upkeep(2);
+    _upkeep(10);
     _housing(CIT_MERCHANT, 100);
 
   _build(BUILD_MANOR);
@@ -74,7 +74,7 @@ void init_building_data()
     _cost(RES_GOLD, 800);
     _cost(RES_STONE, 20);
     _build_time(30);
-    _upkeep(4);
+    _upkeep(20);
     _housing(CIT_BURGHER, 50);
 
   _build(BUILD_KEEP);
@@ -82,7 +82,7 @@ void init_building_data()
     _cost(RES_GOLD, 1500);
     _cost(RES_STONE, 50);
     _build_time(90);
-    _upkeep(5);
+    _upkeep(30);
     _housing(CIT_BURGHER, 5);
     _housing(CIT_MERCHANT, 50);
     _housing(CIT_PEASANT, 100);
@@ -100,7 +100,7 @@ void init_building_data()
     _name("quarry");
     _cost(RES_GOLD, 500);
     _build_time(5);
-    _upkeep(2);
+    _upkeep(3);
     _jobs(CIT_PEASANT, 10);
     _wages(1);
     _produces(RES_STONE, 5);
@@ -110,7 +110,7 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 50);
     _build_time(10);
-    _upkeep(3);
+    _upkeep(5);
     _jobs(CIT_PEASANT, 6);
     _wages(2);
     _produces(RES_MINING, 5);
@@ -127,7 +127,7 @@ void init_building_data()
     _name("sawmill");
     _cost(RES_GOLD, 100);
     _build_time(5);
-    _upkeep(2);
+    _upkeep(3);
     _jobs(CIT_PEASANT, 5);
     _wages(2);
     _produces(RES_LOGGING, 5);
@@ -138,7 +138,7 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 10);
     _build_time(14);
-    _upkeep(3);
+    _upkeep(15);
     _military(50);
 
 }
