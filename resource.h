@@ -3,6 +3,21 @@
 
 #include "color.h"
 #include <string>
+#include <vector>
+
+// INFINITE_RESOURCE is used e.g. when reporting how much stone is available in
+// a mountain.
+#define INFINITE_RESOURCE -99
+/* HIDDEN_RESOURCE is used for Building::minerals_mined, which is of type
+ * std::vector<Mineral_amount>.  When we open a new mine area, we look at the
+ * underlying terrain, and add a Mineral_amount with a type corresponding to
+ * each mineral available in the terrain, and a amount of HIDDEN_RESOURCE.  This
+ * means that while the mineral is available, it isn't presented to the player
+ * until the mine happens to find the mineral - at which point the amount is
+ * changed from HIDDEN_RESOURCE to 0, meaning the player has the option to mine
+ * that mineral (further increasing the amount).
+ */
+#define HIDDEN_RESOURCE   -999
 
 enum Resource
 {
@@ -24,6 +39,19 @@ enum Resource
 
 Resource lookup_resource(std::string name);
 std::string resource_name(Resource res);
+
+struct Resource_amount
+{
+  Resource_amount(Resource R = RES_NULL, int A = 0) :
+    type (R),
+    amount (A)
+    {}
+
+  Resource type;
+  int amount;
+
+  bool is_infinite(); // True if amount == INFINITE_RESOURCE
+};
 
 enum Crop_type
 {
@@ -95,13 +123,16 @@ enum Mineral
 
 struct Crop_datum
 {
+  Crop_datum() { food = 0; percentage = 0; type = CROPTYPE_NULL; }
+
+  nc_color get_color();
+
   std::string name;
   int food;
   int percentage;
   Crop_type type;
-  Crop_datum() { food = 0; percentage = 0; type = CROPTYPE_NULL; }
 
-  nc_color get_color();
+  std::vector<Resource_amount> bonus_resources;
 };
 
 struct Mineral_datum
@@ -117,33 +148,6 @@ struct Mineral_datum
 
 Crop search_for_crop(std::string name);
 Mineral search_for_mineral(std::string name);
-
-// INFINITE_RESOURCE is used e.g. when reporting how much stone is available in
-// a mountain.
-#define INFINITE_RESOURCE -99
-/* HIDDEN_RESOURCE is used for Building::minerals_mined, which is of type
- * std::vector<Mineral_amount>.  When we open a new mine area, we look at the
- * underlying terrain, and add a Mineral_amount with a type corresponding to
- * each mineral available in the terrain, and a amount of HIDDEN_RESOURCE.  This
- * means that while the mineral is available, it isn't presented to the player
- * until the mine happens to find the mineral - at which point the amount is
- * changed from HIDDEN_RESOURCE to 0, meaning the player has the option to mine
- * that mineral (further increasing the amount).
- */
-#define HIDDEN_RESOURCE   -999
-
-struct Resource_amount
-{
-  Resource_amount(Resource R = RES_NULL, int A = 0) :
-    type (R),
-    amount (A)
-    {}
-
-  Resource type;
-  int amount;
-
-  bool is_infinite(); // True if amount == INFINITE_RESOURCE
-};
 
 struct Crop_amount
 {

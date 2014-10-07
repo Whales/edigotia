@@ -11,6 +11,8 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
   Crop_data[cur_id]->percentage = (s)
 #define _food(s) \
   Crop_data[cur_id]->food = (s)
+#define _bonus(t, a) \
+  Crop_data[cur_id]->bonus_resources.push_back( Resource_amount (t), (a) )
 #define _type(s) \
   Crop_data[cur_id]->type = (s)
 
