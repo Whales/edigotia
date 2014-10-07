@@ -110,9 +110,9 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 50);
     _build_time(10);
-    _upkeep(5);
+    _upkeep(8);
     _jobs(CIT_PEASANT, 6);
-    _wages(2);
+    _wages(4);
     _produces(RES_MINING, 5);
 
   _build(BUILD_CAMP);
