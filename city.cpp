@@ -374,6 +374,9 @@ void City::do_turn()
     resources[import] += get_import(import);
   }
 
+// Receive taxes.
+  resources[RES_GOLD] += get_taxes();
+
 // Produce / eat food.
   resources[RES_FOOD] += get_food_production();
   int food_consumed = get_food_consumption();
