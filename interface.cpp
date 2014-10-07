@@ -1291,12 +1291,15 @@ void Interface::building_status()
       cur_bldg = buildings[index];
       Building_datum* bldg_dat = cur_bldg->get_building_datum();
 
-      i_buildings.set_data("num_maintenance", cur_bldg->get_upkeep());
-      if (cur_bldg->get_upkeep() == 0) {
-        i_buildings.set_data("num_maintenance", c_dkgray);
+      std::stringstream upkeep_ss;
+      int upkeep = cur_bldg->get_upkeep();
+      if (upkeep == 0) {
+        upkeep_ss << "<c=dkgray>---<c=/>";
       } else {
-        i_buildings.set_data("num_maintenance", c_red);
+// Upkeep is reported in 1/10th of a gold, so display "13" as "1.3"
+        upkeep_ss << "<c=red>" << upkeep / 10 << "." << upkeep % 10;
       }
+      i_buildings.set_data("text_upkeep", upkeep_ss.str());
 
       i_buildings.clear_data("text_benefits_label");
       i_buildings.clear_data("text_benefits");
