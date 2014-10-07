@@ -565,6 +565,8 @@ void Interface::minister_finance()
 // ... and our net income.
   net_income = income_total - expense_total;
 
+  i_finance.select("list_citizens");
+
   while (!done) {
 // Set colors.
     if (current_gold == 0) {
@@ -651,6 +653,60 @@ void Interface::minister_finance()
       case 'Q':
       case KEY_ESC:
         done = true;
+        break;
+
+      case '=':
+      case '+': {
+        int index = i_finance.get_int("list_citizens");
+// Our list starts at index 0, which is peasants.  So we want to map 0 to
+// peasants, 1 to peasants+1, etc.
+        Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
+        if (city->tax_rate[tax_type] < 100) {
+          city->tax_rate[tax_type] += 5;
+// Round down to nearest multiple of 5.
+          city->tax_rate[tax_type] -= city->tax_rate[tax_type] % 5;
+// Fix all our fields.
+          citizen_tax_rate[tax_type] = city->tax_rate [tax_type];
+// Remove the old money from taxes...
+          income_taxes -= citizen_taxes[tax_type];
+          income_total -= citizen_taxes[tax_type];
+          net_income   -= citizen_taxes[tax_type];
+// Fix the amount we get from taxes for this citizen type...
+          citizen_taxes   [tax_type] = city->get_taxes(tax_type);
+// ... and add in the new money from taxes.
+          income_taxes += citizen_taxes[tax_type];
+          income_total += citizen_taxes[tax_type];
+          net_income   += citizen_taxes[tax_type];
+        }
+      } break;
+
+      case '-': {
+        int index = i_finance.get_int("list_citizens");
+// Our list starts at index 0, which is peasants.  So we want to map 0 to
+// peasants, 1 to peasants+1, etc.
+        Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
+        if (city->tax_rate[tax_type] > 0) {
+          city->tax_rate[tax_type] -= 5;
+// Round down to nearest multiple of 5.
+          city->tax_rate[tax_type] -= city->tax_rate[tax_type] % 5;
+// Fix all our fields.
+          citizen_tax_rate[tax_type] = city->tax_rate [tax_type];
+// Remove the old money from taxes...
+          income_taxes -= citizen_taxes[tax_type];
+          income_total -= citizen_taxes[tax_type];
+          net_income   -= citizen_taxes[tax_type];
+// Fix the amount we get from taxes for this citizen type...
+          citizen_taxes   [tax_type] = city->get_taxes(tax_type);
+// ... and add in the new money from taxes.
+          income_taxes += citizen_taxes[tax_type];
+          income_total += citizen_taxes[tax_type];
+          net_income   += citizen_taxes[tax_type];
+        }
+      } break;
+
+      default:
+        i_finance.handle_action(ch);
+        break;
     }
   }
 }
