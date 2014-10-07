@@ -6,7 +6,7 @@ buildings </> 80 24 11 1 BG </> 0 0 80 24 0 0 0 517 0 0 4194412 9 0 0 1 4194424 
 5 num_free_peasants </> 65 1 5 1 0 1 2036427888 0
 5 num_free_merchants </> 65 2 5 1 0 1 1936028769 0
 5 num_free_burghers </> 65 3 5 1 0 1 146309256 0
-5 num_maintenance </> 67 5 3 1 0 1 146334176 0
+2 text_upkeep </> 67 5 3 1 0 0 -1  </>
 2 text_benefits_label </> 49 7 30 1 0 0 0  </>
 2 text_benefits </> 49 8 30 7 0 0 0  </>
 8 50 5 <S> </> 1 0
