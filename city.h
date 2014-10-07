@@ -44,7 +44,6 @@ public:
   bool place_keep();
 
 // Display output
-  void interface_buildings();
   void draw_map(cuss::element* e_draw, Point sel, bool radius_limited = false);
   void display_map(Window* w, cuss::interface* i_map, bool interactive = false,
                    bool radius_limited = false);

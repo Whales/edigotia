@@ -104,49 +104,6 @@ bool City::place_keep()
   return false;
 }
 
-void City::interface_buildings()
-{
-  cuss::interface i_buildings;
-  Window w_buildings(0, 0, 80, 24);
-
-  if (!i_buildings.load_from_file("cuss/buildings.cuss")) {
-    return;
-  }
-
-  std::vector<std::string> building_names, building_count;
-  std::vector<Building_type> building_types; // To key name list to types
-
-  for (int i = 0; i < BUILD_MAX; i++) {
-    if (open_buildings[i] > 0) {
-      building_names.push_back( Building_data[i]->name  );
-      building_count.push_back( itos(open_buildings[i]) );
-      building_types.push_back( Building_type(i)        );
-    }
-  }
-
-  i_buildings.set_data("list_buildings", building_names);
-  i_buildings.set_data("list_count",     building_count);
-  i_buildings.select  ("list_buildings");
-
-  bool done = false;
-  while (!done) {
-    i_buildings.draw(&w_buildings);
-    w_buildings.refresh();
-
-    int index = i_buildings.get_int("list_buildings");
-    Building_type type = building_types[index];
-
-    i_buildings.set_data("num_maintenance", Building_data[type]->upkeep);
-
-    long ch = input();
-    if (ch == 'q' || ch == 'Q') {
-      done = true;
-    } else {
-      i_buildings.handle_keypress(ch);
-    }
-  }
-}
-
 void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited)
 {
   if (!e_draw) {
@@ -514,25 +471,42 @@ void City::do_turn()
 // TODO: Consequences for failure to pay corruption?
   }
 
+// We total maintenance into a single pool because we'll need to divide the gold
+// by 10, and we want to lose as little to rounding as possible.
+  std::map<Resource,int> total_maintenance;
 // Deduct maintenance for all areas
   for (int i = 0; i < areas.size(); i++) {
     if (areas[i].open) {
       std::map<Resource,int> maintenance = areas[i].get_maintenance();
-      if (!expend_resources( maintenance )) {
-        areas[i].open = false;
+      for (std::map<Resource,int>::iterator it = maintenance.begin();
+           it != maintenance.end();
+           it++) {
+        if (total_maintenance.count(it->first)) {
+          total_maintenance[it->first] += it->second;
+        } else {
+          total_maintenance[it->first] = it->second;
+        }
       }
     }
   }
-// Ditto for buildings (and ditto for the TODO)
-  for (int i = 0; i < BUILD_MAX; i++) {
-    int bd_num = open_buildings[i];
-    for (int n = 0; n < bd_num; n++) {
-      Building_datum* bd = Building_data[i];
-      if (!expend_resources( bd->maintenance_cost )) {
-        open_buildings[i]--;
-        closed_buildings[i]++;
+// Deduct maintenance for all buildings
+  for (int i = 0; i < buildings.size(); i++) {
+    std::map<Resource,int> maintenance = buildings[i].get_maintenance();
+    for (std::map<Resource,int>::iterator it = maintenance.begin();
+         it != maintenance.end();
+         it++) {
+      if (total_maintenance.count(it->first)) {
+        total_maintenance[it->first] += it->second;
+      } else {
+        total_maintenance[it->first] = it->second;
       }
     }
+  }
+  if (total_maintenance.count(RES_GOLD)) {
+    total_maintenance[RES_GOLD] /= 10;
+  }
+  if (!expend_resources(total_maintenance)) {
+// TODO: Close some areas until we CAN pay this.
   }
 
 // The last resource transaction we should do is exporting resources, since it's
@@ -962,7 +936,7 @@ int City::get_total_maintenance()
   for (int i = 0; i < buildings.size(); i++) {
     ret += buildings[i].get_building_datum()->upkeep;
   }
-  return ret;
+  return ret / 10;  // Since maintenance is in 1/10th of a gold
 }
 
 int City::get_fields_worked()
