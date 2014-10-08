@@ -649,7 +649,54 @@ void City::add_open_area(Area area)
     }
   }
 
+// Now attempt to employ citizens to fill it up.
+  Building* area_bldg = &(area.building);
+  int num_jobs = area_bldg->get_total_jobs();
+  Citizen_type cit_type = area_bldg->get_job_citizen_type();
+  if (employ_citizens(cit_type, num_jobs, area_bldg)) {
+// TODO: Add a message telling the player we hired citizens.
+// If it's a farm, we need to set crops to grow.
+    if (area_bldg->produces_resource(RES_FARMING)) {
+// Find whatever crop produces the most food.
+      int best_index = -1, best_food = -1;
+      for (int i = 0; i < area_bldg->crops_grown.size(); i++) {
+        Crop crop = area_bldg->crops_grown[i].type;
+        int food = Crop_data[crop]->food;
+        if (food > best_food) {
+          best_index = i;
+          best_food = food;
+        }
+      }
+// TODO: Add a message telling the player if we chose crops or not
+      if (best_index >= 0) {
+        area_bldg->crops_grown[best_index].amount += num_jobs;
+      }
+    }
+// Mines need to have minerals chosen
+    if (area_bldg->produces_resource(RES_MINING)) {
+// Find whatever mineral is worth the most
+      int best_index = -1, best_value = -1;
+      for (int i = 0; i < area_bldg->minerals_mined.size(); i++) {
+        Mineral mineral = area_bldg->minerals_mined[i].type;
+        int value = Mineral_data[mineral]->value;
+        if (area_bldg->minerals_mined[i].amount != HIDDEN_RESOURCE && 
+            value > best_value) {
+          best_index = i;
+          best_value = value;
+        }
+      }
+// TODO: Add a message telling the player if we chose minerals or not
+      if (best_index >= 0) {
+        area_bldg->minerals_mined[best_index].amount += num_jobs;
+      }
+    }
+  } else if (num_jobs > 0) {
+// TODO: Add a message telling the player that we failed to hire citizens
+  }
+
   areas.push_back( area );
+
+  
 }
 
 bool City::expend_resource(Resource res, int amount)
@@ -717,6 +764,9 @@ bool City::employ_citizens(Citizen_type type, int amount, Building* job_site)
   if (type == CIT_NULL) {
     return false; // Gotta be a real class.
   }
+  if (amount <= 0) {
+    return false;
+  }
   if (population[type].get_unemployed() < amount) {
     return false;
   }
@@ -738,6 +788,9 @@ bool City::fire_citizens(Citizen_type type, int amount, Building* job_site)
   }
   if (type == CIT_NULL) {
     return false; // Gotta be a real class.
+  }
+  if (amount <= 0) {
+    return false;
   }
   if (population[type].count < amount) {
     return false;
