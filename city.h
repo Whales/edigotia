@@ -20,10 +20,16 @@ struct Citizens
   int count;
   int employed;
   int wealth;
-  int morale;
+  int morale_points;
+  int starvation;
 
   int get_unemployed();
   int get_income();
+  int get_morale_percentage();
+  int get_starvation_chance();
+
+  void add_citizens   (int amount);
+  void remove_citizens(int amount);
 };
 
 enum Area_queue_status

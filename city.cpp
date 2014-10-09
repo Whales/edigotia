@@ -11,10 +11,11 @@
 
 Citizens::Citizens()
 {
-  count    =  0;
-  employed =  0;
-  wealth   =  0;
-  morale   = 50;
+  count         = 0;
+  employed      = 0;
+  wealth        = 0;
+  morale_points = 0;
+  starvation    = 0;
 }
 
 Citizens::~Citizens()
@@ -42,7 +43,48 @@ int Citizens::get_income()
 
   return ret;
 }
-  
+
+int Citizens::get_morale_percentage()
+{
+  if (count == 0) {
+    return 0;
+  }
+  return (100 * morale_points) / count;
+}
+
+int Citizens::get_starvation_chance()
+{
+  if (count == 0) {
+    return 0;
+  }
+  return starvation / count;
+}
+
+void Citizens::add_citizens(int amount)
+{
+  if (amount <= 0) {
+    return;
+  }
+  count += amount;
+  morale_points += 50 * amount; // Each one comes into the world with 50% morale
+}
+
+void Citizens::remove_citizens(int amount)
+{
+  if (amount <= 0) {
+    return;
+  }
+// get_morale_percentage() basically returns the morale points per citizen.
+// When we remove citizens, we need to remove their morale points too.
+  morale_points -= amount * get_morale_percentage();
+// Ditto starvation.
+  starvation    -= amount * get_starvation_chance();
+  count -= amount;
+  if (count < 0) {
+    morale_points = 0;
+    count = 0;
+  }
+}
 
 City::City()
 {
@@ -52,7 +94,7 @@ City::City()
   }
 
   birth_points = 0;
-  population[CIT_PEASANT].count = 100;
+  population[CIT_PEASANT].add_citizens(100);
   tax_rate[CIT_PEASANT] = 50;
 
   for (int i = 0; i < RES_MAX; i++) {
@@ -191,12 +233,48 @@ void City::do_turn()
 // Receive taxes.
   resources[RES_GOLD] += get_taxes();
 
+// Check for starvation.
+  for (int i = 0; i < CIT_MAX; i++) {
+    int starve_chance = population[i].get_starvation_chance();
+// TODO: Tweak this?
+    if (starve_chance > 3) {
+      starve_chance = (starve_chance * starve_chance) / 3;
+    }
+    int dead = 0;
+/* Days: Odds:  (Example: after 5 days, each citizen has an 8% chance of dying).
+     1     1%
+     2     2%
+     3     3%
+     4     5%
+     5     8%
+    10    33%
+    17    96%
+*/
+    if (starve_chance >= 100) {
+      dead = population[i].count; // Game over, man!
+    } else if (starve_chance > 0) {
+      for (int n = 0; n < population[i].count; n++) {
+        if (rng(1, 100) <= starve_chance) {
+          dead++;
+        }
+      }
+    }
+// TODO: Alert the player to the death of citizens.
+// TODO: Lose morale due to starvation.
+    population[i].remove_citizens(dead);
+  }
+
 // Produce / eat food.
   resources[RES_FOOD] += get_food_production();
   int food_consumed = get_food_consumption();
   if (resources[RES_FOOD] >= food_consumed) {
     resources[RES_FOOD] -= food_consumed;
+// Everyone eats!  Clear starvation.
+    for (int i = 0; i < CIT_MAX; i++) {
+      population[i].starvation = 0;
+    }
   } else {
+// We can't feed everyone!  So figure out who we can feed.
 // The upper classes get to eat first.
 // TODO: Allow a law which changes this?
     for (int i = CIT_MAX - 1; i > CIT_NULL; i--) {
@@ -204,10 +282,21 @@ void City::do_turn()
       int type_consumption = get_food_consumption(cit_type);
       if (resources[RES_FOOD] >= type_consumption)  {
         resources[RES_FOOD] -= type_consumption;
+        population[i].starvation = 0; // We ate, hooray!
       } else {
-        //int food_deficit = type_consumption - resources[RES_FOOD];
+        int food_deficit = type_consumption - resources[RES_FOOD];
+        int citizen_consumption = citizen_food_consumption(cit_type);
+        int hungry_citizens = 0;
+        if (citizen_consumption > 0) {
+          hungry_citizens = food_deficit / citizen_consumption;
+        }
+// Add starvation for those we did not feed, but remove starvation for those we
+// DID feed.
+        int net_starvation = hungry_citizens -
+                             (population[cit_type].count - hungry_citizens);
+        population[cit_type].starvation += net_starvation;
+// TODO: Add a message alerting the player of insufficient food.
         resources[RES_FOOD] = 0;
-// TODO: Starvation!
       }
     }
   }
@@ -826,7 +915,7 @@ void City::birth_citizen()
     }
   }
 
-  population[new_cit_type].count++;
+  population[new_cit_type].add_citizens(1);
 }
 
 std::vector<Building*> City::get_all_buildings()
