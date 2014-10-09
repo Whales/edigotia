@@ -33,17 +33,22 @@ std::string Map_tile::get_info()
 {
   std::stringstream ret;
 
-  ret << Terrain_data[ter]->name;
+  ret << "<c=white>" << Terrain_data[ter]->name << "<c=/>" << std::endl;
 
   if (!crops.empty()) {
-    ret << std::endl;
+    ret << "<c=green>";
     ret << "Crops: " << get_crop_info() << std::endl;
-    ret << "Farm Output: " << get_farmability() << "%%%%%%%%";
+    ret << "Farm Output: " << get_farmability() << "%%%%";
+    ret << "<c=/>";
+  } else {
+    ret << "<c=red>No crops.<c=/>";
   }
 
   if (wood > 0) {
     ret << std::endl;
+    ret << "<c=brown>";
     ret << capitalize(trees_amount_ranking(wood)) << " trees";
+    ret << "<c=/>";
   }
 
   return ret.str();
