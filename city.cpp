@@ -11,9 +11,10 @@
 
 Citizens::Citizens()
 {
-  count = 0;
-  employed = 0;
-  wealth = 0;
+  count    =  0;
+  employed =  0;
+  wealth   =  0;
+  morale   = 50;
 }
 
 Citizens::~Citizens()
@@ -49,6 +50,7 @@ City::City()
     population[i].type = Citizen_type(i);
   }
 
+  birth_points = 0;
   population[CIT_PEASANT].count = 100;
 
   for (int i = 0; i < BUILD_MAX; i++) {
@@ -368,6 +370,14 @@ void City::display_map(Window* w, cuss::interface* i_map, bool interactive,
 
 void City::do_turn()
 {
+// Birth a new citizen(s)?
+  birth_points += get_daily_birth_points();
+  while (birth_points >= 100) {
+// TODO: Add a message alerting the player that citizens have been born.
+    birth_points -= 100;
+    birth_citizen();
+  }
+
 // Import resources.
   for (int i = 1; i < RES_MAX; i++) {
     Resource import = Resource(i);
@@ -935,6 +945,79 @@ int City::get_military_supported()
   }
 
   return ret;
+}
+
+int City::get_daily_birth_points()
+{
+  int ret = 0;
+  int pop[CIT_MAX], rate[CIT_MAX];
+  for (int i = CIT_NULL; i < CIT_MAX; i++) {
+    pop[i] = population[i].count;
+    rate[CIT_MAX] = 0;
+  }
+
+// Specific rates for each type.  Lower values mean a faster rate.
+// TODO: Base these values on on our race.
+  rate[CIT_PEASANT]  = 100;
+  rate[CIT_MERCHANT] = 90;
+  rate[CIT_BURGHER]  = 80;
+  
+  for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
+    if (pop[i] > 0) {
+      ret += pop[i] / rate[i];
+// Chance to let partial population increase this by 1.
+      if (rng(1, rate[i]) <= pop[i] % rate[i]) {
+        ret++;
+      }
+    }
+  }
+
+// TODO: Other modifiers?  Food, health, morale, etc
+  return ret;
+}
+
+int City::get_required_ratio(Citizen_type cit_type)
+{
+// TODO: Modify/base this from our race.
+  switch (cit_type) {
+    case CIT_MERCHANT:  return 10;
+    case CIT_BURGHER:   return 10;
+  }
+  return 0; // None required.
+}
+
+int City::get_chance_to_birth(Citizen_type cit_type)
+{
+  if (cit_type == CIT_NULL || cit_type == CIT_SLAVE || cit_type == CIT_MAX) {
+    return 0; // These are never birthed.
+  }
+
+  Citizen_type lower_class = Citizen_type(cit_type - 1);
+
+// Ensure we have enough citizens of the class below this one to support another
+// citizen of this class.
+  int req = (population[cit_type].count + 1) * get_required_ratio(cit_type);
+  if (population[lower_class].count < req) {
+    return 0; // We don't meet the required ratio!
+  }
+
+// TODO: Check the morale of the class below this one, among other factors.
+  return 100;
+}
+
+void City::birth_citizen()
+{
+// Decide what type the new citizen will be.
+  Citizen_type new_cit_type = CIT_NULL;
+  for (int i = CIT_MAX - 1; new_cit_type == CIT_NULL && i >= CIT_PEASANT; i--) {
+    Citizen_type cit_type = Citizen_type(i);
+    int chance = get_chance_to_birth(cit_type);
+    if (chance > 0 && rng(1, 100) <= chance) {
+      new_cit_type = cit_type;
+    }
+  }
+
+  population[new_cit_type].count++;
 }
 
 std::vector<Building*> City::get_all_buildings()
