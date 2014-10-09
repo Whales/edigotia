@@ -45,9 +45,8 @@ public:
   bool place_keep();
 
 // Display output
-  void draw_map(cuss::element* e_draw, Point sel, bool radius_limited = false);
-  void display_map(Window* w, cuss::interface* i_map, bool interactive = false,
-                   bool radius_limited = false);
+  void draw_map(cuss::element* e_draw, Point sel = Point(-1, -1),
+                bool radius_limited = false, bool only_terrain = false);
 
 // Standard turn functions
   void do_turn();
