@@ -26,12 +26,12 @@ void init_area_data()
 
   _area(AREA_HOUSES);
     _name("houses");
-    _symbol('o', c_ltgreen);
+    _symbol('O', c_ltgreen);
     _building(BUILD_HOUSE);
 
   _area(AREA_MANOR);
     _name("manor");
-    _symbol('o', c_blue);
+    _symbol('Q', c_blue);
     _building(BUILD_MANOR);
 
   _area(AREA_KEEP);
@@ -56,7 +56,7 @@ void init_area_data()
 
   _area(AREA_SAWMILL);
     _name("sawmill");
-    _symbol('M', c_brown);
+    _symbol('S', c_brown);
     _building(BUILD_SAWMILL);
 
   _area(AREA_BARRACKS);
