@@ -156,6 +156,7 @@ private:
 // Varius values used in user interaction.
   Point sel;  // Point in map currently highlighted
   bool city_radius; // If true, gray out map tiles outside of radius of control
+  bool show_terrain;// If true, don't draw areas - just the terrain
   Area_type current_area; // Current area to be built
   std::string original_info_text; // Original text of text_info, to be restored
 
