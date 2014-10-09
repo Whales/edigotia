@@ -90,7 +90,8 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
-    city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius);
+    city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
+                   show_terrain);
     i_main.set_data("num_population",   city->get_total_population());
     i_main.set_data("num_gold",         city->get_resource_amount(RES_GOLD) );
     i_main.set_data("num_food",         city->get_resource_amount(RES_FOOD) );
@@ -99,13 +100,15 @@ void Interface::main_loop()
 
     if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
       display_area_stats(current_area);
+    } else {
+      i_main.set_data("text_map_info", city->get_map_info(sel));
     }
 
     i_main.draw(&w_main);
     w_main.refresh();
     long ch = input();
 
-    restore_info_text();  // Undo temporary change to text_info
+    restore_info_text();  // Undo temporary change to text_map_info
 
     if (ch == KEY_ESC) {
       set_menu(MENU_NULL);
@@ -169,24 +172,35 @@ void Interface::handle_key(long ch)
           } else {
             popup( city->get_map_info(sel).c_str() );
           }
+
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
           set_mode(IMODE_VIEW_MAP);
+
+        } else if (ch == 't' || ch == 'T') {
+          show_terrain = !show_terrain;
+
         } else if (ch == 'r' || ch == 'R') {
           city_radius = !city_radius;
+
         } else if (ch == 'a' || ch == 'A') {
           current_area = pick_area();
           display_area_stats(current_area);
           set_mode(IMODE_VIEW_MAP);
           Building_datum* build = get_building_for(current_area);
           if (current_area != AREA_NULL && build) {
-            i_main.set_data("text_info", build->get_short_description());
+// rewrite
+            //i_main.set_data("text_map_info", build->get_short_description());
+            i_main.set_data("text_data", build->get_short_description());
           }
+
         } else if (ch == '.') {
           game->advance_time(1, city);
+
         } else if (ch == '>') {
           game->advance_time(7, city);
         }
+
       } break;
           
 // TODO: Fill this in with all keybindings for all modes.
@@ -197,8 +211,7 @@ void Interface::handle_key(long ch)
 void Interface::set_mode(Interface_mode mode)
 {
   cur_mode = mode;
-  i_main.clear_data("text_info"); // TODO: No?
-  //i_main.clear_data("text_info");
+  i_main.clear_data("text_map_info"); // TODO: No?
   switch (mode) {
 
     case IMODE_NULL:
@@ -208,7 +221,7 @@ void Interface::set_mode(Interface_mode mode)
 
     case IMODE_VIEW_MAP: {
       std::stringstream commands;
-      commands << "Use movement keys to scroll." << std::endl;
+      commands << "<c=pink>Movement keys<c=/>: Scroll" << std::endl;
       if (current_area != AREA_NULL) {
         commands << "<c=pink>Enter<c=/>: Place " <<
                     Area_data[current_area]->name << std::endl <<
@@ -217,6 +230,7 @@ void Interface::set_mode(Interface_mode mode)
       } else {
         commands << "<c=pink>Enter<c=/>: Get info on tile" << std::endl;
       }
+      commands << "<c=pink>T<c=/>: Toggle terrain view" << std::endl;
       commands << "<c=pink>R<c=/>: Toggle control radius" << std::endl;
       commands << "<c=pink>A<c=/>: Build ";
       if (current_area != AREA_NULL) {
@@ -230,7 +244,7 @@ void Interface::set_mode(Interface_mode mode)
 
     } break;
 
-  }
+  } // switch (mode)
 
 }
 
@@ -347,23 +361,23 @@ void Interface::do_menu_action(Menu_id menu, int index)
 
 void Interface::set_temp_info(std::string text)
 {
-  original_info_text = i_main.get_str("text_info");
-  i_main.set_data("text_info", text);
+  original_info_text = i_main.get_str("text_map_info");
+  i_main.set_data("text_map_info", text);
 }
 
 void Interface::restore_info_text()
 {
   if (!original_info_text.empty()) {
-    i_main.set_data("text_info", original_info_text);
+    i_main.set_data("text_map_info", original_info_text);
     original_info_text = "";
   }
 }
 
 void Interface::display_area_stats(Area_type type)
 {
-  i_main.clear_data("text_options");
+  i_main.clear_data("text_map_info");
 
-  std::stringstream stats; // We'll set text_options to this
+  std::stringstream stats; // We'll set text_data to this
 
   Building_datum* build_dat = Area_data[type]->get_building_datum();
   std::string area_name = Area_data[type]->name;
@@ -405,13 +419,13 @@ void Interface::display_area_stats(Area_type type)
       break;
 
     case AREA_FARM:
-      stats << "Food consumed each day: " << city->get_food_consumption() <<
-               std::endl;
-      stats << "Food produced each day: " << city->get_food_production() <<
-               std::endl;
       stats << tile->get_terrain_name() << " farmability: " <<
                tile->get_farmability() << "%%%%" << std::endl;
-      stats << "Crops here: " << tile->get_crop_info();
+      stats << std::endl;
+      stats << "Crops here: " << tile->get_crop_info() << std::endl;
+      stats << "Food consumed each day: " << city->get_food_consumption() <<
+               std::endl;
+      stats << "Food produced each day: " << city->get_food_production();
       break;
 
     case AREA_QUARRY:
@@ -446,7 +460,7 @@ void Interface::display_area_stats(Area_type type)
       break;
   }
 
-  i_main.set_data("text_options", stats.str());
+  i_main.set_data("text_map_info", stats.str());
 }
 
 void Interface::enqueue_area()
@@ -1487,8 +1501,11 @@ void Interface::building_status()
 Area_type Interface::pick_area()
 {
   std::vector<std::string> area_options;
-  i_main.clear_data("text_info");
-  i_main.clear_data("text_options");
+  i_main.clear_data("text_map_info");
+// rewrite
+  //i_main.clear_data("text_data");
+  i_main.clear_data("text_commands");
+
   for (int i = 1; i < AREA_MAX; i++) {
     std::stringstream option;
     option << "<c=magenta>";
@@ -1497,8 +1514,10 @@ Area_type Interface::pick_area()
     } else {
       option << char(i - 10 + 'A');
     }
-    option << "<c=/>: " << Area_data[i]->name << std::endl;
-    i_main.add_data("text_options", option.str());
+    option << "<c=/>: " << capitalize(Area_data[i]->name) << std::endl;
+// rewrite
+    //i_main.add_data("text_data", option.str());
+    i_main.add_data("text_commands", option.str());
   }
 
   i_main.draw(&w_main);
@@ -1507,7 +1526,9 @@ Area_type Interface::pick_area()
   while (true) {
     long ch = input();
     if (ch == 'q' || ch == 'Q' || ch == KEY_ESC || ch == '0') {
-      i_main.clear_data("text_options");
+// rewrite
+      //i_main.clear_data("text_data");
+      i_main.clear_data("text_commands");
       return AREA_NULL;
     }
     int sel = -1;
@@ -1519,7 +1540,9 @@ Area_type Interface::pick_area()
       sel = ch - 'A' + 10;
     }
     if (sel >= 1 && sel < AREA_MAX) {
-      i_main.clear_data("text_options");
+// rewrite
+      //i_main.clear_data("text_data");
+      i_main.clear_data("text_commands");
       return Area_type(sel);
     }
   }
