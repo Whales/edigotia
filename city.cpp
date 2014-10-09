@@ -68,7 +68,6 @@ City::City()
   resources[RES_STONE] =  100;
 
   radius = 1;
-  labor_pool = 0;
 }
 
 City::~City()

@@ -143,9 +143,6 @@ public:
 
   std::vector<Military_unit> units_stationed;
 
-  int open_buildings[BUILD_MAX];
-  int closed_buildings[BUILD_MAX];
-
   int resources[RES_MAX];
   int minerals[MINERAL_MAX];
 
@@ -154,7 +151,6 @@ public:
   std::vector<Building> buildings;
   std::vector<Area> areas;
   std::vector<Area> area_queue;
-  int labor_pool;
 
   City_map map;
 
