@@ -1001,6 +1001,11 @@ int City::get_chance_to_birth(Citizen_type cit_type)
     return 0; // We don't meet the required ratio!
   }
 
+// Ensure we have sufficient housing
+  if (get_total_housing(cit_type) <= population[cit_type].count) {
+    return 0;
+  }
+
 // TODO: Check the morale of the class below this one, among other factors.
   return 100;
 }
