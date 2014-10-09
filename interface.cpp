@@ -1282,6 +1282,7 @@ void Interface::building_status()
   std::vector<Building*> buildings = city->get_all_buildings();
 
   std::vector<std::string> building_names, workers, max_workers, worker_class;
+  std::vector<bool> closed;
 
   for (int i = 0; i < buildings.size(); i++) {
     Building* bldg = buildings[i];
@@ -1289,7 +1290,15 @@ void Interface::building_status()
     
     name_ss << capitalize( bldg->get_name() );
     if (bldg->pos.x != -1) {  // It's an area building
-      name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
+// TODO: This is messy.  Better to track whether the building itself is closed.
+      Area* bldg_area = city->area_at(bldg->pos);
+      if (bldg_area && !bldg_area->open) {
+        closed[i] = true;
+        name_ss << " <c=red>(Closed)<c=/>";
+      } else {
+        closed[i] = false;
+        name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
+      }
     }
 
     if (bldg->get_total_jobs() == 0) {
@@ -1350,7 +1359,9 @@ void Interface::building_status()
       std::stringstream upkeep_ss;
       int upkeep = cur_bldg->get_upkeep();
       if (upkeep == 0) {
-        upkeep_ss << "<c=dkgray>---<c=/>";
+        upkeep_ss << "<c=dkgray>0.0<c=/>";
+      } else if (closed[index]) {
+        upkeep_ss << "<c=ltgray>---<c=/>";
       } else {
 // Upkeep is reported in 1/10th of a gold, so display "13" as "1.3"
         upkeep_ss << "<c=red>" << upkeep / 10 << "." << upkeep % 10;
