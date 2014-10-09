@@ -48,15 +48,12 @@ City::City()
 {
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
+    tax_rate[i] = 0;
   }
 
   birth_points = 0;
   population[CIT_PEASANT].count = 100;
-
-  for (int i = 0; i < BUILD_MAX; i++) {
-    open_buildings[i]   = 0;
-    closed_buildings[i] = 0;
-  }
+  tax_rate[CIT_PEASANT] = 50;
 
   for (int i = 0; i < RES_MAX; i++) {
     resources[i] = 0;

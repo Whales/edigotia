@@ -137,7 +137,10 @@ public:
 
 // Data
   Citizens population[CIT_MAX];
+  int tax_rate[CIT_MAX];
+
   int birth_points; // We gain these each turn; at 100, a citizen is born.
+
   std::vector<Military_unit> units_stationed;
 
   int open_buildings[BUILD_MAX];
@@ -145,8 +148,6 @@ public:
 
   int resources[RES_MAX];
   int minerals[MINERAL_MAX];
-
-  int tax_rate[CIT_MAX];
 
   int radius;
 
