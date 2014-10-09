@@ -169,6 +169,9 @@ std::string trees_amount_ranking(int wood)
   if (wood == 0) {
     return "no";
   }
+  if (wood < 15) {
+    return "one or two";
+  }
   if (wood < 50) {
     return "very few";
   }
