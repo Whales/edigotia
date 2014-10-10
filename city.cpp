@@ -50,7 +50,7 @@ int Citizens::get_morale_percentage()
   if (count == 0) {
     return 0;
   }
-  return (100 * morale_points) / count;
+  return tax_morale + (100 * morale_points) / count;
 }
 
 int Citizens::get_starvation_chance()
