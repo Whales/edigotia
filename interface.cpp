@@ -676,11 +676,10 @@ void Interface::minister_finance()
 // peasants, 1 to peasants+1, etc.
         Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
         if (city->tax_rate[tax_type] < 100) {
-          city->tax_rate[tax_type] += 5;
+          citizen_tax_rate[tax_type] += 5;
 // Round down to nearest multiple of 5.
-          city->tax_rate[tax_type] -= city->tax_rate[tax_type] % 5;
-// Fix all our fields.
-          citizen_tax_rate[tax_type] = city->tax_rate [tax_type];
+          citizen_tax_rate[tax_type] -= citizen_tax_rate[tax_type] % 5;
+          city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
 // Remove the old money from taxes...
           income_taxes -= citizen_taxes[tax_type];
           income_total -= citizen_taxes[tax_type];
@@ -691,6 +690,17 @@ void Interface::minister_finance()
           income_taxes += citizen_taxes[tax_type];
           income_total += citizen_taxes[tax_type];
           net_income   += citizen_taxes[tax_type];
+// Set a warning if the rate is too high / too low
+          std::stringstream field_name;
+          field_name << "num_tax_rate_" << citizen_type_name(tax_type);
+          if (citizen_tax_rate[tax_type] >= city->get_high_tax_rate(tax_type)) {
+            i_finance.set_data(field_name.str(), c_ltred);
+          } else if (citizen_tax_rate[tax_type] <=
+                     city->get_low_tax_rate(tax_type)) {
+            i_finance.set_data(field_name.str(), c_ltgreen);
+          } else {
+            i_finance.set_data(field_name.str(), c_ltgray);
+          }
         }
       } break;
 
@@ -700,11 +710,11 @@ void Interface::minister_finance()
 // peasants, 1 to peasants+1, etc.
         Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
         if (city->tax_rate[tax_type] > 0) {
-          city->tax_rate[tax_type] -= 5;
+// Alter the rate...
+          citizen_tax_rate[tax_type] -= 5;
 // Round down to nearest multiple of 5.
-          city->tax_rate[tax_type] -= city->tax_rate[tax_type] % 5;
-// Fix all our fields.
-          citizen_tax_rate[tax_type] = city->tax_rate [tax_type];
+          citizen_tax_rate[tax_type] -= citizen_tax_rate[tax_type] % 5;
+          city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
 // Remove the old money from taxes...
           income_taxes -= citizen_taxes[tax_type];
           income_total -= citizen_taxes[tax_type];
@@ -715,6 +725,17 @@ void Interface::minister_finance()
           income_taxes += citizen_taxes[tax_type];
           income_total += citizen_taxes[tax_type];
           net_income   += citizen_taxes[tax_type];
+// Set a warning if the rate is too high / too low
+          std::stringstream field_name;
+          field_name << "num_tax_rate_" << citizen_type_name(tax_type);
+          if (citizen_tax_rate[tax_type] >= city->get_high_tax_rate(tax_type)) {
+            i_finance.set_data(field_name.str(), c_ltred);
+          } else if (citizen_tax_rate[tax_type] <=
+                     city->get_low_tax_rate(tax_type)) {
+            i_finance.set_data(field_name.str(), c_ltgreen);
+          } else {
+            i_finance.set_data(field_name.str(), c_ltgray);
+          }
         }
       } break;
 
