@@ -14,6 +14,7 @@ Citizens::Citizens()
   count         = 0;
   employed      = 0;
   wealth        = 0;
+  tax_morale    = 0;
   morale_points = 0;
   starvation    = 0;
 }
@@ -95,7 +96,7 @@ City::City()
 
   birth_points = 0;
   population[CIT_PEASANT].add_citizens(100);
-  tax_rate[CIT_PEASANT] = 50;
+  set_tax_rate(CIT_PEASANT, 50);
 
   for (int i = 0; i < RES_MAX; i++) {
     resources[i] = 0;
@@ -1082,7 +1083,64 @@ int City::get_military_expense()
   return ret;
 }
 
+void City::set_tax_rate(Citizen_type type, int rate)
+{
+// Sanity check
+  if (rate < 0 || rate > 100) {
+    return;
+  }
+  tax_rate[type] = rate;
+// TODO: Set these values elsewhere; maybe from race?
+// Taxes below low_rate give a morale bonus.  Taxes above high_rate give a huge
+// morale penalty.
+  int low_rate = get_low_tax_rate(type), high_rate = get_high_tax_rate(type);
+// Set tax_morale of the relevant population;
+  if (rate < low_rate) {
+    population[type].tax_morale = low_rate - rate;
+  } else if (rate > high_rate) {
+    population[type].tax_morale = -150;
+  } else {
+    population[type].tax_morale = 0 - (50 * (rate - low_rate)) / high_rate;
+  }
+}
 // type defaults to CIT_NULL
+
+int City::get_low_tax_rate(Citizen_type type)
+{
+  switch (type) {
+    case CIT_PEASANT:
+      return 20;
+      break;
+    case CIT_MERCHANT:
+      return 15;
+      break;
+    case CIT_BURGHER:
+      return 10;
+      break;
+    default:
+      return  0;
+  }
+  return 0;
+}
+
+int City::get_high_tax_rate(Citizen_type type)
+{
+  switch (type) {
+    case CIT_PEASANT:
+      return 80;
+      break;
+    case CIT_MERCHANT:
+      return 65;
+      break;
+    case CIT_BURGHER:
+      return 50;
+      break;
+    default:
+      return 100;
+  }
+  return 100;
+}
+
 int City::get_taxes(Citizen_type type)
 {
   if (type == CIT_NULL) {

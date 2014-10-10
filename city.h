@@ -20,6 +20,7 @@ struct Citizens
   int count;
   int employed;
   int wealth;
+  int tax_morale;
   int morale_points;
   int starvation;
 
@@ -122,6 +123,9 @@ public:
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);
   int get_military_expense();
+  void set_tax_rate(Citizen_type type, int rate);
+  int get_low_tax_rate (Citizen_type type);
+  int get_high_tax_rate(Citizen_type type);
   int get_taxes(Citizen_type type = CIT_NULL);
   int get_corruption_percentage();
   int get_corruption_amount();
