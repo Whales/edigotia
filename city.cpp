@@ -292,9 +292,11 @@ void City::do_turn()
         }
 // Add starvation for those we did not feed, but remove starvation for those we
 // DID feed.
-        int net_starvation = hungry_citizens -
-                             (population[cit_type].count - hungry_citizens);
-        population[cit_type].starvation += net_starvation;
+        if (hungry_citizens >= population[cit_type].count) {
+          population[cit_type].starvation += hungry_citizens;
+        } else {  // Some people eat.
+          population[cit_type].starvation = hungry_citizens;
+        }
 // TODO: Add a message alerting the player of insufficient food.
         resources[RES_FOOD] = 0;
       }
