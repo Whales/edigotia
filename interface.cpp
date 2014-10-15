@@ -1372,7 +1372,7 @@ void Interface::building_status()
   i_buildings.ref_data("num_free_merchants", &free_merchants);
   i_buildings.ref_data("num_free_burghers",  &free_burghers );
 
-  i_buildings.select("list_building_names");
+// Set up a few variables & prep the interface for our loop
 
   int index = -1;
   Building* cur_bldg = NULL;
@@ -1380,6 +1380,9 @@ void Interface::building_status()
     cur_bldg = buildings[0];
   }
   bool done = false;
+  bool adjusting_production = false;
+
+  i_buildings.select("list_building_names");
 
   while (!done) {
 // Check if we selected a new building
@@ -1403,35 +1406,57 @@ void Interface::building_status()
       }
       i_buildings.set_data("text_upkeep", upkeep_ss.str());
 
-      i_buildings.clear_data("text_benefits_label");
-      i_buildings.clear_data("text_benefits");
+      i_buildings.clear_data("list_benefits_label");
+      i_buildings.clear_data("list_benefits");
 
 // TODO: This assumes we don't offer jobs AND housing - may not always be true
-      if (cur_bldg->get_total_jobs() > 0) { // Jobs, not housing
-        i_buildings.set_data("text_benefits_label", "<c=yellow>Produces:<c=/>");
-        std::stringstream production_ss;
-        production_ss << "<c=ltgray>";
+      if (cur_bldg->produces_resource()) { // Any raw production
+
+        i_buildings.set_data("list_benefits_label", "<c=yellow>Produces:<c=/>");
+        std::vector<std::string> production_list;
         for (int i = 0; i < bldg_dat->production.size(); i++) {
           Resource_amount res_amt = bldg_dat->production[i];
-
-          production_ss << capitalize( resource_name(res_amt.type) ) << " x " <<
-                           res_amt.amount << std::endl;
+          std::stringstream production_ss;
+          production_ss << "<c=ltgray>" <<
+                           capitalize( resource_name(res_amt.type) ) << " x " <<
+                           res_amt.amount << "<c=/>";
+          production_list.push_back( production_ss.str() );
         }
-        production_ss << "<c=/>";
-        i_buildings.set_data("text_benefits", production_ss.str());
+        i_buildings.set_data("list_benefits", production_list);
 
-      } else { // Housing, not jobs
+      } else if (cur_bldg->builds_resource()) { // Any manufacturing
 
-        i_buildings.set_data("text_benefits_label", "<c=yellow>Housing:<c=/>");
-        std::stringstream housing_ss;
-        housing_ss << "<c=ltgray>";
+        i_buildings.set_data("list_benefits_label",
+                             "<c=yellow>Build Queue:<c=/>");
+
+        std::vector<std::string> production_list;
+        if (cur_bldg->build_queue.empty()) {  // Not producing anything!
+          production_list.push_back("<c=ltred>Nothing!<c=/>");
+        } else {
+          for (int i = 0; i < cur_bldg->build_queue.size(); i++) {
+            std::stringstream production_ss;
+            Resource_amount res_amt = cur_bldg->build_queue[i].recipe.result;
+            production_ss << "<c=ltgray>" <<
+                             capitalize( resource_name(res_amt.type) ) <<
+                             " x " << res_amt.amount << "<c=/>";
+            production_list.push_back( production_ss.str() );
+          }
+        }
+        i_buildings.set_data("list_benefits", production_list);
+
+      } else if (cur_bldg->get_housing() > 0) { // Any housing
+
+        i_buildings.set_data("list_benefits_label", "<c=yellow>Housing:<c=/>");
+        std::vector<std::string> housing_list;
         for (int i = 0; i < bldg_dat->housing.size(); i++) {
           Citizen_amount cit_amt = bldg_dat->housing[i];
-          housing_ss << capitalize( citizen_type_name(cit_amt.type) ) << ": " <<
-                        cit_amt.amount << std::endl;
+          std::stringstream housing_ss;
+          housing_ss << "<c=ltgray>" <<
+                        capitalize( citizen_type_name(cit_amt.type) ) << ": " <<
+                        cit_amt.amount << "<c=/>";
+          housing_list.push_back( housing_ss.str() );
         }
-        housing_ss << "<c=/>";
-        i_buildings.set_data("text_benefits", housing_ss.str());
+        i_buildings.set_data("list_benefits", housing_list);
 
       }
     } // End of updating info on newly-selected building
@@ -1510,6 +1535,34 @@ void Interface::building_status()
             }
           }
         }
+        break;
+
+      case 'e':
+      case 'E':
+        adjusting_production = !adjusting_production;
+        if (adjusting_production) {
+          i_buildings.select("list_benefits");
+        } else {
+          i_buildings.select("list_building_names");
+        }
+        break;
+
+      case 'r':
+      case 'R':
+/*
+        if (adjusting_production) {
+// Set up an input popup for new production
+          std::vector<std::string> prod_options;
+          Building_datum* bldg_dat = cur_bldg->get_building_datum();
+          for (int i = 0; i < bldg_dat->recipes.size(); i++) {
+            Recipe rec = bldg_dat->recipes[i];
+            std::stringstream prod_desc;
+            prod_desc << "<c=yellow>" <<
+                         capitalize( resource_name( rec.result.type ) ) <<
+                         " x " << rec.result.amount << "<c=/>";
+            if (!rec.resource_ingredients.empty()) {
+              for (int n = 0; n < rec.resource_ingredients.size(); n++) {
+*/
         break;
 
       default:
