@@ -67,12 +67,21 @@ std::string Building::get_name()
   return get_building_datum()->name;
 }
 
+// res defaults to RES_NULL
 bool Building::produces_resource(Resource res)
 {
   Building_datum* build_dat = get_building_datum();
   return build_dat->produces_resource(res);
 }
 
+// res defaults to RES_NULL
+bool Building::builds_resource(Resource res)
+{
+  Building_datum* build_dat = get_building_datum();
+  return build_dat->builds_resource(res);
+}
+
+  
 int Building::amount_produced(Resource res)
 {
   Building_datum* build_dat = get_building_datum();
@@ -141,6 +150,12 @@ std::map<Resource,int> Building::get_maintenance()
   }
 
   return ret;
+}
+
+// cit_type defaults to CIT_NULL
+int Building::get_housing(Citizen_type cit_type)
+{
+  return get_building_datum()->get_housing(cit_type);
 }
 
 Building_datum::Building_datum()
@@ -225,10 +240,30 @@ std::string Building_datum::get_short_description()
   return ret.str();
 }
 
+// res defaults to RES_NULL
 bool Building_datum::produces_resource(Resource res)
 {
+  if (res == RES_NULL) {
+    return !(production.empty());
+  }
+
   for (int i = 0; i < production.size(); i++) {
     if (production[i].type == res) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// res defaults to RES_NULL
+bool Building_datum::builds_resource(Resource res)
+{
+  if (res == RES_NULL) {
+    return !(recipes.empty());
+  }
+
+  for (int i = 0; i < recipes.size(); i++) {
+    if (recipes[i].result.type == res) {
       return true;
     }
   }
@@ -253,6 +288,18 @@ int Building_datum::get_total_jobs(Citizen_type cit_type)
     return jobs.amount;
   }
   return 0;
+}
+
+// cit_type defaults to CIT_NULL
+int Building_datum::get_housing(Citizen_type cit_type)
+{
+  int ret = 0;
+  for (int i = 0; i < housing.size(); i++) {
+    if (cit_type == CIT_NULL || cit_type == housing[i].type) {
+      ret += housing[i].amount;
+    }
+  }
+  return ret;
 }
 
 bool Building_datum::add_production(Resource type, int amount)

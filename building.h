@@ -61,9 +61,11 @@ struct Building_datum
 
 // Data functions
   std::string get_short_description();
-  bool produces_resource(Resource res);
+  bool produces_resource(Resource res = RES_NULL);
+  bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
   int  get_total_jobs   (Citizen_type cit_type = CIT_NULL);
+  int  get_housing      (Citizen_type cit_type = CIT_NULL);
 
 // Setup functions
   bool add_production(Resource type, int amount);
@@ -99,7 +101,8 @@ struct Building
 
   Building_datum* get_building_datum();
   std::string get_name();
-  bool produces_resource(Resource res);
+  bool produces_resource(Resource res = RES_NULL);
+  bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
 
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
@@ -115,6 +118,17 @@ struct Building
   Building_type type;
   int workers;
 
+// Basically for housing only
+  int get_housing(Citizen_type cit_type = CIT_NULL);
+// Basically for farms only
+  int get_empty_fields();
+  int field_output; // How much of each crop does a single field output?
+  std::vector<Crop_amount> crops_grown;
+// Basically for mines only
+  int get_empty_shafts();
+  int shaft_output; // How much of each mineral does a single shaft output?
+  std::vector<Mineral_amount> minerals_mined;
+
 /* build_queue is a list of things this building will produce; when the building
  * is not currently building anything, it looks at the first item in the queue
  * and starts building that.  Once it finishes, it decreases that item's amount
@@ -127,15 +141,6 @@ struct Building
  * telling the player that the building is idle.
  */
   std::vector<Recipe_amount> build_queue;
-
-// Basically for farms only
-  int get_empty_fields();
-  int field_output; // How much of each crop does a single field output?
-  std::vector<Crop_amount> crops_grown;
-// Basically for mines only
-  int get_empty_shafts();
-  int shaft_output; // How much of each mineral does a single shaft output?
-  std::vector<Mineral_amount> minerals_mined;
 
 };
 
