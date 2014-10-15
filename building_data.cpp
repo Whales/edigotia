@@ -39,6 +39,17 @@ Building_datum* Building_data[BUILD_MAX];
 #define _produces(t, n) \
   Building_data[cur_id]->add_production( (t), (n) )
 
+#define _recipe(r, a) \
+  Building_data[cur_id]->recipes.push_back( Recipe( (r), (a) ) )
+
+#define _uses_resource(r, a) \
+  Building_data[cur_id]->recipes.back().resource_ingredients.push_back( \
+    Resource_amount( (r), (a) ) )
+
+#define _uses_mineral(m, a) \
+  Building_data[cur_id]->recipes.back().mineral_ingredients.push_back( \
+    Mineral_amount( (m), (a) ) )
+
 #define _buildable(t) \
   Building_data[cur_id]->buildable.push_back( (t) )
 
@@ -136,9 +147,31 @@ void init_building_data()
     _name("barracks");
     _plural();
     _cost(RES_GOLD, 500);
-    _cost(RES_WOOD, 10);
+    _cost(RES_WOOD, 40);
     _build_time(14);
     _upkeep(15);
     _military(50);
+
+  _build(BUILD_MASON);
+    _name("mason");
+    _cost(RES_GOLD, 150);
+    _cost(RES_WOOD, 25);
+    _build_time(5);
+    _upkeep(8);
+    _jobs(CIT_MERCHANT, 3);
+    _wages(5);
+    _recipe(RES_STONE, 1);
+      _uses_mineral(MINERAL_STONE, 1);
+
+  _build(BUILD_FORGE);
+    _name("forge");
+    _cost(RES_GOLD, 150);
+    _cost(RES_STONE, 15);
+    _build_time(6);
+    _upkeep(6);
+    _jobs(CIT_MERCHANT, 3);
+    _wages(5);
+    _recipe(RES_GOLD, 1);
+      _uses_mineral(MINERAL_GOLD, 1);
 
 }
