@@ -1328,10 +1328,10 @@ void Interface::building_status()
 // TODO: This is messy.  Better to track whether the building itself is closed.
       Area* bldg_area = city->area_at(bldg->pos);
       if (bldg_area && !bldg_area->open) {
-        closed[i] = true;
+        closed.push_back(true);
         name_ss << " <c=red>(Closed)<c=/>";
       } else {
-        closed[i] = false;
+        closed.push_back(false);
         name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
       }
     }
