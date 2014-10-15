@@ -28,7 +28,30 @@ enum Building_type
 // Military
   BUILD_BARRACKS,
 
+// Manufacturing
+  BUILD_MASON,
+  BUILD_FORGE,
+
   BUILD_MAX
+};
+
+struct Recipe
+{
+  Recipe(Resource R = RES_NULL, int A = 1);
+  std::vector<Resource_amount> resource_ingredients;
+  std::vector<Mineral_amount>  mineral_ingredients;
+
+  Resource_amount result;
+};
+
+// For the building's queue
+struct Recipe_amount
+{
+  Recipe_amount(Recipe R = Recipe(), int A = 1) : recipe (R), amount (A)
+  { }
+
+  Recipe recipe;
+  int amount;
 };
 
 struct Building_datum
@@ -63,6 +86,7 @@ struct Building_datum
 
 // Things this building can construct
   std::vector<Resource> buildable;
+  std::vector<Recipe>   recipes;
 
 };
 
@@ -102,7 +126,7 @@ struct Building
  * If the queue is empty but the building has workers, we generate an alert
  * telling the player that the building is idle.
  */
-  std::vector<Resource_amount> build_queue;
+  std::vector<Recipe_amount> build_queue;
 
 // Basically for farms only
   int get_empty_fields();

@@ -3,6 +3,12 @@
 #include "window.h" // For debugmsg
 #include <sstream>
 
+// R defaults to RES_NULL, A defaults to 1
+Recipe::Recipe(Resource R, int A)
+{
+  result = Resource_amount(R, A);
+}
+
 Building::Building()
 {
   pos = Point(-1, -1);
