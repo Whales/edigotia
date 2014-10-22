@@ -39,8 +39,18 @@ Building_datum* Building_data[BUILD_MAX];
 #define _produces(t, n) \
   Building_data[cur_id]->add_production( (t), (n) )
 
+// <recipes>
+
 #define _recipe(r, a) \
   Building_data[cur_id]->recipes.push_back( Recipe( (r), (a) ) )
+
+#define _units_per_day(a) \
+  Building_data[cur_id]->recipes.back().units_per_day = (a); \
+  Building_data[cur_id]->recipes.back().days_per_unit =  0
+
+#define _days_per_unit(a) \
+  Building_data[cur_id]->recipes.back().days_per_unit = (a); \
+  Building_data[cur_id]->recipes.back().units_per_day =  0
 
 #define _uses_resource(r, a) \
   Building_data[cur_id]->recipes.back().resource_ingredients.push_back( \
@@ -49,6 +59,8 @@ Building_datum* Building_data[BUILD_MAX];
 #define _uses_mineral(m, a) \
   Building_data[cur_id]->recipes.back().mineral_ingredients.push_back( \
     Mineral_amount( (m), (a) ) )
+
+// </recipes>
 
 #define _buildable(t) \
   Building_data[cur_id]->buildable.push_back( (t) )
@@ -161,6 +173,7 @@ void init_building_data()
     _jobs(CIT_MERCHANT, 3);
     _wages(5);
     _recipe(RES_STONE, 1);
+      _units_per_day(3);
       _uses_mineral(MINERAL_STONE, 1);
 
   _build(BUILD_FORGE);
@@ -172,6 +185,7 @@ void init_building_data()
     _jobs(CIT_MERCHANT, 3);
     _wages(5);
     _recipe(RES_GOLD, 1);
+      _units_per_day(3);
       _uses_mineral(MINERAL_GOLD, 1);
 
 }
