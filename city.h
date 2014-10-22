@@ -108,6 +108,8 @@ public:
 
 // Building/Area-related functions
   std::vector<Building*> get_all_buildings();
+// If these are passed BUiLD_NULL/AREA_NULL (or aren't passed a parameter at
+// all) they will return the sum total of ALL buildings/areas.
   int get_number_of_buildings(Building_type type = BUILD_NULL);
   int get_number_of_areas    (Area_type     type = AREA_NULL);
   int get_total_maintenance();
