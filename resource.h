@@ -146,7 +146,9 @@ struct Mineral_datum
   Mineral_datum() { percentage = 0; color = c_ltgray; hidden = false; }
 };
 
-Crop search_for_crop(std::string name);
+// These search for the name (trimmed & non-case-sensitive) in the data pools;
+// partial matches work (e.g. a search for " Eat   " returns CROP_WHEAT)
+Crop    search_for_crop   (std::string name);
 Mineral search_for_mineral(std::string name);
 
 struct Crop_amount
