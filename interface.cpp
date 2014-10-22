@@ -1539,30 +1539,38 @@ void Interface::building_status()
 
       case 'e':
       case 'E':
-        adjusting_production = !adjusting_production;
-        if (adjusting_production) {
-          i_buildings.select("list_benefits");
-        } else {
-          i_buildings.select("list_building_names");
+// Only allow for adjusting production for buildings that produce things
+        if (cur_bldg->builds_resource()) {
+          adjusting_production = !adjusting_production;
+          if (adjusting_production) {
+            i_buildings.select("list_benefits");
+          } else {
+            i_buildings.select("list_building_names");
+          }
         }
         break;
 
       case 'r':
       case 'R':
-/*
         if (adjusting_production) {
-// Set up an input popup for new production
-          std::vector<std::string> prod_options;
-          Building_datum* bldg_dat = cur_bldg->get_building_datum();
-          for (int i = 0; i < bldg_dat->recipes.size(); i++) {
-            Recipe rec = bldg_dat->recipes[i];
-            std::stringstream prod_desc;
-            prod_desc << "<c=yellow>" <<
-                         capitalize( resource_name( rec.result.type ) ) <<
-                         " x " << rec.result.amount << "<c=/>";
-            if (!rec.resource_ingredients.empty()) {
-              for (int n = 0; n < rec.resource_ingredients.size(); n++) {
-*/
+          int prod_index = i_buildings.get_int("list_benefits");
+          if (prod_index >= 0 && prod_index <= cur_bldg->build_queue.size()) {
+            cur_bldg->build_queue.erase( cur_bldg->build_queue.begin() +
+                                         prod_index );
+          }
+        }
+        break;
+
+      case 'a':
+      case 'A':
+        if (adjusting_production) {
+          Recipe_amount new_recipe;
+          if (pick_recipe(cur_bldg, new_recipe)) {  // Returns false if canceled
+            cur_bldg->build_queue.push_back(new_recipe);
+          }
+        }
+        break;
+
         break;
 
       default:
@@ -1570,6 +1578,118 @@ void Interface::building_status()
         break;
     }
   } // while (!done)
+}
+
+bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
+{
+  if (!cur_bldg) {
+    return false;
+  }
+// Set up an interface for picking a resource to produce
+  cuss::interface i_production;
+  if (!i_production.load_from_file("cuss/building_production.cuss")) {
+    return false;
+  }
+  Window w_production(0, 0, 80, 24);
+
+// List of options, units produced per day, the number we already have stored,
+// and the components used to create it.
+  std::vector<std::string> prod_options, prod_units, prod_stored,
+                           prod_components;
+  Building_datum* bldg_dat = cur_bldg->get_building_datum();
+  for (int i = 0; i < bldg_dat->recipes.size(); i++) {
+    Recipe rec = bldg_dat->recipes[i];
+// Capitalize and color the name of the resource
+    std::stringstream ss_name, ss_units, ss_stored, ss_components;
+    ss_name << "<c=yellow>" <<
+               capitalize( resource_name( rec.result.type ) ) <<
+               " x " << rec.result.amount << "<c=/>";
+// Fetch the units per day, converting from days per unit if necessary
+    if (rec.units_per_day != 0) {
+      ss_units << rec.units_per_day;
+    } else if (rec.days_per_unit != 0) {
+      ss_units << "1/" << rec.days_per_unit;
+    } else { // Units = 0 ?!
+      ss_units << "<c=red>0<c=/>";
+    }
+// Fetch the units stored
+    int stored = city->get_resource_amount( rec.result.type );
+    if (stored == 0) {
+      ss_stored << "<c=dkgray>";
+    }
+    ss_stored << stored << "<c=/>";
+// Fetch the components
+    if (rec.resource_ingredients.empty() &&
+        rec.mineral_ingredients.empty()) {
+      prod_components.push_back( std::string() );
+    } else {
+      for (int n = 0; n < rec.resource_ingredients.size(); n++) {
+        Resource ing_type = rec.resource_ingredients[n].type;
+        int ing_amount    = rec.resource_ingredients[n].amount;
+        ss_components << ing_amount << " x " <<
+                         capitalize( resource_name( ing_type ) ) <<
+                         std::endl;
+      }
+      for (int n = 0; n < rec.mineral_ingredients.size(); n++) {
+        Mineral ing_type = rec.mineral_ingredients[n].type;
+        int ing_amount   = rec.mineral_ingredients[n].amount;
+        ss_components << ing_amount << " x " <<
+                         capitalize( Mineral_data[ing_type]->name ) <<
+                         std::endl;
+      }
+    }
+// Now put the contents of the stringstreams where they belong.
+    prod_options.push_back    ( ss_name.str()       );
+    prod_units.push_back      ( ss_units.str()      );
+    prod_stored.push_back     ( ss_stored.str()     );
+    prod_components.push_back ( ss_components.str() );
+  } // for (int i = 0; i < bldg_dat->recipes.size(); i++) 
+
+// Set up our interface.  We don't use prod_components here, since we
+// only display components of the currently-selected recipe.
+  i_production.set_data("list_options", prod_options);
+  i_production.set_data("list_units",   prod_units  );
+  i_production.set_data("list_stored",  prod_stored );
+
+// Amount defaults to 1.
+  i_production.set_data("num_amount", 1);
+
+// Now actually run the interface!
+  while (true) {
+    int index = i_production.get_int("list_options");
+    if (index >= 0 && index < bldg_dat->recipes.size()) {
+// NOW we use prod_components.
+      i_production.set_data("text_components", prod_components[index]);
+    }
+    i_production.draw( &w_production );
+    w_production.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+
+      case '0':
+        i_production.set_data("num_amount", 0);
+        break;
+
+      case '\n':
+        if (index >= 0 && index < bldg_dat->recipes.size()) {
+          new_recipe.recipe = bldg_dat->recipes[index];
+          new_recipe.amount = i_production.get_int("num_amount");
+          return true;
+        }
+        break;
+
+      case 'q':
+      case 'Q':
+      case KEY_ESC:
+        return false;
+
+      default:
+        i_production.handle_keypress(ch);
+        break;
+    }
+  }
 }
 
 Area_type Interface::pick_area()
