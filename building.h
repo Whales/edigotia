@@ -37,11 +37,23 @@ enum Building_type
 
 struct Recipe
 {
+// R and A combine to form a Resource_amount.
   Recipe(Resource R = RES_NULL, int A = 1);
-  std::vector<Resource_amount> resource_ingredients;
-  std::vector<Mineral_amount>  mineral_ingredients;
 
   Resource_amount result;
+
+/* Obviously, only one of the following two should be set.  In
+ * building_data.cpp, we use macros that set one variable and set the other to
+ * 0.  When producing recipes, we check for whichever is not zero and use that.
+ * Also, both are multiplied by the number of workers; 2 units per day actually
+ * produces 6 if we have 3 workers, and 3 days per unit is actually 1 day per
+ * unit if we have 3 workers.
+ */
+  int units_per_day;  // Defaults to 1
+  int days_per_unit;  // Defaults to 0
+
+  std::vector<Resource_amount> resource_ingredients;
+  std::vector<Mineral_amount>  mineral_ingredients;
 };
 
 // For the building's queue
