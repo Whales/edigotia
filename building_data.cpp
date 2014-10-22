@@ -12,6 +12,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _plural() \
   Building_data[cur_id]->plural = true
 
+#define _description(n) \
+  Building_data[cur_id]->description = (n)
+
 #define _cost(t, n) \
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 

@@ -82,8 +82,9 @@ struct Building_datum
 // Setup functions
   bool add_production(Resource type, int amount);
 
-  int uid;
+  int uid;  // Unique identifier; not sure if we need this but doesn't hurt
   std::string name;
+  std::string description;
   bool plural;  // If true, name is treated as a plural
   std::vector<Resource_amount> build_costs;
   int upkeep; // Daily cost in gold, measured in 1/10th of a gold
