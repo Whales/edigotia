@@ -117,6 +117,8 @@ private:
   void minister_morale();
 // Info on buildings; allows player to hire workers.
   void building_status();
+// Select a building to add to our city
+  void build_building();
 // Pick a recipe for a building to build
 // We stick the data in new_recipe; if we cancel, return false, otherwise true
   bool pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe);

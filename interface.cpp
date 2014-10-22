@@ -350,6 +350,7 @@ void Interface::do_menu_action(Menu_id menu, int index)
           building_status();
           break;
         case 2: // Build building
+          build_building();
           break;
       }
       break;
@@ -1578,6 +1579,79 @@ void Interface::building_status()
         break;
     }
   } // while (!done)
+}
+
+void Interface::build_building()
+{
+  cuss::interface i_build;
+  if (!i_build.load_from_file("cuss/build_building.cuss")) {
+    return;
+  }
+
+  Window w_build(0, 0, 80, 24);
+
+// Static lists
+  std::vector<std::string> building_names, buildings_built, build_time;
+
+// Start at 1 since 0 is BUILD_NULL, not a real building.
+  for (int i = 1; i < BUILD_MAX; i++) {
+    Building_type btype = Building_type[i];
+
+    building_names.push_back( Building_data[i]->name );
+    buildings_built.push_back( itos( city->get_number_of_buildings( btype ) ) );
+// And a fancy stringstream for the build time.
+    std::stringstream ss_build_time;
+    ss_build_time << Building_data[i]->build_time << " days";
+    build_time.push_back( ss_build_time.str() );
+  }
+
+// Great!  Now we can set this data to the interface.
+  i_build.set_data("list_buildings",  building_names  );
+  i_build.set_data("list_built",      buildings_built );
+  i_build.set_data("list_build_time", build_time      );
+
+  i_build.select("list_buildings");
+
+  int index = -1; // The currently-selected building; set to -1 so we'll update
+
+  while (true) {
+// Check if index has changed
+    int new_index = i_build.get_int("list_buildings");
+
+    if (new_index != index) {
+      index = new_index;
+      Building_datum* build_dat = Building_data[index];
+
+// Fill out the description
+      i_build.set_data("text_description", build_dat->description);
+
+// Get all the resource costs
+      std::vector<std::string> build_costs;
+      for (int i = 0; i < build_dat->build_costs; i++) {
+        Resource res = build_dat->build_costs[i].type;
+        int amount = build_dat->build_costs[i].amount;
+
+        std::stringstream ss_cost;
+// Help our spacing a bit, so numbers will align vertically
+        if (amount < 10) {
+          ss_cost << "  ";
+        } else if (amount < 100) {
+          ss_cost << " ";
+        }
+        ss_cost << amount << " x " << resource_name(res);
+        build_costs.push_back( ss_cost.str() );
+      }
+      i_build.set_data("list_build_costs", build_costs);
+    } // if (new_index != index)
+
+    i_build.draw(&w_build);
+    w_build.refresh();
+
+    long ch = getch();
+
+    switch (ch) {
+    }
+  }
 }
 
 bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
