@@ -68,14 +68,14 @@ struct Area
 
 /* If open is false, this area is inactive and is treated as though it doesn't
  * exist for all purposes.  When we enqueue an area to our building queue, open
- * is set to false, and construction_left is set to its type construction time.
- * Each day, the area at the top of the queue has its construction_left
- * decreased by an appropriate amount (usually 1); once it hits 0, it's removed
- * from the construction queue, open is set to true, and it's added to the
- * City's area vector.
+ * is set to false, and building's construction_left is set to its type's
+ * construction time.
+ * Each day, the area at the top of the queue has its building's
+ * construction_left decreased by an appropriate amount (usually 1); once it
+ * hits 0, it's removed from the construction queue, open is set to true, and
+ * it's added to the City's area vector.
  */
   bool open;
-  int construction_left;
 
 // Our position on the City_map.
   Point pos;

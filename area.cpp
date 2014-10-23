@@ -13,7 +13,7 @@ Area::Area(Area_type T, Point P)
   pos = P;
   building.pos = P;
   open = true;
-  construction_left = 0;
+  building.construction_left = 0;
 }
 
 void Area::make_queued()
@@ -24,7 +24,7 @@ void Area::make_queued()
   }
 
   open = false;
-  construction_left = bd_data->build_time;
+  building.construction_left = bd_data->build_time;
 }
 
 Area_datum* Area::get_area_datum()
