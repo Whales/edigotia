@@ -160,6 +160,7 @@ public:
   int radius;
 
   std::vector<Building> buildings;
+  std::vector<Building> building_queue;
   std::vector<Area> areas;
   std::vector<Area> area_queue;
 
