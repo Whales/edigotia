@@ -12,20 +12,20 @@ enum Building_type
 {
   BUILD_NULL = 0,
 
-// Housing
+// Housing - ALL AREAS, not real buildings
   BUILD_HOVEL,
   BUILD_HOUSE,
   BUILD_MANOR,
   BUILD_KEEP,
 
-// Basic resources
+// Basic resources - ALL AREAS, not real buildings
   BUILD_FARM,
   BUILD_QUARRY,
   BUILD_MINE,
   BUILD_CAMP,
   BUILD_SAWMILL,
 
-// Military
+// Military - ALL AREAS, not real buildings
   BUILD_BARRACKS,
 
 // Manufacturing
@@ -34,6 +34,29 @@ enum Building_type
 
   BUILD_MAX
 };
+
+enum Building_category
+{
+  BUILDCAT_NULL = 0,  // Used for buildings that only appear as areas
+
+  BUILDCAT_MANUFACTURING, // Buildings that produce resources from raw materials
+
+/* TODO: (just some rough ideas/plans)
+ * Social (tavern, colluseum, theater, gardens, circus)
+ * Religious (shrine, temple, cathedral, idol, ziggurat)
+ * Financial (Market, bank)
+ * Government (Embassy, courthouse, guardhouse)
+ * Medical (apothecary, hospital)
+ * Magic (wizard's tower, alchemy lab)
+ * Educational (school, library, university, observatory)
+ * Decorational (gardens, park, monument)
+ */
+
+  BUILDCAT_MAX
+};
+
+Building_category lookup_building_category(std::string name);
+std::string building_category_name(Building_category category);
 
 struct Recipe
 {
@@ -83,11 +106,16 @@ struct Building_datum
   bool add_production(Resource type, int amount);
 
   int uid;  // Unique identifier; not sure if we need this but doesn't hurt
+
   std::string name;
-  std::string description;
   bool plural;  // If true, name is treated as a plural
+
+  std::string description;
+
+  Building_category category;
+
+  int build_time;
   std::vector<Resource_amount> build_costs;
-  int upkeep; // Daily cost in gold, measured in 1/10th of a gold
 
   std::vector<Citizen_amount> housing;
   int military_support;
@@ -95,9 +123,9 @@ struct Building_datum
   Citizen_amount jobs;
   int wages;  // Measured in 1/10th of a gold!
 
-  int build_time;
   std::vector<Resource_amount> production; // Per job, w/ skill of 5 (max)
-  std::vector<Resource_amount> maintenance_cost;
+  int upkeep; // Daily cost in gold, measured in 1/10th of a gold
+  std::vector<Resource_amount> maintenance_cost;  // Will we ever need this?
 
 // Things this building can construct
   std::vector<Resource> buildable;
@@ -127,6 +155,7 @@ struct Building
   std::map<Resource,int> get_maintenance();
 
   Point pos;  // Position of the area we belong to, if any.
+  int construction_left;  // Days of construction remaining.
 
   Building_type type;
   int workers;

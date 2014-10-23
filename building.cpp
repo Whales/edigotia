@@ -1,6 +1,7 @@
 #include "building.h"
 #include "resource.h"
 #include "window.h" // For debugmsg
+#include "stringfunc.h" // Needed in lookup_building_category()
 #include <sstream>
 
 // R defaults to RES_NULL, A defaults to 1
@@ -162,6 +163,7 @@ Building_datum::Building_datum()
 {
   uid = -1;
   plural = false;
+  category = BUILDCAT_NULL; // i.e. is an Area-only building
   upkeep = 0;
   military_support = 0;
   build_time = 0;
@@ -320,4 +322,27 @@ bool Building_datum::add_production(Resource type, int amount)
 
   production.push_back( Resource_amount(type, amount) );
   return true;
+}
+
+Building_category lookup_building_category(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < BUILDCAT_MAX; i++) {
+    Building_category ret = Building_category(i);
+    if (no_caps( trim( building_category_name(ret) ) ) == name) {
+      return ret;
+    }
+  }
+  return BUILDCAT_NULL;
+}
+
+std::string building_category_name(Building_category category)
+{
+  switch (category) {
+    case BUILDCAT_NULL:           return "NULL";
+    case BUILDCAT_MANUFACTURING:  return "manufacturing";
+    case BUILDCAT_MAX:            return "BUG - BUILDCAT_MAX";
+    default:  return "Unnamed Building_category";
+  }
+  return "BUG - Escaped building_category_name() switch";
 }
