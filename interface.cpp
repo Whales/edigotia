@@ -1591,68 +1591,152 @@ void Interface::build_building()
   Window w_build(0, 0, 80, 24);
 
 // Static lists
-  std::vector<std::string> building_names, buildings_built, build_time;
+  std::vector<std::string> options, cost_gold, cost_wood, cost_stone,
+                           building_queue, queue_days;
 
-// Start at 1 since 0 is BUILD_NULL, not a real building.
-  for (int i = 1; i < BUILD_MAX; i++) {
-    Building_type btype = Building_type[i];
+// Dynamic list - the Building_types we're currently browsing.
+  std::vector<Building_type> bldg_types;
 
-    building_names.push_back( Building_data[i]->name );
-    buildings_built.push_back( itos( city->get_number_of_buildings( btype ) ) );
-// And a fancy stringstream for the build time.
-    std::stringstream ss_build_time;
-    ss_build_time << Building_data[i]->build_time << " days";
-    build_time.push_back( ss_build_time.str() );
+// First, let's set up our building queue.
+  for (int i = 0; i < city->building_queue.size(); i++) {
+    building_queue.push_back( city->building_queue[i].get_name() );
+    queue_days.push_back( itos( city->building_queue[i].construction_left ) );
   }
 
-// Great!  Now we can set this data to the interface.
-  i_build.set_data("list_buildings",  building_names  );
-  i_build.set_data("list_built",      buildings_built );
-  i_build.set_data("list_build_time", build_time      );
+// Set up our list and headers to have the building categories
+  set_building_list(i_build, BUILDCAT_NULL, bldg_types);
 
-  i_build.select("list_buildings");
-
-  int index = -1; // The currently-selected building; set to -1 so we'll update
-
-  while (true) {
-// Check if index has changed
-    int new_index = i_build.get_int("list_buildings");
-
-    if (new_index != index) {
-      index = new_index;
-      Building_datum* build_dat = Building_data[index];
-
-// Fill out the description
-      i_build.set_data("text_description", build_dat->description);
-
-// Get all the resource costs
-      std::vector<std::string> build_costs;
-      for (int i = 0; i < build_dat->build_costs; i++) {
-        Resource res = build_dat->build_costs[i].type;
-        int amount = build_dat->build_costs[i].amount;
-
-        std::stringstream ss_cost;
-// Help our spacing a bit, so numbers will align vertically
-        if (amount < 10) {
-          ss_cost << "  ";
-        } else if (amount < 100) {
-          ss_cost << " ";
-        }
-        ss_cost << amount << " x " << resource_name(res);
-        build_costs.push_back( ss_cost.str() );
-      }
-      i_build.set_data("list_build_costs", build_costs);
-    } // if (new_index != index)
-
-    i_build.draw(&w_build);
-    w_build.refresh();
-
-    long ch = getch();
-
-    switch (ch) {
-    }
-  }
+// TODO: Main loop for this function; also a function in City to enqueue a
+//       building.
 }
+
+void Interface::set_building_list(cuss::interface& i_build,
+                                  Building_category category,
+                                  std::vector<Building_type>& types)
+{
+// We always want to clear list_options, since we're building it here
+  i_build.clear_data("list_options");
+// Also clear text_description, for safety
+  i_build.clear_data("text_description");
+// Aaaand clear out types, just in case
+  types.clear();
+
+// BUILDCAT_NULL is a special case - it means we want to list the building
+// categories, not actual buildings themselves!
+  if (category == BUILDCAT_NULL) {
+// First, we need to set the header to say "Select a type:", and clear the
+// resource header and lists.
+    i_build.set_data("text_header", "<c=yellow>Select a type:<c=/>");
+    i_build.clear_data("text_resource_header");
+    i_build.clear_data("list_cost_gold"      );
+    i_build.clear_data("list_cost_wood"      );
+    i_build.clear_data("list_cost_stone"     );
+// Now, fill list_options with all the names of the different Building_categorys
+    for (int i = 1; i < BUILDCAT_MAX; i++) { // Start at 1 to skip BUILDCAT_NULL
+      Building_category cat = Building_category(i);
+      std::stringstream option;
+      option << "<c=pink>" << i << "<c=/>: " << building_category_name(cat);
+      i_build.add_data("list_options", option.str());
+    }
+// Finally, set some useful help text.
+    i_build.set_data("text_help", "\
+Press a number to view buildings in that category.\n\
+Press <c=pink>TAB<c=/> to switch to the building queue (allowing you to change \
+the order or remove items).\n\
+Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
+");
+// Done!
+
+  } else {  // if (category == BUILDCAT_NULL)
+
+// First, set the headers.
+    std::stringstream header;
+    header << "<c=yellow>" << building_category_name(category) << "<c=/>";
+    i_build.set_data("text_header", header.str());
+    i_build.set_data("text_resource_header", "Gold:  Wood:  Stone:");
+// Find all the buildings that match our given category and put them in types
+    for (int i = 0; i < BUILD_MAX; i++) {
+      Building_datum* bldg_dat = Building_data[i];
+      if (bldg_dat->category == category) { // It's a match!
+        types.push_back( Building_type(i) );
+      }
+    }
+// Prepend an option to go back at the top of list_options
+    i_build.add_data("list_options", "<c=pink>Q<c=/>: Go back");
+// Now use all the buildings in types to fill out the interface's lists
+    for (int i = 0; i < types.size(); i++) {
+      Building_type btype = types[i];
+      Building_datum* bldg_dat = Building_data[btype];
+      std::stringstream ss_name, ss_gold, ss_wood, ss_stone;
+// Check whether we can actually build the building.
+      bool can_build = true;  // We'll set to false if we lack any resources
+      for (int n = 0; n < bldg_dat->build_costs.size(); n++) {
+        Resource res = bldg_dat->build_costs[n].type;
+        int amount   = bldg_dat->build_costs[n].amount;
+        if (city->get_resource_amount(res) < amount) {
+          can_build = false;
+        }
+      }
+// Now that we know whether we can build it, go through again & populate lists
+
+/* TODO: We're kind of making an interface-driven design decision that buildings
+ *       will ONLY use these three resources in their build_costs.  We should
+ *       probably either replace Building_datum::build_costs with a trio of
+ *       ints (gold, wood, and stone), or not make this assumption.  For now
+ *       we'll have ugly code here, leaving the question unanswered, but
+ *       eventually this should be refactored.
+ */
+      for (int n = 0; n < bldg_dat->build_costs.size(); n++) {
+        Resource res = bldg_dat->build_costs[n].type;
+        int amount   = bldg_dat->build_costs[n].amount;
+        std::stringstream* ss_resource = NULL;
+        std::string list_name;
+        switch (res) {
+          case RES_GOLD:
+            ss_resource = &ss_gold;
+            list_name = "list_gold";
+            break;
+          case RES_WOOD:
+            ss_resource = &ss_wood;
+            list_name = "list_wood";
+            break;
+          case RES_STONE:
+            ss_resource = &ss_stone;
+            list_name = "list_stone";
+            break;
+        }
+        if (ss_resource) {
+          if (city->get_resource_amount(res) < amount) {
+// Flag it red so the player knows this is why we can't have this nice thing
+            (*ss_resource) << "<c=red>";
+          } else if (!can_build) {
+// Not the culprit, but still color it dark gray since we can't build this
+            (*ss_resource) << "<c=dkgray>";
+          }
+          (*ss_resource) << amount << "<c=/>";
+          i_build.add_data(list_name, ss_resource->str());
+        }
+      }
+// Now we can add the name of the building.
+// Use i + 1 since we want our list to start counting from 1, not 0
+      ss_name << "<c=pink>" << i + 1 << "<c=/>: ";
+      if (!can_build) {
+        ss_name << "<c=dkgray>";
+      }
+      ss_name << bldg_dat->name << "<c=/>";
+    } // for (int i = 0; i < types.size(); i++)
+
+// Finally, set some useful help text.
+    i_build.set_data("text_help", "\
+Press a number to select a building to add to your queue.\n\
+Press <c=pink>TAB<c=/> to switch to the building queue (allowing you to change \
+the order or remove items).\n\
+Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
+");
+  } // if (category != BUILDCAT_NULL)
+
+}
+
 
 bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
 {

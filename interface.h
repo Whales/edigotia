@@ -110,7 +110,7 @@ private:
   void list_farm_crops(Area* cur_farm, cuss::interface& i_food);
 // Mine minister, define what minerals to mine and view stats
   void minister_mining();
-  // Helper functions for minister_mining()
+  // Helper function for minister_mining()
   void list_mine_minerals(Area* cur_mine, std::vector<int>& mineral_indices,
                           cuss::interface& i_mining);
 // Happiness minister, view morale information and do things to alter it
@@ -119,6 +119,9 @@ private:
   void building_status();
 // Select a building to add to our city
   void build_building();
+  // Helper function for build_building()
+  void set_building_list(cuss::interface& i_build, Building_category category,
+                         std::vector<Building_type>& types);
 // Pick a recipe for a building to build
 // We stick the data in new_recipe; if we cancel, return false, otherwise true
   bool pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe);
