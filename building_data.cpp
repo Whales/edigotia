@@ -15,6 +15,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _description(n) \
   Building_data[cur_id]->description = (n)
 
+#define _category(c) \
+  Building_data[cur_id]->category = (c)
+
 #define _cost(t, n) \
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 
@@ -168,6 +171,7 @@ void init_building_data()
     _military(50);
 
   _build(BUILD_MASON);
+    _category(BUILDCAT_MANUFACTURING);
     _name("mason");
     _cost(RES_GOLD, 150);
     _cost(RES_WOOD, 25);
@@ -180,6 +184,7 @@ void init_building_data()
       _uses_mineral(MINERAL_STONE, 1);
 
   _build(BUILD_FORGE);
+    _category(BUILDCAT_MANUFACTURING);
     _name("forge");
     _cost(RES_GOLD, 150);
     _cost(RES_STONE, 15);
