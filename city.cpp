@@ -455,8 +455,8 @@ void City::do_turn()
 // Advance progress on the first area in our queue.
   if (!area_queue.empty()) {
     Area* area_to_build = &(area_queue[0]);
-    area_to_build->construction_left--;
-    if (area_to_build->construction_left <= 0) {
+    area_to_build->building.construction_left--;
+    if (area_to_build->building.construction_left <= 0) {
       add_open_area(area_queue[0]);
       area_queue.erase( area_queue.begin() );
     }
@@ -751,7 +751,7 @@ std::string City::get_map_info(Point p)
   if (area) {
     ret << std::endl;
     ret << "<c=pink>" << area->get_name() << "<c=/>";
-    if (area->construction_left > 0) {
+    if (area->building.construction_left > 0) {
       ret << " (<c=brown>Under Construction<c=/>)";
     } else if (!area->open) {
       ret << " (<c=red>Closed<c=/>)";
