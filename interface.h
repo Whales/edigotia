@@ -119,9 +119,15 @@ private:
   void building_status();
 // Select a building to add to our city
   void build_building();
-  // Helper function for build_building()
+  // Helper functions for build_building()
+  // Sets up the left side (list of available buildings in this category)
   void set_building_list(cuss::interface& i_build, Building_category category,
                          std::vector<Building_type>& types);
+  // Sets up the right side (our current building queue)
+  void set_building_queue(cuss::interface& i_build);
+  // Sets up the help box depending on circumstances
+  void set_building_help(cuss::interface& i_build, Building_category build_cat,
+                         bool editing_queue, int num_options);
 // Pick a recipe for a building to build
 // We stick the data in new_recipe; if we cancel, return false, otherwise true
   bool pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe);

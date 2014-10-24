@@ -1604,10 +1604,184 @@ void Interface::build_building()
   }
 
 // Set up our list and headers to have the building categories
-  set_building_list(i_build, BUILDCAT_NULL, bldg_types);
+  Building_category build_cat = BUILDCAT_NULL;
+  set_building_list(i_build, build_cat, bldg_types);
+// Set up the building queue
+  set_building_queue(i_build);
 
-// TODO: Main loop for this function; also a function in City to enqueue a
-//       building.
+  bool done = false;
+  bool editing_queue = false;
+
+  while (!done) {
+    i_build.draw(&w_build);
+    w_build.refresh();
+
+    long ch = input();
+
+// Did we pick an option from our list?
+    if (ch >= '1' && ch <= '9') {
+      ch -= '0'; // So that '1' => 1, '2' => 2, etc
+
+      if (build_cat == BUILDCAT_NULL) {
+        if (ch < BUILDCAT_MAX) {
+          build_cat = Building_category(ch);
+          set_building_list(i_build, build_cat, bldg_types);
+        }
+
+      } else { // Actually building a building, not picking a category
+        int index = ch - 1; // Since the list starts at 1 and vector starts at 0
+        Building_type btype = bldg_types[index];
+        if (index >= 0 && index < bldg_types.size()) {
+          Building_queue_status status = city->add_building_to_queue(btype);
+  
+          switch (status) {
+            case BUILDING_QUEUE_OK: // We did it!  Update interface.
+  // We need to redo the list in case we are now unable to build something.
+              set_building_list(i_build, build_cat, bldg_types);
+              set_building_queue(i_build);
+              break;
+  
+            case BUILDING_QUEUE_NO_RESOURCES: {
+  // Craft a popup that will tell us why we can't build it
+              std::stringstream ss_popup;
+              Building_datum* bldg_dat = Building_data[btype];
+              ss_popup << "You lack the resources to build that!" << std::endl;
+              for (int i = 0; i < bldg_dat->build_costs.size(); i++) {
+                ss_popup << std::endl;
+                Resource res = bldg_dat->build_costs[i].type;
+                int amount   = bldg_dat->build_costs[i].amount;
+                int city_amount = city->get_resource_amount(res);
+                ss_popup << capitalize( resource_name( res ) ) << ": " <<
+                            amount << " (You: ";
+                if (city_amount < amount) {
+                  ss_popup << "<c=red>";  // This is why we can't build this!
+                }
+                ss_popup << city_amount << "<c=/>)";
+              }
+              popup(ss_popup.str().c_str());
+            } break;
+
+// TODO: If there are ever any other Building_queue_status values, add them here
+
+          } // switch (status)
+        } // if (index >= 0 && index < bldg_types.size())
+      } // End of "attempting to build a building" block
+
+    } else { // if (ch >= '1' && ch <= '9')
+
+      switch (ch) {
+        case KEY_ESC:
+        case 'Q':
+        case 'q':
+// If we're at the top level, or in the building queue, we leave the screen.
+          if (build_cat == BUILDCAT_NULL || editing_queue) {
+            done = true;
+          } else {  // Return to top level
+            build_cat = BUILDCAT_NULL;
+            set_building_list(i_build, build_cat, bldg_types);
+          }
+          break;
+
+        case '\t': { // TAB
+          editing_queue = !editing_queue;
+          if (editing_queue) { // We moved to control the queue list
+            i_build.select("list_building_queue");
+          } else {  // Select nothing.
+            i_build.select_none();
+          }
+          int help_count = 0;
+          if (build_cat == BUILDCAT_NULL) {
+            help_count = BUILDCAT_MAX - 1;
+          } else {
+            help_count = bldg_types.size();
+          }
+          set_building_help(i_build, build_cat, editing_queue, help_count);
+        } break;
+
+        case '<': // Move queue item up
+          if (editing_queue) {
+            int index = i_build.get_int("list_building_queue");
+// > 0 (not >= 0) since we can't move the first item up.
+            if (index > 0 && index < city->building_queue.size()) {
+              Building tmp = city->building_queue[index - 1];
+              city->building_queue[index - 1] = city->building_queue[index];
+              city->building_queue[index] = tmp;
+// Update the list
+              set_building_queue(i_build);
+// Move our cursor along with the building!
+              i_build.set_data("list_building_queue", index - 1);
+            }
+          }
+          break;
+
+        case '>': // Move queue item down
+          if (editing_queue) {
+            int index = i_build.get_int("list_building_queue");
+// < size() - 1 (not < size()) since we can't move the last item down.
+            if (index >= 0 && index < city->building_queue.size() - 1) {
+              Building tmp = city->building_queue[index + 1];
+              city->building_queue[index + 1] = city->building_queue[index];
+              city->building_queue[index] = tmp;
+// Update the list
+              set_building_queue(i_build);
+// Move our cursor along with the building!
+              i_build.set_data("list_building_queue", index + 1);
+            }
+          }
+          break;
+
+        case 'x':
+        case 'X':
+        case 'd':
+        case 'D': // Delete building from queue.
+          if (editing_queue) {
+            int index = i_build.get_int("list_building_queue");
+            if (index >= 0 && index < city->building_queue.size()) {
+// Warn the player if this will waste effort
+              Building* bldg = &(city->building_queue[index]);
+              Building_datum* bldg_dat = bldg->get_building_datum();
+
+              bool do_it = true;
+              if (bldg->construction_left < bldg_dat->build_time) {
+                int diff = bldg_dat->build_time - bldg->construction_left;
+                std::stringstream ss_warning;
+                ss_warning << "Really cancel production and waste " << diff <<
+                              " days of effort?";
+                do_it = query_yn(ss_warning.str().c_str());
+              }
+
+              if (do_it) {
+
+                if (!city->cancel_queued_building(index)) { // BAD ERROR
+                  debugmsg("city->cancel_queued_building(%d) returned false",
+                           index);
+                } else {
+                  set_building_queue(i_build);
+// Attempt to keep the cursor where it was
+                  i_build.set_data("list_building_queue", index);
+                }
+
+              } // if (do_it)
+
+            } // if (index >= 0 && index < city->building_queue.size())
+          } // if (editing_queue)
+          break;
+
+        default:
+          if (editing_queue) { // Keybindings only work when on queue list
+            i_build.handle_keypress(ch);
+// Make sure the two lists for the queue are synched
+            int index = i_build.get_int("list_building_queue");
+            i_build.set_data("list_queue_days", index);
+          }
+          break;
+
+      } // switch (ch)
+
+    } // if ! (ch >= '1' && ch <= '9')
+
+  } // while (!done)
+
 }
 
 void Interface::set_building_list(cuss::interface& i_build,
@@ -1621,39 +1795,43 @@ void Interface::set_building_list(cuss::interface& i_build,
 // Aaaand clear out types, just in case
   types.clear();
 
+  int help_count = 0; // Used when we cal set_building_help() below
+
 // BUILDCAT_NULL is a special case - it means we want to list the building
 // categories, not actual buildings themselves!
   if (category == BUILDCAT_NULL) {
 // First, we need to set the header to say "Select a type:", and clear the
-// resource header and lists.
+// resource header and lists (including the header & numbers for the city)
     i_build.set_data("text_header", "<c=yellow>Select a type:<c=/>");
-    i_build.clear_data("text_resource_header");
-    i_build.clear_data("list_cost_gold"      );
-    i_build.clear_data("list_cost_wood"      );
-    i_build.clear_data("list_cost_stone"     );
+    i_build.clear_data("text_resource_header" );
+    i_build.clear_data("list_cost_gold"       );
+    i_build.clear_data("list_cost_wood"       );
+    i_build.clear_data("list_cost_stone"      );
 // Now, fill list_options with all the names of the different Building_categorys
     for (int i = 1; i < BUILDCAT_MAX; i++) { // Start at 1 to skip BUILDCAT_NULL
       Building_category cat = Building_category(i);
       std::stringstream option;
-      option << "<c=pink>" << i << "<c=/>: " << building_category_name(cat);
+      option << "<c=pink>" << i << "<c=/>: " <<
+                capitalize( building_category_name(cat) );
       i_build.add_data("list_options", option.str());
     }
-// Finally, set some useful help text.
-    i_build.set_data("text_help", "\
-Press a number to view buildings in that category.\n\
-Press <c=pink>TAB<c=/> to switch to the building queue (allowing you to change \
-the order or remove items).\n\
-Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
-");
-// Done!
+// Append our options with a way to leave the screen
+    i_build.add_data("list_options", "<c=pink>Q<c=/>: Leave screen");
+
+    help_count = BUILDCAT_MAX - 1;
 
   } else {  // if (category == BUILDCAT_NULL)
 
 // First, set the headers.
     std::stringstream header;
-    header << "<c=yellow>" << building_category_name(category) << "<c=/>";
+    header << "<c=yellow>" << capitalize( building_category_name(category) ) <<
+              "<c=/>";
     i_build.set_data("text_header", header.str());
     i_build.set_data("text_resource_header", "Gold:  Wood:  Stone:");
+// Clear out the old cost lists
+    i_build.clear_data("list_cost_gold"       );
+    i_build.clear_data("list_cost_wood"       );
+    i_build.clear_data("list_cost_stone"      );
 // Find all the buildings that match our given category and put them in types
     for (int i = 0; i < BUILD_MAX; i++) {
       Building_datum* bldg_dat = Building_data[i];
@@ -1661,8 +1839,6 @@ Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
         types.push_back( Building_type(i) );
       }
     }
-// Prepend an option to go back at the top of list_options
-    i_build.add_data("list_options", "<c=pink>Q<c=/>: Go back");
 // Now use all the buildings in types to fill out the interface's lists
     for (int i = 0; i < types.size(); i++) {
       Building_type btype = types[i];
@@ -1686,6 +1862,11 @@ Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
  *       we'll have ugly code here, leaving the question unanswered, but
  *       eventually this should be refactored.
  */
+
+// We track whether we added lines for each resource, so we can add a blank line
+// later on (otherwise we'll put the next number in the wrong place)
+      bool did_gold = false, did_wood = false, did_stone = false;
+
       for (int n = 0; n < bldg_dat->build_costs.size(); n++) {
         Resource res = bldg_dat->build_costs[n].type;
         int amount   = bldg_dat->build_costs[n].amount;
@@ -1694,15 +1875,18 @@ Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
         switch (res) {
           case RES_GOLD:
             ss_resource = &ss_gold;
-            list_name = "list_gold";
+            list_name = "list_cost_gold";
+            did_gold = true;
             break;
           case RES_WOOD:
             ss_resource = &ss_wood;
-            list_name = "list_wood";
+            list_name = "list_cost_wood";
+            did_wood = true;
             break;
           case RES_STONE:
             ss_resource = &ss_stone;
-            list_name = "list_stone";
+            list_name = "list_cost_stone";
+            did_stone = true;
             break;
         }
         if (ss_resource) {
@@ -1715,28 +1899,131 @@ Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
           }
           (*ss_resource) << amount << "<c=/>";
           i_build.add_data(list_name, ss_resource->str());
-        }
+        } // if (ss_resource)
+      } // for (int n = 0; n < bldg_dat->build_costs.size(); n++)
+
+// Put in a blank line for the lists where we didn't put in a number
+      if (!did_gold) {
+        i_build.add_data("list_cost_gold", "");
       }
+      if (!did_wood) {
+        i_build.add_data("list_cost_wood", "");
+      }
+      if (!did_stone) {
+        i_build.add_data("list_cost_stone", "");
+      }
+
 // Now we can add the name of the building.
 // Use i + 1 since we want our list to start counting from 1, not 0
       ss_name << "<c=pink>" << i + 1 << "<c=/>: ";
       if (!can_build) {
         ss_name << "<c=dkgray>";
       }
-      ss_name << bldg_dat->name << "<c=/>";
+      ss_name << capitalize( bldg_dat->name ) << "<c=/>";
+      i_build.add_data("list_options", ss_name.str());
     } // for (int i = 0; i < types.size(); i++)
 
-// Finally, set some useful help text.
-    i_build.set_data("text_help", "\
-Press a number to select a building to add to your queue.\n\
-Press <c=pink>TAB<c=/> to switch to the building queue (allowing you to change \
-the order or remove items).\n\
-Press <c=pink>Esc<c=/> or <c=pink>Q<c=/> to leave this screen.\
-");
+// Append an option to go back at the top of list_options
+    i_build.add_data("list_options", "<c=pink>Q<c=/>: Go back");
+// Append a blank line, then info on what the player has
+    i_build.add_data("list_options", "");
+    i_build.add_data("list_options", "<c=white>You have:<c=/>");
+// Append two blank lines to the resource columns, then the city's resources
+    i_build.add_data("list_cost_gold",  "");
+    i_build.add_data("list_cost_gold",  "");
+    std::stringstream city_gold;
+    city_gold << "<c=white>" << city->get_resource_amount(RES_GOLD) <<
+                 "<c=/>";
+    i_build.add_data("list_cost_gold", city_gold.str());
+
+    i_build.add_data("list_cost_wood",  "");
+    i_build.add_data("list_cost_wood",  "");
+    std::stringstream city_wood;
+    city_wood << "<c=white>" << city->get_resource_amount(RES_WOOD) <<
+                 "<c=/>";
+    i_build.add_data("list_cost_wood", city_wood.str());
+
+    i_build.add_data("list_cost_stone", "");
+    i_build.add_data("list_cost_stone", "");
+    std::stringstream city_stone;
+    city_stone << "<c=white>" << city->get_resource_amount(RES_STONE) <<
+                 "<c=/>";
+    i_build.add_data("list_cost_stone", city_stone.str());
+
+    help_count = types.size();
+
   } // if (category != BUILDCAT_NULL)
 
+// Finally, set some useful help text.
+    set_building_help(i_build, category, false, help_count);
 }
 
+void Interface::set_building_queue(cuss::interface& i_build)
+{
+// Clear the two fields we're about to set up
+  i_build.clear_data("list_building_queue");
+  i_build.clear_data("list_queue_days"    );
+  i_build.clear_data("list_total_days"    );
+
+// Special case if no buildings enqueued
+  if (city->building_queue.empty()) {
+    i_build.add_data("list_building_queue", "<c=dkgray>Nothing queued<c=/>");
+    i_build.add_data("list_queue_days", "<c=dkgray>--<c=/>");
+    i_build.add_data("list_total_days", "<c=dkgray>--<c=/>");
+    return;
+  }
+
+// Now set them up.
+  int running_total = 0;
+  for (int i = 0; i < city->building_queue.size(); i++) {
+    Building* bldg = &(city->building_queue[i]);
+    running_total += bldg->construction_left;
+    i_build.add_data("list_building_queue", bldg->get_name());
+    i_build.add_data("list_queue_days", itos( bldg->construction_left ) );
+    i_build.add_data("list_total_days", itos( running_total ) );
+  }
+}
+
+void Interface::set_building_help(cuss::interface& i_build,
+                                  Building_category build_cat,
+                                  bool editing_queue, int num_options)
+{
+  if (editing_queue) {  // Help refers to editing the building queue
+
+    i_build.set_data("text_help", "\
+Use direction keys to select a queued building.\n\
+<c=pink><<c=/>: Move the selected building up.\n\
+<c=pink>><c=/>: Move the selected building down.\n\
+<c=pink>D<c=/>: Delete the selected building.\n\
+<c=pink>TAB<c=/>: Return to selecting buildings.\n\
+<c=pink>Esc<c=/>/<c=pink>Q<c=/>: Leave this screen.\
+");
+
+  } else if (build_cat == BUILDCAT_NULL) { // Help refers to picking a category
+
+    std::stringstream help_text;
+    help_text << "<c=pink>1<c=/> - <c=pink>" << num_options << "<c=/>: View " <<
+                 "buildings in category." << std::endl;
+    help_text << "<c=pink>TAB<c=/>: Switch to the building queue (allow you " <<
+                 "to change the order or remove items)." << std::endl;
+    help_text << "<c=pink>ESC<c=/>/<c=pink>Q<c=/>: Leave this screen.";
+
+    i_build.set_data("text_help", help_text.str());
+
+  } else {  // Help refers to picking a building
+
+    std::stringstream help_text;
+    help_text << "<c=pink>1<c=/> - <c=pink>" << num_options << "<c=/>: " <<
+                 "Select a building to add to your queue." << std::endl;
+    help_text << "<c=pink>TAB<c=/>: Switch to the building queue (allow you " <<
+                 "to change the order or remove items)." << std::endl;
+    help_text << "<c=pink>ESC<c=/>/<c=pink>Q<c=/>: Pick a new category.";
+
+    i_build.set_data("text_help", help_text.str());
+
+  }
+}
+    
 
 bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
 {
