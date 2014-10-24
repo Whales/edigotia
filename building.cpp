@@ -13,9 +13,11 @@ Recipe::Recipe(Resource R, int A)
 Building::Building()
 {
   pos = Point(-1, -1);
+  construction_left = 0;
   type = BUILD_NULL;
   workers = 0;
   field_output = 0;
+  shaft_output = 0;
 }
 
 Building::~Building()
@@ -28,6 +30,18 @@ void Building::set_type(Building_type new_type)
   build_queue.clear();
   crops_grown.clear();
   minerals_mined.clear();
+}
+
+void Building::make_queued()
+{
+  Building_datum* datum = get_building_datum();
+  if (!datum) {
+    debugmsg("Building::make_queued() called get_building_datum() and got \
+NULL!");
+    return;
+  }
+
+  construction_left = datum->build_time;
 }
 
 int Building::get_empty_fields()
