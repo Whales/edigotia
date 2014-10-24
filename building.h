@@ -35,6 +35,9 @@ enum Building_type
   BUILD_MAX
 };
 
+// NOTE: There should be no more than 9 buildings in each category!
+//       If a category is full, split it into two categories.
+
 enum Building_category
 {
   BUILDCAT_NULL = 0,  // Used for buildings that only appear as areas
@@ -139,6 +142,7 @@ struct Building
   ~Building();
 
   void set_type(Building_type new_type);
+  void make_queued(); // Prepare it for being in a building queue
 
   Building_datum* get_building_datum();
   std::string get_name();
@@ -154,20 +158,25 @@ struct Building
   int get_upkeep();
   std::map<Resource,int> get_maintenance();
 
+// ALL-BUILDING DATA
   Point pos;  // Position of the area we belong to, if any.
   int construction_left;  // Days of construction remaining.
 
   Building_type type;
   int workers;
 
-// Basically for housing only
+// HOUSING ONLY
   int get_housing(Citizen_type cit_type = CIT_NULL);
-// Basically for farms only
+
+// FARMS ONLY
   int get_empty_fields();
   int field_output; // How much of each crop does a single field output?
+
   std::vector<Crop_amount> crops_grown;
-// Basically for mines only
+
+// MINES ONLY
   int get_empty_shafts();
+
   int shaft_output; // How much of each mineral does a single shaft output?
   std::vector<Mineral_amount> minerals_mined;
 
