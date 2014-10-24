@@ -450,15 +450,26 @@ void City::do_turn()
       }
     }
   }
-        
 
 // Advance progress on the first area in our queue.
   if (!area_queue.empty()) {
     Area* area_to_build = &(area_queue[0]);
     area_to_build->building.construction_left--;
     if (area_to_build->building.construction_left <= 0) {
+// TODO: Add a message alerting the player that an area is finished
       add_open_area(area_queue[0]);
       area_queue.erase( area_queue.begin() );
+    }
+  }
+
+// Advance progress on the first building in our queue.
+  if (!building_queue.empty()) {
+    Building* building_to_build = &(building_queue[0]);
+    building_to_build->construction_left--;
+    if (building_to_build->construction_left <= 0){
+// TODO: Add a message alerting the player that a building is finished
+      add_open_building(building_queue[0]);
+      building_queue.erase( building_queue.begin() );
     }
   }
 }
