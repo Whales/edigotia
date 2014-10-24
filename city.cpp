@@ -602,13 +602,58 @@ void City::add_open_area(Area area)
 
   areas.push_back( area );
 
-  
+}
+
+Building_queue_status City::add_building_to_queue(Building_type type)
+{
+  Building tmp;
+  tmp.set_type(type);
+  return add_building_to_queue(tmp);
+}
+
+Building_queue_status City::add_building_to_queue(Building building)
+{
+  Building_datum* bldg_dat = building.get_building_datum();
+  if (!expend_resources(bldg_dat->build_costs)) {
+    return BUILDING_QUEUE_NO_RESOURCES;
+  }
+
+  building.make_queued();
+  building_queue.push_back(building);
+  return BUILDING_QUEUE_OK;
+}
+
+void City::add_open_building(Building building)
+{
+// TODO: Anything at all?  Should we try to auto-employ workers?
+  buildings.push_back(building);
+}
+
+bool City::cancel_queued_building(int index)
+{
+  if (index < 0 || index >= building_queue.size()) {
+    return false;
+  }
+
+// We get our resources back!
+  Building_datum* bldg_dat = building_queue[index].get_building_datum();
+
+  gain_resources(bldg_dat->build_costs);
+
+  return true;
 }
 
 bool City::expend_resource(Resource res, int amount)
 {
   std::vector<Resource_amount> res_vec;
   res_vec.push_back( Resource_amount(res, amount) );
+  return expend_resources(res_vec);
+}
+
+bool City::expend_resource(Resource_amount res)
+{
+  std::vector<Resource_amount> res_vec;
+  res_vec.push_back(res);
   return expend_resources(res_vec);
 }
 
@@ -659,6 +704,32 @@ bool City::expend_resources(std::map<Resource,int> res_used)
     }
   }
   return true;
+}
+
+void City::gain_resource(Resource res, int amount)
+{
+  resources[res] += amount;
+}
+
+void City::gain_resource(Resource_amount res)
+{
+  gain_resource(res.type, res.amount);
+}
+
+void City::gain_resources(std::vector<Resource_amount> resources)
+{
+  for (int i = 0; i < resources.size(); i++) {
+    gain_resource( resources[i] );
+  }
+}
+
+void City::gain_resources(std::map<Resource,int> resources)
+{
+  for (std::map<Resource,int>::iterator it = resources.begin();
+       it != resources.end();
+       it++) {
+    gain_resource( it->first, it->second );
+  }
 }
 
 bool City::employ_citizens(Citizen_type type, int amount, Building* job_site)

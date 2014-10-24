@@ -33,6 +33,7 @@ struct Citizens
   void remove_citizens(int amount);
 };
 
+// Return value when we attempt to enqueue an area
 enum Area_queue_status
 {
   AREA_QUEUE_OK,              // OK to build
@@ -40,6 +41,14 @@ enum Area_queue_status
   AREA_QUEUE_BAD_TERRAIN,     // Terrain won't let us build this area
   AREA_QUEUE_OCCUPIED,        // Location already contains an area
   AREA_QUEUE_MAX
+};
+
+// Return value when we attempt to enqueue a building
+enum Building_queue_status
+{
+  BUILDING_QUEUE_OK,            // OK to build
+  BUILDING_QUEUE_NO_RESOURCES,  // We lack the necessary resources
+  BUILDING_QUEUE_MAX
 };
 
 class City
@@ -63,9 +72,20 @@ public:
   Area_queue_status add_area_to_queue(Area area);
   void add_open_area(Area area);  // Move it from queue to areas.
 
+  Building_queue_status add_building_to_queue(Building_type type);
+  Building_queue_status add_building_to_queue(Building building);
+  void add_open_building(Building building);  // Move it from queue to buildings
+  bool cancel_queued_building(int index);
+
   bool expend_resource(Resource res, int amount);
+  bool expend_resource(Resource_amount res);
   bool expend_resources(std::vector<Resource_amount> resources);
-  bool expend_resources(std::map<Resource,int> resources);
+  bool expend_resources(std::map<Resource,int>       resources);
+
+  void gain_resource(Resource res, int amount);
+  void gain_resource(Resource_amount res);
+  void gain_resources(std::vector<Resource_amount> resources);
+  void gain_resources(std::map<Resource,int>       resources);
 
   bool employ_citizens(Citizen_type type, int amount, Building* job_site);
   bool fire_citizens  (Citizen_type type, int amount, Building* job_site);
