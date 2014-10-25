@@ -1383,26 +1383,46 @@ void Interface::building_status()
   i_buildings.ref_data("num_free_burghers",  &free_burghers );
 
 // Set up a few variables & prep the interface for our loop
-  int index = -1;
+  int index = -1; // -1 so that we'll update it on the first iteration
+
+/* If this variable is not -1, it will move our selection in list_benefits to
+ * its value when we update the list.  This is used when moving items around in
+ * list_benefits, to make sure our cursor stays with the item that we moved.
+ */
+  int move_index = -1;
+
+// Set a pointer to the currently-selected building (if our list isn't empty).
   Building* cur_bldg = NULL;
   if (!buildings.empty()) {
     cur_bldg = buildings[0];
   }
-  bool done = false;
+
+  bool done = false; // Once this is true, we exit the function.
+
 /* If adjusting_production is true, then we're currently in the production list
  * and can add/remove items.  If it's false, we're currently selecting a
  * building.
  */
   bool adjusting_production = false;
+
 /* If this is true, we need to update list_benefits (and then set it back to
  * false).  It will be set to true if we select a new building, or if we change
  * the contents of list_benefits (e.g. by adding or removing a production item).
  */
   bool update_benefits = false;
 
+// Set our help text
+  i_buildings.set_data("text_help", "\
+<c=pink>Right<c=/>/<c=pink>L<c=/>/<c=pink>+<c=/>: Hire Citizen\n\
+<c=pink>Left <c=/>/<c=pink>H<c=/>/<c=pink>-<c=/>: Fire Citizen\n\
+<c=pink>TAB<c=/>: Edit production queue\n\
+<c=pink>Q<c=/>: Leave this screen\
+");
+
 // Start our control in the list of buildings
   i_buildings.select("list_building_names");
 
+// Start our loop!
   while (!done) {
 // Check if we selected a new building
     int new_index = i_buildings.get_int("list_building_names");
@@ -1430,7 +1450,10 @@ void Interface::building_status()
       update_benefits = true;
     }
 
-    if (update_benefits) {
+    if (update_benefits && cur_bldg) {
+// Set update_benefits to false so we don't update every loop.
+      update_benefits = false;
+
 /* Use some if statements to figure out what the building does - we'll put the
  * relevent information in list_benefits, and label it properly using
  * list_benefits_label.
@@ -1477,6 +1500,18 @@ void Interface::building_status()
 
         i_buildings.set_data("list_benefits", production_list);
 
+// Check move_index to see if we need to set the selected item
+        if (move_index != -1) {
+          if (move_index >= production_list.size()) {
+            move_index = production_list.size() - 1;
+          }
+          if (move_index < 0) {
+            move_index = 0;
+          }
+          i_buildings.set_data("list_benefits", move_index);
+          move_index = -1;
+        }
+
       } else if (cur_bldg->get_housing() > 0) { // Any housing
 
         i_buildings.set_data("list_benefits_label", "<c=yellow>Housing:<c=/>");
@@ -1499,6 +1534,15 @@ void Interface::building_status()
 
     long ch = input();
 
+// - and + can be used in the production queue; easiest way is to change it here
+    if (adjusting_production) {
+      if (ch == '-') {
+        ch = 'r';
+      } else if (ch == '+' || ch == '=') {
+        ch = 'a';
+      }
+    }
+
     switch (ch) {
 // Leave this screen
       case 'q':
@@ -1513,32 +1557,34 @@ void Interface::building_status()
       case 'L':
       case '=':
       case '+':
+        if (cur_bldg) { // Safety check
 // Can't add workers for mines or farms - that's done via ministers
-        if (cur_bldg->type == BUILD_FARM) {
-          popup("To add workers to a farm, use the Minister of Food.");
+          if (cur_bldg->type == BUILD_FARM) {
+            popup("To add workers to a farm, use the Minister of Food.");
 
-        } else if (cur_bldg->type == BUILD_MINE) {
-          popup("To add workers to a mine, use the Minister of Mining.");
+          } else if (cur_bldg->type == BUILD_MINE) {
+            popup("To add workers to a mine, use the Minister of Mining.");
 
-        } else {
-          Citizen_type cit_type = cur_bldg->get_job_citizen_type();
-          if (city->employ_citizens(cit_type, 1, cur_bldg)) {
-            std::stringstream workers_ss;
-            if (cur_bldg->get_total_jobs() == 0) {
-              workers_ss << "<c=dkgray>";
-            } else if (cur_bldg->workers == 0) {
-              workers_ss << "<c=red>";
-            }
-            workers_ss << cur_bldg->workers          << "<c=/>";
-            workers[index] = workers_ss.str();
+          } else {
+            Citizen_type cit_type = cur_bldg->get_job_citizen_type();
+            if (city->employ_citizens(cit_type, 1, cur_bldg)) {
+              std::stringstream workers_ss;
+              if (cur_bldg->get_total_jobs() == 0) {
+                workers_ss << "<c=dkgray>";
+              } else if (cur_bldg->workers == 0) {
+                workers_ss << "<c=red>";
+              }
+              workers_ss << cur_bldg->workers          << "<c=/>";
+              workers[index] = workers_ss.str();
 
-            switch (cit_type) {
-              case CIT_PEASANT:   free_peasants--;  break;
-              case CIT_MERCHANT:  free_merchants--; break;
-              case CIT_BURGHER:   free_burghers--;  break;
-            }
-          } // if (city->employ_citizens(cit_type, 1, cur_bldg))
-        }
+              switch (cit_type) {
+                case CIT_PEASANT:   free_peasants--;  break;
+                case CIT_MERCHANT:  free_merchants--; break;
+                case CIT_BURGHER:   free_burghers--;  break;
+              }
+            } // if (city->employ_citizens(cit_type, 1, cur_bldg))
+          }
+        } // if (cur_bldg)
         break;
 
 // Fire workers
@@ -1546,43 +1592,65 @@ void Interface::building_status()
       case 'h':
       case 'H':
       case '-':
+        if (cur_bldg) { // Safety check
 // Can't add workers for mines or farms - that's done via ministers
-        if (cur_bldg->type == BUILD_FARM) {
-          popup("To remove workers from a farm, use the Minister of Food.");
+          if (cur_bldg->type == BUILD_FARM) {
+            popup("To remove workers from a farm, use the Minister of Food.");
 
-        } else if (cur_bldg->type == BUILD_MINE) {
-          popup("To remove workers from a mine, use the Minister of Mining.");
+          } else if (cur_bldg->type == BUILD_MINE) {
+            popup("To remove workers from a mine, use the Minister of Mining.");
 
-        } else {
-          Citizen_type cit_type = cur_bldg->get_job_citizen_type();
-          if (city->fire_citizens(cit_type, 1, cur_bldg)) {
-            std::stringstream workers_ss;
-            if (cur_bldg->get_total_jobs() == 0) {
-              workers_ss << "<c=dkgray>";
-            } else if (cur_bldg->workers == 0) {
-              workers_ss << "<c=red>";
-            }
-            workers_ss << cur_bldg->workers          << "<c=/>";
-            workers[index] = workers_ss.str();
-            switch (cit_type) {
-              case CIT_PEASANT:   free_peasants++;  break;
-              case CIT_MERCHANT:  free_merchants++; break;
-              case CIT_BURGHER:   free_burghers++;  break;
-            }
-          } // if (city->fire_citizens(cit_type, 1, cur_bldg))
-        }
+          } else {
+            Citizen_type cit_type = cur_bldg->get_job_citizen_type();
+            if (city->fire_citizens(cit_type, 1, cur_bldg)) {
+              std::stringstream workers_ss;
+              if (cur_bldg->get_total_jobs() == 0) {
+                workers_ss << "<c=dkgray>";
+              } else if (cur_bldg->workers == 0) {
+                workers_ss << "<c=red>";
+              }
+              workers_ss << cur_bldg->workers          << "<c=/>";
+              workers[index] = workers_ss.str();
+              switch (cit_type) {
+                case CIT_PEASANT:   free_peasants++;  break;
+                case CIT_MERCHANT:  free_merchants++; break;
+                case CIT_BURGHER:   free_burghers++;  break;
+              }
+            } // if (city->fire_citizens(cit_type, 1, cur_bldg))
+          }
+        } // if (cur_bldg)
         break;
 
 // Move control between building selecting & production adjustment
-      case 'e':
-      case 'E':
+      case '\t':
 // Only allow for adjusting production for buildings that produce things
-        if (cur_bldg->builds_resource()) {
+        if (cur_bldg && cur_bldg->builds_resource()) {
           adjusting_production = !adjusting_production;
+
           if (adjusting_production) {
             i_buildings.select("list_benefits");
+
+// Set our help text
+            i_buildings.set_data("text_help", "\
+<c=pink>A<c=/>/<c=pink>+<c=/>: Add production item\n\
+<c=pink>R<c=/>/<c=pink>-<c=/>: Remove production item\n\
+<c=pink><<c=/>  : Move item up\n\
+<c=pink>><c=/>  : Move item down\n\
+<c=pink>TAB<c=/>: Return to building selection\n\
+<c=pink>ESC<c=/>/<c=pink>Q<c=/>: Leave this screen\
+");
+
           } else {
             i_buildings.select("list_building_names");
+
+// Set our help text (TODO: this is a duplicate of the code just before the
+//                          loop, don't do that)
+            i_buildings.set_data("text_help", "\
+<c=pink>Right<c=/>/<c=pink>L<c=/>/<c=pink>+<c=/>: Hire Citizen\n\
+<c=pink>Left <c=/>/<c=pink>H<c=/>/<c=pink>-<c=/>: Fire Citizen\n\
+<c=pink>TAB<c=/>: Edit production queue\n\
+<c=pink>Q<c=/>: Leave this screen\
+");
           }
         }
         break;
@@ -1590,11 +1658,13 @@ void Interface::building_status()
 // Remove an item from the production queue.
       case 'r':
       case 'R':
-        if (adjusting_production) {
+        if (cur_bldg && adjusting_production) {
           int prod_index = i_buildings.get_int("list_benefits");
-          if (prod_index >= 0 && prod_index <= cur_bldg->build_queue.size()) {
+          if (prod_index >= 0 && prod_index < cur_bldg->build_queue.size()) {
             cur_bldg->build_queue.erase( cur_bldg->build_queue.begin() +
                                          prod_index );
+// Keep our index where it is now
+            move_index = prod_index;
 // Update list_benefits on next loop (i.e. now)
             update_benefits = true;
           }
@@ -1604,7 +1674,7 @@ void Interface::building_status()
 // Add an item to the production queue.
       case 'a':
       case 'A':
-        if (adjusting_production) {
+        if (cur_bldg && adjusting_production) {
           Recipe_amount new_recipe;
           if (pick_recipe(cur_bldg, new_recipe)) {  // Returns false if canceled
             cur_bldg->build_queue.push_back(new_recipe);
@@ -1614,10 +1684,47 @@ void Interface::building_status()
         }
         break;
 
+// Move item up in the production queue
+      case '<':
+        if (cur_bldg && adjusting_production &&
+            !cur_bldg->build_queue.empty()) {
+          int prod_index = i_buildings.get_int("list_benefits");
+// index > 0 since we can't move the first item up any further
+          if (prod_index > 0 && prod_index < cur_bldg->build_queue.size()) {
+            Recipe_amount tmp = cur_bldg->build_queue[prod_index - 1];
+            cur_bldg->build_queue[prod_index - 1] =
+              cur_bldg->build_queue[prod_index];
+            cur_bldg->build_queue[prod_index] = tmp;
+// Set moved_index, so our cursor stays with the item we moved
+            move_index = prod_index - 1;
+// Refresh the production list
+            update_benefits = true;
+          }
+        }
+        break;
+
+// Move item down in the production queue
+      case '>':
+        if (cur_bldg && adjusting_production &&
+            !cur_bldg->build_queue.empty()) {
+          int prod_index = i_buildings.get_int("list_benefits");
+// index < size() - 1 since we can't move the last item down any further
+          if (prod_index >= 0 &&
+              prod_index < cur_bldg->build_queue.size() - 1) {
+            Recipe_amount tmp = cur_bldg->build_queue[prod_index + 1];
+            cur_bldg->build_queue[prod_index + 1] =
+              cur_bldg->build_queue[prod_index];
+            cur_bldg->build_queue[prod_index] = tmp;
+// Set moved_index, so our cursor stays with the item we moved
+            move_index = prod_index + 1;
+// Refresh the production list
+            update_benefits = true;
+          }
+        }
         break;
 
       default:
-        i_buildings.handle_action(ch);
+        i_buildings.handle_keypress(ch);
         break;
     }
   } // while (!done)
