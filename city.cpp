@@ -654,51 +654,154 @@ bool City::cancel_queued_building(int index)
   return true;
 }
 
+bool City::has_resource(Resource res, int amount)
+{
+  return (get_resource_amount(res) >= amount);
+}
+
+bool City::has_resource(Resource_amount res)
+{
+  return has_resource(res.type, res.amount);
+}
+
+bool City::has_resources(std::vector<Resource_amount> res_used)
+{
+  for (int i = 0; i < res_used.size(); i++) {
+    if (!has_resource( res_used[i] )) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool City::has_resources(std::map<Resource,int> res_used)
+{
+  for (std::map<Resource,int>::iterator it = res_used.begin();
+       it != res_used.end();
+       it++) {
+    if (!has_resource(it->first, it->second)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool City::has_mineral(Mineral res, int amount)
+{
+  return (get_mineral_amount(res) >= amount);
+}
+
+bool City::has_mineral(Mineral_amount res)
+{
+  return has_mineral(res.type, res.amount);
+}
+
+bool City::has_minerals(std::vector<Mineral_amount> min_used)
+{
+  for (int i = 0; i < min_used.size(); i++) {
+    if (!has_mineral( min_used[i] )) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool City::has_minerals(std::map<Mineral,int> min_used)
+{
+  for (std::map<Mineral,int>::iterator it = min_used.begin();
+       it != min_used.end();
+       it++) {
+    if (!has_mineral(it->first, it->second)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool City::expend_resource(Resource res, int amount)
 {
-  std::vector<Resource_amount> res_vec;
-  res_vec.push_back( Resource_amount(res, amount) );
-  return expend_resources(res_vec);
+  if (!has_resource(res, amount)) {
+    return false;
+  }
+  resources[res] -= amount;
+  return true;
 }
 
 bool City::expend_resource(Resource_amount res)
 {
-  std::vector<Resource_amount> res_vec;
-  res_vec.push_back(res);
-  return expend_resources(res_vec);
+  if (!has_resource(res)) {
+    return false;
+  }
+  resources[res.type] -= res.amount;
+  return true;
 }
 
 bool City::expend_resources(std::vector<Resource_amount> res_used)
 {
-// First, check if we have enough
-  for (int i = 0; i < res_used.size(); i++) {
-    Resource res = res_used[i].type;
-    if (get_resource_amount(res) < res_used[i].amount) {
-      return false;
-    }
+  if (!has_resources(res_used)) {
+    return false;
   }
-// Now, actually consume them
+
   for (int i = 0; i < res_used.size(); i++) {
-    Resource res = res_used[i].type;
-    resources[res] -= res_used[i].amount;
+    resources[ res_used[i].type ] -= res_used[i].amount;
   }
   return true;
 }
 
 bool City::expend_resources(std::map<Resource,int> res_used)
 {
-  std::map<Resource,int>::iterator it;
-// First, check if we have enough
-  for (it = res_used.begin(); it != res_used.end(); it++) {
-    Resource res = it->first;
-    if (get_resource_amount(res) < it->second) {
-      return false;
-    }
+  if (!has_resources(res_used)) {
+    return false;
   }
-// Now, actually consume them
-  for (it = res_used.begin(); it != res_used.end(); it++) {
-    Resource res = it->first;
-    resources[res] -= it->second;
+
+  for (std::map<Resource,int>::iterator it = res_used.begin();
+       it != res_used.end();
+       it++) {
+    resources[it->first] -= it->second;
+  }
+  return true;
+}
+
+bool City::expend_mineral(Mineral res, int amount)
+{
+  if (!has_mineral(res, amount)) {
+    return false;
+  }
+  minerals[res] -= amount;
+  return true;
+}
+
+bool City::expend_mineral(Mineral_amount res)
+{
+  if (!has_mineral(res)) {
+    return false;
+  }
+  minerals[res.type] -= res.amount;
+  return true;
+}
+
+bool City::expend_minerals(std::vector<Mineral_amount> min_used)
+{
+  if (!has_minerals(min_used)) {
+    return false;
+  }
+
+  for (int i = 0; i < min_used.size(); i++) {
+    minerals[ min_used[i].type ] -= min_used[i].amount;
+  }
+  return true;
+}
+
+bool City::expend_minerals(std::map<Mineral,int> min_used)
+{
+  if (!has_minerals(min_used)) {
+    return false;
+  }
+
+  for (std::map<Mineral,int>::iterator it = min_used.begin();
+       it != min_used.end();
+       it++) {
+    minerals[it->first] -= it->second;
   }
   return true;
 }
@@ -713,17 +816,17 @@ void City::gain_resource(Resource_amount res)
   gain_resource(res.type, res.amount);
 }
 
-void City::gain_resources(std::vector<Resource_amount> resources)
+void City::gain_resources(std::vector<Resource_amount> res_used)
 {
-  for (int i = 0; i < resources.size(); i++) {
-    gain_resource( resources[i] );
+  for (int i = 0; i < res_used.size(); i++) {
+    gain_resource( res_used[i] );
   }
 }
 
-void City::gain_resources(std::map<Resource,int> resources)
+void City::gain_resources(std::map<Resource,int> res_used)
 {
-  for (std::map<Resource,int>::iterator it = resources.begin();
-       it != resources.end();
+  for (std::map<Resource,int>::iterator it = res_used.begin();
+       it != res_used.end();
        it++) {
     gain_resource( it->first, it->second );
   }
@@ -1105,6 +1208,20 @@ int City::get_resource_amount(Resource res)
 int City::get_mineral_amount(Mineral min)
 {
   return minerals[min];
+}
+
+int City::get_resource_production(Resource res)
+{
+// Check all buildings (including areas)
+  std::vector<Building*> bldgs = get_all_buildings();
+  int ret = 0;
+
+  for (int i = 0; i < bldgs.size(); i++) {
+    ret += bldgs[i]->amount_produced(res);
+    ret += bldgs[i]->amount_built(res, this);
+  }
+
+  return ret;
 }
 
 // type defaults to CIT_NULL

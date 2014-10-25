@@ -77,15 +77,30 @@ public:
   void add_open_building(Building building);  // Move it from queue to buildings
   bool cancel_queued_building(int index);
 
-  bool expend_resource(Resource res, int amount);
-  bool expend_resource(Resource_amount res);
-  bool expend_resources(std::vector<Resource_amount> resources);
-  bool expend_resources(std::map<Resource,int>       resources);
+  bool has_resource (Resource res, int amount);
+  bool has_resource (Resource_amount res);
+  bool has_resources(std::vector<Resource_amount> res_used);
+  bool has_resources(std::map<Resource,int>       res_used);
 
-  void gain_resource(Resource res, int amount);
-  void gain_resource(Resource_amount res);
-  void gain_resources(std::vector<Resource_amount> resources);
-  void gain_resources(std::map<Resource,int>       resources);
+  bool has_mineral (Mineral res, int amount);
+  bool has_mineral (Mineral_amount res);
+  bool has_minerals(std::vector<Mineral_amount> min_used);
+  bool has_minerals(std::map<Mineral,int>       min_used);
+
+  bool expend_resource (Resource res, int amount);
+  bool expend_resource (Resource_amount res);
+  bool expend_resources(std::vector<Resource_amount> res_used);
+  bool expend_resources(std::map<Resource,int>       res_used);
+
+  bool expend_mineral (Mineral res, int amount);
+  bool expend_mineral (Mineral_amount res);
+  bool expend_minerals(std::vector<Mineral_amount> min_used);
+  bool expend_minerals(std::map<Mineral,int>       min_used);
+
+  void gain_resource (Resource res, int amount);
+  void gain_resource (Resource_amount res);
+  void gain_resources(std::vector<Resource_amount> res_used);
+  void gain_resources(std::map<Resource,int>       res_used);
 
   bool employ_citizens(Citizen_type type, int amount, Building* job_site);
   bool fire_citizens  (Citizen_type type, int amount, Building* job_site);
@@ -141,6 +156,7 @@ public:
 // Resource-related functions
   int get_resource_amount(Resource res);
   int get_mineral_amount (Mineral  min);
+  int get_resource_production(Resource res);  // From all sources
 
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);
