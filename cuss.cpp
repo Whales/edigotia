@@ -1557,7 +1557,7 @@ bool interface::handle_action(long ch)
   return false;
 
  binding* used = &(bindings[ch]);
- element* found = (used->target == "" ||used->target == "<S>" ? selected() :
+ element* found = (used->target == "" || used->target == "<S>" ? selected() :
                    find_by_name(used->target));
 
  switch (used->act) {
