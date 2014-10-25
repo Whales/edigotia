@@ -1465,8 +1465,12 @@ void Interface::building_status()
             std::stringstream production_ss;
             Recipe_amount recipe = cur_bldg->build_queue[i];
             production_ss << "<c=ltgray>" <<
-                             capitalize(resource_name(recipe.get_resource())) <<
-                             " x " << recipe.amount << "<c=/>";
+                             capitalize(resource_name(recipe.get_resource()));
+            if (recipe.amount == INFINITE_RESOURCE) {
+              production_ss << " <c=ltblue>(Infinite)<c=/>";
+            } else {
+              production_ss <<  " x " << recipe.amount << "<c=/>";
+            }
             production_list.push_back( production_ss.str() );
           }
         }
@@ -2135,7 +2139,11 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
   i_production.set_data("list_stored",  prod_stored );
 
 // Amount defaults to 1.
-  i_production.set_data("num_amount", 1);
+  int amount = 1;
+  i_production.set_data("text_amount", "1");
+
+// Start by selecting list_options
+  i_production.select("list_options");
 
 // Now actually run the interface!
   while (true) {
@@ -2152,13 +2160,36 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
     switch (ch) {
 
       case '0':
-        i_production.set_data("num_amount", 0);
+        amount = 0;
+        i_production.set_data("text_amount", "<c=ltblue>Infinite<c=/>");
+        break;
+
+      case '+':
+      case '=':
+      case 'l':
+      case '6':
+      case KEY_RIGHT:
+        amount++;
+        i_production.set_data("text_amount", itos(amount));
+        break;
+
+      case '-':
+      case 'h':
+      case '4':
+      case KEY_LEFT:
+        if (amount > 1) {
+          amount--;
+          i_production.set_data("text_amount", itos(amount));
+        }
         break;
 
       case '\n':
         if (index >= 0 && index < bldg_dat->recipes.size()) {
           new_recipe.recipe = bldg_dat->recipes[index];
-          new_recipe.amount = i_production.get_int("num_amount");
+          new_recipe.amount = amount;
+          if (new_recipe.amount == 0) {
+            new_recipe.amount = INFINITE_RESOURCE;
+          }
           return true;
         }
         break;
