@@ -66,6 +66,8 @@ struct Recipe
 // R and A combine to form a Resource_amount.
   Recipe(Resource R = RES_NULL, int A = 1);
 
+  Resource get_resource();  // Returns result.type()
+
   Resource_amount result;
 
 /* Obviously, only one of the following two should be set.  In
@@ -87,6 +89,8 @@ struct Recipe_amount
 {
   Recipe_amount(Recipe R = Recipe(), int A = 1) : recipe (R), amount (A)
   { }
+
+  Resource get_resource();  // Returns recipe.get_resource()
 
   Recipe recipe;
   int amount;

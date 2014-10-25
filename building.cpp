@@ -10,6 +10,16 @@ Recipe::Recipe(Resource R, int A)
   result = Resource_amount(R, A);
 }
 
+Resource Recipe::get_resource()
+{
+  return result.type;
+}
+
+Resource Recipe_amount::get_resource()
+{
+  return recipe.get_resource();
+}
+
 Building::Building()
 {
   pos = Point(-1, -1);
