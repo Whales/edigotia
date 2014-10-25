@@ -8,6 +8,8 @@
 #include <vector>
 #include <map>
 
+class City; // For use in Building::amount_built()
+
 enum Building_type
 {
   BUILD_NULL = 0,
@@ -153,6 +155,7 @@ struct Building
   bool produces_resource(Resource res = RES_NULL);
   bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
+  int  amount_built     (Resource res, City* city);
 
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
   int get_available_jobs(Citizen_type cit_type = CIT_NULL);

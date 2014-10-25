@@ -1,5 +1,6 @@
 #include "building.h"
 #include "resource.h"
+#include "city.h" // Needed in Building::amount_built()
 #include "window.h" // For debugmsg
 #include "stringfunc.h" // Needed in lookup_building_category()
 #include <sstream>
@@ -111,6 +112,34 @@ int Building::amount_produced(Resource res)
 {
   Building_datum* build_dat = get_building_datum();
   return build_dat->amount_produced(res);
+}
+
+int Building::amount_built(Resource res, City* city)
+{
+  if (!city) {
+    return 0;
+  }
+
+  if (build_queue.empty()) {
+    return 0;
+  }
+// We only need to check the first item in our build_queue.
+  Recipe rec = build_queue[0].recipe;
+  if (rec.get_resource() == res &&
+      city->has_resources(rec.resource_ingredients) &&
+      city->has_minerals (rec.mineral_ingredients )) {
+    int ret = rec.result.amount;
+    ret *= workers;
+// Multiple by units_per_day or divide by days_per_unit.
+    if (rec.units_per_day != 0) {
+      ret *= rec.units_per_day;
+    } else if (rec.days_per_unit != 0) {
+      ret /= rec.days_per_unit;
+    }
+    return ret;
+  }
+
+  return 0;
 }
 
 // cit_type defaults to CIT_NULL
