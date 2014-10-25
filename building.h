@@ -32,7 +32,7 @@ enum Building_type
 
 // Manufacturing
   BUILD_MASON,
-  BUILD_FORGE,
+  BUILD_MINT,
 
   BUILD_MAX
 };

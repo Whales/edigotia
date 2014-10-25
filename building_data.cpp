@@ -183,9 +183,9 @@ void init_building_data()
       _units_per_day(3);
       _uses_mineral(MINERAL_STONE, 1);
 
-  _build(BUILD_FORGE);
+  _build(BUILD_MINT);
     _category(BUILDCAT_MANUFACTURING);
-    _name("forge");
+    _name("mint");
     _cost(RES_GOLD, 150);
     _cost(RES_STONE, 15);
     _build_time(6);
