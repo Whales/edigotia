@@ -510,11 +510,10 @@ void Interface::minister_finance()
   int current_gold = city->get_resource_amount(RES_GOLD);
   i_finance.ref_data("num_gold", &current_gold);
 
-  int income_taxes = 0, income_trade = 0, income_mining = 0, income_total = 0;
+  int income_taxes = 0, income_trade = 0, income_total = 0;
   i_finance.ref_data("num_income",        &income_total);
   i_finance.ref_data("num_income_taxes",  &income_taxes);
   i_finance.ref_data("num_income_trade",  &income_trade);
-  i_finance.ref_data("num_income_mining", &income_mining);
 
   int expense_wages = 0, expense_trade = 0, expense_maintenance = 0,
       expense_corruption = 0, expense_military = 0, expense_total = 0;
@@ -557,10 +556,8 @@ void Interface::minister_finance()
 
 // TODO: Calculate trade income & expenses
 
-  income_mining = city->get_amount_mined(MINERAL_GOLD);
-
 // We now know enough to calculate the total gross income...
-  income_total = income_taxes + income_trade + income_mining;
+  income_total = income_taxes + income_trade;
 // ... which lets us calculate the total lost to corruption.
   expense_corruption = income_total * city->get_corruption_percentage();
   expense_corruption /= 100;
@@ -620,12 +617,6 @@ void Interface::minister_finance()
       i_finance.set_data("num_income_trade", c_ltgreen);
     } else {
       i_finance.set_data("num_income_trade", c_dkgray);
-    }
-
-    if (income_mining > 0) {
-      i_finance.set_data("num_income_mining", c_ltgreen);
-    } else {
-      i_finance.set_data("num_income_mining", c_dkgray);
     }
 
     if (expense_wages > 0) {

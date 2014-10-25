@@ -681,6 +681,7 @@ bool City::expend_resources(std::vector<Resource_amount> res_used)
   for (int i = 0; i < res_used.size(); i++) {
     Resource res = res_used[i].type;
     resources[res] -= res_used[i].amount;
+/*
     if (res == RES_GOLD && resources[res] < 0) {
       minerals[MINERAL_GOLD] += resources[res];
       resources[res] = 0;
@@ -688,6 +689,7 @@ bool City::expend_resources(std::vector<Resource_amount> res_used)
       minerals[MINERAL_STONE] += resources[res];
       resources[res] = 0;
     }
+*/
   }
   return true;
 }
@@ -706,6 +708,7 @@ bool City::expend_resources(std::map<Resource,int> res_used)
   for (it = res_used.begin(); it != res_used.end(); it++) {
     Resource res = it->first;
     resources[res] -= it->second;
+/*
     if (res == RES_GOLD && resources[res] < 0) {
       minerals[MINERAL_GOLD] += resources[res];
       resources[res] = 0;
@@ -713,6 +716,7 @@ bool City::expend_resources(std::map<Resource,int> res_used)
       minerals[MINERAL_STONE] += resources[res];
       resources[res] = 0;
     }
+*/
   }
   return true;
 }
@@ -1113,23 +1117,27 @@ int City::get_free_shafts()
 
 int City::get_resource_amount(Resource res)
 {
+/*
   if (res == RES_GOLD) {
     return resources[res] + minerals[MINERAL_GOLD];
   }
   if (res == RES_STONE) {
     return resources[res] + minerals[MINERAL_STONE];
   }
+*/
   return resources[res];
 }
 
 int City::get_mineral_amount(Mineral min)
 {
+/*
   if (min == MINERAL_GOLD) {
     return minerals[min] + resources[RES_GOLD];
   }
   if (min == MINERAL_STONE) {
     return minerals[min] + resources[RES_STONE];
   }
+*/
   return minerals[min];
 }
 
@@ -1245,8 +1253,9 @@ int City::get_corruption_percentage()
 int City::get_corruption_amount()
 {
   int percentage = get_corruption_percentage();
-  int income = get_taxes() + get_import(RES_GOLD) +
-               get_amount_mined(MINERAL_GOLD);
+// TODO: This is probably not an accurate total for income.  Maybe it should
+//       have its own function?
+  int income = get_taxes() + get_import(RES_GOLD);
   int lost = income * percentage;
   lost /= 100;  // Since percentage is reported as an int from 0 to 100.
   return lost;
