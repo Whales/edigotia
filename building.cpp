@@ -17,7 +17,7 @@ Resource Recipe::get_resource()
 
 Resource Recipe_amount::get_resource()
 {
-  return recipe.get_resource();
+  return recipe.get_resource()t;
 }
 
 Building::Building()
