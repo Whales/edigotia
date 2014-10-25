@@ -304,25 +304,83 @@ void City::do_turn()
     }
   }
 
-// Produce minerals and wood.
+// Handle building production.
+  for (int i = 0; i < buildings.size(); i++) {
+    Building* bldg = &(buildings[i]);
+    if (!bldg->build_queue.empty()) {
+      Recipe_amount* rec_amt = &(bldg->build_queue[0]);
+      Recipe* rec = &(rec_amt->recipe);
+// Check if we can build the recipe today.
+      int num_built = 0;
+      if (rec->days_per_unit <= 1) {  // Can build it every day!
+        num_built = bldg->workers;
+        if (rec->units_per_day > 0) {
+          num_built *= rec->units_per_day;
+        }
+      } else {
+// Each worker reduces our counter by 1.
+        rec_amt->days_until_built -= bldg->workers;
+/* We might be able to build more than 1 per day.  If days_per_unit is 2, and we
+ * have 5 workers, we'll produce 3 units the first day and wind up with
+ * days_until_built of 1.  The next day we'll produce 2 untils and wind up with
+ * days_until_built of 0.
+ */
+        while (rec_amt->days_until_built < 0) {
+          num_built++;
+          rec_amt->days_until_built += rec->days_per_unit;
+        }
+      } // rec->days_per_unit > 1
+// Make sure we won't build more than are enqueued.
+      if (rec_amt->amount != INFINITE_RESOURCE && num_built > rec_amt->amount) {
+        num_built = rec_amt->amount;
+      }
+// Perform the following once for each unit built.
+      for (int n = 0; n < num_built; n++) {
+// Check that we have the resources and minerals before expending them, so that
+// we don't expend one only to find we lack the other.
+        if (has_resources(rec->resource_ingredients) &&
+            has_minerals(rec->mineral_ingredients)) {
+          expend_resources(rec->resource_ingredients);
+          expend_minerals (rec->mineral_ingredients );
+          gain_resource   (rec->result);
+          if (rec_amt->amount != INFINITE_RESOURCE) {
+            rec_amt->amount--;
+          }
+        }
+      }
+// Check if we've built all that we enqueued.
+      if (rec_amt->amount != INFINITE_RESOURCE && rec_amt->amount <= 0) {
+        bldg->build_queue.erase( bldg->build_queue.begin() );
+      }
+    } // if (!bldg->build_queue.empty())
+  } // for (int i = 0; i < buildings.size(); i++)
+
+// Produce minerals and wood from mines and sawmills respectively.
   for (int i = 0; i < areas.size(); i++) {
+
     if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
       Building* mine_building = &(areas[i].building);
       Point mine_pos = areas[i].pos;
       Map_tile* tile = map.get_tile(mine_pos);
+
       for (int n = 0; n < mine_building->minerals_mined.size(); n++) {
         Mineral_amount min_mined = mine_building->minerals_mined[n];
+
         if (min_mined.amount > 0) {
           int workers = min_mined.amount; // In case we need to fire them; below
           min_mined.amount *= mine_building->shaft_output;
 // Check that the terrain still has enough of that resource!
           bool found_mineral = false;
+
           for (int m = 0; !found_mineral && m < tile->minerals.size(); m++) {
+
             if (tile->minerals[m].type == min_mined.type) {
               found_mineral = true;
               Mineral_amount* tile_min = &(tile->minerals[m]);
+
               if (tile_min->amount == INFINITE_RESOURCE) {
                 minerals[min_mined.type] += min_mined.amount;
+
               } else if (tile_min->amount < min_mined.amount) {
 // TODO: Add an alert for the player that we've exhausted this source of mineral
                 minerals[min_mined.type] += tile_min->amount;
@@ -334,7 +392,8 @@ void City::do_turn()
                   mine_building->minerals_mined.begin() + n
                 );
                 n--;
-              } else {
+
+              } else { // Not infinite, nor have we run out of the mineral
                 minerals[min_mined.type] += min_mined.amount;
                 tile_min->amount -= min_mined.amount;
               }
@@ -350,6 +409,9 @@ void City::do_turn()
       Map_tile* tile = map.get_tile(mine_pos);
       int wood_produced = (sawmill_bldg->workers *
                            sawmill_bldg->amount_produced(RES_LOGGING));
+
+// TODO: Infinite wood??
+
       if (tile->wood < wood_produced) {
 // TODO: Add a message alerting the player that the wood is exhausted.
         resources[RES_WOOD] += tile->wood;
@@ -357,10 +419,12 @@ void City::do_turn()
         tile->clear_wood();
         fire_citizens(CIT_PEASANT, sawmill_bldg->workers, sawmill_bldg);
         areas[i].open = false;
-      } else {
+
+      } else { // We have not run out of wood.
         resources[RES_WOOD] += wood_produced;
         tile->wood -= wood_produced;
       }
+
     } // if (areas[i].produces_resource(RES_LOGGING))
   }
 
