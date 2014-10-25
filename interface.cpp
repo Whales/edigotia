@@ -1320,6 +1320,7 @@ void Interface::building_status()
   std::vector<std::string> building_names, workers, max_workers, worker_class;
   std::vector<bool> closed;
 
+// Go through all the buildings and fill our string vectors with their info
   for (int i = 0; i < buildings.size(); i++) {
     Building* bldg = buildings[i];
     std::stringstream name_ss, workers_ss, max_workers_ss, worker_class_ss;
@@ -1337,6 +1338,7 @@ void Interface::building_status()
       }
     }
 
+// Gray out worker-related lines if the building doesn't employ workers
     if (bldg->get_total_jobs() == 0) {
       workers_ss      << "<c=dkgray>";
       max_workers_ss  << "<c=dkgray>";
@@ -1359,13 +1361,20 @@ void Interface::building_status()
     workers.push_back       (workers_ss.str()     );
     max_workers.push_back   (max_workers_ss.str() );
     worker_class.push_back  (worker_class_ss.str());
-  }
+  } // for (int i = 0; i < buildings.size(); i++)
 
+/* Update the interface using the data we just fetched
+ * Most are static during the life of this function, so we can use set_data().
+ * However, the number of workers employed may change (since we can hire/fire
+ * workers on this screen), so use ref_data() instead - that way, as soon as we
+ * update the workers vector, the interface will update as well.
+ */
   i_buildings.set_data("list_building_names", building_names);
   i_buildings.ref_data("list_workers",        &workers      );
   i_buildings.set_data("list_max_workers",    max_workers   );
   i_buildings.set_data("list_worker_class",   worker_class  );
 
+// Set the fields that indicate our number of unemployed citizens of each class
   int free_peasants  = city->get_unemployed_citizens(CIT_PEASANT );
   int free_merchants = city->get_unemployed_citizens(CIT_MERCHANT);
   int free_burghers  = city->get_unemployed_citizens(CIT_BURGHER );
@@ -1374,15 +1383,24 @@ void Interface::building_status()
   i_buildings.ref_data("num_free_burghers",  &free_burghers );
 
 // Set up a few variables & prep the interface for our loop
-
   int index = -1;
   Building* cur_bldg = NULL;
   if (!buildings.empty()) {
     cur_bldg = buildings[0];
   }
   bool done = false;
+/* If adjusting_production is true, then we're currently in the production list
+ * and can add/remove items.  If it's false, we're currently selecting a
+ * building.
+ */
   bool adjusting_production = false;
+/* If this is true, we need to update list_benefits (and then set it back to
+ * false).  It will be set to true if we select a new building, or if we change
+ * the contents of list_benefits (e.g. by adding or removing a production item).
+ */
+  bool update_benefits = false;
 
+// Start our control in the list of buildings
   i_buildings.select("list_building_names");
 
   while (!done) {
@@ -1393,7 +1411,6 @@ void Interface::building_status()
 // We selected a new building!  Update information.
       index = new_index;
       cur_bldg = buildings[index];
-      Building_datum* bldg_dat = cur_bldg->get_building_datum();
 
       std::stringstream upkeep_ss;
       int upkeep = cur_bldg->get_upkeep();
@@ -1409,8 +1426,17 @@ void Interface::building_status()
 
       i_buildings.clear_data("list_benefits_label");
       i_buildings.clear_data("list_benefits");
+// Mark us as needing to update list_benefits, since we just cleared it out
+      update_benefits = true;
+    }
 
-// TODO: This assumes we don't offer jobs AND housing - may not always be true
+    if (update_benefits) {
+/* Use some if statements to figure out what the building does - we'll put the
+ * relevent information in list_benefits, and label it properly using
+ * list_benefits_label.
+ * TODO: This assumes we don't offer jobs AND housing - may not always be true
+ */
+      Building_datum* bldg_dat = cur_bldg->get_building_datum();
       if (cur_bldg->produces_resource()) { // Any raw production
 
         i_buildings.set_data("list_benefits_label", "<c=yellow>Produces:<c=/>");
@@ -1429,20 +1455,22 @@ void Interface::building_status()
 
         i_buildings.set_data("list_benefits_label",
                              "<c=yellow>Build Queue:<c=/>");
-
         std::vector<std::string> production_list;
+
         if (cur_bldg->build_queue.empty()) {  // Not producing anything!
           production_list.push_back("<c=ltred>Nothing!<c=/>");
+
         } else {
           for (int i = 0; i < cur_bldg->build_queue.size(); i++) {
             std::stringstream production_ss;
-            Resource_amount res_amt = cur_bldg->build_queue[i].recipe.result;
+            Recipe_amount recipe = cur_bldg->build_queue[i];
             production_ss << "<c=ltgray>" <<
-                             capitalize( resource_name(res_amt.type) ) <<
-                             " x " << res_amt.amount << "<c=/>";
+                             capitalize(resource_name(recipe.get_resource())) <<
+                             " x " << recipe.amount << "<c=/>";
             production_list.push_back( production_ss.str() );
           }
         }
+
         i_buildings.set_data("list_benefits", production_list);
 
       } else if (cur_bldg->get_housing() > 0) { // Any housing
@@ -1459,7 +1487,7 @@ void Interface::building_status()
         }
         i_buildings.set_data("list_benefits", housing_list);
 
-      }
+      } // TODO: An }else{ block for buildings that do none of the above?
     } // End of updating info on newly-selected building
 
     i_buildings.draw(&w_buildings);
@@ -1468,12 +1496,14 @@ void Interface::building_status()
     long ch = input();
 
     switch (ch) {
+// Leave this screen
       case 'q':
       case 'Q':
       case KEY_ESC:
         done = true;
         break;
 
+// Hire workers
       case KEY_RIGHT:
       case 'l':
       case 'L':
@@ -1503,10 +1533,11 @@ void Interface::building_status()
               case CIT_MERCHANT:  free_merchants--; break;
               case CIT_BURGHER:   free_burghers--;  break;
             }
-          }
+          } // if (city->employ_citizens(cit_type, 1, cur_bldg))
         }
         break;
 
+// Fire workers
       case KEY_LEFT:
       case 'h':
       case 'H':
@@ -1534,10 +1565,11 @@ void Interface::building_status()
               case CIT_MERCHANT:  free_merchants++; break;
               case CIT_BURGHER:   free_burghers++;  break;
             }
-          }
+          } // if (city->fire_citizens(cit_type, 1, cur_bldg))
         }
         break;
 
+// Move control between building selecting & production adjustment
       case 'e':
       case 'E':
 // Only allow for adjusting production for buildings that produce things
@@ -1551,6 +1583,7 @@ void Interface::building_status()
         }
         break;
 
+// Remove an item from the production queue.
       case 'r':
       case 'R':
         if (adjusting_production) {
@@ -1558,16 +1591,21 @@ void Interface::building_status()
           if (prod_index >= 0 && prod_index <= cur_bldg->build_queue.size()) {
             cur_bldg->build_queue.erase( cur_bldg->build_queue.begin() +
                                          prod_index );
+// Update list_benefits on next loop (i.e. now)
+            update_benefits = true;
           }
         }
         break;
 
+// Add an item to the production queue.
       case 'a':
       case 'A':
         if (adjusting_production) {
           Recipe_amount new_recipe;
           if (pick_recipe(cur_bldg, new_recipe)) {  // Returns false if canceled
             cur_bldg->build_queue.push_back(new_recipe);
+// Update list_benefits on next loop (i.e. now)
+            update_benefits = true;
           }
         }
         break;
