@@ -90,12 +90,14 @@ struct Recipe
 struct Recipe_amount
 {
   Recipe_amount(Recipe R = Recipe(), int A = 1) : recipe (R), amount (A)
-  { }
+  { days_until_built = 0; }
 
   Resource get_resource();  // Returns recipe.get_resource()
 
   Recipe recipe;
   int amount;
+  int days_until_built;
+
 };
 
 struct Building_datum
