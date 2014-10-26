@@ -417,8 +417,7 @@ void City::do_turn()
         resources[RES_WOOD] += tile->wood;
         tile->wood = 0;
         tile->clear_wood();
-        fire_citizens(CIT_PEASANT, sawmill_bldg->workers, sawmill_bldg);
-        areas[i].open = false;
+        areas[i].close(this);
 
       } else { // We have not run out of wood.
         resources[RES_WOOD] += wood_produced;
