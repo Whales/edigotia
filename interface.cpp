@@ -189,8 +189,6 @@ void Interface::handle_key(long ch)
           set_mode(IMODE_VIEW_MAP);
           Building_datum* build = get_building_for(current_area);
           if (current_area != AREA_NULL && build) {
-// rewrite
-            //i_main.set_data("text_map_info", build->get_short_description());
             i_main.set_data("text_data", build->get_short_description());
           }
 
@@ -2317,8 +2315,6 @@ Area_type Interface::pick_area()
 {
   std::vector<std::string> area_options;
   i_main.clear_data("text_map_info");
-// rewrite
-  //i_main.clear_data("text_data");
   i_main.clear_data("text_commands");
 
   for (int i = 1; i < AREA_MAX; i++) {
@@ -2330,8 +2326,6 @@ Area_type Interface::pick_area()
       option << char(i - 10 + 'A');
     }
     option << "<c=/>: " << capitalize(Area_data[i]->name) << std::endl;
-// rewrite
-    //i_main.add_data("text_data", option.str());
     i_main.add_data("text_commands", option.str());
   }
 
@@ -2341,8 +2335,6 @@ Area_type Interface::pick_area()
   while (true) {
     long ch = input();
     if (ch == 'q' || ch == 'Q' || ch == KEY_ESC || ch == '0') {
-// rewrite
-      //i_main.clear_data("text_data");
       i_main.clear_data("text_commands");
       return AREA_NULL;
     }
@@ -2355,8 +2347,6 @@ Area_type Interface::pick_area()
       sel = ch - 'A' + 10;
     }
     if (sel >= 1 && sel < AREA_MAX) {
-// rewrite
-      //i_main.clear_data("text_data");
       i_main.clear_data("text_commands");
       return Area_type(sel);
     }
