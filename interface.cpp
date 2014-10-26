@@ -192,6 +192,13 @@ void Interface::handle_key(long ch)
             i_main.set_data("text_data", build->get_short_description());
           }
 
+        } else if (ch == 'c' || ch == 'C') {
+          Area* area_selected = city->area_at(sel);
+          if (area_selected && area_selected->open &&
+              query_yn("Really close your %s?",
+                       area_selected->get_name().c_str())) {
+          }
+
         } else if (ch == '.') {
           game->advance_time(1, city);
 
