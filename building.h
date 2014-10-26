@@ -167,7 +167,7 @@ struct Building
   int get_upkeep();
   std::map<Resource,int> get_maintenance();
 
-// ALL-BUILDING DATA
+// ALL-BUILDINGS DATA
   Point pos;  // Position of the area we belong to, if any.
   int construction_left;  // Days of construction remaining.
 
