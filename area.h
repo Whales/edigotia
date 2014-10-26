@@ -52,6 +52,7 @@ struct Area
   Area(Area_type T = AREA_NULL, Point P = Point(-1, -1));
 
   void make_queued(); // Set our construction_left, etc.
+  void close(City* city); // Fire all workers, set open to false, etc.
 
   Area_datum* get_area_datum();
   std::string get_name();

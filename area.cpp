@@ -1,5 +1,7 @@
 #include <map>
 #include "area.h"
+#include "window.h" // For debugmsg()
+#include "city.h"   // For Area::close()
 
 Building_datum* Area_datum::get_building_datum()
 {
@@ -25,6 +27,18 @@ void Area::make_queued()
 
   open = false;
   building.construction_left = bd_data->build_time;
+}
+
+void Area::close(City* city)
+{
+  if (!city) {
+    debugmsg("%s called Area::close(NULL)!", get_name().c_str());
+    return;
+  }
+
+  open = false;
+  Citizen_type cit_type = building.get_job_citizen_type();
+  city->fire_citizens(cit_type, building.workers, &building);
 }
 
 Area_datum* Area::get_area_datum()
