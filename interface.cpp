@@ -152,7 +152,8 @@ void Interface::handle_key(long ch)
     switch (cur_mode) {
       case IMODE_VIEW_MAP: {
         Point p = input_direction(ch);
-//debugmsg("Mapviewing; %s", p.str().c_str());
+
+// Move the cursor
         if (p.x != -2 && (p.x != 0 || p.y != 0)) {
           sel += p;
           if (sel.x < 0) {
@@ -166,6 +167,7 @@ void Interface::handle_key(long ch)
             sel.y = CITY_MAP_SIZE - 1;
           }
 
+// Get info on currently-selected tile
         } else if (ch == '\n') {
           if (current_area != AREA_NULL) {
             enqueue_area();
@@ -173,16 +175,20 @@ void Interface::handle_key(long ch)
             popup( city->get_map_info(sel).c_str() );
           }
 
+// Revert to normal mode (not building an area, VIEW_MAP mode
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
           set_mode(IMODE_VIEW_MAP);
 
+// Toggle hiding areas (i.e. only show terrain)
         } else if (ch == 't' || ch == 'T') {
           show_terrain = !show_terrain;
 
+// Toggled grayed-out tiles outside of our city's radius
         } else if (ch == 'r' || ch == 'R') {
           city_radius = !city_radius;
 
+// Build a new area
         } else if (ch == 'a' || ch == 'A') {
           current_area = pick_area();
           display_area_stats(current_area);
@@ -192,16 +198,20 @@ void Interface::handle_key(long ch)
             i_main.set_data("text_data", build->get_short_description());
           }
 
+// Close an area
         } else if (ch == 'c' || ch == 'C') {
           Area* area_selected = city->area_at(sel);
           if (area_selected && area_selected->open &&
               query_yn("Really close your %s?",
                        area_selected->get_name().c_str())) {
+            area_selected->close(city);
           }
 
+// Move time forward by 1 day
         } else if (ch == '.') {
           game->advance_time(1, city);
 
+// Move time forward by 1 week
         } else if (ch == '>') {
           game->advance_time(7, city);
         }
