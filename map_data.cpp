@@ -92,7 +92,7 @@ void init_terrain_data()
 
   _ter(TER_FIELD);
     _name("Field");
-    _symbol('.', c_green);
+    _symbol('_', c_green);
     _farm(100);
     _wood(0, 80);
     _crop(CROP_WHEAT);
