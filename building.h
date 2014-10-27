@@ -127,6 +127,7 @@ struct Building_datum
 
   int build_time;
   std::vector<Resource_amount> build_costs;
+  int destroy_cost; // How much gold it costs to destroy this
 
   std::vector<Citizen_amount> housing;
   int military_support;
@@ -135,6 +136,7 @@ struct Building_datum
   int wages;  // Measured in 1/10th of a gold!
 
   std::vector<Resource_amount> production; // Per job, w/ skill of 5 (max)
+
   int upkeep; // Daily cost in gold, measured in 1/10th of a gold
   std::vector<Resource_amount> maintenance_cost;  // Will we ever need this?
 

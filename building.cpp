@@ -220,6 +220,7 @@ Building_datum::Building_datum()
   upkeep = 0;
   military_support = 0;
   build_time = 0;
+  destroy_cost = 0;
 }
 
 Building_datum::~Building_datum()

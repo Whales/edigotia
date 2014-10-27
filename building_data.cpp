@@ -21,6 +21,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _cost(t, n) \
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 
+#define _destroy_cost(n) \
+  Building_data[cur_id]->destroy_cost = (n)
+
 #define _build_time(t) \
   Building_data[cur_id]->build_time = (t)
 
@@ -86,6 +89,7 @@ void init_building_data()
     _cost(RES_GOLD, 100);
     _cost(RES_WOOD, 10);
     _build_time(3);
+    _destroy_cost(150);
     _upkeep(5);
     _housing(CIT_PEASANT, 100);
 
@@ -95,6 +99,7 @@ void init_building_data()
     _cost(RES_GOLD, 400);
     _cost(RES_WOOD, 20);
     _build_time(10);
+    _destroy_cost(600);
     _upkeep(10);
     _housing(CIT_MERCHANT, 100);
 
@@ -103,6 +108,7 @@ void init_building_data()
     _cost(RES_GOLD, 800);
     _cost(RES_STONE, 20);
     _build_time(30);
+    _destroy_cost(1250);
     _upkeep(20);
     _housing(CIT_BURGHER, 50);
 
@@ -111,6 +117,7 @@ void init_building_data()
     _cost(RES_GOLD, 1500);
     _cost(RES_STONE, 50);
     _build_time(90);
+    _destroy_cost(2500);
     _upkeep(30);
     _housing(CIT_BURGHER, 5);
     _housing(CIT_MERCHANT, 50);
@@ -120,6 +127,7 @@ void init_building_data()
     _name("farm");
     _cost(RES_GOLD, 100);
     _build_time(1);
+    _destroy_cost(50);
     _upkeep(1);
     _jobs(CIT_PEASANT, 5);
     _wages(1);
@@ -129,6 +137,7 @@ void init_building_data()
     _name("quarry");
     _cost(RES_GOLD, 500);
     _build_time(5);
+    _destroy_cost(800);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
     _wages(1);
@@ -139,6 +148,7 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 50);
     _build_time(10);
+    _destroy_cost(1500);
     _upkeep(8);
     _jobs(CIT_PEASANT, 6);
     _wages(4);
@@ -148,6 +158,7 @@ void init_building_data()
     _name("hunting camp");
     _cost(RES_GOLD, 50);
     _build_time(1);
+    _destroy_cost(100);
     _jobs(CIT_PEASANT, 10);
     _wages(2);
     _produces(RES_HUNTING, 5);
@@ -156,6 +167,7 @@ void init_building_data()
     _name("sawmill");
     _cost(RES_GOLD, 100);
     _build_time(5);
+    _destroy_cost(200);
     _upkeep(3);
     _jobs(CIT_PEASANT, 5);
     _wages(2);
@@ -167,6 +179,7 @@ void init_building_data()
     _cost(RES_GOLD, 500);
     _cost(RES_WOOD, 40);
     _build_time(14);
+    _destroy_cost(800);
     _upkeep(15);
     _military(50);
 
