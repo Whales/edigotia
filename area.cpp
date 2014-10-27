@@ -36,6 +36,10 @@ void Area::close(City* city)
     return;
   }
 
+  if (!open) {  // We're already closed!
+    return;
+  }
+
   open = false;
   Citizen_type cit_type = building.get_job_citizen_type();
   city->fire_citizens(cit_type, building.workers, &building);
