@@ -1,0 +1,38 @@
+Jobs:
+  Ruler:              Gain Influence points.  At certain numbers of influence
+                      points, your city's radius increases by 1.
+    >Can have as many as you want, but those beyond the first have 50%
+     effectiveness
+
+  Keeper of the Coin: Increases your max gold and decreases lending overhead.
+
+  Master Spy:         Increases the reliability and success rate of all spies.
+
+  High Barrister:     Decreases corruption and improves effectiveness of guards.
+
+  Lord of Caravans:   Decreases trade overhead.
+    >Effectiveness increased 50% if they travel with a caravan (only applies to
+     the caravan they're with)
+
+  Master of Crops:    
+  Diplomat:           Assign to a given city, province, or race.  Slowly
+                      improves relations with their assignment.
+    >Effectiveness increased by 50% if they're actually stationed in a city of
+     their target
+
+  High Priest:        Improves value of worship, and relationship with your god.
+
+  Hero:               Acts like a military unit.  Can explore and battle.
+
+  Spy:                Acts as a spy unit, albeit one with greater success rates
+                      (and some unique missions?)
+
+  General:            Attaches to a military unit.  Acts as a force multiplier
+                      and improves morale.
+
+
+Artifacts:  Unique, (sometimes?-)randomly-generated items which a Noble may
+            wield to improve their effectiveness.  Some powers they may hold:
+  >Increase Ruler effectiveness as 10%
+  >Generate gold slowly
+  >Charm citizens in any city visited
