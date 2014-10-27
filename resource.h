@@ -187,9 +187,9 @@ std::string mineral_amount_ranking(Mineral_amount min_amt);
 
 std::string trees_amount_ranking(int wood);
 
+// Defined in resource_data.cpp
 extern Crop_datum*    Crop_data   [CROP_MAX];
 extern Mineral_datum* Mineral_data[MINERAL_MAX];
-
 void init_crop_and_mineral_data();
 
 #endif

@@ -206,6 +206,7 @@ struct Building
 
 };
 
+// Defined in building_data.cpp
 extern Building_datum* Building_data[BUILD_MAX];
 void init_building_data();
 

@@ -86,8 +86,10 @@ struct Area
   Building building;
 };
 
+// Defined in area_data.cpp
 extern Area_datum* Area_data[AREA_MAX];
 void init_area_data();
+
 Building_datum* get_building_for(Area_type area);
 
 #endif

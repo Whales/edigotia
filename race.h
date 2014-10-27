@@ -100,6 +100,9 @@ struct Race_datum
 
 };
 
+// Defined in race_data.cpp
 extern Race_datum* Race_data[RACE_MAX];
+void init_races();
+
 
 #endif
