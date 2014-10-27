@@ -1,0 +1,421 @@
+Terrain: Plains, Desert, Swamp, Water, Hills, Mountains
+Unless otherwise noted, all units are weak on Desert, Swamp, and Water
+
+Humans
+	Lifespan: 70
+	Repro: Normal
+	Strong On: Plains
+  Food: Normal
+  Morale: Normal
+
+Difficulty: Easy
+
+Humans are a sturdy race, perhaps the most widespread of all.  They tend to live
+in large cities on flat ground, and prefer to fight with swords.  Humans are
+skilled at farming and tending to livestock, and they also have a way with tools
+and more advanced machinary.
+
+Elves
+	Lifespan: 130
+	Repro: Slow
+	Strong On: Forest
+  Food: Normal
+  Morale: Normal
+	Cannot harvest trees.  Instead, wood is provided from a Druid's Garden.
+
+Difficulty: Easy
+
+The elves are a race of long-lived forest dwellers, highly in tune with nature.
+Though their laws forbid harming a tree, their attunement to earth magic allows
+them to grow a "Druid's Garden," filled with trees which willingly give up their
+branches for use.  Elves are skilled fighters, particularly with an elven bow,
+a weapon prized universally for its perfection.
+
+Dwarves
+	Lifespan: 100
+	Repro: Slow
+	Weak On: Plains
+	Strong On: Mountains (Hills?)
+  Food: Normal
+  Morale: Normal
+
+Difficulty: Easy
+
+Dwarves are a race of mountain-dwellers, and are uncomfortable on flat land.
+They are adept fighters, particularly comfortable with heavy armor and a heavier
+weapon, and their proficiency at crafting both is legendary.  They are also
+skilled builders and miners.
+
+Orcs
+	Lifespan: 50
+	Repro: Fast
+	Strong On: Hills
+  Food: Normal
+  Morale: Low
+  Warfare gives morale bonus, not malus
+
+Difficulty: Medium
+
+Orcs are a warlike race, related to humans but strikingly different in
+temperment.  Though competent city-builders, their real strength--and the basis
+of their economy--usually lies in raiding others nearby, even other orcs. Orcish
+axes are legendary weapons, and orcish armor is of high quality, but any goods
+unrelated to warfare tend to be shoddy.
+
+Goblins
+	Lifespan: 40
+	Repro: Very Fast
+  Food: Low
+  Morale: Low
+  Trains sappers
+
+Difficulty: Easy
+
+Degenerate cousins of orcs, goblins are much smaller and weaker.  As a result,
+their innate warlike tendencies are tempered slightly, and goblins are more
+inclined to self-reliance.  Their skill in combat is only decent, but goblins
+are adept sneakers, and make excellent thieves.  Their destructive abilities
+are legendary, and often employ teams of sappers to infiltrate and destroy
+enemy barricades.
+
+Kobolds
+	Lifespan: 40
+	Repro: Fast
+	Strong On: Hills, Swamp
+  Food: Normal
+  Morale: Normal
+	Eats refuse.
+
+Difficulty: Easy
+
+Kobolds are small, ugly creatures, generally considered quite unpleasant by most
+others.  Kobolds generally live as scavengers, and their digestive system is so
+strong that they will happily eat rotten meat or garbage.  Though kobolds don't
+possess the attention span for most manufactured goods, their intimate
+relationship with fermentation makes kobold beers and liquors legendary--if a
+bit suspect.
+
+Ogres
+	Lifespan: 60
+	Repro: Normal
+	Strong On: Hills, Plains
+  Food: High
+  Morale: Normal
+
+Difficulty: Easy
+
+Ogres are large, muscular creatures, some twice as tall as a human.  Despite
+their intimidating stature, ogres are not particularly violent in nature; on the
+contrary, they tend to be devoted farmers, and their relationship with livestock
+is unrivaled.  Though they are strong agriculturalists as well, ogres are not
+skilled at making tools, and often buy them from neighboring dwarves.
+
+Trolls
+	Lifespan: 90
+	Repro: Slow
+	Weak On: Plains
+	Strong On: Mountains
+  Food: Very High
+  Morale: Very Low
+  Warfare does not affect morale
+
+Difficulty: Hard
+
+Trolls are hulking furry beasts with a hunchback, drooling fang-rimmed mouths,
+and arms the size of a human.  Though some have argued that trolls are non-
+sentient bloodthirsty beasts, the fact is that trolls usually live in colonies
+and do have the capability of forging weapons and armor.  However, that is the
+extent of their abilities, and they have no interest in other goods.  A troll in
+combat is a terrifying sight, able to take on a dozen or more humans, with flesh
+that heals from any wound in a matter of hours.
+
+Naga
+	Lifespan: 90
+	Repro: Normal (eggs)
+	Weak On: Hills, Mountains
+	Strong On: Desert, Swamp
+  Food: Normal
+  Morale: Normal
+  Can build normally on desert and swamp
+
+Difficulty: Moderate
+
+Naga are beings with a humanoid torso, head, and arms, but their lower body is a
+large snake tail.  Naga are skilled fighters and natural magic-users, and a naga
+scimitar is universally prized.  Naga have a difficult time in rough terrain,
+but can move swiftly across desert sand and swim well in water or swamps.  Nagas
+are divided by outsiders into the categories of "Swamp Naga" and "Desert Naga,"
+but in truth both are the same species.
+
+Gnomes
+	Lifespan: 100
+	Repro: Slow
+	Weak On: Plains
+	Strong On: Mountains
+  Food: Low
+  Morale: Normal
+	Goods may randomly produce an Artifact.
+
+Difficulty: Moderate
+
+Gnomes are a secretive bunch who rarely venture outside their cities.  Their
+society is built around a system of guilds, most of which produce fine goods.
+Gnomes are utilitarians, and while their tools, and devices, are the highest
+quality, their creative efforts are sub-par.  Gnomes are crafty barterers, and
+generally extract exorbitant prices for their goods.  Gnomes are also natural
+atheists, and only very rarely become religious.
+
+Avians
+	Lifespan: 70
+	Repro: Normal (eggs)
+	Strong On: Plains, Desert
+	Normal On: Water, Swamp
+  Food: Normal
+  Morale: Normal
+	Flies over terrain, and can avoid melee combat.
+
+Difficulty: Moderate
+
+Avians are a race of bird-like humanoids which tend to build cities in hard-to-
+reach plateaus and cliffsides.  They generally live as hunters, and a group of
+avians armed with bows is frightening for any foe, particularly those who cannot
+shoot back.  However, if an avian is caught in melee combat, their nearly-hollow
+bones make them easy to bring down.
+
+Minotaur
+	Lifespan: 80
+	Repro: Normal
+	Strong On: Plains
+  Food: Normal
+  Morale: Normal
+	Builds Labyrinths.
+
+Difficulty: Easy
+
+Minotaurs are a bovine race, generally quite strong.  They have a strong
+reclusive instinct, and are skilled builders.  They also fare well with
+livestock, though they find keeping cows distasteful.  Though peaceful in
+nature, minotaurs are skilled weaponsmiths and perform well in melee combat.
+
+Halfling
+	Lifespan: 100
+	Repro: Normal
+  Food: High
+  Morale: High
+	Double bonuses from food.
+
+Difficulty: Hard
+
+Halflings are a small, reclusive race, and are generally considered quiet and
+peaceful.  Their farms produce healthier crops than any others, and halflings
+are devoted cooks, producing food delicious enough to draw travelers from miles.
+They enjoy eating even more than cooking, and halflings often eat 8 meals or
+more in a day.
+
+Apiads
+	Lifespan: 10
+	Repro: Lightning (eggs, queen)
+	Strong On: Forest
+  Food: Normal
+  Morale: Low
+	Produce honey in hives.  Fermentation may rarely produce Royal Jelly.
+	May fly.
+
+Difficulty: Hard
+
+Apiads are a race of large bees, with only slight humanoid features.  Apiads
+live in a hive, with a single egg-producing queen, and do not have the same
+concept of "the individual" which most other races do.  This unique social
+perspective leaves apiads severely inept in communications with other races.
+Nevertheless, the nourishing honey produced inside fortress-like apiad cities
+is a definite draw for traders--and raiders.
+
+Formicants
+	Lifespan: 15
+	Repro: Lightning (eggs, queen)
+	Strong On: Plains
+  Food: High
+  Morale: Low
+	Cities are dug underground.
+
+Difficulty: Hard
+
+Formicants are a humanoid ant race, with an overall human-like appearance, but
+also antennae, two sets of arms, and a thin exoskeleton.  Formicants live in an
+underground nest with a single egg-producing queen.  While Formicants are more
+individuated than Apiads, they still have a natural hive mentality and are wary
+of outsiders.
+
+Arachnids
+	Lifespan: 40
+	Repro: Very Fast (eggs)
+	Strong On: Forest
+	Weak On: Plains, Desert
+  Food: Normal
+  Morale: Normal
+	May place webs to protect city.
+
+Difficulty: Hard
+
+Arachnids are a race of large spiders, with only slight humanoid features.  Most
+races have a natural reaction of disgust and horror upon meeting an arachnid;
+however, arachnids are not particularly warlike, and are dedicated crafters,
+builders and artists.  Still, arachnids are skilled in armed combat and flinging
+their webs, and tend to survive as hunters.
+
+Golems
+	Lifespan: 200
+	Repro: Very Slow (build)
+  Food: None
+  Morale: None
+
+Difficulty: Very Easy
+
+No-one knows when or how golems originated, but it's clear that these magically
+animated statues were created by someone.  Today golems are responsible for
+building new golems, giving them life using magical gemstones.  Golems have no
+artistic ability whatsoever, and neither eat nor feel emotion.  This allows them
+to focus on mining, building, and crafting goods; their intimate relationship to
+clay and metal makes their goods of the highest quality.
+
+Gargoyle
+	Lifespan: 120
+	Repro: Slow
+	Strong On: Hills
+  Food: High
+  Morale: Normale
+	May fly.
+
+Difficulty: Hard
+
+Gargoyles are very similar to humans, but with a hard, metallic blue skin and
+large bat-like wings.  Skilled fighters, spellcasters, and hunters, gargoyles
+fare well in all areas.  However, gargoyles are incapable of eating anything but
+raw meat, and do not find cooked meals or fermented drink appealing.
+
+Rakshasi
+	Lifespan: 150
+	Repro: Very Slow
+  Food: High
+  Morale: Very High
+  No peasant class; farms, mines etc. must be worked by slaves.
+  Starts with slaves.
+
+Difficulty: Very Hard
+
+Rakshasi are tall, graceful humanoids, with the head of a leopard.  No race is
+more attuned to the nature of magic than they are.  Rakshasi tend to be effete
+beings of luxury, excelling at artistic tasks but terrible at anything involving
+manual labor.  Such work is considered to be the place of lower species-that is,
+anything except a rakshasa.  Rakshasi use their magical influence to trick and
+frequently enslave other races--with the exception of felids, which Rakshasi
+think of a "younger sister" race.
+
+Lizardmen
+	Lifespan: 70
+	Repro: Normal (eggs)
+	Strong On: Desert
+  Food: Normal
+  Morale: Low
+
+Difficulty: Moderate
+
+The lizardmen are a tribalistic race scaled beings, most often found in the
+desert.  Given their surroundings, lizardmen are most often hunters, and their
+skill with their legendary two-tined spears is deadly.  The cold-blooded
+lizardmen move and fight with incredible speed during the summer and in hot
+areas like deserts; however, in winter or on cold mountaintops they struggle to
+even maintain consciousness.
+
+Draconians
+	Lifespan: 100
+	Repro: Slow (eggs)
+	Normal On: Desert
+  Food: High
+  Morale: Normal
+	May fly.
+
+Difficulty: Moderate
+
+Draconians are humanoid descendants of dragons.  Most are very large and possess
+a voracious appetite, which draconians tend to sate by hunting wild beasts.
+Draconians tend to fight with their claws and teeth, and as a result are quite
+poor at weapon crafting, though they produce very strong armor.  However, their
+finest weapon is their ability to breathe fire over a long range.  To maintain
+this ability, draconians must imbibe large amounts of alcohol.
+
+Dendroids
+	Lifespan: 150
+	Repro: Very Slow (seedlings)
+	Strong On: Forest
+	Weak On: Desert, Hills, Mountains
+	Normal On: Swamp
+  Food: None
+  Morale: Low
+
+Difficulty: Very Easy
+
+Dendroids are a race of sentient trees.  Dendroids are long-lived and slow to
+move or make decisions.  Dendroids are capable of producing impressive armor and
+passable goods, but have no need for weapons, and no understanding of more
+complex devices.  They cultivate plants, but only for their own edification--
+dendroids get all their nourishment from sunlight, and do not need to eat.
+Their patience and kind nature makes dendroids exceptional diplomats, but their
+lack of understanding in financial matters makes them easy to swindle.
+
+Merfolk
+	Lifespan: 70
+	Repro: Normal
+	Strong On: Water
+	Weak On: Plains, Desert, Hill, Mountain
+	Normal On: Swamp
+  Food: Normal
+  Morale: Normal
+	May dive under water, avoiding a fight.
+  Most buildings can be built in water.
+
+Difficulty: Moderate
+
+Merfolk are a half-fish, half-human race, with both lungs and gills, making them
+truely amphibious.  However, while on land they move by awkwardly swaying their
+fish-like tail, and they are extremely vulnerable there, and as a result tend to
+stay in their watery homes.  Merfolk are capable of diving deep underwater,
+ensuring escape from nearly any fight, and excel at hunting and fishing with
+their legendary tridents.
+
+Gnolls
+	Lifespan: 60
+	Repro: Fast
+	Strong On: Plains, Swamp
+  Food: Normal
+  Morale: Low
+	May be cannibals without morale penalty.
+  No penalty for warfare
+
+Difficulty: Moderate
+
+Gnolls are hyena-like humanoids, tall and tough.  They are a violent,
+unpredictable race which tends to live as scavengers and pillagers.  Gnolls are
+skilled weapon- and armorsmiths, but have little interest in producing tradable
+goods--indeed, they have little interest in talking to anyone outside their
+tribe.  Perhaps the most disturbing quality of gnolls is their practice of
+cannibalism.  Any gnoll that dies, be they warrior, child, or elder, is
+butchered and distributed as meat.
+
+Felids
+	Lifespan: 50
+	Repro: Fast
+  Food: Normal
+  Morale: High
+	No item use.
+
+Difficulty: High
+
+Felids are a race of humanoid cats, their bodies coated in fur.  They are
+skilled hunters and fighters, particularly when ambushing, and have a natural
+connection to magic.  This is the extent of their abilities, however; felids are
+not interested in crafting items save for a few simple wooden weapons, and
+barely even build cities.  They are laziness personified; indeed, felids
+consider laziness to be a virtue, and achieve great pleasure from simply doing
+nothing at all.
+

@@ -1,0 +1,55 @@
+Rakshas	178	Slow to reproduce, very high QoL requirements
+Elves	  177	Slow to reproduce, don't chop trees
+Naga	  174	Weak in plains
+Dwarves	173	Slow to reproduce, weak outside mountains
+Lizardm	170	+25% in summer, -40% in winter
+Apiads	164	Fly, very short-lived, castes
+Humans	163	
+Arachni	163	Webs
+Halflin	160	Weak in combat, enjoy food greatly
+Avians	159	Fly, fragile
+Formici 159	Live underground, castes
+Gargoyl	156	Fly, only eat raw meat
+Gnomes	155	Atheist
+Minotau	153	Tough in combat
+Draconi	151	Fly, Strong in combat, claws & fire breath
+Goblins	142	Fecund
+Ogres	  140	Tough in combat across most terrain
+Orcs	  139	Fecund, strong in combat
+Gnolls	137	Cannibalistic
+Merfolk	134	Excel in water--where all others are weak
+Kobolds 126	Fecund, Eat garbage and rotting food
+Golems	117	Tough in combat, no food or QoL requirements
+Dendroi	111	Long-lived, tough in combat, no food requirements
+Felids	103	QoL derived from eating, leisure time
+Trolls	 86	Very tough in combat, regenerate very fast, low QoL requirements
+
+ 0 No ability          	    We simply cannot do that.
+ 1  10% quality, 500% time	Never done it, only heard descriptions.
+ 2  30% quality, 200% time	We have no need of that; hobbyists do it
+ 3  60% quality, 150% time	We try it but are very inefficient.
+ 4  85% quality, 120% time	We do it regularly, but not well.
+ 5 100% quality, 100% time  It's a routine task for us.
+ 6 110% quality,  90% time	We are skilled at this.
+ 7 125% quality,  80% time	We have a history with this, and know it well.
+ 8 150% quality,  75% time	We have several artisans who have mastered this.
+ 9 200% quality,  70% time	This is an integral part of our society.
+10 400% quality,  50% time	Our skill in this area is legendary.
+
+Light Armor: 50% blocks 50% damage
+Heavy Armor: 80% blocks 80% damage; reduces hits by half
+Magic Armor: Decreases block gap by 50%; reduces hit penalty by 80%
+Bucklers: 20% blocks all damage
+Shields:  40% blocks all damage; reduces hits by half
+
+For armor, quality% affects the gap; i.e. light armor:
+ 1  5% /  5%
+ 2 15% / 15%
+ 3 30% / 30%
+ 4 43% / 43%
+ 5 50% / 50%
+ 6 55% / 55%
+ 7 60% / 60%
+ 8 66% / 66%
+ 9 75% / 75%
+10 88% / 88%

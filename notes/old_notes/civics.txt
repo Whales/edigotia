@@ -1,0 +1,35 @@
+Trade:
+-Free Trade: All civilians will buy whatever they want
+-Domestic First: Foreign goods may not be purchased if domestic goods exist
+  This promotes internal commerce, but limits availability of higher-quality
+  foreign goods, and may discourage caravans from visiting you.
+-Designated Port: Foreign caravans must offer all goods for sale
+  This allows you to take advantage of caravans traveling through your city, but
+  also discourages them from doing so.  As such, it's best used by cities
+  located on an important trade route.
+
+Liberties:
+
+Military:
+*Pacifist: Morale bonus equal to war weariness, but this is lost, and weariness
+           is doubled, for wars you start
+-None: No civilians will be available for military placement.
+-Volunteer: Only volunteers will be available for placement.
+  Volunteer rate is dependant on:
+    -War weariness level; if high, few or none will volunteer.  If negative,
+     many will volunteer
+    -War status; if at war, volunteers increase.  If attacks are imminent,
+     volunteers greatly increase
+-Conscription: You may select citizens for military service at will.
+  Morale drops as conscription increases.
+  Loyalty drops as conscription increases, unless you have military success.
+-Compulsory: A player-set percentage of adults are automatically added to your
+             military.
+  Morale penalty based on war weariness.
+-Total: All adults are considered to be in military service, but may perform
+        other jobs unless sent afield.
+  Morale penalty based on war weariness, plus war status
+
+Social Structure:
+
+

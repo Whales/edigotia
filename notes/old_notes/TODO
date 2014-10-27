@@ -1,0 +1,47 @@
+*** Make saving/loading more portable across versions by saving the *name* of
+    stuff rather than its UID
+*** Better yet, don't just save a string of text/numbers.  Save with tags which
+    serve to indicate what each piece of data is.  Makes it more human-readable,
+    and again, much more portable.
+
+
+Interface
+  Starting screen
+    Options including "Generate World" "New City in World" "Load City" etc
+  Event listing
+    Data structure for an event (message, importance level, category, etc)
+    Data structure for list of events
+    Functions to print, scroll, export, etc. event list
+! Proper game menu
+    Not just hotkeys tied to buildings which aren't listed on screen.  Instead,
+     a "menu bar" which lists top-level hotkeys (e.g. "*B*uild *C*itizens" etc.
+     (asterisks denote color emphasis).  Pressing a hotkey displays sub-options
+     in the message area; e.g. pressing B lists available buildings in the
+     message area.
+  Other views
+    e.g. other than the map/messages/info view.
+    Some ideas:
+      Citizens view - expanded stats on citizens (totals, avgs, etc)
+      Building view - totals, avgs, etc for buildings
+      Military view - state of military
+      World    view - World map
+
+Buildings
+  Ability to limit the number of workers there
+    Permanently or temporarily?
+! Ability to shut building down
+!   Permanently restricts workers to 0, and maintenance stops being paid.
+!   Building slowly withers?  Requires "Integrity" value for buildings
+    Building becomes a possible den for crime?  Requires crime system :P
+  Ability to re-open a closed building
+! Ability to demolish buildings
+!   Make sure to make all workers there jobless!
+  Require connection to network in order for resources to be available / jobs to
+   be available
+
+Files
+  Allow for sub-directories of the main data directory to be considered a
+   comprehensive data directory of its own.  E.g. datadir contains "Tolkien",
+   "Humans Only", and "Classic", each of which defines its own set of rules for
+   gameplay
+  Allow for comments in data files (# clears out remainder of line)

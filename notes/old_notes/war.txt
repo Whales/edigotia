@@ -1,0 +1,65 @@
+When an AI considers going to war, they weigh costs vs. benefits
+All values are multiplied by a % of certainty
+Obviously all these values need to be measured on the same scale
+Key:
+  >Specific value
+  ?Potential adjustor
+  %Percentage to multiply it by
+  !Possible flaw in schema
+
+
+
+Costs:
+ %How likely is it that war is inevitable?
+ %How ready are we now--versus how ready we will be next turn
+ >Economic
+   >Loss of trade with enemy
+     ?Can this trade be replaced?  e.g. another source of resource X
+   >Price of equipping an army
+     %How much is recouped / will be useful to us after the war?
+ >Goodwill
+   >Loss of goodwill with enemy
+   >Loss of goodwill with enemy's friends
+   >Loss of general upstanding
+     ?Do we care if we're viewed as warlike?
+ >Lives
+   >Lives of assault
+     %How useful they are outside of combat
+   >Lives in defense
+     %How likely we are to be on the defense
+ >Citizen morale
+   >General dislike of war
+     ?Are our citizens naturally anti-war?
+     ?What is our citizens' opinion of the enemy?
+     ?Do our social policies encourage/glorify war?
+   >Morale loss due to fear
+     %How likely is failure/fear?
+
+Benefits:
+ >Spoils of war
+   ?What do they have that we can take?
+     %How badly do we need it?  No sense attacking for iron if we're iron-rich
+   ?Can we enslave them?
+ >Status - do we want others to fear us
+   >Enemy's fear
+   >Enemy's friends' fear
+   >General fear
+   ?Are we likely to instill that fear?
+     !Does this conflict with "chance of success?"
+ >Citizen morale
+   ?Does our culture glorify or vilify war?
+   %How likely is success/celebration?
+ >Pre-emptive strike
+   ?Do they seem poised to attack?
+   %What advantage does a pre-emptive strike gain us, as compared to letting
+    them attack first?
+   !Does this conflict with "inevitability of war" in Costs?
+ >Social rule
+   ?Do they have social policies that contradict ours?
+     >Religion
+     >Laws
+       ?Do these laws directly affect us?  e.g. import laws
+   ?Do we have social policies which we want to spread?
+ >Territory
+   ?Does their territory encrouch upon ours?
+   %Value of their territory

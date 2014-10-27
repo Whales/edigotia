@@ -1,0 +1,17 @@
+Heroic -> Mighty -> Grand -> Legendary -> 
+Warrior
+  Leader: Attaches to a unit.  improves its fighting.
+  Ranger: Travels as its own unit.
+Craftsman
+  Smith: higher chance to produce legendary goods.
+  Artist: provides great works of art
+Mage
+  Professor: speeds teaching, adds an extra spell
+  Battlemage: 
+Priest
+  High Priest: enhances religion
+  Missionary:  spreads your religions (works in home or abroad)
+Technologist
+  Scientist: speeds discoveries
+  Inventor:  higher chance to produce inventions
+

@@ -1,0 +1,53 @@
+Human	HP: 100
+Elf	HP:  80
+Dwarf	HP: 120
+
+Equipment is averaged across all units!
+  Sword:    +10 melee attack, +5 melee defense, no close quarter penalty
+  Axe:      +15 melee attack
+  Hammer:   +10 melee attack (+20 on offensive),
+  Stave:    + 6 melee attack (+12 on defensive), +6 melee defense,
+  Spear:    +10 melee attack (+20 on defensive),
+  Bow:       10 ranged attack (16 on defensive)
+  Crossbow:   6 ranged attack (16 on defensive), no close quarter penalty
+  L. Armor: +10 melee defense, -5 melee attack
+  H. Armor: +20 melee defense, 1/2 melee attack
+  Shield:   + 6 melee defense
+
+
+         Melee / Ranged / Magic /  HP / Speed   Overall   Melee
+Human:      10      10      10    100     10        50      40
+Elf:         9      14      12     90     11        55      41
+  Note: Craft great ranged weapons.
+Dwarf:      14       8       7    130      8        50      42
+  Note: Craft great melee weapons.
+Orc:        20       8       8    140     10        60      52
+  Note: Never retreat.
+Goblin:      8       8       8     80      9        41      33
+  Note: Low value of life means no penalty for suicide bombers.  Highly fecund.
+         Melee / Ranged / Magic /  HP / Speed
+Kobold:      9       8       7     90      9        42      34
+  Note: Highly fecund.
+Ogre:       14       6       9    170      8        54      48
+Troll:      30       0       5    800     10       125     125
+  Note: Low rate of reproduction means units are generally smaller.
+Naga:       10      11      11    110      7        50      39/50
+  Note: Free acid spit ranged attack (+8)
+Gnome:       7      12       5     80      9        41      29
+  Note: Early/easy access to tech (explosives, firearms)
+         Melee / Ranged / Magic /  HP / Speed
+Minotaur:   16       5       8    140     10        53
+Halfling:    8      11       8     80      9        44
+Formicant:  10       9      10    120     11        52
+Arachnid:   10      12      12    110     11        56
+Golem:      14       6       0    180      8        48
+         Melee / Ranged / Magic /  HP / Speed
+Gargoyle:   11      10      10    150     10        56
+Rakshasi:   10      10      16    100     10        56
+Lizardmen:  16      10      10    100     11        57
+Draconids:  18      10      10    200     10        68
+Dendroids:  15       0      15    400      3        73
+         Melee / Ranged / Magic /  HP / Speed
+Merfolk:    10      10      11    100     10        51 / 46
+Gnolls:     20      10       8    100     10        58
+Felids:     12      12      11     80     12        55

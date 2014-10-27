@@ -1,0 +1,9 @@
+Uses a base type of any item, then adds some flags.  Flags will tend towards a
+net value of zero.
+--Or?? Difficulty of acquiring artifact is proportionate to the sum of its
+  flags' values?
+
+COMBAT: Applies to any weapon
+  Invisibility: 8
+    Stealth is greatly increased.
+  

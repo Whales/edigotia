@@ -1,0 +1,199 @@
+All
+
+ Wall: 5 stone/tile
+
+ Shack: 5 wood
+	Housing (3, 3);
+
+ Hovel: 10 wood
+	Housing (5, 4);
+
+ House: 20 wood
+	Housing (8, 5)
+
+ Manor: 50 wood
+	Housing (12, 7)
+
+ Palace: 80 wood, 60 stone
+	Housing (20, 9)
+
+ Barracks: 30 wood + 15 stone
+	Trains soldiers.
+	Housing (15, 3)
+
+ School: 40 tone + 20 wood
+	Trains wizards.
+
+ Temple: 50 stone
+	Provides worship
+	Housing (1, 8)
+
+ Textile: 50 wood
+	Builds clothing, decor
+
+ Smeltery: 80 stone
+	Converts ore to stone, metal
+
+ Smith: 70 stone
+	Builds hammer, axe, sword, Heavy armor, Shields
+
+ Woodworks: 40 stone, 40 wood
+	Builds staff, archery, furniture, Bucklers
+
+ Workshop: 60 stone, 20 wood
+	Builds pottery, tools, devices, decor
+
+ Kitchen: 50 stone
+	Builds booze, prepares food
+
+ Pasture: 30 wood
+	Holds livestock (10)
+
+ Farm: 20 wood
+	Grows food
+
+ Market: 60 wood
+	+1 to trade, disperses goods
+
+ Embassy: 50 wood, 50 stone
+	+1 to diplomacy
+
+ Tavern: 60 wood
+	Disperses booze
+	Entertainment
+	Housing (12, 5)
+
+Human
+
+ Cathedral: 100 stone
+	Provides worship
+	Trains priests.
+	House (3, 8)
+
+Elf
+
+ Druid's Garden: 30 wood
+	Grows wood
+	Provides worship
+
+Dwarf
+ 
+Orc
+
+ Arena: 20 wood
+	Provides entertainment, wounds or kills 1-2
+
+Goblin
+ Sappers' Guild
+  Trains sappers
+
+Kobold
+
+ Trash Heap: 20 wood
+	Disperses food
+
+Ogres
+
+Trolls
+
+ Basalt Altar: 5 stone
+	Provides worship
+
+Naga
+
+Gnomes
+
+ Laboratory: 60 stone, 20 wood
+	Provides entertainment
+	Builds devices
+
+Avians
+
+ Nest: 5 wood
+	Holds eggs (10)
+	Housing (3, 5)
+
+Minotaur
+
+ Labyrinth: 50 stone (3x3)
+	Slows intruders, forces 1v1 melee
+	Housing (1, 8)
+
+
+Halfling:
+
+ Low Home: 20 wood, 20 stone
+	Housing (8, 8)
+
+ Banquet Hall: 50 wood, 20 stone
+	Prepares food, booze
+	Disperses Booze
+	Provides Entertainment
+	Housing (5, 4)
+
+
+Bees:
+!Can use wax in place of any material
+
+ Cell: 2 wax
+	Holds eggs (1)
+	Housing (1, 5)
+
+
+Arachnids:
+
+ Den: 8 wood
+	Housing (3, 5)
+
+
+Golems:
+!No housing required
+
+ Workshop: 80 stone, 40 wood
+	Builds pottery, tools, devices, decor
+	Builds golems
+
+
+Gargoyle:
+!All buildings provide +housing (6, 6)
+
+
+Rakshasa:
+
+ Harem: 40 stone, 40 wood, 50 decor
+	Provides entertainment (w/ employment)
+
+
+Lizardmen:
+
+
+Draconians:
+
+
+Dendroids:
+!No housing required
+
+ Grove: sacrifice 2 dendroids
+	Provides worship
+	Trains Priests
+
+
+Merfolk:
+
+
+Gnolls:
+
+ Arena: 20 wood
+	Provides entertainment, wounds or kills 1-2
+
+ Grisley Kitchen: 60 stone
+	Turns slain into prepared food
+	Prepares booze
+
+
+Felids:
+
+ Play Structure: 60 wood
+	Provides Entertainment
+	Housing (4, 8)
+

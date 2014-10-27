@@ -1,0 +1,35 @@
+Starting options:
+
+None, few, some, lots, plentiful
+
+Settlers: The most basic option, a default.
+  Peasants: 30
+  Children: 20
+  Food: Plentiful
+  Wood: Some
+  Gold: Lots
+
+Refugees: More individuals but less resources.  Harder start, easier later.
+  Peasants: 50
+  Children: 30
+  Food: Lots
+  Gold: Some
+
+Utopians: You left to start an ideal society.
+  Nobles: 2
+  Burghers: 4
+  Merchants: 10
+  Peasants: 20
+  Children: 20
+  Food: Lots
+  Wood: Some
+  Gold: Lots
+
+Slavers: You left with your slaves to start anew.
+  *Note: The only option available to Rakshasa.
+  Merchants: 20
+  Slaves: 50
+  Food: Some
+  Gold: Lots
+
+

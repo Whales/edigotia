@@ -1,0 +1,693 @@
+NATURAL:
+Lumos        - God of light, purity, cleansing
+  Beloved by: Dendroids
+  Favored by: Humans, Lizardmen
+  Shunned by: Naga, Arachnids
+Aeros        - God of wind, the weather
+!Needs fleshing out
+  Beloved by: Avians
+  Favored by: Gargoyles
+  Shunned by: Formicants
+Earth Mother - God of growth and decay
+  Beloved by: Elves, Dendroids
+  Favored by: Halfling, Formicants
+  Shunned by:
+Nephyrallo   - God of the ocean, swamps and rivers
+  Beloved by: Merfolk
+  Favored by: Naga, Humans
+  Shunned by: Formicants, Trolls, Dwarves
+Vertumnus    - God of the seasons and changes
+  Beloved by:
+  Favored by: Trolls, Minotaur
+  Shunned by: Draconians, Lizardmen
+
+INDUSTRY/PURSUITS:
+Forge Father - God of heat, industry
+  Beloved by: Dwarves
+  Favored by: Humans, Golems
+  Shunned by: Felids, Rakshasa
+Fiera        - God of the hunt (and fishing)
+  Beloved by: Lizardmen, Felids
+  Favored by: Elves, Merfolk, Arachnids
+  Shunned by: Rakshasa, Dwarves
+Eneri        - God of artistic pursuits
+  Beloved by: Rakshasa
+  Favored by: Elves, Halflings
+  Shunned by: Trolls, Orcs, Kobolds, Golems, Dendroids
+Bacchos      - God of hedonism and alcohol
+  Beloved by: Felids, Rakshasa
+  Favored by: Humans, Halflings
+  Shunned by: 
+Ashlar       - God of masonry, form, structure, order
+  Beloved by: Minotaurs
+  Favored by: Dwarves, Formicants, Humans,
+  Shunned by: Felids
+Farlange     - God of roads, travel, exploration
+
+WARFARE/DIPLOMACY:
+Beogh   - God of warfare and bloodshed (Honorable warfare for its own sake)
+  Beloved by: Orcs, Lizardmen, Gnolls
+  Favored by: Trolls, Minotaur, Gargoyle, Draconians
+  Shunned by: Halflings, Dendroids, Ogres
+Awahri  - God of conquest and empire (Warfare to expand empire & kill heretics)
+  Beloved by:
+  Favored by: Humans, Orcs
+  Shunned by: Halflings
+Trinos  - God of harmony and peace (Peace for its own sake)
+  Beloved by: Halflings
+  Favored by: Ogres, Felids
+  Shunned by: Orcs, Gnolls
+Sekhmet - God of pestilence and ruin (Warfare which maximizes destruction)
+  Beloved by: Trolls
+  Favored by: Orcs
+  Shunned by: Halflings, Dendroids
+Erimar  - God of deceit, spies
+  Beloved by: Goblins
+  Favored by: Kobolds, Naga, Halflings, Rakshasa
+  Shunned by: Orcs, Trolls, Draconians
+
+PURE RELIGION/UNIQUE:
+Fallos   - God of the dark arts and demons
+  Beloved by: Rakshasa
+Artici  - God of witchcraft and spells
+Usstang  - God of insects, crawling things, hive minds, and poison
+  Beloved by: Arachnids
+  Favored by: Apiads, Formats
+  Shunned by: Humans, Elves, Dendroids
+Elderos  - God of foresight
+Nur Derel - God of necromancy and preying upon the weak
+
+
+Each god appreciates worship.  Their opinion generally increases as the number
+of worshippers goes up.  Active worshippers (i.e. those with access to a temple
+devoted to this god) are worth much more than passive ones.
+Gods also appreciate or dislike certain actions, listed below.  Some gods do not
+have one or either.
+Finally, gods may issue edicts or quests.  Completing one will provide a large
+one-time boost.
+If a god's opinion is less than zero, it will very slowly trend towards zero.
+The god will have a chance to perform a Wrath, which will move their opinion
+towards zero.
+If a god's opinion is greater than zero, they may have passive bonuses, as well
+as several boons which are activated either at random, or by invoking their
+power (this requires a grand temple?  High priest?)
+Otherwise, if a god's opinion is less than or greater than the natual level
+(i.e. that determined by the number of worshippers) it will slowly trend towards
+the natural level.
+
+GOD DETAILS:
+Lumos - God of light, purity, cleansing
+  Likes:
+    When corruption is removed
+    When worshippers of Fallos are fought
+  Dislikes:
+    Use of addictive substances
+  Quests:
+    Cleanse Evil - A nearby colony of unclean monsters is revealed to you.  It
+      must be destroyed within a time limit.
+    Cleanse Corruption - A nearby area of corruption is revealed to you.  It
+      must be removed by sending a priest there.
+  Passive:
+    Weather tends to be angled towards sunny.
+    When fighting evil/unclean monsters, or worshippers of Fallos, the enemy
+      fights at -25% strength.
+  Boons:
+    Nourishing Sunlight - Crops produce much more than usual.
+    Block Storm - You get a storm counter.  Whenever a storm would appear, if
+      you have any storm counters, one is expended and the storm is prevented.
+    Cleansing - Disease and addiction is removed from your town.
+  Wrath:
+    Heat wave - Temperature increases significantly, reducing worker output and
+      potentially killing crops.
+    Darkness - The light is blocked out for several weeks, negating crop output.
+  Playstyle Notes:
+    Lumos is a good option for those reliant on crops, or those suffering from
+      frequent disease or widespread drug use.  An army must be kept, to obey
+      Lumos's demands for cleansing.
+
+Aeros - God of wind, the weather
+  Likes:
+    When you explore the world.  The exposed world map is added as a base boost
+      to piety.
+  Dislikes:
+    When no units are in the field.
+  Quests:
+  Passive:
+    Your troops get a minor movement speed boost.  If your troops can fly, this
+      boost is instead major.
+  Boons:
+    Block Storm - You get a storm counter.  Whenever a storm would appear, if
+      you have any storm counters, one is expended and the storm is prevented.
+    Send Storm - A storm is sent to a location of your choice.  Its power scales
+      with Aeros's favor.
+  Wrath:
+    Storm - A storm is sent in.  Its power scales with how angry Aeros is.
+  Playstyle Notes:
+    Aeros is an easy god to play, and of particular interest for flying races
+      who want to increase their movement advantage.  Aeros also makes living in
+      stormy areas safer.  NEEDS MORE!
+
+Earth Mother - God of growth and decay
+  Likes:
+    Allowing trees to grow
+  Dislikes:
+    Destruction of trees
+  Quests:
+    Plant forest - You are asked to plant a forest in a designated area within a
+      time limit.
+  Passive:
+    Taming of Beasts - Monsters attack less and are easier to hunt.
+    Crop boost - Farms produce greater than usual output.
+  Boons:
+    Forest growth - Forest grows around your city, unintrusively.
+    Gift of the trees - You are given a supply of wood.
+  Wrath:
+    Reclaim - Forest grows in your city, possibly destroying buildings.
+    Forest Beasts - Wildlife attacks your city.
+  Playstyle Notes:
+    Earth Mother encourages an alternate approach to wood collection, and is a
+      default for Elves and Dendroids, who don't wish to destroy trees anyway.
+      She makes living in wooded areas very advantageous, and basic food
+      collection much easier.
+
+Nephyrlallo - God of the ocean, rivers, lakes and swamps
+  Likes:
+    Exploration of the sea
+    Reliance on the sea/river/swamp (buildings close to it)
+  Dislikes:
+    Overfishing (e.g. collecting more than (favor + 50) fish per week)
+  Quests:
+    Water Expansion - The player must build a channel of considerable size,
+      extending the sea/river/swamp further inland.
+  Passive:
+    Calm Waters - Seastorms and floods are less common.
+    Swift Journey - The speed of your boats (or swimming units) is faster.
+    Plentiful Waters - Your fishing tends to be luckier.
+  Boons:
+    Bounty of the Sea - A great harvest (beached whale, kelp tide, fish
+      migration) is delivered
+    Protection of the Sea - Sea storms are created around your city, which your
+      ships/units are protected from.  Only occurs on prayer or if units are
+      approaching.  For rivers, this may be replaced by a drought, preventing
+      ships/units from traveling via river.  For the swamp, this may be replaced
+      by horrible disease.
+  Wrath:
+    Wrath of the (Sea/River/Swamp) - A storm hits you;
+      -Sea: Hurricane, typhoon, etc.
+      -River: Flood, drought
+      -Swamp: Flood, drought, disease
+    Anger of the (Sea/River/Swamp) - A mighty beast attacks;
+      -Sea: Kraken, Sea Serpent
+      -River: Great Fish, plague of eels/frogs
+      -Swamp: Swamp Beast
+  Playstyle Notes:
+    Nephyrlallo is a "default" for those who depend on a source of water,
+      particularly the ocean.  River/Swamp cities may turn to Nephrylallo to
+      support their food production without many requirements.  Seaside cities
+      have more to gain from Nephyrlallo, as she encourages a naval playstyle
+      significantly stronger.
+
+Vertumnus - God of the seasons and changes
+  Likes:
+    When seasonal festivals are held
+  Dislikes:
+  Quests:
+    Seasonal;
+      Spring - You are called upon to plant several forests.
+      Summer - You are called upon to build homes and explore.
+      Autumn - You are called upon to attack enemies.
+      Winter - You are called upon to retreat units home.
+  Passive:
+    Seasonal bonuses;
+      Spring - Farms are cheaper to build
+      Summer - Morale is heightened
+      Autumn - Farms produce additional food
+      Winter - Food consumption is reduced
+  Boons:
+    Seasonal boons;
+      Spring - Reproduction is increased dramatically
+      Summer - Storm counter (lasts until Autumn)
+      Autmun - Farms produce MUCH more food
+      Winter - Storm counter (lasts until spring)
+  Wrath:
+    Seasonal wrath;
+      Spring - Crop failure; farms are destroyed.
+      Summer - Drought
+      Autumn - Crop failure; farms produce no food
+      Winter - Storm
+  Playstyle Notes:
+    Vertumnus is a good god for the early game, as he promotes rapid growth and
+      makes food management much easier.  Once a city has these under control,
+      or if a city gets a large portion of its food from imports, Vertumnus is
+      less useful.  Also, his control over the rhythm of your play (with the
+      regularly-delivered quests) can be frustrating.  Fortunately, Vertumnus's
+      wrath is not so bad (IF farms aren't critical for you).
+
+Forge Father - God of heat, industry, transformation
+  Likes:
+    Operating forges - a small bonus, comparable to worshippers
+  Dislikes:
+    Unemployment - All unemployed citizens are treated as -2 worshippers.
+  Quests:
+    Construct Idol - A special building is unlocked - an idol, buildable at huge
+      cost.  The idol is forged from a processed material (brick, steel, etc).
+  Passive:
+    The output of your forges is increased.
+  Boons:
+  Wrath:
+
+Fiera - God of the hunt (and fishing)
+  Likes:
+    When you have a successful hunt.
+  Dislikes:
+    Killing a holy beast (unicorn, etc)
+  Quests:
+    Legendary Hunt - Fiera will reveal the domain of a legendary beast.  You
+      have a limited time to kill or capture the beast; killing it proides a
+      small piety boost, capturing it very large.  If captured, the beast is
+      tamed.
+  Passive:
+    Huntsman's Glory - You receive a basic boost to luck in all hunts, scaling
+      with Fiera's favor.
+  Boons:
+    
+  Wrath:
+
+Eneri - God of artistic pursuits
+  Likes:
+  Dislikes:
+  Quests:
+  Passive:
+  Boons:
+  Wrath:
+
+Bacchos - God of hedonism and alcohol
+  Likes:
+  Dislikes:
+  Quests:
+  Passive:
+  Boons:
+  Wrath:
+
+Ashlar - God of masonry, form, structure, order
+  Likes:
+  Dislikes:
+  Quests:
+  Passive:
+  Boons:
+  Wrath:
+
+Farlange - God of roads, travel, trade
+  Likes:
+    When roads are built.
+    When trade is conducted, preferably with those far away
+    When heroes are sent to distant cities.
+  Dislikes:
+    When you destroy roads
+    When you have no units afield
+  Quests:
+    Holy Road - You are called upon to build a road to a randomly-selected
+      location. When completed, a holy site is created at that location and you
+      receive a piety gain proportional to the length of the road.
+    Pilgrimage - You are called upon to send a number of worshippers to a holy
+      site of Farlange, either one constructed via Holy Road or another city
+      which has Farlange as its patron.  Upon their arrival, you receive piety
+      proportional to the distance and the number of pilgrims.
+    Eternal Pilgrimage - You are called upon to send a number of worshippers on
+      an unending pilgrimage of travel.  They will travel at Farlange's
+      discretion, and will essentially be lost to you--they will never return
+      home.  As long as they live, they will be counted as 10 times the number
+      of worshippers they are,  will receive double Traveler's Protection (see
+      below under Passive), and will have diplomacy boosts, spreading the word
+      of Farlange and your city.  They will also send maps of their travels
+      home.
+  Passive:
+    Traveler's Protection - Your units afield cannot be ambushed (by monsters or
+      by armies), and are protected from damage when fleeing (up to a limit?).
+      When traveling via road, your units travel at 1.5x the normal speed.
+      Hostile encounters are reduced.
+    Road Building - You build roads twice as fast (and at lowered resource
+      costs?).
+    Holy Trade - The overhead costs of trading are reduced.  Unlike the trade
+      skill, this only applies to your costs, not those of your trade partner.
+  Boons:
+    Laying the Path - Farlange will occasionally gift you with several tiles
+      of road, generally in the direction of a city or feature which is
+      currently not directly connected to you by road.  If this boon is
+      requested, you can request 
+    Showing the Way - Farlange will reveal to you the location of a city or
+      feature.  If performed by request, you may name the feature (NOTE: This
+      will probably require a special interface.  In particular, if we know that
+      we are at war with the Orcs of Thurgal, then the interface should list
+      Thurgal as an option, probably with a note saying "AT WAR").
+  Wrath:
+    Wanderlust - Several of your citizens will leave your city in multiple
+      groups.  Each group has a timer for when they will return home; however,
+      they may resettle in another city before that timer is reached, and never
+      return.
+    Denying the Way - You temporarily lose any movement bonuses from roads.
+  Playstyle Notes:
+    Farlange offers improved mobility and safety for players who use roads
+      extensively.  He also makes exploring and expanding much easier.
+      Farlange makes it harder to rely on domestic production, since at any
+      moment you may be called upon to send citizens afield (and Far generally
+      appreciates having them afield), but fortunately also makes it easier to
+      rely on imported goods, making him a good option for cities which do not
+      have impressive domestic output anyway.
+
+Beogh - God of warfare and bloodshed (Honorable warfare for its own sake)
+  Likes:
+    When you declare war before attacking
+      -Note: Maybe Beogh should just be the god of warfare, not *honorable*
+       warfare.  If so, remove the "before attacking" part.
+    Your military victories (i.e. battles)
+    When an enemy capitulates
+  Dislikes:
+    When you declare peace (this penalty must be higher than the bonus for
+      declaring war to avoid farming)
+    Dishonorable warfare (e.g. assassination, sappers, spies)
+    Retreating from any battle
+  Quests:
+    Holy War - Beogh demands that you declare war on a random neighbor.  This is
+      weighted by friendliness and power; Beogh will only very rarely demand
+      that you declare war on someone much more powerful, or a close ally.  If
+      war is not declared, piety is lost; otherwise, piety gains (see Likes) are
+      doubled for this war, as are passive bonuses.
+  Passive:
+    Combat Might - The combat stats of all units are increased by an amount
+      which scales with favor.  Melee is affected more than ranged.
+    Noble Combat - War weariness is reduced by an amount which scales with favor
+      and is eventually removed altogether.
+  Boons:
+  Wrath:
+    Weak Target - All others gain a morale boost for attacking you while this is
+      active.  Beogh followers immediately gain a Holy War quest with you as the
+      target.
+  Playstyle Notes:
+    Beogh is an easy god to play--so long as you don't mind near-constant
+      warfare.  With no activated abilities and across-the-board bonuses, this
+      is a good choice for players new to the game who want a war-centric run.
+
+Awahri - God of conquest and empire (Warfare to expand empire & kill heretics)
+  Likes:
+    When you conquer cities.
+    When you kill non-believers.
+    When you convert cities to the faith.
+  Dislikes:
+    When you attack fellow Awahri followers.
+    When your High Priest dies.
+  Quests:
+    Holy City - Awahri demands that you capture a target city.
+    Heretic - Awahri demands that a Hero of another faith be captured or killed.
+  Passive:
+    Priests of Awahri can learn combat spells in the temple.
+      -Expand upon this...
+    War weariness is reduced for wars which Awahri demands.
+  Boons:
+    Holy Wrath - Awahri will, at his discretion only, unleash his furor on an
+      enemy army, instantly killing several soldiers.  This is weighted towards
+      occuring when relevant to any Likes or active Quests.
+    High Priest - Any priest may be instantly converted to a Hero, the High
+      Priest of Awahri.  This occurs immediately after reaching a certain piety
+      level.  There can only be one High Priest; if it dies, then another will
+      replace it after a while.  The High Priest grants significant boosts to
+      the combat skills of all units in its army, and increases the chance of
+      Holy Wrath.
+      The High Priest may also be used 
+  Wrath:
+    Holy War - All followers of Awahri are called upon to attack you.
+    Holy Wrath - Awahri's wrath is unleashed upon you, as above.
+  Playstyle Notes:
+    Awahri is, like Beogh, good if you plan to be at war a lot of the time, but
+      is much more difficult to handle.  With no basic boosts to combat, and war
+      weariness reduction only part of the time, the normal challenges of combat
+      are still there.  The High Priest-oriented aspect of Awahri encourages a
+      single large army, as opposed to more complex maneuvering; if a single
+      city is to be attacked, Awahri is a great choice.
+
+Trinos - God of harmony and peace (Peace for its own sake)
+  Likes:
+    When you are at peace with neighbors (this is considered a part of "base"
+      piety, like # of followers).
+  Dislikes:
+    When you are at war with neighbors (this is considered a part of "base"
+      piety, like # of followers, and is much higher than the Like).
+  Quests:
+    Fellowship - Trinos reveals an undiscovered neighbor, and asks that you
+      enter into peaceful relations with them.
+  Passive:
+    All other nations experience increased war weariness when at war with you.
+      This scales with piety.
+    All other nations experience a morale boost for agreeing to treaties you
+      propose, whether they are political, trade, etc.
+  Boons:
+    Turn Back - An army near your city will immediately start marching away. The
+      piety cost of requesting this scales with the size of the army.  This
+      effect will eventually wear off; how long this takes depends on the
+      intelligence (?) of the army.
+  Wrath:
+    Weakness in Battle - Your military units suffer severe combat penalties.
+  Playstyle Notes:
+    Trinos is a good god for beginners who aren't interested in warfare, just
+      city-building.  Enemies will tend to avoid war with the player, and can be
+      more easily persuaded to agree to treaties.  The Turn Back ability also
+      provides a panic button (albeit a temporary one), which gives beginners a
+      second chance to find a way to handle that oncoming army.
+
+Sekhmet - God of pestilence and ruin (Warfare which maximizes destruction)
+  Likes:
+    When you destroy buildings (which you didn't build).
+    When you burn forests.
+    When you kill military units or citizens.
+  Dislikes:
+    When you capture or release military units or citizens without killing them.
+  Quests:
+    Path of Destruction - Sekhmet will choose, more or less at random, a target
+      for destruction.  It may be a city, a forest, fields, etc.
+  Passive:
+    Berserk Fury - Military units may enter a fury, indiscriminately killing
+      whichever enemy is closest, and destroying anything they can.  While this
+      is active, their combat prowess is tripled (melee only).
+  Boons:
+    Plague - Sekhmet unleashes a plague upon your enemies (or even friends).
+      This is frequently done at random, but may be requested via sacrifice.
+      -Plague of locusts - Destroy farms.
+      -Plague of boils - Spread disease among citizens.
+      -Plague of meteor - Much rarer than the others.
+  Wrath:
+    Plages unleashed upon you as above.
+  Playstyle Notes:
+    Sekhmet suits a player who's interested in warfare, but not interested in
+      managing their conquests.  Situationally, Sekhmet suits a relatively weak
+      state who's under the threat of one or more powerful enemies.  Sekhmet's
+      plagues can stand in for a strong army, and delay opponents from attack.
+
+Erimar - God of deceit, spies
+  Likes:
+    When espionage is carried out.
+    When you break treaties or betray friends (preferably via espionage)
+  Dislikes:
+    When you declare war before attacking.
+    When your secrets are leaked.
+  Quests:
+    Grand Jester - Erimar assigns you a more or less frivolous espionage mission
+      such as stealing a king's clothing or creating a diplomatic incident.
+      -These may have a postive effect of reducing the target's citizens'
+       loyalty.
+      -The target is assigned completely randomly, and may be a friend or enemy.
+  Passive:
+    Your espionage missions have higher success rates.
+  Boons:
+  Wrath:
+
+Fallos - God of the dark arts and demons
+  Likes:
+    Sacrifice - The boost from this is adjusted by class (slaves are worth the
+      least, nobles the most) and race (your own race is preferred, others are
+      accepted).  Sacrificing a hero is very highly valued.
+  Dislikes:
+  Quests:
+    Corrupt - Fallos demands that you bring chaos to a given area, most likely
+      one settled by a neighbor.  A priest can start the corruption in that
+      area; this will spawn volcanoes, creating demon spawn areas, and downgrade
+      terrain (forest -> fertile, fertile -> barren, barren -> corrupt)
+  Passive:
+    Demon Summoning - Priests of Fallos can summon demons to aid in combat.
+    Foul Harvest - Worshippers of Fallos can build a Demonic Garden, a farm
+      which may be planted on corrupt terrain.
+  Boons:
+    Blood Ritual - This boon only appears via prayer, and must be accompanied by
+      a sacrifice.  The value of the sacrifice is treated as in Likes above.
+      An enemy army or village within the range of the sacrifice is stricken by
+      sudden death which scales with the value of the sacrifice.
+    Demonic Hero - A demon is summoned and is treated as a hero with a selected
+      type.  If this happens via prayer, you may choose the type of hero;
+      otherwise, it is randomly chosen (according to need?):
+      -Assassin: A powerful shapeshifting, teleporting demonic assassin which
+       disappears after dispatching its target
+      -Taskmaster: A resident of a town, or commander of an army, which improves
+       work/combat by a large percentage, but also worsens morale.
+      -Tormentor: A combat mage possessing of powerful spells.  Every spell it
+       casts must be accompanied by live sacrifice.
+      -Pitlord: A mighty, thunderous warrior which leaves corruption in its
+       path and can singlehandedly dispatch a small army.  Pitlord are rare
+       if gifted, and require a large amount of piety if summoned via prayer.
+    Spread Corruption - Fallos will periodically spread corruption in and
+      around your settlement.
+  Wrath:
+    Corrupt Blight - Fallos will corrupt terrain around your settlement.
+    Demonic Plague - Fallos will send a plague against your town:
+      -Foul Swarm: Locusts which destroy crops and create corruption.
+      -Wave of Death: Citizens will die, selected at random.  The wave continues
+        until a certain value is met; the value of the death follows the rules
+        for sacrifice under Likes above.
+      -Demonic Invasion: An army of demons strikes your town.  Occasionally, and
+        only when Fallos is enraged with you, a Pitlord may strike.
+  Playstyle Notes:
+    Fallos offers the most power of any god, and is a strong choice for when
+      an enemy must be destroyed quickly and with few resources.  However, the
+      cost of worshipping Fallos is very high, exceeded only by the cost of
+      angering Fallos.  Still, Fallos is a strong choice for those with an
+      excess of sacrifice victims (large numbers of slaves, overpopulation).  If
+      overpopulation is a concern, worshipping Fallos may be a better choice
+      than simply letting people starve.
+
+Artici - God of witchcraft and spells
+  Likes:
+    Wizards who worship her (they are counted (5x? 10x) for base piety)
+  Dislikes:
+  Quests:
+    Ancient Tome - The location of an ancient magical tome is revealed to you.
+      It must be retrieved within a time limit.  It may or may not contain
+      valuable spells; the piety gain for completing this quest is higher for
+      more useless books; better books are their own reward.
+  Passive:
+    The power of all your spells is increased slightly.
+    Your magic schools contain one extra spell per level.
+  Boons:
+    Artici will occasionally offer your magic school a new spell.
+  Wrath:
+    Artici will dampen your magic abilities, reducing spell power or preventing
+      casting entirely.
+    Your magic schools, if they remain open, will be at high risk for magical
+      explosion.
+  Playstyle Notes:
+    Artici is an easy-to-worship god for those interested in passive boosts to
+      their magical abilities.  Artici is a good choice for those with very weak
+      natural abilities who want to have some mastery of spells, or for more
+      talented races who want a wider spell selection.
+
+Usstang - God of insects, crawling things, hive minds, and poison
+  Likes:
+    When you use poison in combat.
+  Dislikes:
+    Declaring war on an insectoid race.
+  Quests:
+    Insectoid Visitation - A swarm of varied insects visits, allowing you to:
+      -Give them free reign - Crops and forests are destroyed.  Usstang is
+        highly pleased.
+      -Divert them - Send the insects to another, nearby location.  Usstang is
+        pleased if you send them to an area with crops or forest to devour, and
+        displeased if you send them to empty areas.
+      -Eat them - The insects are added to your food reservoir.  Usstang is
+        highly displeased.
+  Passive:
+    Holy Poison - Your poisons are made more effective.  Insectoid races get a
+      natural poison to their unarmed attack.
+  Boons:
+    Plague of Locusts - A swarm of locusts is sent to a selected location,
+      destroying crops.
+    Plague of Beetles - A swarm of beetles is sent to a selected location,
+      destroying forests.
+  Wrath:
+    Plagues as above.
+  Playstyle Notes:
+    Worshipping Usstang is almost a non-option for races dependant on farms for
+      food.  However, for those with alternate sources of food, it provides a
+      powerful way to deny farming to neighbors, and a potent boost to combat.
+
+Elderos - God of knowledge and divinations
+  Likes:
+    When you perform research.
+    Active schools/universities (treated as a part of base piety).
+  Dislikes:
+    Lack of schools; at least one must be open or piety will drop.
+  Quests:
+    Divine Knowledge - Elderos will reveal a technology of limited or no
+      practical application.  You must research it within a time limit.
+    Divine Destiny - Elderos will create a special event which happens at a
+      specific location.  You must send a priest to this location before the
+      event occurs.  The event may be an attack, an appearance of a special
+      monster, a chance meeting, etc.
+  Passive:
+    Quest for Knowledge - Elderos increases the output of your research
+      facilities.
+  Boons:
+    Who - Delivers information on a hero.  Gives their location, skills, and
+      recent history (missions completed, etc)
+    What - Delivers information on a settlement.  May include production,
+      population, heroes, etc.
+    Where - Delivers information on a location.  Reveals the map, monsters, etc
+    When - Predicts events for the future (storms, attacks, etc)
+  Wrath:
+    Ignorance - Elderos will decrease or stop the output of your research
+      facilities.  This is only removed by actually performing research.
+  Playstyle Notes:
+    Elderos's boost to research is of interest to players interested in the tech
+      aspect of the game.  His boons of knowledge allow for newer players to
+      handle randomness more easily.
+
+Nur Derel - God of necromancy and preying upon the weak
+  Likes:
+    Live sacrifice.  Deliberate sacrifices increase your Sacrifice Counter by 2
+      (or more?).  Your Sacrifice Counter is capped at your piety level.
+      Sacrifices are all worth the same amount, regardless of race, class, etc.
+  Dislikes:
+    Any healing.  Upon taking Nur Derel as your patron deity, a prompt will be
+      given to close hospitals, if any exist.
+  Quests:
+    Reaping - Nur Derel will designate a nearby settlement.  It will always be
+      weaker than your own; it may be a minor settlement (hunters, bandits, etc)
+      or a city proper.  You are called upon to attack it within a time limit,
+      and to kill all there.  All those killed increase your sacrifices by 1.5x
+      the normal rate.
+    Dark Ceremony - Nur Derel occasionally requires a soul to feed upon.  A
+      portal is opened at some distance from your city (it will try to place
+      itself in an area of Very High Magic; if that isn't doable, it will be at
+      the maximum radius from your city).  You must bring a designated sacrifice
+      to the portal; the sacrifice is chosen at random, and may be a slave,
+      noble, or even a hero.  If the sacrifice is brought to the portal, it is
+      immediately devoured and you gain a large piety boost; if the sacrifice
+      dies before reaching the portal, or if the portal closes (long timeout),
+      Nur Derel is angered.
+  Passive:
+    Raise Dead - Anyone killed in your city, or in the presence of a priest of
+      Nur Derel, is immediately raised as a wight.  Wights are treated as slaves
+      for all intents, but have no morale requirements, absolute loyalty, etc.
+      They also function at slightly-reduceds skill levels.  Every individual
+      raised reduces your Sacrifice Counter by 1, but does not affect your
+      piety.
+  Boons:
+    Necrodivination - At high piety cost, a captured hero can be killed and
+      ressurrected as a ghost, with their memories from their past life laid out
+      for examination.  This essentially grants you an immediate and free spy
+      mission, with a limited number of espionage points (how do we determine
+      this number?) and perfect success.
+  Wrath:
+    Undead Rebellion - Any remaining undead in your city instantly turn on you,
+      attacking those nearby.  If there are dead in your cemetaries, they will
+      be raised and attack.
+  Playstyle Notes:
+    Nur Derel offers you a way to get rid of excessive slaves or peasants which
+      you cannot afford to feed, and do not have a better use for.  Since Nur
+      Derel does not value higher classes more, this encourages a more "top-
+      heavy" society.  Since undead workers are nearly as good as peasants at
+      manual labor, it's possible to do away with the peasantry altogether, if
+      you have sufficient piety, and exist as a necromancer lord--allowing you
+      to use draconian laws, extended warfare, or other options often prohibited
+      by threat of rebellion.
+    For all the game-changing power that Nur Derel offers, it's also a risky
+      gambit; the number of undead followers you can sustain is limited by Nur
+      Derel's favor, which can dip if you fail a quest, or if you do not make
+      sacrifices quickly enough.
+

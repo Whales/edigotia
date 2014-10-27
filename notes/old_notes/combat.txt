@@ -1,0 +1,108 @@
+Combat starts ranged; either side can attempt to close to melee, and will if
+their melee skill is better
+
+Human:	Str 10  Dex 10  Spd 10  HP 100
+Elf:	  Str  9  Dex 11  Spd 11  HP  90
+Dwarf:  Str 13  Dex  8  Spd  7  HP 120
+Orc:	  Str 12  Dex 10  Spd 10  HP 110
+Goblin:	Str  8  Dex 10  Spd 11  HP  90
+Kobold: Str  7  Dex 10  Spd 11  HP  80
+Ogre:	  Str 14  Dex  7  Spd  9  HP 140
+Troll:	Str 20  Dex  6  Spd  8  HP 180  Natural armor: 30
+Naga:	  Str 12  Dex 12  Spd  6  HP 100  Natural armor: 10
+Gnome:	Str 10  Dex 11  Spd  7  HP  90
+Avian:  Str  9  Dex 10  Spd 15  HP  90  Flies
+	                                      2x Damage from impact
+Minota: Str 14  Dex 10  Spd 12  HP 100  Horns: act as spear (40)
+	                                      Hooves: act as hammer (50)
+Halfli: Str  6  Dex 11  Spd 10  HP  80
+Apiad:  Str  8  Dex 11  Spd 16  HP  50  Flies
+	                                      Natural armor: 15
+Arachn: Str 10  Dex 12  Spd 10  HP  90  Natural armor: 15
+	                                      Ranged: web, halves target's speed
+Golem:  Str 13  Dex  8  Spd  7  HP 120  Double damage from hammer
+	                                      Half damage from all else
+Gargoy: Str 11  Dex  9  Spd 14  HP 100  Flies
+Raksha: Str 10  Dex 12  Spd 12  HP  90  Claws: act as sword (15)
+Lizard: Str 12  Dex 12  Spd 12  HP 100  Claws: act as sword (25)
+Dracon: Str 14  Dex  9  Spd 13  HP 150  Flies
+	                                      Claws: act as sword (35)
+	                                      Breath: ranged fire (40)
+Dendro: Str 14  Dex  8  Spd  5  HP 160  Natural armor:  20
+	                                      Branch acts as stave (30)
+	                                      Double damage from fire
+Merfol: Str 10  Dex 11  Spd  5  HP 100  3x speed in water
+Gnoll:	Str 11  Dex 11  Spd 11  HP 110
+Felid:  Str  9  Dex 12  Spd 13  HP  90  Claws: act as sword (10)
+
+Unarmed dam: Str * 2 (+ any natural weapons)
+
+Hammer: 10 + Str * 4
+Axe: 25 + Str * 2 +  Dex
+Sword: 35 +  Dex * 2
+Spear: 20 + Str +  Dex +  Spd + Opponent's Spd
+Stave: 30 + Str * 2
+
+L. Armor: provides 10
+M. Armor: provides 20, dex - 1
+H. Armor: Provides 40, dex - 3
+
+Bow: 50
+Magic Missile: 40, bypasses 50% of armor, increased chance to hit
+Fireball: 60, fire, bypasses 50% of armor, may cause 6 fire splash
+
+Damage is 0 to dam;
+Armor reduces damage by 0 to dam
+
+
+
+Combat cycle:
+  Range starts at 10
+  At melee range?
+    Yes: Is our melee better?
+      Yes: Engage in melee
+      No:  Can we outpace them?
+        Yes: Retreat
+        No:  Engage in melee
+    No: Is our ranged better than theirs?
+      Yes: Is range > 10?
+        Yes: Can we outpace them?
+          Yes: Move closer
+          No:  Engage in ranged
+        No:  Engage in ranged
+      No: Is our melee better, taking into account losses while closing?
+        Yes: Move closer
+        No:  Do we have archer friends?
+          Yes: Hold position
+          No:  Retreat to flee
+
+  Continues until one side is dead, or range >= 20 (retreat)
+
+
+Example:
+  Humans:
+   50x soldiers (sword, h. armor)
+    Dam = 17, armor = 16
+   30x archers (bow, l. armor) 
+    Dam = 10, armor =  4
+  Orcs:
+   100x solders (axe, l. armor)
+    Dam = 24, armor =  4
+
+Turn 1:
+  Humans:  50.00x Soldiers at  5, 30.00x Archers at 5
+  Orcs:   100.00x Soldiers at -5
+  -HS Move to 4
+  -OS Move to -4
+  -HA fire; 15 hit,
+
+Turn 2:
+  Humans:  50.00x Soldiers at  4, 30.00x Archers at 5
+  Orcs:    92.50x Soldiers at -4
+  -HS Hold
+  -OS Move to -3
+  -HA fire; 10 hit
+
+Turn 3:
+  Humans:  50.00x Soldiers at  4, 30.00x Archers at 5
+  Orcs:    87.60x Soldiers at -3

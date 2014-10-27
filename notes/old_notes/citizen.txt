@@ -1,0 +1,48 @@
+Peasant:
+  Jobs: Farmer, miner, woodsman, footsoldier
+  Requirements:
+    Food:     Low
+    Luxuries: None
+    Housing:  Low
+  Default class when aging up or immigrating
+
+Craftsman:
+  Jobs: Potter, blacksmith, chef, archer
+  Requirements:
+    Food:     Low
+    Luxuries: Low
+    Housing:  Fair
+  To age up:
+    Parents:  Peasant or Craftsmen
+    Educatn:  Low
+    Housing:  Fair
+  To transition:
+    Housing:  Fair
+    Luxuries: Low
+
+Burgher:
+  Jobs: Judge, ambassador, dean, commander
+  Requirements:
+    Food:     Med
+    Luxuries: Med
+    Housing: Good
+  To age up:
+    Parents:  Craftsment or Burghers
+    Educatn:  Good
+    Housing:  Good
+  To transition:
+    Housing:  Good
+    Food:     Good
+    Wealth:   High
+
+Noble:
+  No job, but boost effectiveness of taxes, policies, and diplomacy
+  Requirements:
+    Food:     High
+    Luxuries: Very High
+    Housing:  Fine
+  To age up:
+    Parents: Burghers
+    Educatn: Great
+    Housing: Great
+    Wealth:  Very High
