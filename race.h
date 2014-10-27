@@ -57,6 +57,9 @@ enum Species_skill
   SKILL_MAX
 };
 
+Species_skill lookup_species_skill(std::string name);
+std::string species_skill_name(Species_skill skill);
+
 struct Race_datum
 {
   Race_datum();
