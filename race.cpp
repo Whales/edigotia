@@ -27,19 +27,19 @@ Race_datum::~Race_datum()
 {
 }
 
-Species_skill lookup_species_skill(std::string name)
+Race_skill lookup_race_skill(std::string name)
 {
   name = no_caps( trim( name ) );
   for (int i = 0; i < SKILL_MAX; i++) {
-    Species_skill ret = Species_skill(i);
-    if (name == no_caps( trim( species_skill_name(ret) ) ) ) {
+    Race_skill ret = Race_skill(i);
+    if (name == no_caps( trim( race_skill_name(ret) ) ) ) {
       return ret;
     }
   }
   return SKILL_NULL;
 }
 
-std::string species_skill_name(Species_skill skill)
+std::string race_skill_name(Race_skill skill)
 {
   switch (skill) {
     case SKILL_NULL:      return "NULL";
@@ -47,7 +47,7 @@ std::string species_skill_name(Species_skill skill)
     case SKILL_MINING:    return "mining";
     case SKILL_FORESTRY:  return "forestry";
     case SKILL_MAX:       return "BUG - SKILL_MAX";
-    default:              return "BUG - Unnamed Species_skill";
+    default:              return "BUG - Unnamed Race_skill";
   }
-  return "BUG - Escaped species_skill_name() switch";
+  return "BUG - Escaped race_skill_name() switch";
 }

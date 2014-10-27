@@ -1,7 +1,7 @@
 #ifndef _RACE_H_
 #define _RACE_H_
 
-#include "citizen.h"  // Some species values are Citizen_type-dependent.
+#include "citizen.h"  // Some race values are Citizen_type-dependent.
 #include <string>
 
 enum Race
@@ -45,7 +45,7 @@ enum Race
   RACE_MAX
 };
 
-enum Species_skill
+enum Race_skill
 {
   SKILL_NULL = 0,
 
@@ -57,8 +57,8 @@ enum Species_skill
   SKILL_MAX
 };
 
-Species_skill lookup_species_skill(std::string name);
-std::string species_skill_name(Species_skill skill);
+Race_skill lookup_race_skill(std::string name);
+std::string race_skill_name(Race_skill skill);
 
 struct Race_datum
 {
@@ -71,7 +71,7 @@ struct Race_datum
   std::string adjective;  // "Buying ____ weapons.", e.g. "orcish"
 
 
-// GENERAL SPECIES STATS
+// GENERAL RACE STATS
 
   int food_consumption; // Default is 100
 
