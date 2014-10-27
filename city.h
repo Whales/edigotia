@@ -71,6 +71,8 @@ public:
   Area_queue_status add_area_to_queue(Area_type type, Point location);
   Area_queue_status add_area_to_queue(Area area);
   void add_open_area(Area area);  // Move it from queue to areas.
+  void destroy_area_at(int x, int y);
+  void destroy_area_at(Point pos);
 
   Building_queue_status add_building_to_queue(Building_type type);
   Building_queue_status add_building_to_queue(Building building);

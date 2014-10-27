@@ -678,6 +678,25 @@ void City::add_open_area(Area area)
 
 }
 
+void City::destroy_area_at(int x, int y)
+{
+  destroy_area_at( Point(x, y) );
+}
+
+void City::destroy_area_at(Point pos)
+{
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].pos == pos) {
+      int cost = areas[i].get_building_datum()->destroy_cost;
+      if (expend_resource(RES_GOLD, cost)) {
+        areas[i].close(this); // Should handle everything needed to destroy it
+        areas.erase( areas.begin() + i );
+      }
+      return;
+    }
+  }
+}
+
 Building_queue_status City::add_building_to_queue(Building_type type)
 {
   Building tmp;
