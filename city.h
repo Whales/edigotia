@@ -145,7 +145,8 @@ public:
 
 // Building/Area-related functions
   std::vector<Building*> get_all_buildings();
-// If these are passed BUiLD_NULL/AREA_NULL (or aren't passed a parameter at
+  std::vector<Building*> get_pure_buildings(); // i.e. those not of an Area
+// If these are passed BUILD_NULL/AREA_NULL (or aren't passed a parameter at
 // all) they will return the sum total of ALL buildings/areas.
   int get_number_of_buildings(Building_type type = BUILD_NULL);
   int get_number_of_areas    (Area_type     type = AREA_NULL);
@@ -159,6 +160,7 @@ public:
   int get_resource_amount(Resource res);
   int get_mineral_amount (Mineral  min);
   int get_resource_production(Resource res);  // From all sources
+  int get_food_cap();
 
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);

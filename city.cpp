@@ -493,6 +493,12 @@ void City::do_turn()
     }
   }
 
+// Make sure our food isn't above the cap (food goes bad y'know)
+  int food_cap = get_food_cap();
+  if (resources[RES_FOOD] > food_cap) {
+    resources[RES_FOOD] = food_cap;
+  }
+
 // Allow mines to discover new materials.
 // TODO: Make this better (put in its own function?)
   for (int i = 0; i < areas.size(); i++) {
@@ -1189,6 +1195,15 @@ std::vector<Building*> City::get_all_buildings()
   return ret;
 }
 
+std::vector<Building*> City::get_pure_buildings()
+{
+  std::vector<Building*> ret;
+  for (int i = 0; i < buildings.size(); i++) {
+    ret.push_back( &(buildings[i]) );
+  }
+  return ret;
+}
+
 int City::get_number_of_buildings(Building_type type)
 {
   int ret = 0;
@@ -1304,6 +1319,13 @@ int City::get_resource_production(Resource res)
   }
 
   return ret;
+}
+
+int City::get_food_cap()
+{
+  int food_expiration = 10; // How many days does it take our food to go bad?
+// TODO: Allow modifiers to food_expiration.
+  return food_expiration * get_food_consumption();
 }
 
 // type defaults to CIT_NULL
