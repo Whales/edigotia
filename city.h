@@ -8,6 +8,7 @@
 #include "map.h"
 #include "window.h"
 #include "cuss.h"
+#include "race.h"
 #include <map>
 
 struct Citizens
@@ -187,6 +188,8 @@ public:
   int get_export(Resource res);
 
 // Data
+  Race race;
+
   Citizens population[CIT_MAX];
   int tax_rate[CIT_MAX];
 
