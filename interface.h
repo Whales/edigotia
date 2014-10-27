@@ -153,8 +153,7 @@ private:
   void set_menu_str();
 
 // *** DATA ***
-// Menu info - static except for cur_menu.
-  Menu_id cur_menu;
+// Menu info - all static.
   std::vector<Menu> menus;
   std::string menu_str;
   int next_menu_posx;
@@ -162,6 +161,7 @@ private:
 // Current mode.
   Game_state game_state; // e.g. "quit"
   Interface_mode cur_mode;
+  Menu_id cur_menu;
 
 // Pointers to game data.
   Game* game;
