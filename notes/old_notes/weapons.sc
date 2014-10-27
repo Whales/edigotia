@@ -93,6 +93,7 @@ let I7 = 4
 let J7 = 7
 let K7 = 0
 let L7 = @sum(E7:K7)-@sum(B7:D7)
+rightstring M7 = "Longbow"
 rightstring A8 = "Crossbow"
 let B8 = 4
 let C8 = 5
@@ -105,4 +106,5 @@ let I8 = 6
 let J8 = 4
 let K8 = 4
 let L8 = @sum(E8:K8)-@sum(B8:D8)
-goto J8 J0
+rightstring M8 = "Crossbow"
+goto M8 H0
