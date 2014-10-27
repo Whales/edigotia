@@ -183,14 +183,14 @@ void init_building_data()
     _upkeep(15);
     _military(50);
 
-  _build(BUILD_MASON);
+  _build(BUILD_MASONRY);
     _category(BUILDCAT_MANUFACTURING);
-    _name("mason");
+    _name("masonry");
     _cost(RES_GOLD, 150);
     _cost(RES_WOOD, 25);
     _build_time(5);
     _upkeep(8);
-    _jobs(CIT_MERCHANT, 3);
+    _jobs(CIT_PEASANT, 3);
     _wages(5);
     _recipe(RES_STONE, 1);
       _units_per_day(3);
