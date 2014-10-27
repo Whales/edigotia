@@ -15,6 +15,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _adjective(s) \
   Race_data[cur_id]->adjective = (s)
 
+#define _color(c) \
+  Race_data[cur_id]->color = (c)
+
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
@@ -52,6 +55,7 @@ void init_races()
     _name("human");
     _plural_name("humans");
     _adjective("human");
+    _color(c_white);
 
     _food_consumption(100);
 
@@ -78,6 +82,7 @@ void init_races()
     _name("elf");
     _plural_name("elves");
     _adjective("elvish");
+    _color(c_ltgreen);
 
     _food_consumption(95);
 
@@ -104,6 +109,7 @@ void init_races()
     _name("dwarf");
     _plural_name("dwarves");
     _adjective("dwarvish");
+    _color(c_brown);
 
     _food_consumption(105);
 
@@ -131,6 +137,7 @@ void init_races()
     _name("orc");
     _plural_name("orcs");
     _adjective("orcish");
+    _color(c_ltred);
 
     _food_consumption(105);
 

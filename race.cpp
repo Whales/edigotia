@@ -4,7 +4,11 @@
 Race_datum::Race_datum()
 {
   uid = -1;
-  name = "Uninitialized Race";
+  name        = "Uninitialized Race";
+  plural_name = "Uninitialized Race";
+  adjective   = "Uninitialized Race";
+
+  color = c_ltgray;
 
 // Some reasonable defaults.
   for (int i = 0; i < CIT_MAX; i++) {

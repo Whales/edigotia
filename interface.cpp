@@ -90,7 +90,11 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
-    i_main.set_data("text_race",capitalize(Race_data[city->race]->plural_name));
+    std::stringstream ss_race;
+    Race_datum* race_dat = Race_data[city->race];
+    ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
+               capitalize(race_dat->plural_name) << "<c=/>";
+    i_main.set_data("text_race", ss_race.str());
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
                    show_terrain);
     i_main.set_data("num_population",   city->get_total_population());

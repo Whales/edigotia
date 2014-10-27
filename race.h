@@ -2,6 +2,7 @@
 #define _RACE_H_
 
 #include "citizen.h"  // Some race values are Citizen_type-dependent.
+#include "color.h"
 #include <string>
 
 enum Race
@@ -69,6 +70,8 @@ struct Race_datum
   std::string name;
   std::string plural_name;
   std::string adjective;  // "Buying ____ weapons.", e.g. "orcish"
+
+  nc_color color;
 
 
 // GENERAL RACE STATS
