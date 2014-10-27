@@ -31,7 +31,7 @@ enum Building_type
   BUILD_BARRACKS,
 
 // Manufacturing
-  BUILD_MASON,
+  BUILD_MASONRY,
   BUILD_MINT,
 
   BUILD_MAX

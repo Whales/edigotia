@@ -797,6 +797,7 @@ void Interface::minister_food()
 // These values and fields are static during the life of this interface.
   int num_farms     = city->get_number_of_buildings(BUILD_FARM);
   int food_stored   = city->get_resource_amount(RES_FOOD);
+  int food_cap      = city->get_food_cap();
   int food_imported = city->get_import(RES_FOOD);
   int food_consumed = city->get_food_consumption();
   int food_exported = city->get_export(RES_FOOD);
@@ -807,8 +808,14 @@ void Interface::minister_food()
   }
 
   i_food.set_data("num_food_stored",   food_stored);
+  i_food.set_data("num_food_cap",      food_cap);
   if (food_stored == 0) {
     i_food.set_data("num_food_stored", c_red);
+  } else if (food_stored >= food_cap) {
+    i_food.set_data("num_food_stored", c_blue);
+    i_food.set_data("num_food_cap",    c_blue);
+  } else if (food_stored >= food_cap * 0.9) {
+    i_food.set_data("num_food_stored", c_ltblue);
   } else {
     i_food.set_data("num_food_stored", c_ltcyan);
   }
