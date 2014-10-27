@@ -130,7 +130,7 @@ void init_building_data()
     _destroy_cost(50);
     _upkeep(1);
     _jobs(CIT_PEASANT, 5);
-    _wages(1);
+    _wages(5);
     _produces(RES_FARMING, 10);
 
   _build(BUILD_QUARRY);
@@ -140,7 +140,7 @@ void init_building_data()
     _destroy_cost(800);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
-    _wages(1);
+    _wages(3);
     _produces(RES_STONE, 5);
 
   _build(BUILD_MINE);
@@ -151,7 +151,7 @@ void init_building_data()
     _destroy_cost(1500);
     _upkeep(8);
     _jobs(CIT_PEASANT, 6);
-    _wages(4);
+    _wages(8);
     _produces(RES_MINING, 5);
 
   _build(BUILD_CAMP);
@@ -160,7 +160,7 @@ void init_building_data()
     _build_time(1);
     _destroy_cost(100);
     _jobs(CIT_PEASANT, 10);
-    _wages(2);
+    _wages(6);
     _produces(RES_HUNTING, 5);
 
   _build(BUILD_SAWMILL);
@@ -170,7 +170,7 @@ void init_building_data()
     _destroy_cost(200);
     _upkeep(3);
     _jobs(CIT_PEASANT, 5);
-    _wages(2);
+    _wages(5);
     _produces(RES_LOGGING, 5);
 
   _build(BUILD_BARRACKS);
