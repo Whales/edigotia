@@ -147,7 +147,10 @@ void Interface::handle_key(long ch)
     }
 
   } else {  // Not a menu; thus, the action taken depends on our mode.
-//debugmsg("mode %d", cur_mode);
+
+    if (ch == '*') {
+      debugmsg("mode %d", cur_mode);
+    }
 
     switch (cur_mode) {
       case IMODE_VIEW_MAP: {
@@ -234,6 +237,9 @@ void Interface::handle_key(long ch)
         }
 
       } break;
+
+      default:
+        break;
           
 // TODO: Fill this in with all keybindings for all modes.
     }
@@ -287,13 +293,14 @@ void Interface::set_menu(Menu_id item)
 // If we're setting the currently-open menu, instead just close it.
   if (item == cur_menu) {
     item = MENU_NULL;
+  } else if (item != MENU_NULL) {
+    set_mode(IMODE_MENU);
   }
 // Remove any currently-open menu.
   if (cur_menu != MENU_NULL) {
-    set_mode(IMODE_MENU);
     get_menu_info(cur_menu, menu_name, posx);
-    i_main.erase_element(menu_name);
-    i_main.erase_element("menu_border");
+    i_main.erase_element(menu_name);  // Delete the element created for old menu
+    i_main.erase_element("menu_border");  // Delete the border created for "
   }
 // Add in the new menu.
   cur_menu = item;
