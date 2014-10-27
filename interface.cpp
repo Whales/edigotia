@@ -476,7 +476,7 @@ void Interface::display_area_stats(Area_type type)
         stats << "<c=dkgray>" << ter_dat->name << " does not contain any " <<
                  "minerals." << "<c=/>";
       } else {
-        stats << ter_dat->name << " may contain: " << std::endl;
+        stats << ter_dat->name << " <c=white>may<c=/> contain: " << std::endl;
         for (int i = 0; i < ter_dat->minerals.size(); i++) {
           Mineral_amount min_amt = ter_dat->minerals[i];
           Mineral_datum* min_dat = Mineral_data[min_amt.type];
