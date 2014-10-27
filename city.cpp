@@ -89,6 +89,8 @@ void Citizens::remove_citizens(int amount)
 
 City::City()
 {
+  race = RACE_HUMAN;
+
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
     tax_rate[i] = 0;
@@ -409,10 +411,12 @@ void City::do_turn()
       Map_tile* tile = map.get_tile(mine_pos);
       int wood_produced = (sawmill_bldg->workers *
                            sawmill_bldg->amount_produced(RES_LOGGING));
+// Alter logging based on racial ability.
+// Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
+      wood_produced = (wood_produced *
+                       Race_data[race]->skill_level[SKILL_FORESTRY]) / 5;
 
-// TODO: Infinite wood??
-
-      if (tile->wood < wood_produced) {
+      if (tile->wood != INFINITE_RESOURCE && tile->wood < wood_produced) {
 // TODO: Add a message alerting the player that the wood is exhausted.
         resources[RES_WOOD] += tile->wood;
         tile->wood = 0;
@@ -421,7 +425,9 @@ void City::do_turn()
 
       } else { // We have not run out of wood.
         resources[RES_WOOD] += wood_produced;
-        tile->wood -= wood_produced;
+        if (tile->wood != INFINITE_RESOURCE) {
+          tile->wood -= wood_produced;
+        }
       }
 
     } // if (areas[i].produces_resource(RES_LOGGING))
@@ -588,14 +594,16 @@ void City::add_open_area(Area area)
   int farming = 0;
   for (int i = 0; farming == 0 && i < build_dat->production.size(); i++) {
     if (build_dat->production[i].type == RES_FARMING) {
-      farming = build_dat->production[i].amount;
+      farming = build_dat->production[i].amount; // The amount of RES_FARMING
     }
   }
   if (farming > 0) {
     Map_tile* tile_here = map.get_tile(area.pos);
     Building* farm_bld = &(area.building);
     farming = (farming * tile_here->get_farmability()) / 100;
-// TODO: Further modify farming based on racial ability.
+// Alter farming based on racial ability.
+// Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
+    farming = (farming * Race_data[race]->skill_level[SKILL_FARMING]) / 5;
     farm_bld->field_output = farming;
 // Set up area.building's list of crops based on what's available here.
     farm_bld->crops_grown.clear();
@@ -614,6 +622,9 @@ void City::add_open_area(Area area)
     }
   }
   if (mining > 0) {
+// Alter mining based on racial ability.
+// Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
+    mining = (mining * Race_data[race]->skill_level[SKILL_MINING]) / 5;
 // Set up area.building's list of minerals based on what's available here.
     area.building.shaft_output = mining;
     area.building.minerals_mined.clear();
@@ -1112,10 +1123,9 @@ int City::get_daily_birth_points()
   }
 
 // Specific rates for each type.  Lower values mean a faster rate.
-// TODO: Base these values on on our race.
-  rate[CIT_PEASANT]  = 100;
-  rate[CIT_MERCHANT] = 90;
-  rate[CIT_BURGHER]  = 80;
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    rate[i] = Race_data[race]->birth_rate[i];
+  }
   
   for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
     if (pop[i] > 0) {
@@ -1133,12 +1143,7 @@ int City::get_daily_birth_points()
 
 int City::get_required_ratio(Citizen_type cit_type)
 {
-// TODO: Modify/base this from our race.
-  switch (cit_type) {
-    case CIT_MERCHANT:  return 10;
-    case CIT_BURGHER:   return 10;
-  }
-  return 0; // None required.
+  return Race_data[race]->citizen_ratio[cit_type];
 }
 
 int City::get_chance_to_birth(Citizen_type cit_type)
@@ -1384,38 +1389,12 @@ void City::set_tax_rate(Citizen_type type, int rate)
 
 int City::get_low_tax_rate(Citizen_type type)
 {
-  switch (type) {
-    case CIT_PEASANT:
-      return 20;
-      break;
-    case CIT_MERCHANT:
-      return 15;
-      break;
-    case CIT_BURGHER:
-      return 10;
-      break;
-    default:
-      return  0;
-  }
-  return 0;
+  return Race_data[race]->low_tax_rate[type];
 }
 
 int City::get_high_tax_rate(Citizen_type type)
 {
-  switch (type) {
-    case CIT_PEASANT:
-      return 80;
-      break;
-    case CIT_MERCHANT:
-      return 65;
-      break;
-    case CIT_BURGHER:
-      return 50;
-      break;
-    default:
-      return 100;
-  }
-  return 100;
+  return Race_data[race]->high_tax_rate[type];
 }
 
 int City::get_taxes(Citizen_type type)
@@ -1455,12 +1434,16 @@ int City::get_food_consumption(Citizen_type type)
   if (type == CIT_NULL) {
     int ret = 0;
     for (int i = 0; i < CIT_MAX; i++) {
-      int a = population[i].count * citizen_food_consumption( Citizen_type(i) );
+      int a = get_food_consumption( Citizen_type(i) );
       ret += a;
     }
     return ret;
   }
-  return (population[type].count * citizen_food_consumption( type ));
+// citizen_food_consumption() is defined in citizen.cpp.
+  int ret = (population[type].count * citizen_food_consumption( type ));
+// Modify based on race - its food_consumption is a percentage.
+  ret = (ret * Race_data[race]->food_consumption) / 100;
+  return ret;
 }
 
 int City::get_food_production()
