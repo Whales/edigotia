@@ -97,7 +97,10 @@ City::City()
   }
 
   birth_points = 0;
-  population[CIT_PEASANT].add_citizens(100);
+
+  for (int i = CIT_PEASANT; i < CIT_BURGHER; i++) {
+    population[i].add_citizens( Race_data[race]->starting_population[i] );
+  }
   set_tax_rate(CIT_PEASANT, 50);
 
   for (int i = 0; i < RES_MAX; i++) {
@@ -1433,7 +1436,7 @@ int City::get_food_consumption(Citizen_type type)
 // TODO: Modify this based on our race.
   if (type == CIT_NULL) {
     int ret = 0;
-    for (int i = 0; i < CIT_MAX; i++) {
+    for (int i = 1; i < CIT_MAX; i++) {
       int a = get_food_consumption( Citizen_type(i) );
       ret += a;
     }
