@@ -207,6 +207,23 @@ void Interface::handle_key(long ch)
             area_selected->close(city);
           }
 
+// Destroy an area
+        } else if (ch == 'd' || ch == 'D') {
+          Area* area_selected = city->area_at(sel);
+          if (area_selected) {
+            int cost = area_selected->get_building_datum()->destroy_cost;
+            int gold = city->get_resource_amount(RES_GOLD);
+
+            if (gold < cost) {
+              popup("Destroying that %s costs <c=ltred>%d<c=/> gold.  You have \
+<c=ltred>%d<c=/> gold.", area_selected->get_name().c_str(), cost, gold);
+
+            } else if (query_yn("Destroy the %s?\nCost: %d gold\nYou:  %d gold",
+                               area_selected->get_name().c_str(), cost, gold)) {
+              city->destroy_area_at(sel);
+            }
+          }
+
 // Move time forward by 1 day
         } else if (ch == '.') {
           game->advance_time(1, city);
