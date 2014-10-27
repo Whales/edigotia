@@ -90,6 +90,7 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
+    i_main.set_data("text_race",capitalize(Race_data[city->race]->plural_name));
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
                    show_terrain);
     i_main.set_data("num_population",   city->get_total_population());

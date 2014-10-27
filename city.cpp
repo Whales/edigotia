@@ -150,6 +150,17 @@ bool City::place_keep()
   return false;
 }
 
+void City::pick_race()
+{
+// A list of options.
+  std::vector<std::string> options;
+  for (int i = 1; i < RACE_MAX; i++) {
+    options.push_back( Race_data[i]->plural_name );
+  }
+  int race_index = 1 + menu_vec("Pick race:", options);
+  race = Race(race_index);
+}
+
 // radius_limited and only_terrain default to false.
 void City::draw_map(cuss::element* e_draw, Point sel, bool radius_limited,
                     bool only_terrain)

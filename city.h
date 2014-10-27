@@ -60,6 +60,7 @@ public:
 
 // Starting functions
   bool place_keep();
+  void pick_race();
 
 // Display output
   void draw_map(cuss::element* e_draw, Point sel = Point(-1, -1),

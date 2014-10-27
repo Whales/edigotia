@@ -56,6 +56,9 @@ int main()
     }
   }
 
+// Crude race picker; TODO: replace this.
+  city.pick_race();
+
 // Set up a game.
   Game game;
   game.init();
