@@ -1451,6 +1451,7 @@ int City::get_corruption_amount()
 // type defaults to CIT_NULL
 int City::get_food_consumption(Citizen_type type)
 {
+// TODO: Modify this based on our race.
   if (type == CIT_NULL) {
     int ret = 0;
     for (int i = 0; i < CIT_MAX; i++) {
