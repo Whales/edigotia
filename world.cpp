@@ -4,6 +4,8 @@
 #include "window.h"
 #include "cuss.h"
 #include "keys.h" // for input_direction()
+#include "kingdom.h"  // To color map based on Kingdom.
+#include "stringfunc.h" // For capitalize()
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow(), used in reading/writing crops and minerals
@@ -669,8 +671,13 @@ Point World_map::draw(Window* w_map)
       for (int y = pos.y; y < pos.y + ydim; y++) {
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
+          int kingdom_id = get_kingdom_id(x, y);
           Map_type_datum* data = Map_type_data[type];
           glyph gl = data->symbol;
+          if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
+            Kingdom* kingdom = Kingdoms[kingdom_id];
+            gl = gl.hilite(kingdom->color);
+          }
           bool do_crop_hilite = (hilite_crops && has_crop(crop_hilited, x, y));
           bool do_mineral_hilite = (hilite_minerals &&
                                     has_mineral(mineral_hilited, x, y));
@@ -733,6 +740,19 @@ Point World_map::draw(Window* w_map)
       i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
       i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
       i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
+
+      int kingdom_id = get_kingdom_id(center);
+      i_legend.set_data("num_kingdom_id", kingdom_id);
+      if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
+        Kingdom* kingdom = Kingdoms[kingdom_id];
+        Race_datum* race_dat = Race_data[ kingdom->race ];
+        std::stringstream ss_race;
+        ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
+                   capitalize(race_dat->plural_name) << "<c=/>";
+        i_legend.set_data("text_kingdom_race", ss_race.str());
+      } else {
+        i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
+      }
       i_legend.draw(w_legend);
       w_legend->refresh();
     }
