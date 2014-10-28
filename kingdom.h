@@ -7,7 +7,7 @@
 #include "world.h"
 #include <vector>
 
-#define STANDARD_KINGDOM_SIZE 50
+#define STANDARD_KINGDOM_SIZE 80
 
 class Kingdom
 {
