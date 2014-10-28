@@ -19,11 +19,11 @@ void init_kingdoms(World_map* world)
 // One kingdom for each race.  Start at 1 to skip RACE_NULL.
   for (int i = 1; i < RACE_MAX; i++) {
     Kingdom* kingdom = new Kingdom;
-    kingdom->uid = i;
+    kingdom->uid = i - 1;
     kingdom->race = Race(i);
     Race_datum* race_dat = Race_data[i];
 // Pick a color - try the official race color first
-    if (color_free[ race_dat->color ]) {
+    if (race_dat->color < c_dkgray && color_free[ race_dat->color ]) {
       kingdom->color = race_dat->color;
       color_free[ race_dat->color ] = false;
 
@@ -98,10 +98,11 @@ bool Kingdom::place_in_world(World_map* world, int size)
   for (int i = 0; i < 20; i++) {
     int value = 0;
     Point p = locations_to_try[i];
-    for (int x = p.x - size; value != -999999 && x <= p.x + size; x++) {
-      for (int y = p.y - size; value != -999999 && y <= p.y + size; y++) {
-        if (world->get_kingdom_id(x, y) != -1) {
-          value = -999999; // There's already a kingdom here, it's no good.
+    for (int x = p.x - size; x <= p.x + size; x++) {
+      for (int y = p.y - size; y <= p.y + size; y++) {
+        if (world->get_map_type(x, y) != MAP_OCEAN && 
+            world->get_kingdom_id(x, y) != -1) {
+          value -= 500;
         } else {
           Map_type type = world->get_map_type(x, y);
 // Multiply the value based on distance (closer = more important)
@@ -114,8 +115,8 @@ bool Kingdom::place_in_world(World_map* world, int size)
 // 4/3 times the distance (which ranges from 0%-75%) times 100, divided by size.
             multiplier -= (400 * dist) / (size * 3);
           }
-          if (race_dat->map_type_values.count(type)) {
-            value += multiplier * race_dat->map_type_values[type];
+          if (race_dat->map_type_value.count(type)) {
+            value += multiplier * race_dat->map_type_value[type];
           }
         }
       } // for (all y in range)
@@ -133,9 +134,19 @@ bool Kingdom::place_in_world(World_map* world, int size)
 
 // Mark the world map as claimed!
   Point loc = locations_to_try[best_index];
+  int average_value = best_value / (100 * size * size);
   for (int x = loc.x - size; x <= loc.x + size; x++) {
     for (int y = loc.y - size; y <= loc.y + size; y++) {
-      world->set_kingdom_id(x, y, uid);
+      Map_type type = world->get_map_type(x, y);
+      int value = 60 - trig_dist( loc, Point(x, y) );
+      if (race_dat->map_type_value.count(type) &&
+          race_dat->map_type_value[type] > 0) {
+        value += race_dat->map_type_value[type];
+      }
+      if (world->get_map_type(x, y) != MAP_OCEAN && value >= average_value) {
+// Only claim non-ocean points with a decent value.
+        world->set_kingdom_id(x, y, uid);
+      }
     }
   }
 
