@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-#define WORLD_MAP_SIZE 500
+#define WORLD_MAP_SIZE 400
 
 class World_map
 {
