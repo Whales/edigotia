@@ -1453,8 +1453,9 @@ int City::get_food_consumption(Citizen_type type)
     }
     return ret;
   }
-// citizen_food_consumption() is defined in citizen.cpp.
-  int ret = (population[type].count * citizen_food_consumption( type ));
+// citizen_food_consumption() is defined in citizen.cpp.  It returns the amount
+// per 100 citizens, so naturally we need to divide by 100.
+  int ret = (population[type].count * citizen_food_consumption( type )) / 100;
 // Modify based on race - its food_consumption is a percentage.
   ret = (ret * Race_data[race]->food_consumption) / 100;
   return ret;
@@ -1468,6 +1469,9 @@ int City::get_food_production()
     Crop_amount crop = crops_grown[i];
     ret += crop.amount * Crop_data[crop.type]->food;
   }
+// Crop_data[]->food is per 100 units of the crop, so naturally we must divide
+// by 100.
+  ret /= 100;
   return ret;
 }
 

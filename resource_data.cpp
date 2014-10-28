@@ -39,6 +39,8 @@ void init_crop_and_mineral_data()
     Mineral_data[i] = new Mineral_datum();
   }
 
+// _food() is per 100 units of the crop!
+
   int cur_id = 0;
 
   _crop(CROP_NULL);
@@ -48,43 +50,43 @@ void init_crop_and_mineral_data()
     _cname("wheat");
     _cpercent(90);
     _type(CROPTYPE_FOOD);
-    _food(10);
+    _food(100);
 
   _crop(CROP_CABBAGE);
     _cname("cabbage");
     _cpercent(70);
     _type(CROPTYPE_FOOD);
-    _food(12);
+    _food(120);
 
   _crop(CROP_GRAPES);
     _cname("grapes");
     _cpercent(30);
     _type(CROPTYPE_FOOD);
-    _food(5);
+    _food(50);
 
   _crop(CROP_MELON);
     _cname("melon");
     _cpercent(40);
     _type(CROPTYPE_FOOD);
-    _food(8);
+    _food(80);
 
   _crop(CROP_RICE);
     _cname("rice");
     _cpercent(90);
     _type(CROPTYPE_FOOD);
-    _food(10);
+    _food(110);
 
   _crop(CROP_CACTUS);
     _cname("cactus");
     _cpercent(90);
     _type(CROPTYPE_FOOD);
-    _food(6);
+    _food(60);
 
   _crop(CROP_PEPPER);
     _cname("pepper");
     _cpercent(60);
     _type(CROPTYPE_SPICE);
-    _food(2);
+    _food(20);
 
   _crop(CROP_CINNAMON);
     _cname("cinnamon");
