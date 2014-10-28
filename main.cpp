@@ -6,6 +6,7 @@
 #include "game.h"
 #include "init.h"
 #include "files.h"  // For file_exists()
+#include "kingdom.h"  // For init_kingdoms()
 
 void check_world_resources(World_map* world);
 
@@ -31,6 +32,10 @@ int main()
   } else {
     world.load_from_file("world.sav");
   }
+
+// Set up our kingdoms
+  init_kingdoms(&world);
+
 // Tool for debugging / testing the amount of resources in the world.
   //check_world_resources(&world);
 // ... for now, we always start by picking a location for a new city.
