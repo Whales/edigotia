@@ -32,7 +32,6 @@ Race_datum::Race_datum()
 
 // Non-array-based variables
 
-  preferred_map_type = MAP_PLAINS;
   food_consumption = 100;
 
 }
