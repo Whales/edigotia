@@ -6,6 +6,20 @@
 
 #define SGN(a) (((a)<0) ? -1 : 1)
 
+std::string Point::str()
+{
+  std::stringstream ret;
+  ret << "[" << x << ":" << y << "]";
+  return ret.str();
+}
+
+std::string Tripoint::str()
+{
+  std::stringstream ret;
+  ret << "[" << x << ":" << y << ":" << z << "]";
+  return ret.str();
+}
+
 std::vector <Point> line_to(int x0, int y0, int x1, int y1)
 {
   int t = 0;
@@ -189,23 +203,19 @@ int rl_dist(int x0, int y0, int z0, int x1, int y1, int z1)
   return dz;
 }
 
-std::string Point::str()
-{
-  std::stringstream ret;
-  ret << "[" << x << ":" << y << "]";
-  return ret.str();
-}
-
-std::string Tripoint::str()
-{
-  std::stringstream ret;
-  ret << "[" << x << ":" << y << ":" << z << "]";
-  return ret.str();
-}
-
 int rl_dist(Tripoint origin, Tripoint target)
 {
   return rl_dist(origin.x, origin.y, origin.z, target.x, target.y, target.z);
+}
+
+int trig_dist(int x0, int y0, int x1, int y1)
+{
+  return int( sqrt( double( pow(x1 - x0, 2.0) + pow(y1 - y0, 2.0) ) ) );
+}
+
+int trig_dist(Point origin, Point target)
+{
+  return trig_dist(origin.x, origin.y, target.x, target.y);
 }
 
 int manhattan_dist(int x0, int y0, int x1, int y1)
