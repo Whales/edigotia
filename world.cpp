@@ -42,6 +42,7 @@ void World_map::generate()
       //temperature[x][y] += rng(-1, 1);
       //temperature[x][y] += rng(-3, 3);
       continent_id[x][y] = -1;
+      kingdom_id  [x][y] = -1;
       river[x][y] = false;
     }
   }
@@ -899,6 +900,32 @@ Map_type World_map::get_map_type(int x, int y)
     return MAP_NULL;
   }
   return tiles[x][y];
+}
+
+void World_map::set_kingdom_id(Point p, int id)
+{
+  set_kingdom_id(p.x, p.y, id);
+}
+
+void World_map::set_kingdom_id(int x, int y, int id)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+    return;
+  }
+  kingdom_id[x][y] = id;
+}
+
+int World_map::get_kingdom_id(Point p)
+{
+  return get_kingdom_id(p.x, p.y);
+}
+
+int World_map::get_kingdom_id(int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+    return -1;
+  }
+  return kingdom_id[x][y];
 }
 
 bool World_map::is_river(Point p)

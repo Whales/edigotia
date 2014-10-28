@@ -34,6 +34,11 @@ public:
   Map_type get_map_type(Point p);
   Map_type get_map_type(int x, int y);
 
+  void set_kingdom_id(Point p, int id);
+  void set_kingdom_id(int x, int y, int id);
+  int  get_kingdom_id(Point p);
+  int  get_kingdom_id(int x, int y);
+
 // true if the Map_datum has is_river == true
   bool is_river(Point p);
   bool is_river(int x, int y);
@@ -88,7 +93,9 @@ private:
   int rainfall                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int temperature               [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int continent_id              [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int kingdom_id                [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   bool river                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+// crops and minerals are bitmaps that indicate what's here
   int crops                     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int minerals                  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 
