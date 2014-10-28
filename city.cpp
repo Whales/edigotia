@@ -111,7 +111,7 @@ City::City()
   }
 
   resources[RES_GOLD]  = 5000;
-  resources[RES_FOOD]  = 5000;
+  resources[RES_FOOD]  = get_food_cap();
   resources[RES_WOOD]  =  100;
   resources[RES_STONE] =  100;
 
