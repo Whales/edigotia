@@ -21,8 +21,8 @@ Race_datum* Race_data[RACE_MAX];
 #define _kingdom_color(c) \
   Race_data[cur_id]->kingdom_colors.push_back( (c) )
 
-#define _map_type(m) \
-  Race_data[cur_id]->preferred_map_type = (m)
+#define _map_type(m, i) \
+  Race_data[cur_id]->map_type_value[(m)] = (i)
 
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
@@ -70,7 +70,16 @@ void init_races()
     _kingdom_color(c_ltcyan);
     _kingdom_color(c_yellow);
 
-    _map_type(MAP_PLAINS);
+    _map_type(MAP_PLAINS,      100);
+    _map_type(MAP_BASIN,        80);
+    _map_type(MAP_CANYON,       50);
+    _map_type(MAP_FOREST,       40);
+    _map_type(MAP_FOOTHILLS,    10);
+
+    _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_SWAMP,       -20);
+    _map_type(MAP_MOUNTAINOUS,  -5);
+
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -104,7 +113,14 @@ void init_races()
     _kingdom_color(c_ltgreen);
     _kingdom_color(c_ltcyan);
 
-    _map_type(MAP_FOREST);
+    _map_type(MAP_FOREST,      100);
+    _map_type(MAP_BASIN,        30);
+    _map_type(MAP_SWAMP,        15);
+    _map_type(MAP_PLAINS,       10);
+
+    _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_MOUNTAINOUS, -30);
+
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
@@ -138,7 +154,14 @@ void init_races()
     _kingdom_color(c_ltred);
     _kingdom_color(c_yellow);
 
-    _map_type(MAP_MOUNTAINOUS);
+    _map_type(MAP_CANYON,      100);
+    _map_type(MAP_MOUNTAINOUS,  90);
+    _map_type(MAP_FOOTHILLS,    70);
+    _map_type(MAP_WASTELAND,    10);
+
+    _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_PLAINS,      -20);
+
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
@@ -173,7 +196,15 @@ void init_races()
     _kingdom_color(c_ltred);
     _kingdom_color(c_yellow);
 
-    _map_type(MAP_WASTELAND);
+    _map_type(MAP_WASTELAND,  100);
+    _map_type(MAP_FOOTHILLS,   80);
+    _map_type(MAP_BASIN,       50);
+    _map_type(MAP_CANYON,      45);
+    _map_type(MAP_PLAINS,      40);
+    _map_type(MAP_MOUNTAINOUS, 10);
+
+    _map_type(MAP_DESERT,     -10);
+
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);

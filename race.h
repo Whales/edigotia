@@ -5,6 +5,7 @@
 #include "color.h"
 #include "map.h"      // For Map_type
 #include <string>
+#include <map>
 
 enum Race
 {
@@ -77,7 +78,8 @@ struct Race_datum
 
 // PLACEMENT & CIVILIZATION
 
-  Map_type preferred_map_type;
+// Used for placement; how much we want to live near various map types.
+  std::map<Map_type,int> map_type_value;
 
 
 // GENERAL RACE STATS
