@@ -64,11 +64,14 @@ void init_races()
 
     _color(c_white);
     _kingdom_color(c_ltgray);
+    _kingdom_color(c_blue);
     _kingdom_color(c_cyan);
+/*
     _kingdom_color(c_white);
     _kingdom_color(c_ltblue);
     _kingdom_color(c_ltcyan);
     _kingdom_color(c_yellow);
+*/
 
     _map_type(MAP_PLAINS,      100);
     _map_type(MAP_BASIN,        80);
@@ -110,8 +113,10 @@ void init_races()
     _kingdom_color(c_green);
     _kingdom_color(c_cyan);
     _kingdom_color(c_brown);
+/*
     _kingdom_color(c_ltgreen);
     _kingdom_color(c_ltcyan);
+*/
 
     _map_type(MAP_FOREST,      100);
     _map_type(MAP_BASIN,        30);
@@ -151,8 +156,10 @@ void init_races()
     _kingdom_color(c_ltgray);
     _kingdom_color(c_red);
     _kingdom_color(c_brown);
+/*
     _kingdom_color(c_ltred);
     _kingdom_color(c_yellow);
+*/
 
     _map_type(MAP_CANYON,      100);
     _map_type(MAP_MOUNTAINOUS,  90);
@@ -193,8 +200,10 @@ void init_races()
     _kingdom_color(c_red);
     _kingdom_color(c_magenta);
     _kingdom_color(c_brown);
+/*
     _kingdom_color(c_ltred);
     _kingdom_color(c_yellow);
+*/
 
     _map_type(MAP_WASTELAND,  100);
     _map_type(MAP_FOOTHILLS,   80);
