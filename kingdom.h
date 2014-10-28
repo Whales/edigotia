@@ -28,6 +28,6 @@ public:
 
 // See kingdom.cpp
 extern std::vector<Kingdom*> Kingdoms;
-void init_kingdoms();
+void init_kingdoms(World_map* world);
 
 #endif
