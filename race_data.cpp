@@ -18,6 +18,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _color(c) \
   Race_data[cur_id]->color = (c)
 
+#define _kingdom_color(c) \
+  Race_data[cur_id]->kingdom_colors.push_back( (c) )
+
 #define _map_type(m) \
   Race_data[cur_id]->preferred_map_type = (m)
 
@@ -58,7 +61,14 @@ void init_races()
     _name("human");
     _plural_name("humans");
     _adjective("human");
+
     _color(c_white);
+    _kingdom_color(c_ltgray);
+    _kingdom_color(c_cyan);
+    _kingdom_color(c_white);
+    _kingdom_color(c_ltblue);
+    _kingdom_color(c_ltcyan);
+    _kingdom_color(c_yellow);
 
     _map_type(MAP_PLAINS);
     _food_consumption(100);
@@ -86,7 +96,13 @@ void init_races()
     _name("elf");
     _plural_name("elves");
     _adjective("elvish");
+
     _color(c_ltgreen);
+    _kingdom_color(c_green);
+    _kingdom_color(c_cyan);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_ltgreen);
+    _kingdom_color(c_ltcyan);
 
     _map_type(MAP_FOREST);
     _food_consumption(95);
@@ -114,7 +130,13 @@ void init_races()
     _name("dwarf");
     _plural_name("dwarves");
     _adjective("dwarvish");
+
     _color(c_brown);
+    _kingdom_color(c_ltgray);
+    _kingdom_color(c_red);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_ltred);
+    _kingdom_color(c_yellow);
 
     _map_type(MAP_MOUNTAINOUS);
     _food_consumption(105);
@@ -143,7 +165,13 @@ void init_races()
     _name("orc");
     _plural_name("orcs");
     _adjective("orcish");
+
     _color(c_ltred);
+    _kingdom_color(c_red);
+    _kingdom_color(c_magenta);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_ltred);
+    _kingdom_color(c_yellow);
 
     _map_type(MAP_WASTELAND);
     _food_consumption(105);

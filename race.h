@@ -73,7 +73,7 @@ struct Race_datum
   std::string adjective;  // "Buying ____ weapons.", e.g. "orcish"
 
   nc_color color;
-
+  std::vector<nc_color> kingdom_colors; // Acceptable colors for kingdoms
 
 // PLACEMENT & CIVILIZATION
 
