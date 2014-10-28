@@ -3,6 +3,7 @@
 
 #include "citizen.h"  // Some race values are Citizen_type-dependent.
 #include "color.h"
+#include "map.h"      // For Map_type
 #include <string>
 
 enum Race
@@ -72,6 +73,11 @@ struct Race_datum
   std::string adjective;  // "Buying ____ weapons.", e.g. "orcish"
 
   nc_color color;
+
+
+// PLACEMENT & CIVILIZATION
+
+  Map_type preferred_map_type;
 
 
 // GENERAL RACE STATS

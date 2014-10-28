@@ -26,11 +26,15 @@ Race_datum::Race_datum()
   morale_requirement[CIT_MERCHANT] = 50;
   morale_requirement[CIT_BURGHER]  = 50;
 
-  food_consumption = 100;
-
   for (int i = 0; i < SKILL_MAX; i++) {
     skill_level[i] = 3;
   }
+
+// Non-array-based variables
+
+  preferred_map_type = MAP_PLAINS;
+  food_consumption = 100;
+
 }
 
 Race_datum::~Race_datum()

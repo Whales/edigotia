@@ -18,6 +18,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _color(c) \
   Race_data[cur_id]->color = (c)
 
+#define _map_type(m) \
+  Race_data[cur_id]->preferred_map_type = (m)
+
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
@@ -57,6 +60,7 @@ void init_races()
     _adjective("human");
     _color(c_white);
 
+    _map_type(MAP_PLAINS);
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -84,6 +88,7 @@ void init_races()
     _adjective("elvish");
     _color(c_ltgreen);
 
+    _map_type(MAP_FOREST);
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
@@ -111,6 +116,7 @@ void init_races()
     _adjective("dwarvish");
     _color(c_brown);
 
+    _map_type(MAP_MOUNTAINOUS);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
@@ -139,6 +145,7 @@ void init_races()
     _adjective("orcish");
     _color(c_ltred);
 
+    _map_type(MAP_WASTELAND);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
