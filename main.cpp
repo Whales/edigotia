@@ -1,4 +1,4 @@
-#include "city.h"
+#include "player_city.h"
 #include "rng.h"
 #include "window.h"
 #include "world.h"
@@ -47,7 +47,7 @@ int main()
   }
 
 // Put our city there.
-  City city;
+  Player_city city;
   bool placed = false;
   while (!placed) {
     std::vector<Crop>    crops    = world.crops_at   (p);
@@ -63,6 +63,7 @@ int main()
 
 // Crude race picker; TODO: replace this.
   city.pick_race();
+  city.start_new_city();
 
 // Set up a game.
   Game game;
