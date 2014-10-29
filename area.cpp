@@ -1,7 +1,8 @@
-#include <map>
 #include "area.h"
 #include "window.h" // For debugmsg()
 #include "city.h"   // For Area::close()
+#include "player_city.h"   // For Area::close()
+#include <map>
 
 Building_datum* Area_datum::get_building_datum()
 {
@@ -42,7 +43,11 @@ void Area::close(City* city)
 
   open = false;
   Citizen_type cit_type = building.get_job_citizen_type();
-  city->fire_citizens(cit_type, building.workers, &building);
+
+  if (city->is_player_city()) {
+    Player_city* p_city = static_cast<Player_city*>(city);
+    p_city->fire_citizens(cit_type, building.workers, &building);
+  }
 }
 
 Area_datum* Area::get_area_datum()
