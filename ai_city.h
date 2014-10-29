@@ -1,0 +1,32 @@
+#ifndef _AI_CITY_H_
+#define _AI_CITY_H_
+
+#include "citizen.h"
+#include "city.h"
+#include "glyph.h"  // For AI_City::get_glyph()
+
+class AI_City
+{
+public:
+  AI_City();
+  ~AI_City();
+
+// Mutators
+  void set_name();
+
+// Accessors
+  int get_total_population(Citizen_type type = CIT_NULL);
+  glyph get_glyph();
+
+  std::string name;
+  City_type type;
+  Race race;
+
+  Citizens population[CIT_MAX];
+
+private:
+  int resources[RES_MAX];
+  int minerals[MINERAL_MAX];
+};
+
+#endif
