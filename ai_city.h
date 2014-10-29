@@ -3,13 +3,15 @@
 
 #include "citizen.h"
 #include "city.h"
-#include "glyph.h"  // For AI_City::get_glyph()
+#include "glyph.h"  // For AI_city::get_glyph()
 
-class AI_City
+class AI_city : public City
 {
 public:
-  AI_City();
-  ~AI_City();
+  AI_city();
+  virtual ~AI_city();
+
+  virtual bool is_ai_city() { return true; }
 
 // Mutators
   void set_name();
