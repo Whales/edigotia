@@ -9,7 +9,11 @@
 #include "window.h"
 #include "cuss.h"
 #include "race.h"
+#include "glyph.h"    // For City::get_glyph()
 #include <map>
+
+// For determining City::get_glyph() - above this uses O, below uses o
+#define CITY_POPULATION_LARGE 1000
 
 struct Citizens
 {
@@ -52,6 +56,18 @@ enum Building_queue_status
   BUILDING_QUEUE_MAX
 };
 
+enum City_type
+{
+  CITY_TYPE_NULL = 0,
+  CITY_TYPE_CITY,
+  CITY_TYPE_DUCHY,    // Capital of a ducy
+  CITY_TYPE_CAPITAL,  // Capital of a kingdom
+  CITY_TYPE_MAX
+};
+
+City_type lookup_city_type(std::string name);
+std::string city_type_name(City_type type);
+
 class City
 {
 public:
@@ -63,6 +79,7 @@ public:
   void pick_race();
 
 // Display output
+  glyph get_glyph();
   void draw_map(cuss::element* e_draw, Point sel = Point(-1, -1),
                 bool radius_limited = false, bool only_terrain = false);
 
@@ -189,6 +206,9 @@ public:
   int get_export(Resource res);
 
 // Data
+  std::string name;
+  City_type type;
+
   Race race;
 
   Citizens population[CIT_MAX];
