@@ -24,6 +24,15 @@ Race_datum* Race_data[RACE_MAX];
 #define _map_type(m, i) \
   Race_data[cur_id]->map_type_value[(m)] = (i)
 
+#define _city_name_start(...) \
+  Race_data[cur_id]->add_city_names("start", __VA_ARGS__, 0)
+
+#define _city_name_middle(...) \
+  Race_data[cur_id]->add_city_names("middle", __VA_ARGS__, 0)
+
+#define _city_name_end(...) \
+  Race_data[cur_id]->add_city_names("end", __VA_ARGS__, 0)
+
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
@@ -83,6 +92,23 @@ void init_races()
     _map_type(MAP_SWAMP,       -20);
     _map_type(MAP_MOUNTAINOUS,  -5);
 
+    _city_name_start("al", "ba", "bir", "cam", "car", "chel", "co", "da", "der",
+                     "exo", "glo", "her", "lam", "le", "lim", "lo", "nor",
+                     "oxe", "peter", "pre", "sal", "sou", "sum", "tru", "wa",
+                     "wim", "wol", "yor");
+
+    _city_name_middle("", "", "can", "ces", "der", "el", "er", "fa", "ga",
+                      "ing", "ke", "ler", "man", "mer", "ming", "nor", "per",
+                      "sing", "til", "ting", "to", "ven", "ver", "ving", "wor");
+
+// Use repeats to make an ending more likely.
+    _city_name_end("borough", "borough", "burg", "burg", "burg", "bury", "bury",
+                   "bury", "by", "by", "caster", "cester", "don", "field",
+                   "field", "ford", "ford", "forth", "gale", "ham", "ham",
+                   "ham", "ia", "kirk", "mouth", "neck", "over", "pool", "pool",
+                   "sex", "st", "st", "ter", "tol", "ton", "ton", "vale",
+                   "ville");
+
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -126,6 +152,21 @@ void init_races()
     _map_type(MAP_DESERT,      -40);
     _map_type(MAP_MOUNTAINOUS, -30);
 
+    _city_name_start("alva", "alya", "ava", "bri", "elde", "egla", "for", "gon",
+                     "hel", "kor", "lyve", "mene", "narni", "rive", "ta",
+                     "vi");
+
+// Elven cities often have short names, no middle!
+    _city_name_middle("", "", "", "", "", "", "a", "allo", "gro", "he", "i",
+                      "lo", "lum", "lun", "ny", "rio", "ro", "tir", "thro",
+                      "ver");
+
+    _city_name_end("a", "bar", "bel", "dell", "dell", "dell", "dolin", "e",
+                   "haven", "le", "lin", "lin", "lo", "lon", "lond", "lond",
+                   "mar", "men", "menos", "os", "rest", "rion", "ro", "ron",
+                   "rose", "se", "th", "the", "the", "thon", "thrion",
+                   "thrond");
+
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
@@ -168,6 +209,29 @@ void init_races()
 
     _map_type(MAP_DESERT,      -40);
     _map_type(MAP_PLAINS,      -20);
+
+// Start should end with any of "lor"
+    _city_name_start("", "", "abo", "abel", "aber", "amo", "bel", "bur", "fal",
+                     "ghor", "glo", "glor", "grel", "gu", "hel", "helo", "hur",
+                     "lor", "mon", "mor", "no", "nor", "or", "su", "thor", "ul",
+                     "ul");
+
+// Middle should start with anything that follows "lor", end with a vowel or "r"
+    _city_name_middle("a", "ar", "be", "bi", "bor", "dar", "de", "dene", "der",
+                      "di", "dine", "do", "dor", "dore", "dostr", "du", "e",
+                      "fa", "far", "ga", "gar", "ge", "ger", "gerde", "gla",
+                      "glar", "gle", "gor", "gora", "gu", "gunde", "ia", "ia",
+                      "ia", "le", "lege", "na", "nar", "nda", "ndar", "nde",
+                      "nder", "ndi", "ndo", "ndor", "ne", "nere", "nesse",
+                      "nlo", "nlir", "nur", "nur", "nunde", "sar", "se", "sela",
+                      "selar", "ser", "sere", "ste", "sto", "stone", "stone",
+                      "stone", "stor", "sune", "suner", "te", "ter", "tor",
+                      "tori", "tre", "tro", "ve", "vi", "vise", "vur", "vurse");
+
+    _city_name_end("", "", "", "", "", "", "", "", "", "", "", "", "der", "dom",
+                   "don", "donar", "dum", "dun", "dun", "dun", "forge", "forge",
+                   "grad", "grod", "lan", "land", "nar", "nar", "roth", "th",
+                   "th", "thun", "thundar");
 
     _food_consumption(105);
 
@@ -213,6 +277,27 @@ void init_races()
     _map_type(MAP_MOUNTAINOUS, 10);
 
     _map_type(MAP_DESERT,     -10);
+
+    _city_name_start("arz", "bhor", "bor", "boz", "dhul", "dush", "ghal",
+                     "ghor", "ghul", "grag", "gros", "kaz", "khar", "khaz",
+                     "khor", "khul", "kuz", "larg", "mhor", "mol", "mhol",
+                     "narz", "nash", "orc", "orc", "orcr", "ork", "ork", "ork",
+                     "ork", "orkr", "ors", "ors", "orz", "rhas", "rhaz", "ror",
+                     "rhul", "rhuz", "santh", "sanz", "sarz", "sorz", "suth",
+                     "taz", "thor", "tor", "thor", "ur", "urz", "vhoz", "wur",
+                     "zath", "zho'", "zhuth");
+
+    _city_name_middle("", "", "", "", " Khal", " Khal", " Khor", "ak", "ak",
+                      "akh", "akr", "akr", "al", "anik", "ankh", "ar", "ark",
+                      "ath", "az", "ek", "ek", "ekr", "el", "en", "ent", "entr",
+                      "enz", "er", "erz", "et", "eth", "etr", "ez", "i'", "ik",
+                      "ikr", "in", "ink", "inz", "ir", "nik", "nikr", "ok",
+                      "ok", "okr", "uk", "uk", "uk", "uk", "ukr", "ukr", "ul",
+                      "ur", "urk", "urz", "uz", "zek", "zel", "zhor");
+
+    _city_name_end("", "", "", "a", "a", "a", "ak", "al", "ani", "anik",
+                   "arth", "ath", "az", "e", "el", "en", "ez", "o", "one", "or",
+                   "ork", "orz", "os", "os", "ur", "urk", "urk", "uz", "uz");
 
     _food_consumption(105);
 

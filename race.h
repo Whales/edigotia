@@ -68,6 +68,11 @@ struct Race_datum
   Race_datum();
   ~Race_datum();
 
+// pos is "start" "middle" or "end" and indicates where to put it.
+// The rest is a null-terminated list of C strings
+  void add_city_names(std::string pos, ...);
+  std::string get_city_name();
+
   int uid;  // Probably don't need it, but why not
   std::string name;
   std::string plural_name;
@@ -80,7 +85,8 @@ struct Race_datum
 
 // Used for placement; how much we want to live near various map types.
   std::map<Map_type,int> map_type_value;
-
+// To name a city of this race, we string together a start, middle, and end.
+  std::vector<std::string> city_name_start, city_name_middle, city_name_end;
 
 // GENERAL RACE STATS
 

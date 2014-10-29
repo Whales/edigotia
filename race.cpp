@@ -1,5 +1,9 @@
 #include "race.h"
 #include "stringfunc.h"
+#include "rng.h"    // For Race_datum::get_city_name()
+#include "window.h" // For debugmsg()
+#include <cstdarg>  // For variadic function Race_datum::add_city_names()
+#include <sstream>  // For Race_datum::get_city_name()
 
 Race_datum::Race_datum()
 {
@@ -38,6 +42,55 @@ Race_datum::Race_datum()
 
 Race_datum::~Race_datum()
 {
+}
+
+void Race_datum::add_city_names(std::string pos, ...)
+{
+  std::string fixed_pos = no_caps( trim( pos ) );
+  std::vector<std::string>* names;
+  if (fixed_pos == "start") {
+    names = &city_name_start;
+  } else if (fixed_pos == "middle") {
+    names = &city_name_middle;
+  } else if (fixed_pos == "end") {
+    names = &city_name_end;
+  } else {
+    debugmsg("Race_datum::add_city_names(\"%s\") called!", fixed_pos.c_str());
+    return;
+  }
+
+// Start our variadic list and all that
+  va_list ap;
+  va_start(ap, pos);
+  char* tmp;
+  bool done = false;
+  while (!done) {
+    tmp = va_arg(ap, char*);
+    if (tmp == NULL) {
+      done = true;
+    } else {
+      names->push_back( std::string(tmp) );
+    }
+  }
+}
+
+std::string Race_datum::get_city_name()
+{
+  std::stringstream ret;
+  if (!city_name_start.empty()) {
+    int i = rng(0, city_name_start.size());
+    ret << city_name_start[i];
+  }
+  if (!city_name_middle.empty()) {
+    int i = rng(0, city_name_middle.size());
+    ret << city_name_middle[i];
+  }
+  if (!city_name_end.empty()) {
+    int i = rng(0, city_name_end.size());
+    ret << city_name_end[i];
+  }
+
+  return capitalize( ret.str() );
 }
 
 Race_skill lookup_race_skill(std::string name)
