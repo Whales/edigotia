@@ -89,6 +89,7 @@ void Citizens::remove_citizens(int amount)
 
 City::City()
 {
+  type = CITY_TYPE_CITY;
   race = RACE_HUMAN;
 
   for (int i = 0; i < CIT_MAX; i++) {
@@ -159,6 +160,61 @@ void City::pick_race()
   }
   int race_index = 1 + menu_vec("Pick race:", options);
   race = Race(race_index);
+}
+
+glyph City::get_glyph()
+{
+  glyph ret;
+  ret.bg = c_black;
+  int pop = get_total_population();
+  switch (type) {
+    case CITY_TYPE_CAPITAL:
+      ret.symbol = '@';
+      break;
+    case CITY_TYPE_DUCHY:
+      ret.symbol = 'D';
+      break;
+    case CITY_TYPE_CITY:
+    default:
+      if (pop >= CITY_POPULATION_LARGE) {
+        ret.symbol = 'O';
+      } else {
+        ret.symbol = 'o';
+      }
+      break;
+  }
+
+// Now color us based on our population.
+  int pop_level = 0;
+  if (pop >= CITY_POPULATION_LARGE) {
+// 100 if we're barely large, 200 if we're double-large, etc
+    pop_level = (100 * pop) / CITY_POPULATION_LARGE;
+  } else {
+// 100 if we're half-large, 200 if we're nearly large, 0 if we're 0
+    pop_level = (200 * pop) / CITY_POPULATION_LARGE;
+  }
+
+  if (pop_level >= 200) {
+    ret.fg = c_white;
+  } else if (pop_level >= 175) {
+    ret.fg = c_ltred;
+  } else if (pop_level >= 150) {
+    ret.fg = c_yellow;
+  } else if (pop_level >= 125) {
+    ret.fg = c_ltgreen;
+  } else if (pop_level >= 100) {
+    ret.fg = c_ltblue;
+  } else if (pop_level >= 75) {
+    ret.fg = c_cyan;
+  } else if (pop_level >= 50) {
+    ret.fg = c_magenta;
+  } else if (pop_level >= 25) {
+    ret.fg = c_brown;
+  } else {
+    ret.fg = c_ltgray;
+  }
+
+  return ret;
 }
 
 // radius_limited and only_terrain default to false.
@@ -1568,4 +1624,29 @@ int City::get_import(Resource res)
 int City::get_export(Resource res)
 {
   return 0;
+}
+
+City_type lookup_city_type(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < CITY_TYPE_MAX; i++) {
+    City_type ret = City_type(i);
+    if (name == no_caps( trim( city_type_name(ret) ) ) ) {
+      return ret;
+    }
+  }
+  return CITY_TYPE_NULL;
+}
+
+std::string city_type_name(City_type type)
+{
+  switch (type) {
+    case CITY_TYPE_NULL:    return "NULL";
+    case CITY_TYPE_CITY:    return "city";
+    case CITY_TYPE_DUCHY:   return "duchy seat";
+    case CITY_TYPE_CAPITAL: return "capital";
+    case CITY_TYPE_MAX:     return "BUG - CITY_TYPE_MAX";
+    default:                return "BUG - Unnamed City_type";
+  }
+  return "BUG - Escaped city_type_name() switch!";
 }
