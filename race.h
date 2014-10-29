@@ -88,14 +88,19 @@ struct Race_datum
 // To name a city of this race, we string together a start, middle, and end.
   std::vector<std::string> city_name_start, city_name_middle, city_name_end;
 
-// GENERAL RACE STATS
+// GENERAL RACE VALUES
 
   int food_consumption; // Default is 100
 
 
-// CITIZEN-TYPE-BASED STATS
+// GAME START VALUES
 
   int starting_population[CIT_MAX];
+  int starting_resources [RES_MAX];
+
+
+// CITIZEN-TYPE-BASED VALUES
+
   int birth_rate[CIT_MAX];  // Lower is faster; this many citizens for 1 point
 /* The citizen_ratio of each Citizen_type represents the number of the type
  * below we need to support 1 of this type.  For instance, if

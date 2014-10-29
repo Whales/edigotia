@@ -39,6 +39,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _starting_population(t, n) \
   Race_data[cur_id]->starting_population[ (t) ] = (n)
 
+#define _starting_resources(t, n) \
+  Race_data[cur_id]->starting_resources[ (t) ] = (n)
+
 #define _birth_rate(t, n) \
   Race_data[cur_id]->birth_rate[ (t) ] = (n)
 
@@ -112,6 +115,10 @@ void init_races()
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,     110);
+    _starting_resources (RES_STONE,    110);
+
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  90);
     _birth_rate         (CIT_BURGHER,   80);
@@ -170,6 +177,10 @@ void init_races()
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,     120);
+    _starting_resources (RES_STONE,    100);
+
     _birth_rate         (CIT_PEASANT,  120);
     _birth_rate         (CIT_MERCHANT, 110);
     _birth_rate         (CIT_BURGHER,  100);
@@ -236,6 +247,10 @@ void init_races()
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    6000);
+    _starting_resources (RES_WOOD,     100);
+    _starting_resources (RES_STONE,    100);
+
     _birth_rate         (CIT_PEASANT,  120);
     _birth_rate         (CIT_MERCHANT, 110);
     _birth_rate         (CIT_BURGHER,  100);
@@ -301,7 +316,11 @@ void init_races()
 
     _food_consumption(105);
 
-    _starting_population(CIT_PEASANT,  100);
+    _starting_population(CIT_PEASANT,  120);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,     100);
+    _starting_resources (RES_STONE,    100);
+
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  95);
     _birth_rate         (CIT_BURGHER,   90);
