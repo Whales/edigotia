@@ -2,6 +2,7 @@
 #include "window.h"
 #include "cuss.h"
 #include "city.h"
+#include "player_city.h"
 #include "stringfunc.h"
 #include "keys.h"
 #include "building.h"
@@ -25,7 +26,7 @@ Interface::~Interface()
 {
 }
 
-bool Interface::init(Game* G, City* C)
+bool Interface::init(Game* G, Player_city* C)
 {
   if (!G) {
     if (!C) {
@@ -91,7 +92,7 @@ void Interface::main_loop()
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
     std::stringstream ss_race;
-    Race_datum* race_dat = Race_data[city->race];
+    Race_datum* race_dat = Race_data[city->get_race()];
     ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
                capitalize(race_dat->plural_name) << "<c=/>";
     i_main.set_data("text_race", ss_race.str());

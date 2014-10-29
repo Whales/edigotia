@@ -31,7 +31,7 @@ enum Game_state
   GAME_QUIT
 };
 
-class City;
+class Player_city;
 
 struct Command
 {
@@ -56,7 +56,7 @@ public:
   Interface();
   ~Interface();
 
-  bool init(Game* G, City* C);
+  bool init(Game* G, Player_city* C);
 
   void main_loop();
 
@@ -165,7 +165,7 @@ private:
 
 // Pointers to game data.
   Game* game;
-  City* city;
+  Player_city* city;
 
 // Varius values used in user interaction.
   Point sel;  // Point in map currently highlighted
