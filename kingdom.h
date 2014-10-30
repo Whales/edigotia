@@ -7,7 +7,10 @@
 #include "world.h"
 #include <vector>
 
-#define STANDARD_KINGDOM_SIZE 80
+// This is the radius around a city which we lay claim to.
+#define KINGDOM_CLAIM_RADIUS 8
+// This is how many "points" we have to expand; adding a city generally costs 10
+#define KINGDOM_EXPANSION_POINTS 200
 
 class Kingdom
 {
@@ -15,15 +18,32 @@ public:
   Kingdom();
   ~Kingdom();
 
-  bool place_in_world(World_map* world, int size = STANDARD_KINGDOM_SIZE);
+// Building the kingdom
+  bool place_capital (World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
+  bool place_new_city(World_map* world, int& expansion_points);
+  void place_minor_cities(World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
+  void expand_boundaries(World_map* world);
 
 // Data
   int uid;
   Race race;
-  City capital;
   nc_color color;
 
-  std::vector<City> dukes;
+  City* capital;
+  std::vector<City*> dukes;
+  std::vector<City*> cities;
+
+private:
+  Point pick_best_point(World_map* world, std::vector<Point> points_to_try,
+                        int radius = KINGDOM_CLAIM_RADIUS);
+  void add_city(World_map* world, Point loc, City_type type,
+                int radius = KINGDOM_CLAIM_RADIUS);
+  void claim_territory(World_map* world, Point p);
+
+  std::vector<Point> city_locations;
+
+// Kingdom boundaries
+  int most_west, most_north, most_east, most_south;
 };
 
 // See kingdom.cpp
