@@ -82,6 +82,8 @@ public:
   virtual void start_new_city();  // Sets up our population and more!
   virtual void do_turn();
   void set_random_name();
+  void set_race(Race new_race);
+  void set_city_type(City_type new_type);
 
 // General-data accessors
   int get_total_population(Citizen_type type = CIT_NULL);

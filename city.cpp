@@ -128,6 +128,16 @@ void City::set_random_name()
   }
 }
 
+void City::set_race(Race new_race)
+{
+  race = new_race;
+}
+
+void City::set_city_type(City_type new_type)
+{
+  type = new_type;
+}
+
 int City::get_total_population(Citizen_type type)
 {
   if (type == CIT_NULL) {
