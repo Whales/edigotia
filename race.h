@@ -17,14 +17,14 @@ enum Race
   RACE_DWARF,
   RACE_ORC,
 
-/*
 // Expanded-standard fantasy races
   RACE_GOBLIN,
-  RACE_KOBOLD,
   RACE_OGRE,
   RACE_TROLL,
-  RACE_GNOME,
   RACE_HALFLING,
+/*
+  RACE_GNOME,
+  RACE_KOBOLD,
 
 // Rare/obscure/highly specialized fantasy races
   RACE_NAGA,

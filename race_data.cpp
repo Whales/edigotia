@@ -88,8 +88,8 @@ void init_races()
     _kingdom_color(c_yellow);
 */
 
-    _map_type(MAP_PLAINS,      100);
-    _map_type(MAP_BASIN,        80);
+    _map_type(MAP_BASIN,       100);
+    _map_type(MAP_PLAINS,       90);
     _map_type(MAP_CANYON,       50);
     _map_type(MAP_FOREST,       40);
     _map_type(MAP_FOOTHILLS,    10);
@@ -141,6 +141,7 @@ void init_races()
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  3);
 
+
   _race(RACE_ELF);
     _name("elf");
     _plural_name("elves");
@@ -166,10 +167,10 @@ void init_races()
     _cluster_size(2, 4);
 
 // Should end with a vowel or "lnrs"
-    _city_name_start("al", "av", "bi", "bir", "bri", "dil", "e", "el", "en",
-                     "er", "ere", "es", "fi", "for", "il", "in", "is", "kor",
-                     "li", "lo", "me", "mi", "mir", "na", "ri", "ta", "to",
-                     "tol", "va", "val", "vi");
+    _city_name_start("al", "bi", "bir", "bri", "dil", "e", "el", "en", "er",
+                     "ere", "es", "fi", "for", "il", "in", "is", "kor", "li",
+                     "lo", "me", "mi", "mir", "na", "ri", "ta", "to", "tol",
+                     "va", "val", "vi");
 
 // Should end with a vowel or "lnr"
     _city_name_middle("", "", "", "", "", "", "allo", "an", "he",
@@ -205,6 +206,7 @@ void init_races()
     _skill(SKILL_FARMING,   4);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  5);
+
 
   _race(RACE_DWARF);
     _name("dwarf");
@@ -356,4 +358,341 @@ void init_races()
     _skill(SKILL_MINING,    4);
     _skill(SKILL_FORESTRY,  3);
 
+
+  _race(RACE_GOBLIN);
+    _name("goblin");
+    _plural_name("goblins");
+    _adjective("goblin");
+
+    _color(c_ltgray);
+    _kingdom_color(c_ltgray);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_red);
+
+    _map_type(MAP_WASTELAND,   100);
+    _map_type(MAP_BASIN,        80);
+    _map_type(MAP_PLAINS,       70);
+    _map_type(MAP_FOOTHILLS,    50);
+    _map_type(MAP_MOUNTAINOUS,  20);
+
+    _map_type(MAP_DESERT,      -10);
+
+    _cluster_size(5, 8);
+
+    _city_name_start("ak", "ar", "bek", "bik", "bir", "bu", "buk", "dak", "dek",
+                     "dik", "dir", "du", "ek", "er", "fek", "fik", "fu", "hak",
+                     "hu", "ik", "ir", "kak", "ku", "kuk", "krak", "krek", "na",
+                     "nak", "nik", "nuk", "pik", "prik", "pu", "su", "rak",
+                     "rik", "ru", "ruk", "sak", "sek", "sik", "stak", "stek",
+                     "stik", "stuk", "su", "suk", "tak", "tek", "tik", "tu",
+                     "tuk", "tra", "trak", "trek", "trik", "truk", "u", "uk",
+                     "vak", "vik", "vu");
+
+    _city_name_middle("", "", "", "", "", "", "", "", "", "", "", "", "", "",
+                      "", "", "", "", "", "", "", "", "", "", "", "a", "aba",
+                      "abi", "abu", "ada", "adi", "adu", "aka", "aki", "aku",
+                      "ala", "ali", "alu", "ava", "avi", "avu", "la", "li",
+                      "lu", "ra", "ri", "ru");
+
+    _city_name_end("ba", "bak", "bek", "bu", "buk", "da", "dak", "dek", "dik",
+                   "du", "duk", "fak", "fik", "fuk", "hak", "hik", "huk", "ka",
+                   "kak", "kek", "kik", "ku", "kuk", "na", "nak", "ni", "nik",
+                   "nok", "nu", "nuk", "pa", "pak", "pi", "pik", "pok", "puk",
+                   "rak", "rik", "ro", "ru", "ruk", "sak", "sik", "so", "sok",
+                   "spak", "sprak", "suk", "tak", "tek", "tik", "to", "trak",
+                   "trik", "truk");
+
+    _food_consumption( 90);
+
+    _starting_population(CIT_PEASANT,  140);
+    _starting_resources (RES_GOLD,    4000);
+    _starting_resources (RES_WOOD,     100);
+    _starting_resources (RES_STONE,    100);
+
+    _birth_rate         (CIT_PEASANT,   90);
+    _birth_rate         (CIT_MERCHANT,  90);
+    _birth_rate         (CIT_BURGHER,   90);
+    _citizen_ratio      (CIT_MERCHANT,  14);
+    _citizen_ratio      (CIT_BURGHER,   12);
+    _morale_requirement (CIT_MERCHANT,  50);
+    _morale_requirement (CIT_BURGHER,   75);
+    _low_tax_rate       (CIT_PEASANT,   25);
+    _low_tax_rate       (CIT_MERCHANT,  20);
+    _low_tax_rate       (CIT_BURGHER,   15);
+    _high_tax_rate      (CIT_PEASANT,   90);
+    _high_tax_rate      (CIT_MERCHANT,  80);
+    _high_tax_rate      (CIT_BURGHER,   60);
+
+    _skill(SKILL_FARMING,   3);
+    _skill(SKILL_MINING,    3);
+    _skill(SKILL_FORESTRY,  2);
+
+
+
+  _race(RACE_OGRE);
+    _name("ogre");
+    _plural_name("ogres");
+    _adjective("ogre");
+
+    _color(c_brown);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_red);
+    _kingdom_color(c_magenta);
+
+    _map_type(MAP_BASIN,       100);
+    _map_type(MAP_PLAINS,       90);
+    _map_type(MAP_WASTELAND,    50);
+    _map_type(MAP_FOOTHILLS,    40);
+
+    _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_SWAMP,       -20);
+    _map_type(MAP_MOUNTAINOUS, -10);
+
+    _cluster_size(1, 3);
+
+// End with lr
+    _city_name_start("al", "ar", "bal", "bar", "bel", "bil", "dal", "dar",
+                     "del", "el", "fal", "far", "ful", "hal", "har", "her",
+                     "hul", "il", "ir", "lar", "lor", "lur", "mal", "mar",
+                     "mel", "mer", "mil", "mor", "mul", "mur", "nal", "nar",
+                     "nel", "nil", "nor", "nul", "or", "rel", "ril", "tal",
+                     "tar", "ter", "til", "tor", "tul", "ur", "war", "wer",
+                     "wil", "wor", "yal", "yar", "yel", "yil", "yor", "yus");
+
+// Start with bdkt, end with lrs
+    _city_name_middle("", "", "", "", "bal", "bar", "bas", "bel", "bes", "bil",
+                      "bis", "bor", "bos", "bul", "bur", "bus", "dal", "dar",
+                      "das", "del", "des", "dil", "dis", "dor", "dos", "dul",
+                      "dus", "kal", "kar", "kas", "kel", "kes", "kil", "kis",
+                      "kor", "kos", "kul", "kus", "tal", "tar", "tas", "tel",
+                      "tes", "til", "tis", "tor", "tos", "tus");
+
+// Start with bdkt, end with aodklnrt,rd,rk,rt,
+    _city_name_end("", "", "", "", "ba", "bad", "bak", "ban", "bar", "bat",
+                   "bard", "bark", "bart", "bed", "bek", "bel", "ben", "bet",
+                   "berd", "bid", "bik", "bil", "bin", "bit", "birk", "birt",
+                   "bo", "bod", "bok", "bon", "bot", "bord", "bork", "bort",
+                   "bud", "buk", "bun", "bur", "but", "burd", "burk", "burt",
+                   "da", "dad", "dak", "dal", "dan", "dar", "dat", "dard",
+                   "dark", "dart", "ded", "dek", "del", "den", "det", "derk",
+                   "dert", "did", "dil", "din", "dit", "dirk", "dirt", "do",
+                   "dod", "dok", "don", "dor", "dot", "dork", "dort", "dud",
+                   "duk", "dun", "dut", "durk", "durt", "ka", "kad", "kal",
+                   "kan", "kar", "kat", "kard", "kark", "kart", "ked", "kel",
+                   "ken", "ket", "kerk", "kert", "kid", "kik", "kin", "kit",
+                   "kirk", "ko", "kod", "kok", "kol", "kon", "kor", "kot",
+                   "kord", "kork", "kort", "kud", "kuk", "kul", "kut", "kurd",
+                   "kurk", "kurt", "ta", "tad", "tak", "tal", "tan", "tar",
+                   "tat", "tard", "tark", "tart", "ted", "tek", "tel", "ten",
+                   "ter", "tet", "terd", "terk", "tert", "tid", "tik", "til",
+                   "tin", "tit", "tird", "tird", "tirt", "to", "tod", "tok",
+                   "ton", "tor", "tot", "tord", "tork", "tort", "tud", "tuk",
+                   "tun", "tut", "turd", "turk", "turt");
+
+    _food_consumption(140);
+
+    _starting_population(CIT_PEASANT,   90);
+    _starting_resources (RES_GOLD,    4500);
+    _starting_resources (RES_WOOD,     130);
+    _starting_resources (RES_STONE,    130);
+
+    _birth_rate         (CIT_PEASANT,  120);
+    _birth_rate         (CIT_MERCHANT, 110);
+    _birth_rate         (CIT_BURGHER,  100);
+    _citizen_ratio      (CIT_MERCHANT,  10);
+    _citizen_ratio      (CIT_BURGHER,   10);
+    _morale_requirement (CIT_MERCHANT,  50);
+    _morale_requirement (CIT_BURGHER,   70);
+    _low_tax_rate       (CIT_PEASANT,   20);
+    _low_tax_rate       (CIT_MERCHANT,  15);
+    _low_tax_rate       (CIT_BURGHER,   10);
+    _high_tax_rate      (CIT_PEASANT,   80);
+    _high_tax_rate      (CIT_MERCHANT,  65);
+    _high_tax_rate      (CIT_BURGHER,   50);
+
+    _skill(SKILL_FARMING,   5);
+    _skill(SKILL_MINING,    4);
+    _skill(SKILL_FORESTRY,  4);
+
+
+
+  _race(RACE_TROLL);
+    _name("troll");
+    _plural_name("trolls");
+    _adjective("trollish");
+
+    _color(c_dkgray);
+    _kingdom_color(c_ltgray);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_red);
+
+    _map_type(MAP_FOOTHILLS,   100);
+    _map_type(MAP_CANYON,      100);
+    _map_type(MAP_MOUNTAINOUS,  80);
+
+    _map_type(MAP_SWAMP,       -40);
+    _map_type(MAP_PLAINS,      -20);
+
+    _cluster_size(1, 2);
+
+    _city_name_start("ak", "ar", "ark", "bak", "ber", "berk", "dak", "dar",
+                     "dark", "der", "dor", "durk", "ek", "er", "hak", "har",
+                     "hark", "hek", "hor", "hurk", "lar", "lek", "lor", "lork",
+                     "lur", "mak", "mar", "mark", "mor", "muk", "mur", "murk",
+                     "rak", "rek", "rok", "ruk", "tak", "tar", "tark", "tek",
+                     "ter", "terk", "tuk", "turk", "uk", "ur", "urk");
+
+    _city_name_middle(" A", " Ba", " Be", " Bu", " Da", " De", " Du", " E",
+                      " Ha", " He", " Hu", " La", " Le", " Lu", " Ma", " Me",
+                      " Mu", " Ra", " Re", " Ro", " Ru", " Ta", " Te", " Tu",
+                      " U", "a", "e", "l", "r", "t", "u");
+
+    _city_name_end("", "k", "k", "k", "k", "k", "r", "r", "r", "rk", "rk");
+
+    _food_consumption(180);
+
+    _starting_population(CIT_PEASANT,   20);
+    _starting_resources (RES_GOLD,    6000);
+    _starting_resources (RES_WOOD,     100);
+    _starting_resources (RES_STONE,    150);
+
+    _birth_rate         (CIT_PEASANT,  180);
+    _birth_rate         (CIT_MERCHANT, 170);
+    _birth_rate         (CIT_BURGHER,  160);
+    _citizen_ratio      (CIT_MERCHANT,  20);
+    _citizen_ratio      (CIT_BURGHER,   20);
+    _morale_requirement (CIT_MERCHANT,  20);
+    _morale_requirement (CIT_BURGHER,   30);
+    _low_tax_rate       (CIT_PEASANT,    5);
+    _low_tax_rate       (CIT_MERCHANT,   5);
+    _low_tax_rate       (CIT_BURGHER,    5);
+    _high_tax_rate      (CIT_PEASANT,  100);
+    _high_tax_rate      (CIT_MERCHANT,  95);
+    _high_tax_rate      (CIT_BURGHER,   90);
+
+    _skill(SKILL_FARMING,   1);
+    _skill(SKILL_MINING,    2);
+    _skill(SKILL_FORESTRY,  1);
+
+
+
+  _race(RACE_HALFLING);
+    _name("halfling");
+    _plural_name("halflings");
+    _adjective("halfling");
+
+    _color(c_ltblue);
+    _kingdom_color(c_blue);
+    _kingdom_color(c_cyan);
+    _kingdom_color(c_green);
+
+    _map_type(MAP_BASIN,       100);
+    _map_type(MAP_PLAINS,       90);
+    _map_type(MAP_FOREST,       80);
+
+    _map_type(MAP_DESERT,      -90);
+
+    _cluster_size(3, 4);
+
+    _city_name_start("bl", "br", "ch", "cl", "cr", "dr", "fl", "fr", "gl", "gr",
+                     "l", "pl", "pr", "r", "st", "str", "th", "tr", "wh", "wr");
+
+    _city_name_middle("aid", "aig", "aigh", "aight", "ail", "aim", "ain", "air",
+                      "airt", "aist", "ait", "aive", "aize", "aud", "aug",
+                      "augh", "aught", "aum", "aun", "aur", "aurt", "aust",
+                      "aut", "auve", "ay", "ead", "eal", "eam", "ean", "ear",
+                      "eart", "east", "eat", "eave", "eaze", "eed", "eegh",
+                      "eel", "eem", "een", "eer", "eest", "eet", "eeve", "eeze",
+                      "eum", "eun", "eur", "euze", "iad", "iar", "ian", "iar",
+                      "iom", "ion", "ior", "iot", "oar", "oast", "oid", "oil",
+                      "oin", "oist", "oit", "oize", "ood", "oog", "oogh", "oom",
+                      "oon", "oor", "oost", "oot", "oud", "oun", "oust", "out");
+
+    _city_name_end(" Bottom", "s Bottom", " End", "s End", " Field", "s Field",
+                   " Glen", " Hall", "sberry", "sborough", "sburg", "sbury",
+                   "sby", "sdon", "dover", "field", "ford", "ford", "sforth",
+                   "gale", "ham", "ham", "ham", "skirk", "smouth", "sneck",
+                   "ton", "ton", "wood", "svale", "sville");
+
+    _food_consumption(120);
+
+    _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,     120);
+    _starting_resources (RES_STONE,    100);
+
+    _birth_rate         (CIT_PEASANT,  100);
+    _birth_rate         (CIT_MERCHANT,  90);
+    _birth_rate         (CIT_BURGHER,   80);
+    _citizen_ratio      (CIT_MERCHANT,   7);
+    _citizen_ratio      (CIT_BURGHER,    7);
+    _morale_requirement (CIT_MERCHANT,  60);
+    _morale_requirement (CIT_BURGHER,   80);
+    _low_tax_rate       (CIT_PEASANT,   20);
+    _low_tax_rate       (CIT_MERCHANT,  15);
+    _low_tax_rate       (CIT_BURGHER,   10);
+    _high_tax_rate      (CIT_PEASANT,   80);
+    _high_tax_rate      (CIT_MERCHANT,  65);
+    _high_tax_rate      (CIT_BURGHER,   50);
+
+    _skill(SKILL_FARMING,   4);
+    _skill(SKILL_MINING,    3);
+    _skill(SKILL_FORESTRY,  4);
+
 }
+
+/* Template
+
+
+  _race(RACE_);
+    _name("");
+    _plural_name("");
+    _adjective("");
+
+    _color(c_);
+    _kingdom_color(c_);
+    _kingdom_color(c_);
+    _kingdom_color(c_);
+
+    _map_type(MAP_FOREST,      100);
+    _map_type(MAP_BASIN,        30);
+    _map_type(MAP_SWAMP,        15);
+    _map_type(MAP_PLAINS,       10);
+
+    _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_MOUNTAINOUS, -30);
+
+    _cluster_size(2, 4);
+
+    _city_name_start( );
+
+    _city_name_middle( );
+
+    _city_name_end( );
+
+    _food_consumption(100);
+
+    _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,     100);
+    _starting_resources (RES_STONE,    100);
+
+    _birth_rate         (CIT_PEASANT,  100);
+    _birth_rate         (CIT_MERCHANT,  90);
+    _birth_rate         (CIT_BURGHER,   80);
+    _citizen_ratio      (CIT_MERCHANT,  10);
+    _citizen_ratio      (CIT_BURGHER,   10);
+    _morale_requirement (CIT_MERCHANT,  50);
+    _morale_requirement (CIT_BURGHER,   70);
+    _low_tax_rate       (CIT_PEASANT,   20);
+    _low_tax_rate       (CIT_MERCHANT,  15);
+    _low_tax_rate       (CIT_BURGHER,   10);
+    _high_tax_rate      (CIT_PEASANT,   80);
+    _high_tax_rate      (CIT_MERCHANT,  65);
+    _high_tax_rate      (CIT_BURGHER,   50);
+
+    _skill(SKILL_FARMING,   3);
+    _skill(SKILL_MINING,    3);
+    _skill(SKILL_FORESTRY,  3);
+
+*/
