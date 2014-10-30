@@ -39,7 +39,8 @@ Race_datum::Race_datum()
   }
 
 // Non-array-based variables
-
+  cluster_min = 3;
+  cluster_max = 4;
   food_consumption = 100;
 
 }
@@ -82,15 +83,15 @@ std::string Race_datum::get_city_name()
 {
   std::stringstream ret;
   if (!city_name_start.empty()) {
-    int i = rng(0, city_name_start.size());
+    int i = rng(0, city_name_start.size() - 1);
     ret << city_name_start[i];
   }
   if (!city_name_middle.empty()) {
-    int i = rng(0, city_name_middle.size());
+    int i = rng(0, city_name_middle.size() - 1);
     ret << city_name_middle[i];
   }
   if (!city_name_end.empty()) {
-    int i = rng(0, city_name_end.size());
+    int i = rng(0, city_name_end.size() - 1);
     ret << city_name_end[i];
   }
 
