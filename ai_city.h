@@ -12,23 +12,6 @@ public:
   virtual ~AI_city();
 
   virtual bool is_ai_city() { return true; }
-
-// Mutators
-  void set_name();
-
-// Accessors
-  int get_total_population(Citizen_type type = CIT_NULL);
-  glyph get_glyph();
-
-  std::string name;
-  City_type type;
-  Race race;
-
-  Citizens population[CIT_MAX];
-
-private:
-  int resources[RES_MAX];
-  int minerals[MINERAL_MAX];
 };
 
 #endif
