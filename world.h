@@ -39,6 +39,11 @@ public:
   int  get_kingdom_id(Point p);
   int  get_kingdom_id(int x, int y);
 
+  void  set_city(Point p, City* new_city);
+  void  set_city(int x, int y, City* new_city);
+  City* get_city(Point p);
+  City* get_city(int x, int y);
+
 // true if the Map_datum has is_river == true
   bool is_river(Point p);
   bool is_river(int x, int y);
@@ -94,6 +99,7 @@ private:
   int temperature               [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int continent_id              [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int kingdom_id                [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  City* city                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   bool river                    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 // crops and minerals are bitmaps that indicate what's here
   int crops                     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
