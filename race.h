@@ -87,6 +87,8 @@ struct Race_datum
   std::map<Map_type,int> map_type_value;
 // To name a city of this race, we string together a start, middle, and end.
   std::vector<std::string> city_name_start, city_name_middle, city_name_end;
+// How many cities will be clustered around a duchy seat?
+  int cluster_min, cluster_max;
 
 // GENERAL RACE VALUES
 
