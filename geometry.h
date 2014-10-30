@@ -225,4 +225,7 @@ Direction_full get_general_direction(Tripoint origin, Point target);
 Direction_full get_general_direction(Point origin,    Tripoint target);
 Direction_full get_general_direction(Tripoint origin, Tripoint target);
 
+// points_at_exact_distance() returns a list of all points exactly dist tiles
+// (using rl_dist() calculation) from origin.  Basically, a circle.
+std::vector<Point> points_at_exact_distance(Point origin, int dist);
 #endif

@@ -309,6 +309,18 @@ Direction_full get_general_direction(Tripoint origin, Tripoint target)
                                 Point(target.x, target.y) );
 }
 
+std::vector<Point> points_at_exact_distance(Point origin, int dist)
+{
+  std::vector<Point> ret;
+  for (int n = 0 - dist; n <= dist; n++) {
+    ret.push_back( Point( origin.x - dist, origin.y + n    ) );
+    ret.push_back( Point( origin.x + dist, origin.y + n    ) );
+    ret.push_back( Point( origin.x + n   , origin.y - dist ) );
+    ret.push_back( Point( origin.x + n   , origin.y + dist ) );
+  }
+  return ret;
+}
+
 std::string Direction_name(Direction dir)
 {
   switch (dir) {
