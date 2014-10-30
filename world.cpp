@@ -45,7 +45,8 @@ void World_map::generate()
       //temperature[x][y] += rng(-3, 3);
       continent_id[x][y] = -1;
       kingdom_id  [x][y] = -1;
-      river[x][y] = false;
+      city        [x][y] = NULL;
+      river       [x][y] = false;
     }
   }
 
@@ -667,28 +668,41 @@ Point World_map::draw(Window* w_map)
 
   while (true) {
     Point center(pos.x + xdim / 2, pos.y + ydim / 2);
+
     for (int x = pos.x; x < pos.x + xdim; x++) {
       for (int y = pos.y; y < pos.y + ydim; y++) {
+
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
-          int kingdom_id = get_kingdom_id(x, y);
           Map_type_datum* data = Map_type_data[type];
           glyph gl = data->symbol;
-          if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
+
+          City* city_here = city[x][y];
+          if (city_here) {
+            gl = city_here->get_glyph();
+          }
+
+          int kingdom_id = get_kingdom_id(x, y);
+          if (!city_here && kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
             Kingdom* kingdom = Kingdoms[kingdom_id];
             gl = gl.hilite(kingdom->color);
           }
+
           bool do_crop_hilite = (hilite_crops && has_crop(crop_hilited, x, y));
           bool do_mineral_hilite = (hilite_minerals &&
                                     has_mineral(mineral_hilited, x, y));
-          if (x == pos.x + xdim / 2 && y == pos.y + ydim / 2) {
+
+// See if we need to change the background color for any reason.
+          if (x == center.x && y == center.y) {
             gl = gl.hilite(c_blue);
-          } else if (do_crop_hilite && do_mineral_hilite) {
-            gl = gl.hilite(c_cyan);
-          } else if (do_crop_hilite) {
-            gl = gl.hilite(c_green);
-          } else if (do_mineral_hilite) {
-            gl = gl.hilite(c_red);
+          } else if (!city_here) { // No highlighting if there's a city
+            if (do_crop_hilite && do_mineral_hilite) {
+              gl = gl.hilite(c_cyan);
+            } else if (do_crop_hilite) {
+              gl = gl.hilite(c_green);
+            } else if (do_mineral_hilite) {
+              gl = gl.hilite(c_red);
+            }
           }
           w_map->putglyph(x - pos.x, y - pos.y, gl);
         } else {
@@ -741,6 +755,7 @@ Point World_map::draw(Window* w_map)
       i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
       i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
 
+// Kingdom info
       int kingdom_id = get_kingdom_id(center);
       i_legend.set_data("num_kingdom_id", kingdom_id);
       if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
@@ -753,6 +768,16 @@ Point World_map::draw(Window* w_map)
       } else {
         i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
       }
+
+// City info
+      City* city_here = get_city(center);
+      if (city_here) {
+        i_legend.set_data("text_city_name", city_here->get_name());
+        i_legend.set_data("text_city_name", c_yellow);
+      } else {
+        i_legend.clear_data("text_city_name");
+      }
+
       i_legend.draw(w_legend);
       w_legend->refresh();
     }
@@ -946,6 +971,32 @@ int World_map::get_kingdom_id(int x, int y)
     return -1;
   }
   return kingdom_id[x][y];
+}
+
+void World_map::set_city(Point p, City* new_city)
+{
+  set_city(p.x, p.y, new_city);
+}
+
+void World_map::set_city(int x, int y, City* new_city)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+    return;
+  }
+  city[x][y] = new_city;
+}
+
+City* World_map::get_city(Point p)
+{
+  return get_city(p.x, p.y);
+}
+
+City* World_map::get_city(int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+    return NULL;
+  }
+  return city[x][y];
 }
 
 bool World_map::is_river(Point p)
