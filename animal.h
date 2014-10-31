@@ -47,6 +47,15 @@ enum Animal
   ANIMAL_MAX
 };
 
+struct Animal_amount
+{
+  Animal_amount(Animal A = ANIMAL_NULL, int N = 0) :
+    animal (A), amount (N) { }
+
+  Animal animal;
+  int amount;
+};
+
 struct Animal_datum
 {
   Animal_datum();
@@ -55,6 +64,12 @@ struct Animal_datum
   std::string name;
   int uid;
 
+// Placement data
+  int min_temp, max_temp;         // Range of temperature we live in
+  int min_altitude, max_altitude; // Range of altitude    we live in
+  int min_rainfall, max_rainfall; // Range of rainfall    we live in
+
+// Hunting/livestock data
   int danger;             // Dangerous to hunt? 10 = unarmed man, 20 = hunter
   int reproduction_rate;  // A percentage increase per year (range: 0 - 100)
   int hardiness;          // Livestock has a one-in-THIS chance of dying daily
