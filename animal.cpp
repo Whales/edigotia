@@ -4,6 +4,13 @@ Animal_datum::Animal_datum()
 {
   name = "NULL Animal";
 
+  min_temp      =   0;
+  max_temp      = 100;
+  min_altitude  =   0;
+  max_altitude  = 100;
+  min_rainfall  =   0;
+  max_rainfall  = 100;
+
   danger = 0;
 
   reproduction_rate =   30;
