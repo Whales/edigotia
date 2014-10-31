@@ -56,6 +56,10 @@ std::string resource_name(Resource res)
     case RES_WOOD:    return "wood";
     case RES_STONE:   return "stone";
 
+    case RES_FIBER:   return "fibers";
+    case RES_FUR:     return "fur";
+    case RES_LEATHER: return "leather";
+
     case RES_FARMING: return "farming";
     case RES_MINING:  return "mining";
     case RES_HUNTING: return "hunting";

@@ -23,10 +23,16 @@ enum Resource
 {
   RES_NULL = 0,
 
+// The Big Four
   RES_GOLD,
   RES_FOOD,
   RES_WOOD,
   RES_STONE,
+
+// Component resources
+  RES_FIBER,  // Anything than can become cloth; cotton, wool, etc
+  RES_FUR,
+  RES_LEATHER,
 
 // Meta-resources
   RES_FARMING,  // Can be any available crop
