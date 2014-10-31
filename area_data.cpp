@@ -44,11 +44,6 @@ void init_area_data()
     _symbol('F', c_ltgreen);
     _building(BUILD_FARM);
 
-  _area(AREA_QUARRY);
-    _name("quarry");
-    _symbol('Q', c_ltgray);
-    _building(BUILD_QUARRY);
-
   _area(AREA_MINE);
     _name("mine");
     _symbol('M', c_yellow);

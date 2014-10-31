@@ -474,9 +474,6 @@ void Interface::display_area_stats(Area_type type)
       stats << "Food produced each day: " << city->get_food_production();
       break;
 
-    case AREA_QUARRY:
-      break;
-
     case AREA_MINE:
       if (ter_dat->minerals.empty()) {
         stats << "<c=dkgray>" << ter_dat->name << " does not contain any " <<

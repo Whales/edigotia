@@ -64,7 +64,6 @@ void init_terrain_data()
     _buildable(AREA_HOUSES);
 // Burghers refuse to live on an icy hill!
     _buildable(AREA_KEEP);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -129,7 +128,6 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -156,7 +154,6 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -216,7 +213,6 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -256,7 +252,6 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_SWAMP);
@@ -275,7 +270,6 @@ void init_terrain_data()
 // Merchants and burghers refuse to live in the swamp!
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
-    _buildable(AREA_QUARRY);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
 

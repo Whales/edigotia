@@ -26,7 +26,6 @@ enum Area_type
 
 // Raw resource production
   AREA_FARM,
-  AREA_QUARRY,
   AREA_MINE,
   AREA_SAWMILL,
 
@@ -36,11 +35,30 @@ enum Area_type
   AREA_MAX
 };
 
+// NOTE: There should be no more than 9 buildings in each category!
+//       If a category is full, split it into two categories.
+
+enum Area_category
+{
+  AREACAT_NULL = 0,
+
+  AREACAT_HOUSING,  // Things that provide housing - hovels, houses, manor, keep
+
+  AREACAT_FOOD,     // Things that produce food - farm, hunting camp, fishery
+  AREACAT_RESOURCES,// Things that produce non-food resources - mine, sawmill
+
+  AREACAT_MILITARY, // Any military structure - barracks
+
+  AREACAT_MAX
+};
+
 struct Area_datum
 {
   std::string name;
   int uid;
   glyph symbol;
+
+  Area_category category;
 
   Building_type building;
 

@@ -22,7 +22,6 @@ enum Building_type
 
 // Basic resources - ALL AREAS, not real buildings
   BUILD_FARM,
-  BUILD_QUARRY,
   BUILD_MINE,
   BUILD_CAMP,
   BUILD_SAWMILL,

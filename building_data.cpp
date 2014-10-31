@@ -133,16 +133,6 @@ void init_building_data()
     _wages(2);
     _produces(RES_FARMING, 10);
 
-  _build(BUILD_QUARRY);
-    _name("quarry");
-    _cost(RES_GOLD, 500);
-    _build_time(5);
-    _destroy_cost(800);
-    _upkeep(3);
-    _jobs(CIT_PEASANT, 10);
-    _wages(3);
-    _produces(RES_STONE, 5);
-
   _build(BUILD_MINE);
     _name("mine");
     _cost(RES_GOLD, 500);

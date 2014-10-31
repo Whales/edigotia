@@ -22,9 +22,9 @@ enum Terrain_type
   TER_GLACIER,    // Frozen river, useless
 
   TER_FIELD,      // Good for farming
-  TER_ROCKY,      // OK for farming, good for quarry, OK for mining
-  TER_HILL,       // Good for mining, OK for quarry
-  TER_MOUNTAIN,   // Great for mining, OK for quarry
+  TER_ROCKY,      // OK for farming, OK for mining
+  TER_HILL,       // Good for mining
+  TER_MOUNTAIN,   // Great for mining
 
   TER_FOREST,     // Great for hunting, abundant wood
   TER_BARREN,     // Appears when forest is cleared; OK for farming
