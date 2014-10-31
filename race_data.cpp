@@ -233,7 +233,7 @@ void init_races()
     _cluster_size(2, 5);
 
 // Start should end with any of "ioulr"
-    _city_name_start("", "", "amo", "bel", "bil", "bor", "bur", "dai", "du",
+    _city_name_start("amo", "bel", "bil", "bor", "bur", "dai", "du",
                      "dur", "fal", "glau", "glo", "glor", "gor", "grel", "gu",
                      "hel", "ho", "hol", "hor", "hur", "ilu", "lor", "mon",
                      "mor", "nar", "nau", "ni", "nir", "no", "nol", "nor", "or",
@@ -459,13 +459,13 @@ void init_races()
                      "tar", "ter", "til", "tor", "tul", "ur", "war", "wer",
                      "wil", "wor", "yal", "yar", "yel", "yil", "yor", "yus");
 
-// Start with bdkt, end with lrs
-    _city_name_middle("", "", "", "", "bal", "bar", "bas", "bel", "bes", "bil",
-                      "bis", "bor", "bos", "bul", "bur", "bus", "dal", "dar",
-                      "das", "del", "des", "dil", "dis", "dor", "dos", "dul",
-                      "dus", "kal", "kar", "kas", "kel", "kes", "kil", "kis",
-                      "kor", "kos", "kul", "kus", "tal", "tar", "tas", "tel",
-                      "tes", "til", "tis", "tor", "tos", "tus");
+// Start with bdkt, end with vowel or lr
+    _city_name_middle("", "", "", "", "bal", "bar", "ba", "bel", "be", "bil",
+                      "bi", "bor", "bo", "bul", "bur", "bu", "dal", "dar",
+                      "da", "del", "de", "dil", "di", "dor", "do", "dul",
+                      "du", "kal", "kar", "ka", "kel", "ke", "kil", "ki",
+                      "kor", "ko", "kul", "ku", "tal", "tar", "ta", "tel",
+                      "te", "til", "ti", "tor", "to", "tu");
 
 // Start with bdkt, end with aodklnrt,rd,rk,rt,
     _city_name_end("", "", "", "", "ba", "bad", "bak", "ban", "bar", "bat",
