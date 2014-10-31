@@ -41,7 +41,7 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 void init_animal_data()
 {
   for (int i = 0; i < ANIMAL_MAX; i++) {
-    Animal_data[i] = new Animal_data;
+    Animal_data[i] = new Animal_datum;
     Animal_data[i]->uid = i;
   }
 
@@ -192,4 +192,58 @@ void init_animal_data()
     _hardiness(600);
     _food_killed(0);
     _food_eaten(150);
-    _tameness(
+    _tameness(50);
+// TODO: Should jellies provide some kind of resource?  Right now they're
+//       worthless.
+
+  _animal(ANIMAL_DIRE_WOLF);
+    _name("dire wolf");
+    _danger(16);
+    _reproduction(18);
+    _hardiness(5000);
+    _food_killed(180);
+    _food_eaten(250);
+    _carnivore();
+    _tameness(4);
+    _resource_killed(RES_FUR, 20);
+
+  _animal(ANIMAL_MANTICORE);
+    _name("manticore");
+    _danger(18);
+    _reproduction(15);
+    _hardiness(7500);
+    _food_killed(400);
+    _food_eaten(350);
+    _carnivore();
+    _tameness(5);
+
+  _animal(ANIMAL_UNICORN);
+    _name("unicorn");
+    _danger(15);
+    _reproduction(5);
+    _hardiness(8000);
+    _food_killed(200);
+    _food_eaten(180);
+    _tameness(10);
+    _resource_killed(RES_UNICORN_HORN, 1);
+
+  _animal(ANIMAL_BASILISK);
+    _name("basilisk");
+    _danger(20);
+    _reproduction(8);
+    _hardiness(7000);
+    _food_killed(100);
+    _food_eaten(100);
+    _tameness(0);
+
+  _animal(ANIMAL_WYVERN);
+    _name("wyvern");
+    _danger(22);
+    _reproduction(15);
+    _hardiness(9000);
+    _food_killed(1600);
+    _food_eaten(1000);
+    _carnivore();
+    _tameness(2);
+
+}
