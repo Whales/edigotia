@@ -5,6 +5,7 @@
 #include "glyph.h"    // For terrain glyph
 #include "resource.h" // Crops and minerals
 #include "area.h"
+#include "animal.h"
 #include <vector>
 #include <string>
 
