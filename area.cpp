@@ -1,7 +1,8 @@
 #include "area.h"
-#include "window.h" // For debugmsg()
-#include "city.h"   // For Area::close()
-#include "player_city.h"   // For Area::close()
+#include "window.h"       // For debugmsg()
+#include "city.h"         // For Area::close()
+#include "player_city.h"  // For Area::close()
+#include "stringfunc.h"   // For no_caps() and trim()
 #include <map>
 
 Building_datum* Area_datum::get_building_datum()
@@ -94,6 +95,32 @@ int Area::amount_produced(Resource res)
     return 0;
   }
   return get_building_datum()->amount_produced(res);
+}
+
+Area_category lookup_area_category(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < AREACAT_MAX; i++) {
+    Area_category ret = Area_category(i);
+    if (name == area_category_name(ret)) {
+      return ret;
+    }
+  }
+  return AREACAT_NULL;
+}
+
+std::string area_category_name(Area_category category)
+{
+  switch (category) {
+    case AREACAT_NULL:      return "NULL";
+    case AREACAT_HOUSING:   return "housing";
+    case AREACAT_FOOD:      return "food";
+    case AREACAT_RESOURCES: return "resources";
+    case AREACAT_MILITARY:  return "military";
+    case AREACAT_MAX:       return "BUG - AREACAT_MAX";
+    default:                return "BUG - Unnamed Area_category";
+  }
+  return "BUG - Escaped area_category_name() switch!";
 }
 
 Building_datum* get_building_for(Area_type area)

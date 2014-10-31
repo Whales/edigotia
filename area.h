@@ -52,6 +52,9 @@ enum Area_category
   AREACAT_MAX
 };
 
+Area_category lookup_area_category(std::string name);
+std::string area_category_name(Area_category category);
+
 struct Area_datum
 {
   std::string name;
