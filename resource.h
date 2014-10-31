@@ -34,6 +34,9 @@ enum Resource
   RES_FUR,
   RES_LEATHER,
 
+// Rare/monster resources
+  RES_UNICORN_HORN,
+
 // Meta-resources
   RES_FARMING,  // Can be any available crop
   RES_MINING,   // Available minerals, decided by the terrain
