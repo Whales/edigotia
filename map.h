@@ -142,6 +142,7 @@ struct Map_tile
   int wood;
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
+  std::vector<Animal>         game;
 };
 
 class City_map
