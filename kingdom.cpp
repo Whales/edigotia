@@ -77,15 +77,15 @@ void init_kingdoms(World_map* world)
     kingdom_index.push_back( i );
   }
 
-  int iteration = 0;
+  int iteration = 0, max_points = points.size() * KINGDOM_EXPANSION_POINTS;
   while (!kingdom_index.empty()) {
     iteration++;
     int total_points = 0;
     for (int i = 0; i < points.size(); i++) {
       total_points += points[i];
     }
-    popup_nowait("Placing cities... (iteration %d, points left %d)",
-                 iteration, total_points);
+    int percent = (100 * (max_points - total_points)) / total_points;
+    popup_nowait("Placing cities... [%d%%%%%%%%]", percent);
     for (int i = 0; i < kingdom_index.size(); i++) {
       Kingdom* kingdom = Kingdoms[ kingdom_index[i] ];
       if (!kingdom->place_new_city(world, points[i])) {
