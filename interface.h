@@ -133,6 +133,8 @@ private:
                          bool editing_queue, int num_options);
 // Pick an area to build
   Area_type pick_area();
+  // Helper functions for pick_area();
+  void set_area_list(Area_category category, std::vector<Area_type>& types);
 
 
 // *** Helper / data-storing functions ***

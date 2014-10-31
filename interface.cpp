@@ -2364,43 +2364,88 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
 
 Area_type Interface::pick_area()
 {
-  std::vector<std::string> area_options;
   i_main.clear_data("text_map_info");
   i_main.clear_data("text_commands");
 
-  for (int i = 1; i < AREA_MAX; i++) {
-    std::stringstream option;
-    option << "<c=magenta>";
-    if (i <= 9) {
-      option << i;
-    } else {
-      option << char(i - 10 + 'A');
-    }
-    option << "<c=/>: " << capitalize(Area_data[i]->name) << std::endl;
-    i_main.add_data("text_commands", option.str());
-  }
+  Area_category cur_category = AREACAT_NULL;
+  std::vector<Area_type> types;
 
-  i_main.draw(&w_main);
-  w_main.refresh();
+  set_area_list(cur_category, types);
 
   while (true) {
+
+    i_main.draw(&w_main);
+    w_main.refresh();
+
     long ch = input();
-    if (ch == 'q' || ch == 'Q' || ch == KEY_ESC || ch == '0') {
-      i_main.clear_data("text_commands");
-      return AREA_NULL;
+
+    if (ch >= '1' && ch <= '9') { // We made a selection!
+      ch -= '1';  // '1' => 0, '2' => 1, etc.
+      if (cur_category == AREACAT_NULL) { // We selected a category.
+        ch++; // Sinc ewe don't list AREACAT_NULL.
+        if (ch < AREACAT_MAX) {
+          cur_category = Area_category(ch);
+          set_area_list(cur_category, types);
+        }
+
+      } else { // We selected an area.
+        if (ch < types.size()) {
+          i_main.clear_data("text_commands");
+          return types[ch];
+        }
+      }
+    } else if (ch == KEY_ESC || ch == 'q' || ch == 'Q') {
+// The effect depends on whether we've already selected a category.
+      if (cur_category == AREACAT_NULL) {
+        i_main.clear_data("text_commands");
+        return AREA_NULL;
+      } else {
+        cur_category = AREACAT_NULL;
+        set_area_list(cur_category, types);
+      }
     }
-    int sel = -1;
-    if (ch >= '1' && ch <= '9') {
-      sel = ch - '0';
-    } else if (ch >= 'a' && ch <= 'z') {
-      sel = ch - 'a' + 10;
-    } else if (ch >= 'A' && ch <= 'Z') {
-      sel = ch - 'A' + 10;
+  } // while (true)
+}
+
+void Interface::set_area_list(Area_category category,
+                              std::vector<Area_type>& types)
+{
+  i_main.clear_data("text_commands");
+  types.clear();
+
+  if (category == AREACAT_NULL) {
+// Start at 1 to skill AREACAT_NULL
+    for (int i = 1; i < AREACAT_MAX; i++) {
+      Area_category cat = Area_category(i);
+      std::stringstream ss_cat;
+      ss_cat << "<c=pink>" << i << "<c=/>: " <<
+                capitalize( area_category_name( cat ) ) << std::endl;
+      i_main.add_data("text_commands", ss_cat.str());
     }
-    if (sel >= 1 && sel < AREA_MAX) {
-      i_main.clear_data("text_commands");
-      return Area_type(sel);
+// Add an option to cancel.
+    i_main.add_data("text_commands", "<c=pink>Q<c=/>: Cancel");
+    return;
+
+  } else {  // Actually listing areas.
+
+// First, find all areas that belong to our chosen category.
+    for (int i = 0; i < AREA_MAX; i++) {
+      Area_datum* area_dat = Area_data[i];
+      if (area_dat->category == category) {
+        types.push_back( Area_type(i) );
+      }
     }
+// Next, display them in our interface.
+    for (int i = 0; i < types.size(); i++) {
+      std::stringstream ss_area;
+      Area_datum* area_dat = Area_data[ types[i] ];
+      ss_area << "<c=pink>" << i + 1 << "<c=/>: " <<
+                 capitalize( area_dat->name ) << std::endl;
+      i_main.add_data("text_commands", ss_area.str());
+    }
+// Finally, add an option to go back to category selection.
+    i_main.add_data("text_commands", "<c=pink>Q<c=/>: Change category");
+
   }
 }
 
