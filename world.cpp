@@ -685,7 +685,10 @@ Point World_map::draw(Window* w_map)
           int kingdom_id = get_kingdom_id(x, y);
           if (!city_here && kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
             Kingdom* kingdom = Kingdoms[kingdom_id];
-            gl = gl.hilite(kingdom->color);
+// Skip adding the kingdom background if it would interfere with our cursor.
+            if (kingdom->color != c_blue || x != center.x || y != center.y) {
+              gl = gl.hilite(kingdom->color);
+            }
           }
 
           bool do_crop_hilite = (hilite_crops && has_crop(crop_hilited, x, y));
