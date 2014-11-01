@@ -3,6 +3,7 @@
 #include "map.h"
 #include "resource.h"
 #include "race.h"
+#include "animal.h"
 
 bool init_all_data()
 {
@@ -11,6 +12,7 @@ bool init_all_data()
   init_terrain_data();
   init_map_type_data();
   init_crop_and_mineral_data();
+  init_animal_data();
   init_races();
 
   return true;
