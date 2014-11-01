@@ -3,6 +3,7 @@
 #include "window.h" // For debugmsg()
 #include "geometry.h" // For rl_dist()
 #include "ai_city.h"
+#include <sstream>
 
 std::vector<Kingdom*> Kingdoms;
 
@@ -85,7 +86,7 @@ void init_kingdoms(World_map* world)
       total_points += points[i];
     }
     int percent = (100 * (max_points - total_points)) / max_points;
-    popup_nowait("Placing cities... [%d%%%%%%%%]", percent);
+    popup_nowait("Placing duchies... [%d%%%%%%%%]", percent);
     for (int i = 0; i < kingdom_index.size(); i++) {
       Kingdom* kingdom = Kingdoms[ kingdom_index[i] ];
       if (!kingdom->place_new_city(world, points[i])) {
@@ -97,6 +98,8 @@ void init_kingdoms(World_map* world)
 
 // Now each kingdom gets to place minor cities in its duchies.
   for (int i = 0; i < Kingdoms.size(); i++) {
+    int percent = (100 * (i + 1)) / Kingdoms.size();
+    popup_nowait("Placing minor cities... [%d%%%%%%%%]", percent);
     Kingdoms[i]->place_minor_cities(world);
   }
 
@@ -219,22 +222,86 @@ bool Kingdom::place_new_city(World_map* world, int& expansion_points)
 
 void Kingdom::place_minor_cities(World_map* world, int radius)
 {
+  //std::stringstream ss_debug;
+
   Race_datum* race_dat = Race_data[race];
+
+  //ss_debug << race_dat->cluster_min << "<=>" << race_dat->cluster_max <<
+              //std::endl;
 // Copy city_locations since it'll change during this function.
   std::vector<Point> tmp_city_locations = city_locations;
+// tmp_city-locations contains the locations of all duchy seats; for each one,
+// place several "minor" (regular) cities.
   for (int i = 0; i < tmp_city_locations.size(); i++) {
+    int percent = (100 * (i + 1)) / tmp_city_locations.size();
+    popup_nowait("Placing minor cities [%d%%%%%%%%]", percent);
     Point parent_city = tmp_city_locations[i];
+// Use our race to determine how many to place.
     std::vector<Point> new_city_locations;
     int num_cities = rng(race_dat->cluster_min, race_dat->cluster_max);
-    for (int n = 0; n < num_cities; n++) {
-      Point city_loc( rng(parent_city.x - radius, parent_city.x + radius),
-                      rng(parent_city.y - radius, parent_city.y + radius) );
-// Only use this point if it's not too close to another new city
-      bool okay = (rl_dist(parent_city, city_loc) > 1);
-// Also make sure we're not on the ocean!
-      if (world->get_map_type(city_loc) == MAP_OCEAN) {
-        okay = false;
+
+// Get a list of all possible locations, and their scores according to our race.
+    std::vector<Point> possible_locations;
+    std::vector<int>   scores;
+
+    for (int x = parent_city.x - radius; x <= parent_city.x + radius; x++) {
+      for (int y = parent_city.y - radius; y <= parent_city.y + radius; y++) {
+// Only use this point if it's in our kingdom and not adjacent to the parent.
+        if (x >= 0 && x < WORLD_MAP_SIZE && y >= 0 && y < WORLD_MAP_SIZE &&
+            world->get_kingdom_id(x, y) == uid &&
+            rl_dist(parent_city, Point(x, y)) > 1) {
+// Figure out the score of the location, and insert it into our list in the
+// proper position to sort the list by score.
+          int score = 0;
+          Map_type map_type = world->get_map_type(x, y);
+          if (race_dat->map_type_value.count(map_type)) {
+            score = race_dat->map_type_value[map_type];
+          }
+// Safety check
+          if (possible_locations.size() != scores.size()) {
+            debugmsg("locations %d, scores %d", possible_locations.size(),
+                     scores.size());
+          }
+// Now find a place to insert this location.
+          bool inserted = false;
+          for (int n = 0; n < possible_locations.size(); n++) {
+            if (scores[n] < score) {
+              inserted = true;
+              possible_locations.insert( possible_locations.begin() + n,
+                                         Point(x, y) );
+              scores.insert( scores.begin() + n, score );
+              if (possible_locations.size() > num_cities * 2) {
+                possible_locations.pop_back();
+                scores.pop_back();
+              }
+            }
+          }
+// If we never inserted, stick us at the back of the list.
+          if (!inserted && possible_locations.size() < num_cities * 2) {
+            possible_locations.push_back( Point(x, y) );
+            scores.push_back( score );
+          }
+        } // if location is okay to use
       }
+    }
+
+// Okay, we've got all our possible locations; now select from the top N, where
+// N is twice the number of cities we're placing.
+    int list_size = num_cities * 2;
+    if (list_size > possible_locations.size()) {
+      list_size = possible_locations.size();
+    }
+
+// Now, for each city to place, pick an item from this final list.
+    for (int n = 0;
+         list_size > 0 && !possible_locations.empty() && n < num_cities;
+         n++) {
+      int index = rng(0, list_size - 1);
+      Point city_loc = possible_locations[index];
+      possible_locations.erase( possible_locations.begin() + index);
+      list_size--;
+// Ensure we're not adjacent to any new cities.
+      bool okay = true;
       for (int j = 0; okay && j < new_city_locations.size(); j++) {
         int dist = rl_dist(city_loc, new_city_locations[j]);
         if (dist <= 1) {
@@ -243,13 +310,20 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
       }
       if (okay) {
         new_city_locations.push_back( city_loc );
+      } else {
+        n--;
       }
     }
 // Now place those new cities.
+    ////ss_debug << "Duchy " << i << ": " << new_city_locations.size() <<
+                //" cities" << std::endl;
     for (int n = 0; n < new_city_locations.size(); n++) {
       add_city(world, new_city_locations[n], CITY_TYPE_CITY, radius / 2);
     }
-  }
+
+  } // for (int i = 0; i < tmp_city_locations.size(); i++)
+
+  //debugmsg( ss_debug.str().c_str() );
 }
 
 Point Kingdom::pick_best_point(World_map* world,
@@ -426,4 +500,3 @@ void Kingdom::expand_boundaries(World_map* world)
     claim_territory(world, points_to_claim[i]);
   }
 }
-  
