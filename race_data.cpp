@@ -158,7 +158,7 @@ void init_races()
 */
 
     _map_type(MAP_FOREST,      100);
-    _map_type(MAP_JUNGLE,       60);
+    _map_type(MAP_JUNGLE,       45);
     _map_type(MAP_BASIN,        30);
     _map_type(MAP_SWAMP,        15);
     _map_type(MAP_PLAINS,       10);
