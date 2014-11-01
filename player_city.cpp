@@ -78,13 +78,17 @@ void Player_city::start_new_city()
 {
   City::start_new_city();
 
+  Race_datum* race_dat = Race_data[race];
+
   for (int i = 0; i < CIT_MAX; i++) {
-    tax_rate[i] = 0;
+    if (i >= CIT_PEASANT && i <= CIT_BURGHER) {
+      set_tax_rate( Citizen_type(i), race_dat->high_tax_rate[i] - 5 );
+    } else {
+      tax_rate[i] = 0;
+    }
   }
 
   birth_points = 0;
-
-  set_tax_rate(CIT_PEASANT, 50);
 
   radius = 1;
 }
