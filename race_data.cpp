@@ -303,8 +303,8 @@ void init_races()
 */
 
     _map_type(MAP_WASTELAND,  100);
+    _map_type(MAP_BASIN,      100);
     _map_type(MAP_FOOTHILLS,   80);
-    _map_type(MAP_BASIN,       50);
     _map_type(MAP_CANYON,      45);
     _map_type(MAP_PLAINS,      40);
     _map_type(MAP_JUNGLE,      15);
@@ -541,9 +541,9 @@ void init_races()
 
     _cluster_size(1, 2);
 
-    _city_name_start("ak", "ar", "ark", "bak", "ber", "berk", "dak", "dar",
-                     "dark", "der", "dor", "durk", "ek", "er", "hak", "har",
-                     "hark", "hek", "hor", "hurk", "lar", "lek", "lor", "lork",
+    _city_name_start("ak", "ar", "ark", "buk", "bur", "burk", "duk", "dar",
+                     "dark", "dur", "dor", "durk", "ek", "er", "hak", "har",
+                     "hark", "hek", "hur", "hurk", "lar", "luk", "lor", "lork",
                      "lur", "mak", "mar", "mark", "mor", "muk", "mur", "murk",
                      "rak", "rek", "rok", "ruk", "tak", "tar", "tark", "tek",
                      "ter", "terk", "tuk", "turk", "uk", "ur", "urk");
