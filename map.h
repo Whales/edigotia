@@ -65,7 +65,7 @@ struct Terrain_datum
 
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
-// TODO: List of wildlife
+  std::vector<Animal> game;
 
   std::vector<Area_type> buildable_areas;
 };
@@ -161,6 +161,7 @@ public:
  */
   void generate(Map_type type,
                 std::vector<Crop> crops, std::vector<Mineral> minerals,
+                std::vector<Animal> game,
                 Direction coast = DIR_NULL,
                 Direction_full river_start = DIRFULL_NULL,
                 Direction_full river_end = DIRFULL_NULL);

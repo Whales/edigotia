@@ -105,6 +105,7 @@ City_map::~City_map()
 
 void City_map::generate(Map_type type,
                         std::vector<Crop> crops, std::vector<Mineral> minerals,
+                        std::vector<Animal> game,
                         Direction coast,
                         Direction_full river_start, Direction_full river_end)
 {
@@ -500,7 +501,10 @@ void City_map::generate(Map_type type,
  */
       tiles[x][y].crops.clear();
       tiles[x][y].minerals.clear();
+      tiles[x][y].game.clear();
       Terrain_datum* ter_dat = Terrain_data[ tiles[x][y].ter ];
+
+// Crops
       for (int i = 0; i < ter_dat->crops.size(); i++) {
 // Check if the world map assigned us this crop.
         Crop crop = ter_dat->crops[i];
@@ -522,6 +526,8 @@ void City_map::generate(Map_type type,
           tiles[x][y].crops.push_back(crop);
         }
       }
+
+// Minerals
       for (int i = 0; i < ter_dat->minerals.size(); i++) {
         Mineral_amount min_amount = ter_dat->minerals[i];
         Mineral mineral = min_amount.type;
@@ -546,6 +552,30 @@ void City_map::generate(Map_type type,
           tiles[x][y].minerals.push_back( min_amount.make_small() );
         }
       }
+
+// Game
+      for (int i = 0; i < ter_dat->game.size(); i++) {
+// Check if the world map assigned us this crop.
+        Animal animal = ter_dat->game[i];
+        bool animal_assigned = false;
+        for (int n = 0; !animal_assigned && n < game.size(); n++) {
+          if (game[n] == animal) {
+            animal_assigned = true;
+          }
+        }
+// Only assign the animal if we got it from the world map, or on a small chance
+        Animal_datum* animal_dat = Animal_data[animal];
+        if (!animal_dat) {
+          debugmsg("NULL animal_dat (animal %d)", animal);
+        }
+        if (animal_assigned ||
+            (rng(1, 100) <= animal_dat->percentage &&
+             rng(1, 100) <= animal_dat->percentage &&
+             rng(1, 100) <= animal_dat->percentage   )) {
+          tiles[x][y].game.push_back(animal);
+        }
+      }
+
     }
   }
 }
