@@ -95,6 +95,7 @@ void init_races()
     _map_type(MAP_FOOTHILLS,    10);
 
     _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_JUNGLE,      -30);
     _map_type(MAP_SWAMP,       -20);
     _map_type(MAP_MOUNTAINOUS,  -5);
 
@@ -157,6 +158,7 @@ void init_races()
 */
 
     _map_type(MAP_FOREST,      100);
+    _map_type(MAP_JUNGLE,       60);
     _map_type(MAP_BASIN,        30);
     _map_type(MAP_SWAMP,        15);
     _map_type(MAP_PLAINS,       10);
@@ -228,6 +230,7 @@ void init_races()
     _map_type(MAP_WASTELAND,    10);
 
     _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_JUNGLE,      -25);
     _map_type(MAP_PLAINS,      -20);
 
     _cluster_size(2, 5);
@@ -304,6 +307,7 @@ void init_races()
     _map_type(MAP_BASIN,       50);
     _map_type(MAP_CANYON,      45);
     _map_type(MAP_PLAINS,      40);
+    _map_type(MAP_JUNGLE,      15);
     _map_type(MAP_MOUNTAINOUS, 10);
 
     _map_type(MAP_DESERT,     -10);
@@ -372,6 +376,7 @@ void init_races()
     _map_type(MAP_WASTELAND,   100);
     _map_type(MAP_BASIN,        80);
     _map_type(MAP_PLAINS,       70);
+    _map_type(MAP_JUNGLE,       60);
     _map_type(MAP_FOOTHILLS,    50);
     _map_type(MAP_MOUNTAINOUS,  20);
 
@@ -445,6 +450,7 @@ void init_races()
     _map_type(MAP_FOOTHILLS,    40);
 
     _map_type(MAP_DESERT,      -40);
+    _map_type(MAP_JUNGLE,      -30);
     _map_type(MAP_SWAMP,       -20);
     _map_type(MAP_MOUNTAINOUS, -10);
 
@@ -591,6 +597,7 @@ void init_races()
     _map_type(MAP_FOREST,       80);
 
     _map_type(MAP_DESERT,      -90);
+    _map_type(MAP_JUNGLE,      -70);
 
     _cluster_size(3, 4);
 
