@@ -1493,7 +1493,7 @@ void Interface::building_status()
       }
       i_buildings.set_data("text_upkeep", upkeep_ss.str());
 
-      i_buildings.clear_data("list_benefits_label");
+      i_buildings.clear_data("text_benefits_label");
       i_buildings.clear_data("list_benefits");
 // Mark us as needing to update list_benefits, since we just cleared it out
       update_benefits = true;
@@ -1505,13 +1505,14 @@ void Interface::building_status()
 
 /* Use some if statements to figure out what the building does - we'll put the
  * relevent information in list_benefits, and label it properly using
- * list_benefits_label.
+ * text_benefits_label.
  * TODO: This assumes we don't offer jobs AND housing - may not always be true
  */
       Building_datum* bldg_dat = cur_bldg->get_building_datum();
+
       if (cur_bldg->produces_resource()) { // Any raw production
 
-        i_buildings.set_data("list_benefits_label", "<c=yellow>Produces:<c=/>");
+        i_buildings.set_data("text_benefits_label", "<c=yellow>Produces:<c=/>");
         std::vector<std::string> production_list;
         for (int i = 0; i < bldg_dat->production.size(); i++) {
           Resource_amount res_amt = bldg_dat->production[i];
@@ -1525,7 +1526,7 @@ void Interface::building_status()
 
       } else if (cur_bldg->builds_resource()) { // Any manufacturing
 
-        i_buildings.set_data("list_benefits_label",
+        i_buildings.set_data("text_benefits_label",
                              "<c=yellow>Build Queue:<c=/>");
         std::vector<std::string> production_list;
 
@@ -1563,7 +1564,7 @@ void Interface::building_status()
 
       } else if (cur_bldg->get_housing() > 0) { // Any housing
 
-        i_buildings.set_data("list_benefits_label", "<c=yellow>Housing:<c=/>");
+        i_buildings.set_data("text_benefits_label", "<c=yellow>Housing:<c=/>");
         std::vector<std::string> housing_list;
         for (int i = 0; i < bldg_dat->housing.size(); i++) {
           Citizen_amount cit_amt = bldg_dat->housing[i];
