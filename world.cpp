@@ -166,7 +166,11 @@ void World_map::generate()
             tiles[x][y] = MAP_BASIN;
           }
         } else if (rainfall[x][y] > altitude[x][y]) {
-          tiles[x][y] = MAP_FOREST;
+          if (temperature[x][y] > 25 + altitude[x][y]) {
+            tiles[x][y] = MAP_JUNGLE;
+          } else {
+            tiles[x][y] = MAP_FOREST;
+          }
         } else if (temperature[x][y] <= 20) {
           tiles[x][y] = MAP_ICY_FOOTHILLS;
         } else {
@@ -192,7 +196,11 @@ void World_map::generate()
         } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
         } else if (rainfall[x][y] >= 45) {
-          tiles[x][y] = MAP_FOREST;
+          if (temperature[x][y] >= 65) {
+            tiles[x][y] = MAP_JUNGLE;
+          } else {
+            tiles[x][y] = MAP_FOREST;
+          }
         } else if (rainfall[x][y] >= 30) {
           tiles[x][y] = MAP_PLAINS;
         } else if (rainfall[x][y] >= 12) {
