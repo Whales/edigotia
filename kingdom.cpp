@@ -247,15 +247,20 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
     for (int x = parent_city.x - radius; x <= parent_city.x + radius; x++) {
       for (int y = parent_city.y - radius; y <= parent_city.y + radius; y++) {
 // Only use this point if it's in our kingdom and not adjacent to the parent.
+        int kingdom_id = world->get_kingdom_id(x, y);
         if (x >= 0 && x < WORLD_MAP_SIZE && y >= 0 && y < WORLD_MAP_SIZE &&
-            world->get_kingdom_id(x, y) == uid &&
+            (kingdom_id == uid || kingdom_id == -1) &&
             rl_dist(parent_city, Point(x, y)) > 1) {
 // Figure out the score of the location, and insert it into our list in the
 // proper position to sort the list by score.
-          int score = 0;
+// Randomize score a little bit so it's not always the same terrain.
+          int score = rng(0, 10);
+          if (one_in(10)) {
+            score += rng(10, 50);
+          }
           Map_type map_type = world->get_map_type(x, y);
           if (race_dat->map_type_value.count(map_type)) {
-            score = race_dat->map_type_value[map_type];
+            score += race_dat->map_type_value[map_type];
           }
 // Safety check
           if (possible_locations.size() != scores.size()) {
@@ -264,8 +269,9 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
           }
 // Now find a place to insert this location.
           bool inserted = false;
-          for (int n = 0; n < possible_locations.size(); n++) {
-            if (scores[n] < score) {
+          for (int n = 0; !inserted && n < possible_locations.size(); n++) {
+            if (scores[n] < score ||
+                (scores[n] == score && one_in(possible_locations.size() - n))) {
               inserted = true;
               possible_locations.insert( possible_locations.begin() + n,
                                          Point(x, y) );
@@ -317,6 +323,13 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
 // Now place those new cities.
     ////ss_debug << "Duchy " << i << ": " << new_city_locations.size() <<
                 //" cities" << std::endl;
+/*
+    if (new_city_locations.size() < race_dat->cluster_min) {
+      debugmsg("Placing %d cities, min is %d.",
+               new_city_locations.size(), race_dat->cluster_min);
+    }
+*/
+
     for (int n = 0; n < new_city_locations.size(); n++) {
       add_city(world, new_city_locations[n], CITY_TYPE_CITY, radius / 2);
     }
