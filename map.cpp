@@ -233,6 +233,17 @@ void City_map::generate(Map_type type,
       chance[TER_MOUNTAIN]  =  1;
       chance[TER_FOREST]    =  7;
       chance[TER_SWAMP]     = 40;
+      chance[TER_JUNGLE]    =  2;
+      break;
+
+    case MAP_JUNGLE:
+      chance[TER_FIELD]     =   2;
+      chance[TER_ROCKY]     =   2;
+      chance[TER_HILL]      =   5;
+      chance[TER_MOUNTAIN]  =   1;
+      chance[TER_FOREST]    =   4;
+      chance[TER_SWAMP]     =  10;
+      chance[TER_JUNGLE]    = 120;
       break;
 
     case MAP_DESERT:
