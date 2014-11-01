@@ -254,7 +254,7 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
 // Figure out the score of the location, and insert it into our list in the
 // proper position to sort the list by score.
 // Randomize score a little bit so it's not always the same terrain.
-          int score = rng(0, 10);
+          int score = rng(0, 30);
           if (one_in(10)) {
             score += rng(10, 50);
           }
