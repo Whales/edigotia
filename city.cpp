@@ -232,7 +232,7 @@ int City::get_mineral_amount(Mineral min)
 
 int City::get_food_cap()
 {
-  int food_expiration = 10; // How many days does it take our food to go bad?
+  int food_expiration = 25; // How many days does it take our food to go bad?
 // TODO: Allow modifiers to food_expiration.
   return food_expiration * get_food_consumption();
 }
