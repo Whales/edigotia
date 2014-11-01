@@ -255,7 +255,7 @@ void init_animal_data()
     _name("jelly");
     _temp_range     ( 32,  75);
     _altitude_range (  0,  80);
-    _rainfall_range ( 40,  90);
+    _rainfall_range ( 30,  90);
     _percentage(50);
     _danger(2);
     _reproduction(50);
@@ -268,9 +268,9 @@ void init_animal_data()
 
   _animal(ANIMAL_DIRE_WOLF);
     _name("dire wolf");
-    _temp_range     (  2,  60);
+    _temp_range     (  2,  40);
     _altitude_range (  0,  90);
-    _rainfall_range ( 15,  70);
+    _rainfall_range (  5,  70);
     _percentage(20);
     _danger(16);
     _reproduction(18);
