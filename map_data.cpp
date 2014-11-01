@@ -273,6 +273,23 @@ void init_terrain_data()
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
 
+  _ter(TER_JUNGLE);
+    _name("Jungle");
+    _symbol('J', c_ltcyan);
+    _farm(15);
+    _wood(3000, 10000);
+    _wood_cleared(TER_FIELD);
+    _crop(CROP_RICE);
+    _crop(CROP_PEPPER);
+    _crop(CROP_CINNAMON);
+    _crop(CROP_AYAHUASCA);
+    _crop(CROP_DEATHCAP);
+    _crop(CROP_VIPERVINE);
+    _crop(CROP_SCORPICON);
+    _mineral(MINERAL_STONE, 1800);
+    _mineral(MINERAL_COAL,  6000);
+    _buildable(AREA_SAWMILL);
+
   _ter(TER_ICE);
     _name("Ice");
     _symbol('~', c_ltcyan);
