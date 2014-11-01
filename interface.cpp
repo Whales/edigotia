@@ -159,6 +159,15 @@ void Interface::handle_key(long ch)
     }
 
     switch (cur_mode) {
+
+      case IMODE_MENU:
+// Most menu stuff is handled above (keys '1' - '9').  But Q can close the menu.
+        if (ch == 'q' || ch == 'Q') {
+          set_menu(MENU_NULL);
+          set_mode(IMODE_VIEW_MAP);
+        }
+        break;
+
       case IMODE_VIEW_MAP: {
         Point p = input_direction(ch);
 
@@ -184,10 +193,11 @@ void Interface::handle_key(long ch)
             popup( city->get_map_info(sel).c_str() );
           }
 
-// Revert to normal mode (not building an area, VIEW_MAP mode
+// Revert to normal mode (not building an area, VIEW_MAP mode)
         } else if (ch == 'q' || ch == 'Q') {
           current_area = AREA_NULL;
           set_mode(IMODE_VIEW_MAP);
+          i_main.clear_data("text_data");
 
 // Toggle hiding areas (i.e. only show terrain)
         } else if (ch == 't' || ch == 'T') {
