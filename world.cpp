@@ -9,7 +9,7 @@
 #include "animal.h"
 #include <sstream>
 #include <vector>
-#include <math.h> // for pow(), used in reading/writing crops and minerals
+#include <math.h> // for pow() and sqrt()
 #include <fstream>
 
 World_map::World_map()
@@ -305,24 +305,20 @@ Placing %d blobs [%d%%%%%%%%]",
   for (int i = 1; i < ANIMAL_MAX; i++) {
     Animal animal = Animal(i);
     Animal_datum* animal_dat = Animal_data[animal];
-    int min_radius =  5 + (animal_dat->percentage / 6);
-    int max_radius = 10 + (animal_dat->percentage / 2);
-    int avg_radius = (min_radius + max_radius) / 2;
-    int avg_size   = avg_radius * avg_radius;
-// Calculate the total number of blobs of the given size that'd fit in the world
-    int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
-    total_blobs /= avg_size * 1.2;
-    if (animal_dat->percentage < 20) {
-      total_blobs *= .6;
-    } else if (animal_dat->percentage > 90) {
-      total_blobs *= 1.2;
+
+    int num_blobs = 5 + animal_dat->percentage / 2;
+
+// We want those blobs to cover <animal_dat->percentage> percent of the world.
+    if (num_blobs < 2) {
+      num_blobs = 2;
     }
-// Place an appropriate percentage of the total blobs
-    int num_blobs = total_blobs * animal_dat->percentage;
-    num_blobs /= 100;
-    if (animal_dat->percentage >= 90) {
-      max_radius += 8;
-    }
+// So figure out a size that will do that.
+    int needed_coverage = (animal_dat->percentage * WORLD_MAP_SIZE *
+                           WORLD_MAP_SIZE) / 100;
+    int needed_area = needed_coverage / num_blobs;
+    int needed_radius = sqrt( double(needed_area) );
+    int min_radius = needed_radius * 0.6;
+    int max_radius = needed_radius * 1.4;
 // Now place the blobs.
     for (int n = 0; n < num_blobs; n++) {
       int percent = (100 * n) / num_blobs;
@@ -335,7 +331,12 @@ Placing %d blobs [%d%%%%%%%%]",
                      num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
-      Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      Point p;
+      int tries = 0;
+      do {
+        tries++;
+        p = Point( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      } while (tries < 20 && !tile_okay_for_animal(p, animal));
       add_animal(p, animal, radius);
     }
   }
@@ -695,19 +696,28 @@ void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
         minerals[x][y] |= int(pow(2, mineral));
       } else if (animal != ANIMAL_NULL) {
 // With animals, we need to check to make sure the environment is a match
-        Animal_datum* animal_dat = Animal_data[animal];
-        int temp = temperature[x][y], alt = altitude[x][y],
-            rain = rainfall[x][y];
-        if (temp >= animal_dat->min_temp && temp <= animal_dat->max_temp &&
-            alt >= animal_dat->min_altitude &&
-            alt <= animal_dat->max_altitude &&
-            rain >= animal_dat->min_rainfall &&
-            rain <= animal_dat->max_rainfall) {
+        if (tile_okay_for_animal(x, y, animal)) {
           animals[x][y]  |= int(pow(2, animal));
         }
       }
     }
   }
+}
+
+bool World_map::tile_okay_for_animal(Point p, Animal animal)
+{
+  return tile_okay_for_animal(p.x, p.y, animal);
+}
+
+bool World_map::tile_okay_for_animal(int x, int y, Animal animal)
+{
+  Animal_datum* animal_dat = Animal_data[animal];
+  return (temperature[x][y] >= animal_dat->min_temp &&
+          temperature[x][y] <= animal_dat->max_temp &&
+          altitude[x][y]    >= animal_dat->min_altitude &&
+          altitude[x][y]    <= animal_dat->max_altitude &&
+          rainfall[x][y]    >= animal_dat->min_rainfall &&
+          rainfall[x][y]    <= animal_dat->max_rainfall);
 }
 
 Point World_map::draw(Window* w_map)

@@ -91,13 +91,16 @@ private:
   void add_crop     (Point origin, Crop crop,       int radius);
   void add_mineral  (Point origin, Mineral mineral, int radius);
   void add_animal   (Point origin, Animal animal,   int radius);
-/* add_crop() and add_mineral() are both basically the same function, so rather
- * than rewrite it, add_resource() does both.  If crop != CROP_NULL it will
- * place crop, otherwise it will place mineral.  If both are null (or neither
- * are), it will return without doing anything.
+/* add_crop(), add_mineral() and add_animal() are all basically the same
+ * function, so rather than rewrite it three times, add_resource() does them
+ * all.  Exactly one of {crop, mineral, animal} should be non-null; the other
+ * two should be null.  The non-null one will be placed.  If this requirement is
+ * not met, the function will return without doing anything.
  */
   void add_resource (Point origin, Crop crop, Mineral mineral, Animal animal,
                      int radius);
+  bool tile_okay_for_animal(Point p, Animal animal);
+  bool tile_okay_for_animal(int x, int y, Animal animal);
 
   Map_type tiles  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
