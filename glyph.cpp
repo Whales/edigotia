@@ -54,7 +54,11 @@ glyph glyph::hilite(nc_color back)
   }
   glyph ret = (*this);
   
-  ret.bg = back;
+  if (ret.bg == back) {
+    ret.bg = c_black;
+  } else {
+    ret.bg = back;
+  }
   return ret;
 }
 
