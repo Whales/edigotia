@@ -570,7 +570,6 @@ void City_map::generate(Map_type type,
         }
         if (animal_assigned ||
             (rng(1, 100) <= animal_dat->percentage &&
-             rng(1, 100) <= animal_dat->percentage &&
              rng(1, 100) <= animal_dat->percentage   )) {
           tiles[x][y].game.push_back(animal);
         }
