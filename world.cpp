@@ -196,7 +196,7 @@ void World_map::generate()
         } else if (rainfall[x][y] >= 55) {
           tiles[x][y] = MAP_SWAMP;
         } else if (rainfall[x][y] >= 45) {
-          if (temperature[x][y] >= 65) {
+          if (temperature[x][y] >= 75) {
             tiles[x][y] = MAP_JUNGLE;
           } else {
             tiles[x][y] = MAP_FOREST;
