@@ -360,6 +360,7 @@ Point Kingdom::pick_best_point(World_map* world,
 // The center point MUST be unclaimed.
     if (world->get_kingdom_id(p) == -1) {
 
+// Check out nearby terrain
       for (int x = p.x - radius; x <= p.x + radius; x++) {
         for (int y = p.y - radius; y <= p.y + radius; y++) {
 
@@ -374,9 +375,15 @@ Point Kingdom::pick_best_point(World_map* world,
             multiplier -= (400 * dist) / (radius * 3);
           }
 
+// Greatly increase the multiplier for the center tile - you know, the one our
+// city will actually be on.
+          if (x == p.x && y == p.y) {
+            multiplier = 100 * (radius - 1) * (radius - 1);
+          }
+
 // Are we close to another kingdom?
           if (world->get_kingdom_id(x, y) != -1) {
-            value -= multiplier* kingdom_penalty;
+            value -= multiplier * kingdom_penalty;
           } else {
             Map_type type = world->get_map_type(x, y);
             if (race_dat->map_type_value.count(type)) {
