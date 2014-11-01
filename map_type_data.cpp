@@ -49,6 +49,10 @@ void init_map_type_data()
     _water();
     _symbol('s', c_cyan);
 
+  _ter(MAP_JUNGLE);
+    _name("jungle");
+    _symbol('J', c_ltcyan);
+
   _ter(MAP_FOOTHILLS);
     _name("foothills");
     _symbol('n', c_brown);
