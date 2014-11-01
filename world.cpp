@@ -6,6 +6,7 @@
 #include "keys.h" // for input_direction()
 #include "kingdom.h"  // To color map based on Kingdom.
 #include "stringfunc.h" // For capitalize()
+#include "animal.h"
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow(), used in reading/writing crops and minerals
@@ -221,6 +222,8 @@ void World_map::generate()
       minerals[x][y] = 0;
     }
   }
+
+// Crops
   for (int i = 1; i < CROP_MAX; i++) {
     Crop crop = Crop(i);
     Crop_datum* crop_dat = Crop_data[crop];
@@ -295,6 +298,45 @@ Placing %d blobs [%d%%%%%%%%]",
       int radius = rng(min_radius, max_radius);
       Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
       add_mineral(p, mineral, radius);
+    }
+  }
+
+// Slightly different for animals, but still very similar
+  for (int i = 1; i < ANIMAL_MAX; i++) {
+    Animal animal = Animal(i);
+    Animal_datum* animal_dat = Animal_data[animal];
+    int min_radius =  5 + (animal_dat->percentage / 6);
+    int max_radius = 10 + (animal_dat->percentage / 2);
+    int avg_radius = (min_radius + max_radius) / 2;
+    int avg_size   = avg_radius * avg_radius;
+// Calculate the total number of blobs of the given size that'd fit in the world
+    int total_blobs = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
+    total_blobs /= avg_size * 1.2;
+    if (animal_dat->percentage < 20) {
+      total_blobs *= .6;
+    } else if (animal_dat->percentage > 90) {
+      total_blobs *= 1.2;
+    }
+// Place an appropriate percentage of the total blobs
+    int num_blobs = total_blobs * animal_dat->percentage;
+    num_blobs /= 100;
+    if (animal_dat->percentage >= 90) {
+      max_radius += 8;
+    }
+// Now place the blobs.
+    for (int n = 0; n < num_blobs; n++) {
+      int percent = (100 * n) / num_blobs;
+      if (percent >= 10 && percent % 5 == 0) {
+        popup_nowait("\
+Generating World...\n\
+Animal %d / %d (%s)  \n\
+Placing %d blobs [%d%%%%%%%%]",
+                     i, ANIMAL_MAX - 1, Animal_data[animal]->name.c_str(),
+                     num_blobs, (100 * n) / num_blobs);
+      }
+      int radius = rng(min_radius, max_radius);
+      Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      add_animal(p, animal, radius);
     }
   }
 
@@ -543,30 +585,50 @@ void World_map::add_river(Point origin)
 void World_map::add_crop(Point origin, Crop crop, int radius)
 {
   //crops.push_back( Crop_area(crop, origin, radius) );
-  add_resource(origin, crop, MINERAL_NULL, radius);
+  add_resource(origin, crop, MINERAL_NULL, ANIMAL_NULL, radius);
 }
 
 void World_map::add_mineral(Point origin, Mineral mineral, int radius)
 {
   //minerals.push_back( Mineral_area(mineral, origin, radius) );
-  add_resource(origin, CROP_NULL, mineral, radius);
+  add_resource(origin, CROP_NULL, mineral, ANIMAL_NULL, radius);
+}
+
+void World_map::add_animal(Point origin, Animal animal, int radius)
+{
+  add_resource(origin, CROP_NULL, MINERAL_NULL, animal, radius);
 }
 
 void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
-                             int radius)
+                             Animal animal, int radius)
 {
-  if (crop == CROP_NULL && mineral == MINERAL_NULL) {
-    debugmsg("World_map::add_resource() called with crop = CROP_NULL and \
-mineral = MINERAL_NULL!");
+  if (crop == CROP_NULL && mineral == MINERAL_NULL && animal == ANIMAL_NULL) {
+    debugmsg("World_map::add_resource() called with all resources NULL!");
+    return;
+  } else if (crop != CROP_NULL && mineral != MINERAL_NULL &&
+             animal != ANIMAL_NULL) {
+    debugmsg("World_map::add_resource() called with all three resources set!");
     return;
   } else if (crop != CROP_NULL && mineral != MINERAL_NULL) {
     debugmsg("World_map::add_resource() called with crop AND mineral!");
     return;
+  } else if (crop != CROP_NULL && animal != ANIMAL_NULL) {
+    debugmsg("World_map::add_resource() called with crop AND animal!");
+    return;
+  } else if (mineral != MINERAL_NULL && animal != ANIMAL_NULL) {
+    debugmsg("World_map::add_resource() called with mineral AND animal!");
+    return;
   }
+
   if (origin.x < 0               || origin.y < 0 ||
       origin.x >= WORLD_MAP_SIZE || origin.y >= WORLD_MAP_SIZE) {
     debugmsg("World_map::add_resource() called with origin %s.",
              origin.str().c_str());
+    return;
+  }
+
+  if (radius <= 0) {
+    debugmsg("World_map::add_resource() called with radius %d.", radius);
     return;
   }
 
@@ -628,11 +690,21 @@ mineral = MINERAL_NULL!");
     int x = placement[i].x, y = placement[i].y;
     if (tiles[x][y] != MAP_NULL && tiles[x][y] != MAP_OCEAN) {
       if (crop != CROP_NULL) {
-  // Check if we already exist
-        crops[x][y] |= int(pow(2, crop));
-      } else {  // Placing mineral, not crop.
-  // Check if we already exist
+        crops[x][y]    |= int(pow(2, crop));
+      } else if (mineral != MINERAL_NULL) {
         minerals[x][y] |= int(pow(2, mineral));
+      } else if (animal != ANIMAL_NULL) {
+// With animals, we need to check to make sure the environment is a match
+        Animal_datum* animal_dat = Animal_data[animal];
+        int temp = temperature[x][y], alt = altitude[x][y],
+            rain = rainfall[x][y];
+        if (temp >= animal_dat->min_temp && temp <= animal_dat->max_temp &&
+            alt >= animal_dat->min_altitude &&
+            alt <= animal_dat->max_altitude &&
+            rain >= animal_dat->min_rainfall &&
+            rain <= animal_dat->max_rainfall) {
+          animals[x][y]  |= int(pow(2, animal));
+        }
       }
     }
   }
@@ -669,12 +741,15 @@ Point World_map::draw(Window* w_map)
   pos.x -= (xdim / 2);
   pos.y -= (ydim / 2);
 
-  bool hilite_crops = false;
-  Crop crop_hilited = CROP_NULL;
-  bool hilite_minerals = false;
+  bool hilite_crops       = false;
+  Crop crop_hilited       = CROP_NULL;
+  bool hilite_minerals    = false;
   Mineral mineral_hilited = MINERAL_NULL;
+  bool hilite_animals     = false;
+  Animal animal_hilited   = ANIMAL_NULL;
 
   while (true) {
+
     Point center(pos.x + xdim / 2, pos.y + ydim / 2);
 
     for (int x = pos.x; x < pos.x + xdim; x++) {
@@ -691,28 +766,38 @@ Point World_map::draw(Window* w_map)
           }
 
           int kingdom_id = get_kingdom_id(x, y);
-          if (!city_here && kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
+          if (!city_here && kingdom_id >= 0 && kingdom_id < Kingdoms.size() &&
+              !hilite_crops && !hilite_minerals && !hilite_animals) {
             Kingdom* kingdom = Kingdoms[kingdom_id];
 // Skip adding the kingdom background if it would interfere with our cursor.
-            if (kingdom->color != c_blue || x != center.x || y != center.y) {
-              gl = gl.hilite(kingdom->color);
-            }
+            gl = gl.hilite(kingdom->color);
           }
 
-          bool do_crop_hilite = (hilite_crops && has_crop(crop_hilited, x, y));
+          bool do_crop_hilite    = (hilite_crops &&
+                                    has_crop(   crop_hilited,    x, y) );
           bool do_mineral_hilite = (hilite_minerals &&
-                                    has_mineral(mineral_hilited, x, y));
+                                    has_mineral(mineral_hilited, x, y) );
+          bool do_animal_hilite  = (hilite_animals &&
+                                    has_animal( animal_hilited,  x, y) );
 
 // See if we need to change the background color for any reason.
           if (x == center.x && y == center.y) {
             gl = gl.hilite(c_blue);
           } else if (!city_here) { // No highlighting if there's a city
-            if (do_crop_hilite && do_mineral_hilite) {
+            if (do_crop_hilite && do_mineral_hilite && do_animal_hilite) {
+              gl = gl.hilite(c_ltgray);
+            } else if (do_crop_hilite && do_mineral_hilite) {
+              gl = gl.hilite(c_brown);
+            } else if (do_crop_hilite && do_animal_hilite) {
               gl = gl.hilite(c_cyan);
+            } else if (do_mineral_hilite && do_animal_hilite) {
+              gl = gl.hilite(c_magenta);
             } else if (do_crop_hilite) {
               gl = gl.hilite(c_green);
             } else if (do_mineral_hilite) {
               gl = gl.hilite(c_red);
+            } else if (do_animal_hilite) {
+              gl = gl.hilite(c_blue);
             }
           }
           w_map->putglyph(x - pos.x, y - pos.y, gl);
@@ -878,10 +963,32 @@ Point World_map::draw(Window* w_map)
           }
         } break;
   
+        case 'a':
+        case 'A': {
+          std::string animal_name = string_input_popup("hilite animal:");
+          Animal hilited = ANIMAL_NULL;
+          bool do_hilite = true;
+          if (!animal_name.empty()) {
+            hilited = search_for_animal(animal_name);
+            if (hilited == ANIMAL_NULL) {
+              popup("%s not found.");
+              do_hilite = false;
+            }
+          }
+          if (do_hilite) {
+            hilite_animals = true;
+            //hilite_crops = false;
+            animal_hilited = hilited;
+          } else {
+            hilite_animals = false;
+          }
+        } break;
+  
         case 't':
         case 'T':
           hilite_crops    = false;
           hilite_minerals = false;
+          hilite_animals  = false;
           break;
 
         case '?':
@@ -1145,6 +1252,11 @@ std::vector<Mineral> World_map::minerals_at(Point p)
   return minerals_at( p.x, p.y );
 }
 
+std::vector<Animal> World_map::animals_at(Point p)
+{
+  return animals_at( p.x, p.y );
+}
+
 std::vector<Crop> World_map::crops_at(int x, int y)
 {
   std::vector<Crop> ret;
@@ -1167,6 +1279,17 @@ std::vector<Mineral> World_map::minerals_at(int x, int y)
   return ret;
 }
 
+std::vector<Animal> World_map::animals_at(int x, int y)
+{
+  std::vector<Animal> ret;
+  for (int i = 1; i < ANIMAL_MAX; i++) {
+    if (has_animal( Animal(i), x, y )) {
+      ret.push_back( Animal(i) );
+    }
+  }
+  return ret;
+}
+
 bool World_map::has_crop(Crop crop, Point p)
 {
   return has_crop(crop, p.x, p.y);
@@ -1175,6 +1298,11 @@ bool World_map::has_crop(Crop crop, Point p)
 bool World_map::has_mineral(Mineral mineral, Point p)
 {
   return has_mineral(mineral, p.x, p.y);
+}
+
+bool World_map::has_animal(Animal animal, Point p)
+{
+  return has_animal(animal, p.x, p.y);
 }
 
 bool World_map::has_crop(Crop crop, int x, int y)
@@ -1199,4 +1327,16 @@ bool World_map::has_mineral(Mineral mineral, int x, int y)
     return true;
   }
   return (minerals[x][y] & int(pow(2, mineral)));
+}
+
+bool World_map::has_animal(Animal animal, int x, int y)
+{
+  if (x < 0 || x >= WORLD_MAP_SIZE ||
+      y < 0 || y >= WORLD_MAP_SIZE) {
+    return false;
+  }
+  if (animal == ANIMAL_NULL && animals[x][y] > 1) {
+    return true;
+  }
+  return (animals[x][y] & int(pow(2, animal)));
 }
