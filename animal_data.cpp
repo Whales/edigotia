@@ -19,6 +19,9 @@ Animal_datum* Animal_data[ANIMAL_MAX];
   Animal_data[cur_id]->min_rainfall = (a); \
   Animal_data[cur_id]->max_rainfall = (b)
 
+#define _percentage(n) \
+  Animal_data[cur_id]->percentage = (n)
+
 #define _danger(n) \
   Animal_data[cur_id]->danger = (n)
 
@@ -65,6 +68,7 @@ void init_animal_data()
     _temp_range     ( 25,  80);
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  50);
+    _percentage(85);
     _reproduction(45);
     _hardiness(1800);
     _food_killed(2);
@@ -77,6 +81,7 @@ void init_animal_data()
     _temp_range     ( 35,  75);
     _altitude_range (  0,  85);
     _rainfall_range ( 20,  70);
+    _percentage(70);
     _reproduction(32);
     _hardiness(2800);
     _food_killed(60);
@@ -88,6 +93,7 @@ void init_animal_data()
     _temp_range     ( 10,  60);
     _altitude_range (  0,  95);
     _rainfall_range ( 15,  60);
+    _percentage(60);
     _reproduction(30);
     _hardiness(2500);
     _food_killed(50);
@@ -101,6 +107,7 @@ void init_animal_data()
     _temp_range     ( 20,  85);
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  60);
+    _percentage(60);
     _reproduction(30);
     _hardiness(3500);
     _food_killed(250);
@@ -114,6 +121,7 @@ void init_animal_data()
     _temp_range     ( 20,  80);
     _altitude_range (  0,  80);
     _rainfall_range ( 15,  60);
+    _percentage(30);
     _danger(1);
     _reproduction(20);
     _hardiness(4000);
@@ -130,6 +138,7 @@ void init_animal_data()
     _temp_range     ( 10,  60);
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  75);
+    _percentage(90);
     _reproduction(50);
     _hardiness(800);
     _food_killed(2);
@@ -142,6 +151,7 @@ void init_animal_data()
     _temp_range     (  5,  90);
     _altitude_range (  0,  85);
     _rainfall_range (  5,  60);
+    _percentage(70);
     _reproduction(25);
     _hardiness(2000);
     _food_killed(15);
@@ -155,6 +165,7 @@ void init_animal_data()
     _temp_range     ( 35,  90);
     _altitude_range (  0,  60);
     _rainfall_range (  0,  70);
+    _percentage(60);
     _danger(5);
     _reproduction(28);
     _hardiness(3400);
@@ -167,6 +178,7 @@ void init_animal_data()
     _temp_range     ( 12,  85);
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  60);
+    _percentage(80);
     _reproduction(20);
     _hardiness(3000);
     _food_killed(80);
@@ -182,6 +194,7 @@ void init_animal_data()
     _temp_range     (  0,  55);
     _altitude_range (  5,  80);
     _rainfall_range ( 15,  65);
+    _percentage(70);
     _danger(10);
     _reproduction(18);
     _hardiness(3400);
@@ -195,6 +208,7 @@ void init_animal_data()
     _temp_range     (  5,  60);
     _altitude_range (  0,  75);
     _rainfall_range ( 15,  60);
+    _percentage(60);
     _danger(8);
     _reproduction(25);
     _hardiness(3000);
@@ -209,6 +223,7 @@ void init_animal_data()
     _temp_range     ( 70, 110);
     _altitude_range (  0,  50);
     _rainfall_range (  0,  25);
+    _percentage(35);
     _danger(12);
     _reproduction(15);
     _hardiness(3500);
@@ -224,6 +239,7 @@ void init_animal_data()
     _temp_range     ( 65, 100);
     _altitude_range (  0,  60);
     _rainfall_range (  0,  30);
+    _percentage(25);
     _danger(16);
     _reproduction(8);
     _hardiness(7000);
@@ -240,6 +256,7 @@ void init_animal_data()
     _temp_range     ( 32,  75);
     _altitude_range (  0,  80);
     _rainfall_range ( 40,  90);
+    _percentage(50);
     _danger(2);
     _reproduction(50);
     _hardiness(600);
@@ -254,6 +271,7 @@ void init_animal_data()
     _temp_range     (  2,  60);
     _altitude_range (  0,  90);
     _rainfall_range ( 15,  70);
+    _percentage(20);
     _danger(16);
     _reproduction(18);
     _hardiness(5000);
@@ -268,6 +286,7 @@ void init_animal_data()
     _temp_range     ( 50, 110);
     _altitude_range ( 60, 100);
     _rainfall_range (  0,  40);
+    _percentage(10);
     _danger(18);
     _reproduction(15);
     _hardiness(7500);
@@ -281,6 +300,7 @@ void init_animal_data()
     _temp_range     ( 30,  65);
     _altitude_range (  0,  95);
     _rainfall_range ( 40,  60);
+    _percentage(5);
     _danger(15);
     _reproduction(5);
     _hardiness(8000);
@@ -294,6 +314,7 @@ void init_animal_data()
     _temp_range     ( 60, 110);
     _altitude_range (  0, 100);
     _rainfall_range (  0,  40);
+    _percentage(8);
     _danger(20);
     _reproduction(8);
     _hardiness(7000);
@@ -306,6 +327,7 @@ void init_animal_data()
     _temp_range     ( 30,  90);
     _altitude_range ( 70, 100);
     _rainfall_range ( 10,  70);
+    _percentage(3);
     _danger(22);
     _reproduction(15);
     _hardiness(9000);

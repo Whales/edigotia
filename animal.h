@@ -68,6 +68,7 @@ struct Animal_datum
   int min_temp, max_temp;         // Range of temperature we live in
   int min_altitude, max_altitude; // Range of altitude    we live in
   int min_rainfall, max_rainfall; // Range of rainfall    we live in
+  int percentage;                 // Chance of placement
 
 // Hunting/livestock data
   int danger;             // Dangerous to hunt? 10 = unarmed man, 20 = hunter

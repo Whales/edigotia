@@ -10,6 +10,7 @@ Animal_datum::Animal_datum()
   max_altitude  = 100;
   min_rainfall  =   0;
   max_rainfall  = 100;
+  percentage    =   0;
 
   danger = 0;
 
