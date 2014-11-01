@@ -87,6 +87,10 @@ struct Animal_datum
 //       it is a sin in the eyes of some gods to kill or "enslave" a unicorn.
 };
 
+// Defined in animal.cpp - searches for a partial match of the name, not caps
+// sensitive, ignores whitespace
+Animal search_for_animal(std::string name);
+
 // Defined in animal_data.cpp
 extern Animal_datum* Animal_data[ANIMAL_MAX];
 void init_animal_data();

@@ -1,4 +1,5 @@
 #include "animal.h"
+#include "stringfunc.h" // search_for_animal() needs trim() and no_caps()
 
 Animal_datum::Animal_datum()
 {
@@ -28,3 +29,16 @@ Animal_datum::Animal_datum()
 Animal_datum::~Animal_datum()
 {
 }
+
+Animal search_for_animal(std::string name)
+{
+  name = no_caps( trim(name) );
+  for (int i = 1; i < ANIMAL_MAX; i++) {
+    Animal ret = Animal(i);
+    if (Animal_data[ret]->name.find(name) != std::string::npos) {
+      return ret;
+    }
+  }
+  return ANIMAL_NULL;
+}
+
