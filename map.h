@@ -36,6 +36,7 @@ enum Terrain_type
 
   TER_DESERT,     // Bad for most everything, but some unique crops
   TER_SWAMP,      // Bad for most everything, but some unique crops
+  TER_JUNGLE,     // Great for hunting, abundant wood
 
   TER_ICE,        // From icecap - nearly useless
 
@@ -86,6 +87,7 @@ enum Map_type
   MAP_PLAINS,       // Mostly field and rocky
   MAP_FOREST,       // Mostly forest and plains
   MAP_SWAMP,        // Mostly swamp
+  MAP_JUNGLE,       // Jungle, forest and swamp.
 
   MAP_FOOTHILLS,    // Mostly hills and mountains
   MAP_ICY_FOOTHILLS,// Frozen hills and mountains
