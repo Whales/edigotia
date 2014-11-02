@@ -19,6 +19,8 @@ Terrain_datum* Terrain_data[TER_MAX];
   Terrain_data[cur_id]->crops.push_back( (c) )
 #define _mineral(m, a) \
   Terrain_data[cur_id]->minerals.push_back( Mineral_amount( (m), (a) ) )
+#define _animal(a) \
+  Terrain_data[cur_id]->animals.push_back( (a) )
 #define _buildable(a) \
   Terrain_data[cur_id]->buildable_areas.push_back( (a) )
 
