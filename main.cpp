@@ -50,12 +50,15 @@ int main()
   Player_city city;
   bool placed = false;
   while (!placed) {
-    std::vector<Crop>    crops    = world.crops_at   (p);
-    std::vector<Mineral> minerals = world.minerals_at(p);
-    std::vector<Animal>  game;
-    city.map.generate( world.get_map_type(p), crops, minerals, game,
-                       world.coast_from(p), world.river_start_for(p),
-                       world.river_end_for(p) );
+    std::vector<Crop>    crops    = world.crops_at    (p);
+    std::vector<Mineral> minerals = world.minerals_at (p);
+    std::vector<Animal>  animals  = world.animals_at  (p);
+
+    city.map.generate( world.get_map_type(p),
+                       crops, minerals, animals,
+                       world.coast_from(p),
+                       world.river_start_for(p), world.river_end_for(p) );
+
     placed = city.place_keep();
     if (!placed) {
       p = world.draw();
