@@ -282,11 +282,11 @@ std::string Building_datum::get_short_description()
     }
   }
 
-  if (!buildable.empty()) {
+  if (!recipes.empty()) {
     ret << "<c=ltblue>Constructs: ";
-    for (int i = 0; i < buildable.size(); i++) {
-      ret << resource_name( buildable[i] );
-      if (i + 1 < buildable.size()) {
+    for (int i = 0; i < recipes.size(); i++) {
+      ret << resource_name( recipes[i].get_resource() );
+      if (i + 1 < recipes.size()) {
         ret << ", ";
       }
     }

@@ -22,8 +22,8 @@ enum Building_type
 
 // Basic resources - ALL AREAS, not real buildings
   BUILD_FARM,
+  BUILD_HUNTING_CAMP,
   BUILD_MINE,
-  BUILD_CAMP,
   BUILD_SAWMILL,
 
 // Military - ALL AREAS, not real buildings
@@ -140,7 +140,6 @@ struct Building_datum
   std::vector<Resource_amount> maintenance_cost;  // Will we ever need this?
 
 // Things this building can construct
-  std::vector<Resource> buildable;
   std::vector<Recipe>   recipes;
 
 };

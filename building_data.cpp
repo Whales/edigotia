@@ -71,8 +71,6 @@ Building_datum* Building_data[BUILD_MAX];
 
 // </recipes>
 
-#define _buildable(t) \
-  Building_data[cur_id]->buildable.push_back( (t) )
 
 void init_building_data()
 {
@@ -133,6 +131,15 @@ void init_building_data()
     _wages(2);
     _produces(RES_FARMING, 10);
 
+  _build(BUILD_HUNTING_CAMP);
+    _name("hunting camp");
+    _cost(RES_GOLD, 50);
+    _build_time(1);
+    _destroy_cost(100);
+    _jobs(CIT_PEASANT, 5);
+    _wages(3);
+    _produces(RES_HUNTING, 10);
+
   _build(BUILD_MINE);
     _name("mine");
     _cost(RES_GOLD, 500);
@@ -143,15 +150,6 @@ void init_building_data()
     _jobs(CIT_PEASANT, 6);
     _wages(5);
     _produces(RES_MINING, 5);
-
-  _build(BUILD_CAMP);
-    _name("hunting camp");
-    _cost(RES_GOLD, 50);
-    _build_time(1);
-    _destroy_cost(100);
-    _jobs(CIT_PEASANT, 10);
-    _wages(3);
-    _produces(RES_HUNTING, 5);
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
