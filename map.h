@@ -65,7 +65,7 @@ struct Terrain_datum
 
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
-  std::vector<Animal> game;
+  std::vector<Animal> animals;
 
   std::vector<Area_type> buildable_areas;
 };
@@ -134,6 +134,7 @@ struct Map_tile
   glyph          get_glyph();
   std::string    get_info();
   std::string    get_crop_info();
+  std::string    get_animals_info();
 
   int get_farmability();
 
@@ -145,7 +146,7 @@ struct Map_tile
   int wood;
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
-  std::vector<Animal>         game;
+  std::vector<Animal>         animals;
 };
 
 class City_map
@@ -161,7 +162,7 @@ public:
  */
   void generate(Map_type type,
                 std::vector<Crop> crops, std::vector<Mineral> minerals,
-                std::vector<Animal> game,
+                std::vector<Animal> animals,
                 Direction coast = DIR_NULL,
                 Direction_full river_start = DIRFULL_NULL,
                 Direction_full river_end = DIRFULL_NULL);

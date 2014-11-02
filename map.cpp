@@ -57,12 +57,27 @@ std::string Map_tile::get_info()
 std::string Map_tile::get_crop_info()
 {
   if (crops.empty()) {
-    return std::string();
+    return "None";
   }
   std::stringstream ret;
   for (int i = 0; i < crops.size(); i++) {
     ret << Crop_data[ crops[i] ]->name;
     if (i < crops.size() - 1) {
+      ret << " ";
+    }
+  }
+  return ret.str();
+}
+
+std::string Map_tile::get_animals_info()
+{
+  if (animals.empty()) {
+    return "None";
+  }
+  std::stringstream ret;
+  for (int i = 0; i < animals.size(); i++) {
+    ret << Animal_data[ animals[i] ]->name;
+    if (i < animals.size() - 1) {
       ret << " ";
     }
   }
@@ -105,7 +120,7 @@ City_map::~City_map()
 
 void City_map::generate(Map_type type,
                         std::vector<Crop> crops, std::vector<Mineral> minerals,
-                        std::vector<Animal> game,
+                        std::vector<Animal> animals,
                         Direction coast,
                         Direction_full river_start, Direction_full river_end)
 {
@@ -501,7 +516,7 @@ void City_map::generate(Map_type type,
  */
       tiles[x][y].crops.clear();
       tiles[x][y].minerals.clear();
-      tiles[x][y].game.clear();
+      tiles[x][y].animals.clear();
       Terrain_datum* ter_dat = Terrain_data[ tiles[x][y].ter ];
 
 // Crops
@@ -553,13 +568,13 @@ void City_map::generate(Map_type type,
         }
       }
 
-// Game
-      for (int i = 0; i < ter_dat->game.size(); i++) {
+// Animals
+      for (int i = 0; i < ter_dat->animals.size(); i++) {
 // Check if the world map assigned us this crop.
-        Animal animal = ter_dat->game[i];
+        Animal animal = ter_dat->animals[i];
         bool animal_assigned = false;
-        for (int n = 0; !animal_assigned && n < game.size(); n++) {
-          if (game[n] == animal) {
+        for (int n = 0; !animal_assigned && n < animals.size(); n++) {
+          if (animals[n] == animal) {
             animal_assigned = true;
           }
         }
@@ -571,7 +586,7 @@ void City_map::generate(Map_type type,
         if (animal_assigned ||
             (rng(1, 100) <= animal_dat->percentage &&
              rng(1, 100) <= animal_dat->percentage   )) {
-          tiles[x][y].game.push_back(animal);
+          tiles[x][y].animals.push_back(animal);
         }
       }
 
