@@ -76,9 +76,10 @@ std::string Map_tile::get_animals_info()
   }
   std::stringstream ret;
   for (int i = 0; i < animals.size(); i++) {
-    ret << Animal_data[ animals[i] ]->name;
+    ret << capitalize( animal_amount_ranking(animals[i]) ) << " " <<
+           Animal_data[ animals[i].type ]->name_plural;
     if (i < animals.size() - 1) {
-      ret << " ";
+      ret << "," << std::endl;
     }
   }
   return ret.str();
@@ -570,23 +571,29 @@ void City_map::generate(Map_type type,
 
 // Animals
       for (int i = 0; i < ter_dat->animals.size(); i++) {
-// Check if the world map assigned us this crop.
-        Animal animal = ter_dat->animals[i];
+        Animal_amount min_amount = ter_dat->animals[i];
+        Animal animal = min_amount.type;
+// Check if the world map assigned us this animal.
         bool animal_assigned = false;
         for (int n = 0; !animal_assigned && n < animals.size(); n++) {
           if (animals[n] == animal) {
             animal_assigned = true;
           }
         }
-// Only assign the animal if we got it from the world map, or on a small chance
         Animal_datum* animal_dat = Animal_data[animal];
         if (!animal_dat) {
           debugmsg("NULL animal_dat (animal %d)", animal);
         }
-        if (animal_assigned ||
-            (rng(1, 100) <= animal_dat->percentage &&
-             rng(1, 100) <= animal_dat->percentage   )) {
-          tiles[x][y].animals.push_back(animal);
+/* Some terrains have an infinite amount of a animal; always copy it over.
+ * This is copied from minerals above; should we NOT do this?  It doesn't seem
+ * likely to ever occur.
+ */
+        if (min_amount.is_infinite()) {
+          tiles[x][y].animals.push_back( min_amount );
+        } else if (animal_assigned) {
+          tiles[x][y].animals.push_back( min_amount.randomize() );
+        } else if (rng(1, 150) <= animal_dat->percentage) {
+          tiles[x][y].animals.push_back( min_amount.make_small() );
         }
       }
 

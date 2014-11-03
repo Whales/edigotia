@@ -65,7 +65,7 @@ struct Terrain_datum
 
   std::vector<Crop> crops;
   std::vector<Mineral_amount> minerals;
-  std::vector<Animal> animals;
+  std::vector<Animal_amount> animals;
 
   std::vector<Area_type> buildable_areas;
 };
@@ -146,7 +146,7 @@ struct Map_tile
   int wood;
   std::vector<Crop>           crops;
   std::vector<Mineral_amount> minerals;
-  std::vector<Animal>         animals;
+  std::vector<Animal_amount>  animals;
 };
 
 class City_map
