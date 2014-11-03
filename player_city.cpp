@@ -5,6 +5,7 @@
 #include "stringfunc.h"
 #include "geometry.h"
 #include "rng.h"
+#include "combat.h" // For hunting
 #include <sstream>
 #include <vector>
 #include <map>
@@ -267,9 +268,9 @@ void Player_city::do_turn()
       }
     }
 // TODO: Alert the player to the death of citizens.
-// TODO: Lose morale due to starvation.
-    population[i].remove_citizens(dead);
-  }
+// TODO: Lose morale due to starvation?
+    kill_citizens( Citizen_type(i), dead, DEATH_STARVATION );
+  } // for (int i = 0; i < CIT_MAX; i++)
 
 // Produce / eat food.
   resources[RES_FOOD] += get_food_production();
@@ -650,6 +651,11 @@ void Player_city::add_open_area(Area area)
     }
   }
 
+// Hunting camps are set up specially.
+  if (area.produces_resource(RES_HUNTING)) {
+    area.building.hunter_level = 4* Race_data[race]->skill_level[SKILL_HUNTING];
+  }
+
 // Now attempt to employ citizens to fill it up.
   Building* area_bldg = &(area.building);
   int num_jobs = area_bldg->get_total_jobs();
@@ -782,7 +788,8 @@ bool Player_city::employ_citizens(Citizen_type type, int amount, Building* job_s
   return true;
 }
 
-bool Player_city::fire_citizens(Citizen_type type, int amount, Building* job_site)
+bool Player_city::fire_citizens(Citizen_type type, int amount,
+                                Building* job_site)
 {
 // Several checks to ensure we can make this assignment
   if (!job_site) {
@@ -805,6 +812,49 @@ bool Player_city::fire_citizens(Citizen_type type, int amount, Building* job_sit
   population[type].employed -= amount;
   job_site->workers -= amount;
   return true;
+}
+
+void Player_city::kill_citizens(Citizen_type type, int amount,
+                                Cause_of_death cause)
+{
+// Sanity check
+  if (type == CIT_NULL || type == CIT_MAX) {
+    debugmsg("Player_city::kill_citizens(%s) called!",
+             citizen_type_name(type).c_str());
+    return;
+  }
+
+  if (population[type].count < amount) {
+    amount = population[type].count;
+  }
+
+// Figure out if we killed anyone who's employed.  If so, we need to fire them.
+// We kill off the unemployed first, so to get the number dead who are employed,
+// we subtrace the unemployed from the amount killed.
+  int employed_killed = amount - get_unemployed_citizens(type);
+// Randomly pick buildings to remove employees from
+  std::vector<Building*> employers = get_employers(type);
+  while (employed_killed > 0 && !employers.empty()) {
+    int index = rng(0, employers.size());
+    Building* bldg = employers[index];
+    if (bldg->workers <= 0) {
+      debugmsg("Player_city::killed_citizens() tried to fire citizens from a \
+workerless building!");
+      employers.erase( employers.begin() + index );
+    } else {
+      fire_citizens(type, 1, bldg);
+      if (bldg->workers <= 0) {
+        employers.erase( employers.begin() + index );
+      }
+    }
+  }
+
+// OK, now we can kill them off.
+  population[type].remove_citizens(amount);
+// TODO: Morale penalty here.
+// TODO: Message.
+// TODO: Do something with our Cause_of_death.  Modify the message for sure, but
+//       more?  Stats?
 }
 
 bool Player_city::inside_radius(int x, int y)
@@ -1031,6 +1081,19 @@ std::vector<Building*> Player_city::get_pure_buildings()
   std::vector<Building*> ret;
   for (int i = 0; i < buildings.size(); i++) {
     ret.push_back( &(buildings[i]) );
+  }
+  return ret;
+}
+
+// cit_type defaults to CIT_NULL
+std::vector<Building*> Player_city::get_employers(Citizen_type cit_type)
+{
+  std::vector<Building*> ret;
+  for (int i = 0; i < buildings.size(); i++) {
+    Building* bldg = &(buildings[i]);
+    if (bldg->get_filled_jobs(cit_type) > 0) {
+      ret.push_back(bldg);
+    }
   }
   return ret;
 }
@@ -1341,6 +1404,119 @@ Animal_action Player_city::get_hunting_action(Animal animal)
 void Player_city::set_hunting_action(Animal animal, Animal_action action)
 {
   hunting_action[animal] = action;
+}
+
+void Player_city::do_hunt(Area* hunting_camp)
+{
+  if (!hunting_camp) {
+    debugmsg("Player_city::do_hunt(NULL) called!");
+    return;
+  }
+
+  Building* camp_bldg = &(hunting_camp->building);
+
+  int hunters = camp_bldg->workers;
+
+  int num_hunts = camp_bldg->amount_produced(RES_HUNTING) * hunters;
+
+  int combat_points = camp_bldg->hunter_level;
+
+  if (num_hunts <= 0) {
+    return;
+  }
+
+  int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
+
+  Map_tile* tile = map.get_tile(hunting_camp->pos);
+  if (!tile) {
+    debugmsg("BUG - Hunting on NULL ground!");
+    return;
+  }
+
+  for (int i = 0; i < num_hunts; i++) {
+    Animal prey = tile->choose_hunt_animal(skill_level);
+    Animal_datum* prey_dat = Animal_data[prey];
+    int pack_size = 1;
+    if (rng(1, 100) <= prey_dat->pack_chance) {
+      pack_size = rng(1, prey_dat->max_pack_size);
+    }
+
+    if (prey != ANIMAL_NULL) {  // Ensure we actually caught something!
+
+      bool combat = true;  // Handle combat after checking if we flee.
+
+// If we want to flee, try that first.
+      if (hunting_action[prey] == ANIMAL_ACT_FLEE) {
+// Affect chance of fleeing based on pack size.
+        int flee_chance = prey_dat->flee_chance;
+        flee_chance = (flee_chance * 10) / (9 + pack_size);
+        bool fled = (rng(1, 100) <= prey_dat->flee_chance);
+
+        if (skill_level < 3) {  // 1 or 2 extra chances to FAIL
+          for (int n = 0; fled && n < 3 - skill_level; n++) {
+            fled = rng(1, 100) <= prey_dat->flee_chance;
+          }
+
+        } else if (skill_level > 3) { // 1 or 2 extra chances to SUCCEED
+          for (int n = 0; !fled && n < skill_level - 3; n++) {
+            fled = rng(1, 100) <= prey_dat->flee_chance;
+          }
+        }
+
+        if (!fled) {  // Forced into combat!
+          combat = true;
+        }
+      } // if (hunting_action[prey] == ANIMAL_ACT_FLEE)
+
+      if (combat) {
+// "2" limits us to 2 hunters fighting at once
+        Battle_result result = quick_battle(hunters, combat_points,
+                                            pack_size, prey_dat->danger,
+                                            2);
+        
+        if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
+// If we want to, try to capture it.
+          if (hunting_action[prey] == ANIMAL_ACT_CAPTURE) {
+// We use a mix of livestock & hunting skills for capturing things
+            int livestock_skill = Race_data[race]->skill_level[SKILL_LIVESTOCK];
+            int capture_skill = (livestock_skill * 2 + skill_level) / 3;
+            bool caught = (rng(1, 100) <= prey_dat->tameness);
+            if (capture_skill < 3) {  // 1 or 2 extra chances to FAIL
+              for (int n = 0; caught && n < 3 - capture_skill; n++) {
+                caught = rng(1, 100) <= prey_dat->tameness;
+              }
+            } else if (capture_skill > 3) { // 1 or 2 extra chances to SUCCEED
+              for (int n = 0; !caught && n < capture_skill - 3; n++) {
+                caught = rng(1, 100) <= prey_dat->tameness;
+              }
+            }
+          }
+// TODO: Add a message?
+          kill_animals(prey, pack_size);
+        } // if (result.result == COMBAT_RES_ATTACKER_WON)
+
+// Even if we won, some hunters may have died.
+        if (result.attackers_dead > 0) {
+// TODO: Add a message
+          fire_citizens(CIT_PEASANT, result.attackers_dead, camp_bldg);
+          kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING);
+        }
+      } // if (combat)
+    } // if (prey != ANIMAL_NULL)
+  } // for (int i = 0; i < num_hunts; i++)
+}
+
+void Player_city::kill_animals(Animal animal, int amount)
+{
+  Animal_datum* animal_dat = Animal_data[animal];
+
+  gain_resource(RES_FOOD, amount * animal_dat->food_killed);
+
+  for (int i = 0; i < animal_dat->resources_killed.size(); i++) {
+    Resource_amount res = animal_dat->resources_killed[i];
+    res.amount *= amount;
+    gain_resource(res);
+  }
 }
 
 // TODO: This function.

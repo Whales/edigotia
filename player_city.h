@@ -53,6 +53,8 @@ public:
 
   bool employ_citizens(Citizen_type type, int amount, Building* job_site);
   bool fire_citizens  (Citizen_type type, int amount, Building* job_site);
+  void kill_citizens  (Citizen_type type, int amount,
+                       Cause_of_death cause = DEATH_UNKNOWN);
 
 // Data functions
 
@@ -93,6 +95,10 @@ public:
 // Building/Area-related functions
   std::vector<Building*> get_all_buildings();
   std::vector<Building*> get_pure_buildings(); // i.e. those not of an Area
+// get_employers() returns buildings with at least 1 worker of the type passed.
+// If it's passed CIT_NULL (or nothing), it ignores the Citizen_type.
+  std::vector<Building*> get_employers(Citizen_type cit_type = CIT_NULL);
+
 // If these are passed BUILD_NULL/AREA_NULL (or aren't passed a parameter at
 // all) they will return the sum total of ALL buildings/areas.
   int get_number_of_buildings(Building_type type = BUILD_NULL);
@@ -130,6 +136,8 @@ public:
   // Animals & hunting
   Animal_action get_hunting_action(Animal animal);
   void set_hunting_action(Animal animal, Animal_action action);
+  void do_hunt(Area* hunting_camp);
+  void kill_animals(Animal animal, int amount);
 
 // Trade-related functions
   int get_import(Resource res);
