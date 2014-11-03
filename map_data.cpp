@@ -17,10 +17,10 @@ Terrain_datum* Terrain_data[TER_MAX];
   Terrain_data[cur_id]->wood_cleared_type = (t)
 #define _crop(c) \
   Terrain_data[cur_id]->crops.push_back( (c) )
-#define _mineral(m, a) \
-  Terrain_data[cur_id]->minerals.push_back( Mineral_amount( (m), (a) ) )
-#define _animal(a) \
-  Terrain_data[cur_id]->animals.push_back( (a) )
+#define _mineral(m, n) \
+  Terrain_data[cur_id]->minerals.push_back( Mineral_amount( (m), (n) ) )
+#define _animal(a, n) \
+  Terrain_data[cur_id]->animals.push_back( Animal_amount( (a), (n) ) )
 #define _buildable(a) \
   Terrain_data[cur_id]->buildable_areas.push_back( (a) )
 
@@ -45,6 +45,12 @@ void init_terrain_data()
     _mineral(MINERAL_COPPER,    300);
     _mineral(MINERAL_GOLD,      800);
     _mineral(MINERAL_COAL,     1000);
+    _animal(ANIMAL_HARE,       2000);
+    _animal(ANIMAL_FOX,         600);
+    _animal(ANIMAL_BEAR,        100);
+    _animal(ANIMAL_WOLF,        250);
+    _animal(ANIMAL_DIRE_WOLF,    50);
+    _animal(ANIMAL_AKHLUT,       40);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -62,6 +68,12 @@ void init_terrain_data()
     _mineral(MINERAL_IRON,     5000);
     _mineral(MINERAL_GOLD,     1500);
     _mineral(MINERAL_COAL,     4000);
+    _animal(ANIMAL_HARE,       1600);
+    _animal(ANIMAL_FOX,         480);
+    _animal(ANIMAL_BEAR,         70);
+    _animal(ANIMAL_WOLF,        180);
+    _animal(ANIMAL_DIRE_WOLF,    35);
+    _animal(ANIMAL_AKHLUT,       15);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
 // Burghers refuse to live on an icy hill!
@@ -79,6 +91,9 @@ void init_terrain_data()
     _mineral(MINERAL_IRON,    10000);
     _mineral(MINERAL_GOLD,     2000);
     _mineral(MINERAL_COAL,     8000);
+    _animal(ANIMAL_FOX,         120);
+    _animal(ANIMAL_BEAR,         50);
+    _animal(ANIMAL_DIRE_WOLF,     5);
     _buildable(AREA_HOVELS);
 // Merchants and burghers refuse to live on an icy mountain!
     _buildable(AREA_KEEP);
@@ -88,7 +103,8 @@ void init_terrain_data()
     _name("glacier");
     _symbol('#', c_ltcyan);
     _farm(0);
-// Glaciers are totally useless!
+    _animal(ANIMAL_AKHLUT,      150);
+// Glaciers are totally useless!  Except for Akhluts, which are very dangerous.
     
 
   _ter(TER_FIELD);
@@ -101,6 +117,16 @@ void init_terrain_data()
     _crop(CROP_TOBACCO);
     _crop(CROP_COTTON);
     _crop(CROP_HAY);
+    _animal(ANIMAL_HARE,       5000);
+    _animal(ANIMAL_FOX,        1500);
+    _animal(ANIMAL_BOAR,        500);
+    _animal(ANIMAL_DEER,       1200);
+    _animal(ANIMAL_WOLF,        800);
+    _animal(ANIMAL_LION,        300);
+    _animal(ANIMAL_ELEPHANT,    200);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_DIRE_WOLF,    12);
+    _animal(ANIMAL_UNICORN,       2);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -125,6 +151,15 @@ void init_terrain_data()
     _mineral(MINERAL_IRON,     1000);
     _mineral(MINERAL_GOLD,      200);
     _mineral(MINERAL_COAL,      500);
+    _animal(ANIMAL_HARE,       4500);
+    _animal(ANIMAL_FOX,        1000);
+    _animal(ANIMAL_BOAR,       1200);
+    _animal(ANIMAL_WOLF,        800);
+    _animal(ANIMAL_JAGUAR,      180);
+    _animal(ANIMAL_LION,        200);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_DIRE_WOLF,    60);
+    _animal(ANIMAL_BASILISK,     12);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -151,6 +186,17 @@ void init_terrain_data()
     _mineral(MINERAL_IRON,     5000);
     _mineral(MINERAL_GOLD,     1500);
     _mineral(MINERAL_COAL,     4000);
+    _animal(ANIMAL_HARE,       4600);
+    _animal(ANIMAL_FOX,        1300);
+    _animal(ANIMAL_BOAR,       1000);
+    _animal(ANIMAL_DEER,       1000);
+    _animal(ANIMAL_BEAR,        250);
+    _animal(ANIMAL_WOLF,        400);
+    _animal(ANIMAL_JAGUAR,      100);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_DIRE_WOLF,    60);
+    _animal(ANIMAL_MANTICORE,    15);
+    _animal(ANIMAL_BASILISK,     18);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -172,6 +218,13 @@ void init_terrain_data()
     _mineral(MINERAL_IRON,    10000);
     _mineral(MINERAL_GOLD,     2000);
     _mineral(MINERAL_COAL,     8000);
+    _animal(ANIMAL_HARE,        800);
+    _animal(ANIMAL_BEAR,        200);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_DIRE_WOLF,   100);
+    _animal(ANIMAL_MANTICORE,    80);
+    _animal(ANIMAL_BASILISK,     30);
+    _animal(ANIMAL_WYVERN,       12);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -192,6 +245,15 @@ void init_terrain_data()
     _crop(CROP_CINNAMON);
     _mineral(MINERAL_STONE,    1500);
     _mineral(MINERAL_COAL,     4000);
+    _animal(ANIMAL_HARE,       7500);
+    _animal(ANIMAL_FOX,        2400);
+    _animal(ANIMAL_DEER,       4000);
+    _animal(ANIMAL_BEAR,       1000);
+    _animal(ANIMAL_WOLF,        500);
+    _animal(ANIMAL_JELLY,       200);
+    _animal(ANIMAL_DIRE_WOLF,    50);
+    _animal(ANIMAL_UNICORN,      80);
+    _animal(ANIMAL_BASILISK,     10);
     _buildable(AREA_HOVELS);
 // Houses and manors take up too much space to be built in a forest!
     _buildable(AREA_KEEP);
@@ -210,6 +272,15 @@ void init_terrain_data()
     _crop(CROP_CINNAMON);
     _mineral(MINERAL_STONE,    1500);
     _mineral(MINERAL_COAL,     4000);
+    _animal(ANIMAL_HARE,       2500);
+    _animal(ANIMAL_FOX,         800);
+    _animal(ANIMAL_DEER,       1200);
+    _animal(ANIMAL_BEAR,        300);
+    _animal(ANIMAL_WOLF,        120);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_DIRE_WOLF,    20);
+    _animal(ANIMAL_UNICORN,      10);
+    _animal(ANIMAL_BASILISK,     12);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -249,6 +320,15 @@ void init_terrain_data()
     _mineral(MINERAL_COPPER,    800);
     _mineral(MINERAL_IRON,      500);
     _mineral(MINERAL_GOLD,      100);
+    _animal(ANIMAL_HARE,       1000);
+    _animal(ANIMAL_FOX,         300);
+    _animal(ANIMAL_BOAR,        500);
+    _animal(ANIMAL_JAGUAR,      150);
+    _animal(ANIMAL_LION,        300);
+    _animal(ANIMAL_ELEPHANT,    150);
+    _animal(ANIMAL_JELLY,        50);
+    _animal(ANIMAL_MANTICORE,   120);
+    _animal(ANIMAL_BASILISK,     50);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -268,6 +348,14 @@ void init_terrain_data()
     _crop(CROP_VIPERVINE);
     _mineral(MINERAL_IRON,     2000);
     _mineral(MINERAL_COAL,     5000);
+    _animal(ANIMAL_HARE,       2500);
+    _animal(ANIMAL_FOX,        1000);
+    _animal(ANIMAL_DEER,       1000);
+    _animal(ANIMAL_BEAR,        600);
+    _animal(ANIMAL_WOLF,        200);
+    _animal(ANIMAL_JELLY,       300);
+    _animal(ANIMAL_DIRE_WOLF,    30);
+    _animal(ANIMAL_UNICORN,      40);
     _buildable(AREA_HOVELS);
 // Merchants and burghers refuse to live in the swamp!
     _buildable(AREA_KEEP);
@@ -288,14 +376,20 @@ void init_terrain_data()
     _crop(CROP_DEATHCAP);
     _crop(CROP_VIPERVINE);
     _crop(CROP_SCORPICON);
-    _mineral(MINERAL_STONE, 1800);
-    _mineral(MINERAL_COAL,  6000);
+    _mineral(MINERAL_STONE,    1800);
+    _mineral(MINERAL_COAL,     6000);
+    _animal(ANIMAL_BOAR,       1200);
+    _animal(ANIMAL_JAGUAR,      400);
+    _animal(ANIMAL_ELEPHANT,     50);
+    _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_MANTICORE,   200);
     _buildable(AREA_SAWMILL);
 
   _ter(TER_ICE);
     _name("Ice");
     _symbol('~', c_ltcyan);
     _farm(0);
+    _animal(ANIMAL_AKHLUT,       50);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_BARRACKS);
