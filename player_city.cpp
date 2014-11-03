@@ -362,7 +362,7 @@ void Player_city::do_turn()
     } // if (!bldg->build_queue.empty())
   } // for (int i = 0; i < buildings.size(); i++)
 
-// Produce minerals and wood from mines and sawmills respectively.
+// Produce minerals from mines, wood from sawmills, and hunts from hunting camps
   for (int i = 0; i < areas.size(); i++) {
 
     if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
@@ -436,7 +436,12 @@ void Player_city::do_turn()
       }
 
     } // if (areas[i].produces_resource(RES_LOGGING))
-  }
+
+    if (areas[i].produces_resource(RES_HUNTING)) {  // It's a hunting camp!
+      do_hunt( &(areas[i]) );
+    }
+
+  } // for (int i = 0; i < areas.size(); i++)
 
 // Pay wages.
   int wages = get_total_wages();
