@@ -100,6 +100,27 @@ int Map_tile::get_mineral_amount(Mineral mineral)
   return 0;
 }
 
+Animal Map_tile::choose_hunt_animal(int skill_level)
+{
+// Figure out the total population, including the difficulty of the terrain
+  int total_pop = get_terrain_datum()->hunting_difficulty;
+  for (int i = 0; i < animals.size(); i++) {
+    total_pop += animals[i].amount;
+  }
+
+  int roll = rng(1, total_pop);
+// Generate a random number, and subtract populations til we hit 0
+  for (int i = 0; i < animals.size(); i++) {
+    roll -= animals[i].amount;
+    if (roll <= 0) {
+      return animals[i].type;
+    }
+  }
+// At this point, if we haven't hit zero it's due to the terrain difficulty.
+// Which means we weren't able to catch anything!
+  return ANIMAL_NULL;
+}
+
 void Map_tile::clear_wood()
 {
   Terrain_datum* ter_dat = get_terrain_datum();

@@ -147,6 +147,8 @@ struct Map_tile
 
   int get_mineral_amount(Mineral mineral);
 
+  Animal choose_hunt_animal(int skill_level);
+
   void clear_wood();  // Become whatever we become when wood is cleared out.
 
   Terrain_type ter;
