@@ -25,8 +25,14 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _percentage(n) \
   Animal_data[cur_id]->percentage = (n)
 
+#define _default_action(a) \
+  Animal_data[cur_id]->default_action = (a)
+
 #define _danger(n) \
   Animal_data[cur_id]->danger = (n)
+
+#define _flee_chance(n) \
+  Animal_data[cur_id]->flee_chance = (n)
 
 #define _reproduction(n) \
   Animal_data[cur_id]->reproduction_rate = (n)
@@ -73,6 +79,7 @@ void init_animal_data()
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  50);
     _percentage(85);
+    _default_action(ANIMAL_ACT_CAPTURE);
     _reproduction(45);
     _hardiness(1800);
     _food_killed(2);
@@ -87,6 +94,7 @@ void init_animal_data()
     _altitude_range (  0,  85);
     _rainfall_range ( 20,  70);
     _percentage(70);
+    _default_action(ANIMAL_ACT_CAPTURE);
     _reproduction(32);
     _hardiness(2800);
     _food_killed(60);
@@ -100,6 +108,7 @@ void init_animal_data()
     _altitude_range (  0,  95);
     _rainfall_range ( 15,  60);
     _percentage(60);
+    _default_action(ANIMAL_ACT_CAPTURE);
     _reproduction(30);
     _hardiness(2500);
     _food_killed(50);
@@ -115,6 +124,7 @@ void init_animal_data()
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  60);
     _percentage(60);
+    _default_action(ANIMAL_ACT_CAPTURE);
     _reproduction(30);
     _hardiness(3500);
     _food_killed(250);
@@ -130,7 +140,8 @@ void init_animal_data()
     _altitude_range (  0,  80);
     _rainfall_range ( 15,  60);
     _percentage(30);
-    _danger(1);
+    _default_action(ANIMAL_ACT_CAPTURE);
+    _danger(10);
     _reproduction(20);
     _hardiness(4000);
     _food_killed(200);
@@ -148,6 +159,7 @@ void init_animal_data()
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  75);
     _percentage(90);
+    _default_action(ANIMAL_ACT_KILL);
     _reproduction(50);
     _hardiness(800);
     _food_killed(2);
@@ -162,6 +174,7 @@ void init_animal_data()
     _altitude_range (  0,  85);
     _rainfall_range (  5,  60);
     _percentage(70);
+    _default_action(ANIMAL_ACT_KILL);
     _reproduction(25);
     _hardiness(2000);
     _food_killed(15);
@@ -177,7 +190,9 @@ void init_animal_data()
     _altitude_range (  0,  60);
     _rainfall_range (  0,  70);
     _percentage(60);
-    _danger(5);
+    _default_action(ANIMAL_ACT_KILL);
+    _danger(14);
+    _flee_chance(90);
     _reproduction(28);
     _hardiness(3400);
     _food_killed(75);
@@ -191,6 +206,7 @@ void init_animal_data()
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  60);
     _percentage(80);
+    _default_action(ANIMAL_ACT_KILL);
     _reproduction(20);
     _hardiness(3000);
     _food_killed(80);
@@ -208,7 +224,9 @@ void init_animal_data()
     _altitude_range (  5,  80);
     _rainfall_range ( 15,  65);
     _percentage(70);
-    _danger(10);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(22);
+    _flee_chance(80);
     _reproduction(18);
     _hardiness(3400);
     _food_killed(300);
@@ -223,7 +241,9 @@ void init_animal_data()
     _altitude_range (  0,  75);
     _rainfall_range ( 15,  60);
     _percentage(60);
-    _danger(8);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(26);
+    _flee_chance(60);
     _reproduction(25);
     _hardiness(3000);
     _food_killed(80);
@@ -239,7 +259,9 @@ void init_animal_data()
     _altitude_range (  0,  80);
     _rainfall_range (  5,  90);
     _percentage(30);
-    _danger(11);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(25);
+    _flee_chance(40);
     _reproduction(15);
     _hardiness(3200);
     _food_killed(115);
@@ -255,7 +277,9 @@ void init_animal_data()
     _altitude_range (  0,  50);
     _rainfall_range (  0,  25);
     _percentage(35);
-    _danger(12);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(28);
+    _flee_chance(65);
     _reproduction(15);
     _hardiness(3500);
     _food_killed(250);
@@ -272,7 +296,9 @@ void init_animal_data()
     _altitude_range (  0,  60);
     _rainfall_range (  0,  30);
     _percentage(25);
-    _danger(16);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(30);
+    _flee_chance(85);
     _reproduction(8);
     _hardiness(7000);
     _food_killed(1500);
@@ -290,7 +316,9 @@ void init_animal_data()
     _altitude_range (  0,  80);
     _rainfall_range ( 30,  90);
     _percentage(50);
-    _danger(2);
+    _default_action(ANIMAL_ACT_KILL);
+    _danger(5);
+    _flee_chance(95);
     _reproduction(50);
     _hardiness(600);
     _food_killed(0);
@@ -306,7 +334,9 @@ void init_animal_data()
     _altitude_range (  0,  90);
     _rainfall_range (  5,  70);
     _percentage(20);
-    _danger(16);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(40);
+    _flee_chance(20);
     _reproduction(18);
     _hardiness(5000);
     _food_killed(180);
@@ -323,7 +353,9 @@ void init_animal_data()
     _altitude_range (-20,  20);
     _rainfall_range (  0,  80);
     _percentage(10);
-    _danger(18);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(50);
+    _flee_chance(10);
     _reproduction(10);
     _hardiness(9000);
     _food_killed(320);
@@ -340,7 +372,9 @@ void init_animal_data()
     _altitude_range ( 60, 100);
     _rainfall_range (  0,  40);
     _percentage(10);
-    _danger(18);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(52);
+    _flee_chance(5);
     _reproduction(15);
     _hardiness(7500);
     _food_killed(400);
@@ -355,7 +389,9 @@ void init_animal_data()
     _altitude_range (  0,  95);
     _rainfall_range ( 40,  60);
     _percentage(5);
-    _danger(15);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(40);
+    _flee_chance(50);
     _reproduction(5);
     _hardiness(8000);
     _food_killed(200);
@@ -370,7 +406,9 @@ void init_animal_data()
     _altitude_range (  0, 100);
     _rainfall_range (  0,  40);
     _percentage(8);
-    _danger(20);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(60);
+    _flee_chance(80);
     _reproduction(8);
     _hardiness(7000);
     _food_killed(100);
@@ -384,7 +422,9 @@ void init_animal_data()
     _altitude_range ( 70, 100);
     _rainfall_range ( 10,  70);
     _percentage(3);
-    _danger(22);
+    _default_action(ANIMAL_ACT_FLEE);
+    _danger(80);
+    _flee_chance(5);
     _reproduction(15);
     _hardiness(9000);
     _food_killed(1600);
