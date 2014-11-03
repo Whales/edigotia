@@ -185,9 +185,12 @@ struct Building
 
 // MINES ONLY
   int get_empty_shafts();
-
   int shaft_output; // How much of each mineral does a single shaft output?
+
   std::vector<Mineral_amount> minerals_mined;
+
+// HUNTING CAMPS ONLY
+  int hunter_level; // Combat level of hunter; compare to animals' danger value
 
 /* build_queue is a list of things this building will produce; when the building
  * is not currently building anything, it looks at the first item in the queue
