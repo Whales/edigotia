@@ -485,7 +485,7 @@ void Interface::display_area_stats(Area_type type)
       break;
 
     case AREA_HUNTING_CAMP:
-      stats << "Game in this " << tile->get_terrain_name() << std::endl;
+      stats << "Game in this " << tile->get_terrain_name() << ":" << std::endl;
       stats << tile->get_animals_info() << std::endl;
       stats << "Food consumed each day: " << city->get_food_consumption() <<
                std::endl;
