@@ -109,10 +109,12 @@ public:
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);
   int get_military_expense();
+
   void set_tax_rate(Citizen_type type, int rate);
   int get_low_tax_rate (Citizen_type type);
   int get_high_tax_rate(Citizen_type type);
   int get_taxes(Citizen_type type = CIT_NULL);
+
   int get_corruption_percentage();
   int get_corruption_amount();
 
@@ -124,6 +126,10 @@ public:
   int get_amount_mined(Mineral mineral = MINERAL_NULL);
   std::map<Mineral,int> get_minerals_mined();
   std::map<Mineral,int> get_minerals_used();
+
+  // Animals & hunting
+  Animal_action get_hunting_action(Animal animal);
+  void set_hunting_action(Animal animal, Animal_action action);
 
 // Trade-related functions
   int get_import(Resource res);
@@ -145,6 +151,8 @@ public:
 
 private:
   int birth_points; // We gain these each turn; at 100, a citizen is born.
+
+  Animal_action hunting_action[ANIMAL_MAX];
 
 };
 

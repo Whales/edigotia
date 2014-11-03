@@ -27,6 +27,9 @@ Player_city::Player_city()
   for (int i = 0; i < MINERAL_MAX; i++) {
     minerals[i] = 0;
   }
+  for (int i = 0; i < ANIMAL_MAX; i++) {
+    hunting_action[i] = Animal_data[i]->default_action;
+  }
 
   radius = 1;
 }
@@ -1328,6 +1331,16 @@ std::map<Mineral,int> Player_city::get_minerals_used()
 {
   std::map<Mineral,int> ret;
   return ret;
+}
+
+Animal_action Player_city::get_hunting_action(Animal animal)
+{
+  return hunting_action[animal];
+}
+
+void Player_city::set_hunting_action(Animal animal, Animal_action action)
+{
+  hunting_action[animal] = action;
 }
 
 // TODO: This function.
