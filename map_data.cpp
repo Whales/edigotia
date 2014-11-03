@@ -4,23 +4,35 @@ Terrain_datum* Terrain_data[TER_MAX];
 
 #define _ter(n) \
   cur_id = (n)
+
 #define _name(n) \
   Terrain_data[cur_id]->name = (n)
+
 #define _symbol(c, f) \
   Terrain_data[cur_id]->symbol = glyph((c), (f), (c_black))
+
 #define _farm(n) \
   Terrain_data[cur_id]->farm_percent = (n)
+
+#define _hunting_difficulty(n) \
+  Terrain_data[cur_id]->hunting_difficulty = (n)
+
 #define _wood(a, b) \
   Terrain_data[cur_id]->wood_min = (a); \
   Terrain_data[cur_id]->wood_max = (b)
+
 #define _wood_cleared(t) \
   Terrain_data[cur_id]->wood_cleared_type = (t)
+
 #define _crop(c) \
   Terrain_data[cur_id]->crops.push_back( (c) )
+
 #define _mineral(m, n) \
   Terrain_data[cur_id]->minerals.push_back( Mineral_amount( (m), (n) ) )
+
 #define _animal(a, n) \
   Terrain_data[cur_id]->animals.push_back( Animal_amount( (a), (n) ) )
+
 #define _buildable(a) \
   Terrain_data[cur_id]->buildable_areas.push_back( (a) )
 
@@ -39,6 +51,7 @@ void init_terrain_data()
     _name("tundra");
     _symbol('*', c_white);
     _farm(10);
+    _hunting_difficulty(400);
     _crop(CROP_CABBAGE);
     _crop(CROP_AMANITAS);
     _mineral(MINERAL_TIN,       300);
@@ -62,6 +75,7 @@ void init_terrain_data()
     _name("icy hill");
     _symbol('=', c_ltgray);
     _farm(0);
+    _hunting_difficulty(600);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      2000);
     _mineral(MINERAL_COPPER,   5000);
@@ -85,6 +99,7 @@ void init_terrain_data()
     _name("icy mountain");
     _symbol('^', c_white);
     _farm(0);
+    _hunting_difficulty(1000);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      5000);
     _mineral(MINERAL_COPPER,  10000);
@@ -103,6 +118,7 @@ void init_terrain_data()
     _name("glacier");
     _symbol('#', c_ltcyan);
     _farm(0);
+    _hunting_difficulty(1000);
     _animal(ANIMAL_AKHLUT,      150);
 // Glaciers are totally useless!  Except for Akhluts, which are very dangerous.
     
@@ -111,6 +127,7 @@ void init_terrain_data()
     _name("Field");
     _symbol('_', c_green);
     _farm(100);
+    _hunting_difficulty(100);
     _wood(0, 80);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -118,10 +135,10 @@ void init_terrain_data()
     _crop(CROP_COTTON);
     _crop(CROP_HAY);
     _animal(ANIMAL_HARE,       5000);
-    _animal(ANIMAL_FOX,        1500);
-    _animal(ANIMAL_BOAR,        500);
-    _animal(ANIMAL_DEER,       1200);
-    _animal(ANIMAL_WOLF,        800);
+    _animal(ANIMAL_FOX,        1000);
+    _animal(ANIMAL_BOAR,        200);
+    _animal(ANIMAL_DEER,        400);
+    _animal(ANIMAL_WOLF,        300);
     _animal(ANIMAL_LION,        300);
     _animal(ANIMAL_ELEPHANT,    200);
     _animal(ANIMAL_JELLY,       100);
@@ -139,6 +156,7 @@ void init_terrain_data()
     _name("Rocky");
     _symbol(',', c_brown);
     _farm(60);
+    _hunting_difficulty(500);
     _wood(0, 40);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -173,6 +191,7 @@ void init_terrain_data()
     _name("Hill");
     _symbol('=', c_brown);
     _farm(50);
+    _hunting_difficulty(400);
     _wood(0, 30);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -187,9 +206,9 @@ void init_terrain_data()
     _mineral(MINERAL_GOLD,     1500);
     _mineral(MINERAL_COAL,     4000);
     _animal(ANIMAL_HARE,       4600);
-    _animal(ANIMAL_FOX,        1300);
+    _animal(ANIMAL_FOX,        1000);
     _animal(ANIMAL_BOAR,       1000);
-    _animal(ANIMAL_DEER,       1000);
+    _animal(ANIMAL_DEER,        800);
     _animal(ANIMAL_BEAR,        250);
     _animal(ANIMAL_WOLF,        400);
     _animal(ANIMAL_JAGUAR,      100);
@@ -210,6 +229,7 @@ void init_terrain_data()
     _name("Mountain");
     _symbol('^', c_ltgray);
     _farm(10);
+    _hunting_difficulty(1000);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
@@ -236,6 +256,7 @@ void init_terrain_data()
     _name("Forest");
     _symbol(';', c_ltgreen);
     _farm(20);
+    _hunting_difficulty(900);
     _wood(2000, 8000);
     _wood_cleared(TER_BARREN);
     _crop(CROP_CABBAGE);
@@ -265,6 +286,7 @@ void init_terrain_data()
     _name("Barren");
     _symbol(':', c_brown);
     _farm(70);
+    _hunting_difficulty(400);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
     _crop(CROP_AMANITAS);
@@ -314,6 +336,7 @@ void init_terrain_data()
     _name("Desert");
     _symbol('~', c_yellow);
     _farm(30);
+    _hunting_difficulty(100);
     _crop(CROP_CACTUS);
     _crop(CROP_SPICEREED);
     _crop(CROP_SCORPICON);
@@ -340,6 +363,7 @@ void init_terrain_data()
     _name("Swamp");
     _symbol('~', c_cyan);
     _farm(80);
+    _hunting_difficulty(1000);
     _wood(500, 4000);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);
@@ -367,6 +391,7 @@ void init_terrain_data()
     _name("Jungle");
     _symbol('J', c_ltcyan);
     _farm(15);
+    _hunting_difficulty(1200);
     _wood(3000, 10000);
     _wood_cleared(TER_FIELD);
     _crop(CROP_RICE);
@@ -389,6 +414,7 @@ void init_terrain_data()
     _name("Ice");
     _symbol('~', c_ltcyan);
     _farm(0);
+    _hunting_difficulty(100);
     _animal(ANIMAL_AKHLUT,       50);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);

@@ -59,6 +59,13 @@ struct Terrain_datum
   glyph symbol;
 
   int farm_percent;
+// This value is treated as a "null animal" when hunting; we pick what animal we
+// hunt by random choice, each animal weighted by its population.  So if there
+// are 10 hares, 6 foxes, and this value is 4, there's a 10-in-20 chance of
+// hunting a hare, 6-in-20 of a fox, and 4-in-20 of nothing.
+// Reasonable value range is 100 to 1000.  Use higher values for terrain that's
+// easy to hide in (e.g. forest)
+  int hunting_difficulty;
   int wood_min, wood_max;
 
   Terrain_type wood_cleared_type; // What to become when wood is cleared out.
