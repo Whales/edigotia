@@ -49,6 +49,18 @@ enum Animal
   ANIMAL_MAX
 };
 
+enum Animal_action
+{
+  ANIMAL_ACT_NULL = 0,
+  ANIMAL_ACT_FLEE,
+  ANIMAL_ACT_KILL,
+  ANIMAL_ACT_CAPTURE,
+  ANIMAL_ACT_MAX
+};
+
+Animal_action lookup_animal_action(std::string name);
+std::string animal_action_name(Animal_action action);
+
 struct Animal_amount
 {
   Animal_amount(Animal A = ANIMAL_NULL, int N = 0) :
@@ -80,7 +92,9 @@ struct Animal_datum
   int percentage;                 // Chance of placement
 
 // Hunting/livestock data
+  Animal_action default_action; // Defaut action taken when hunting
   int danger;             // Dangerous to hunt? 10 = unarmed man, 20 = hunter
+  int flee_chance;        // Chance to flee, if we choose to.
   int reproduction_rate;  // A percentage increase per year (range: 0 - 100)
   int hardiness;          // Livestock has a one-in-THIS chance of dying daily
                           // Use 0 if the livestock will never die randomly

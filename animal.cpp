@@ -35,7 +35,9 @@ Animal_datum::Animal_datum()
   max_rainfall  = 100;
   percentage    =   0;
 
+  default_action = ANIMAL_ACT_KILL;
   danger = 0;
+  flee_chance = 100;
 
   reproduction_rate =   30;
   hardiness         = 2000;
@@ -50,6 +52,31 @@ Animal_datum::Animal_datum()
 
 Animal_datum::~Animal_datum()
 {
+}
+
+Animal_action lookup_animal_action(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < ANIMAL_ACT_MAX; i++) {
+    Animal_action ret = Animal_action(i);
+    if (name == no_caps( animal_action_name(ret) ) ) {
+      return ret;
+    }
+  }
+  return ANIMAL_ACT_NULL;
+}
+
+std::string animal_action_name(Animal_action action)
+{
+  switch (action) {
+    case ANIMAL_ACT_NULL:     return "NULL";
+    case ANIMAL_ACT_FLEE:     return "flee";
+    case ANIMAL_ACT_KILL:     return "kill";
+    case ANIMAL_ACT_CAPTURE:  return "capture";
+    case ANIMAL_ACT_MAX:      return "BUG - ANIMAL_ACT_MAX";
+    default:                  return "BUG - Unnamed Animal_action";
+  }
+  return "BUG - Escaped animal_action_name() switch!";
 }
 
 Animal search_for_animal(std::string name)
