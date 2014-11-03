@@ -1492,7 +1492,7 @@ void Player_city::do_hunt(Area* hunting_camp)
             }
           }
 // TODO: Add a message?
-          kill_animals(prey, pack_size);
+          kill_animals(prey, pack_size, hunting_camp->pos);
         } // if (result.result == COMBAT_RES_ATTACKER_WON)
 
 // Even if we won, some hunters may have died.
@@ -1506,7 +1506,7 @@ void Player_city::do_hunt(Area* hunting_camp)
   } // for (int i = 0; i < num_hunts; i++)
 }
 
-void Player_city::kill_animals(Animal animal, int amount)
+void Player_city::kill_animals(Animal animal, int amount, Point pos)
 {
   Animal_datum* animal_dat = Animal_data[animal];
 
@@ -1516,6 +1516,22 @@ void Player_city::kill_animals(Animal animal, int amount)
     Resource_amount res = animal_dat->resources_killed[i];
     res.amount *= amount;
     gain_resource(res);
+  }
+
+// Remove animals from the map, if appropriate.
+// pos defaults to (-1, -1) which means the animal didn't come from the map.
+  Map_tile* tile = map.get_tile(pos);
+  if (tile) {
+    bool done = false;
+    for (int i = 0; !done && i < tile->animals.size(); i++) {
+      if (tile->animals[i].type == animal) {
+        done = true;
+        tile->animals[i].amount -= amount;
+        if (tile->animals[i].amount <= 0) {
+          tile->animals.erase(tile->animals.begin() + i);
+        }
+      }
+    }
   }
 }
 

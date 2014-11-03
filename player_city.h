@@ -137,7 +137,7 @@ public:
   Animal_action get_hunting_action(Animal animal);
   void set_hunting_action(Animal animal, Animal_action action);
   void do_hunt(Area* hunting_camp);
-  void kill_animals(Animal animal, int amount);
+  void kill_animals(Animal animal, int amount, Point pos = Point(-1, -1));
 
 // Trade-related functions
   int get_import(Resource res);
