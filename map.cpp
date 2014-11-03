@@ -104,6 +104,11 @@ Animal Map_tile::choose_hunt_animal(int skill_level)
 {
 // Figure out the total population, including the difficulty of the terrain
   int total_pop = get_terrain_datum()->hunting_difficulty;
+  if (total_pop > 0) {
+// Modify the odds of finding nothing using our skill level
+// Triple or double for poor skill; 75% or 60% for good skill.
+    total_pop = (total_pop * 3) / skill_level;
+  }
   for (int i = 0; i < animals.size(); i++) {
     total_pop += animals[i].amount;
   }
