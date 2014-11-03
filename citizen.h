@@ -15,8 +15,6 @@ enum Citizen_type
 
 Citizen_type lookup_citizen_type(std::string name);
 std::string citizen_type_name(Citizen_type type, bool plural = false);
-int citizen_food_consumption(Citizen_type type);
-int citizen_idle_income(Citizen_type type); // Per 100 citizens.
 
 struct Citizen_amount
 {
@@ -29,5 +27,23 @@ struct Citizen_amount
     type (T), amount (A) {}
   
 };
+
+int citizen_food_consumption(Citizen_type type);
+int citizen_idle_income(Citizen_type type); // Per 100 citizens.
+
+enum Cause_of_death
+{
+  DEATH_NULL = 0,
+
+  DEATH_UNKNOWN,  // Try to avoid using this!
+
+  DEATH_STARVATION,
+  DEATH_HUNTING,
+
+  DEATH_MAX
+};
+
+Cause_of_death lookup_cause_of_death(std::string name);
+std::string cause_of_death_name(Cause_of_death cause);
 
 #endif
