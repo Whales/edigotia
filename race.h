@@ -54,6 +54,7 @@ enum Race_skill
 
 // Area-related skills
   SKILL_FARMING,
+  SKILL_HUNTING,
   SKILL_MINING,
   SKILL_FORESTRY, // Includes logging
 

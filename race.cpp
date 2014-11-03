@@ -115,6 +115,7 @@ std::string race_skill_name(Race_skill skill)
   switch (skill) {
     case SKILL_NULL:      return "NULL";
     case SKILL_FARMING:   return "farming";
+    case SKILL_HUNTING:   return "hunting";
     case SKILL_MINING:    return "mining";
     case SKILL_FORESTRY:  return "forestry";
     case SKILL_MAX:       return "BUG - SKILL_MAX";

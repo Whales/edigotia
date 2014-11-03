@@ -139,6 +139,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   50);
 
     _skill(SKILL_FARMING,   4);
+    _skill(SKILL_HUNTING,   3);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  3);
 
@@ -206,6 +207,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   65);
 
     _skill(SKILL_FARMING,   4);
+    _skill(SKILL_HUNTING,   5);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  5);
 
@@ -284,6 +286,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   65);
 
     _skill(SKILL_FARMING,   2);
+    _skill(SKILL_HUNTING,   2);
     _skill(SKILL_MINING,    5);
     _skill(SKILL_FORESTRY,  2);
 
@@ -359,6 +362,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   70);
 
     _skill(SKILL_FARMING,   1);
+    _skill(SKILL_HUNTING,   4);
     _skill(SKILL_MINING,    4);
     _skill(SKILL_FORESTRY,  3);
 
@@ -429,6 +433,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   60);
 
     _skill(SKILL_FARMING,   3);
+    _skill(SKILL_HUNTING,   2);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  2);
 
@@ -517,6 +522,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   50);
 
     _skill(SKILL_FARMING,   5);
+    _skill(SKILL_HUNTING,   2);
     _skill(SKILL_MINING,    4);
     _skill(SKILL_FORESTRY,  4);
 
@@ -577,6 +583,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   90);
 
     _skill(SKILL_FARMING,   1);
+    _skill(SKILL_HUNTING,   4);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  1);
 
@@ -643,6 +650,7 @@ void init_races()
     _high_tax_rate      (CIT_BURGHER,   50);
 
     _skill(SKILL_FARMING,   4);
+    _skill(SKILL_HUNTING,   1);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  4);
 
