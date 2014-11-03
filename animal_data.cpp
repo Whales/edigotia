@@ -34,6 +34,12 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _flee_chance(n) \
   Animal_data[cur_id]->flee_chance = (n)
 
+#define _pack_chance(n) \
+  Animal_data[cur_id]->pack_chance = (n)
+
+#define _max_pack_size(n) \
+  Animal_data[cur_id]->max_pack_size = (n)
+
 #define _reproduction(n) \
   Animal_data[cur_id]->reproduction_rate = (n)
 
@@ -80,6 +86,8 @@ void init_animal_data()
     _rainfall_range ( 15,  50);
     _percentage(85);
     _default_action(ANIMAL_ACT_CAPTURE);
+    _pack_chance(80);
+    _max_pack_size(8);
     _reproduction(45);
     _hardiness(1800);
     _food_killed(2);
@@ -95,6 +103,8 @@ void init_animal_data()
     _rainfall_range ( 20,  70);
     _percentage(70);
     _default_action(ANIMAL_ACT_CAPTURE);
+    _pack_chance(70);
+    _max_pack_size(5);
     _reproduction(32);
     _hardiness(2800);
     _food_killed(60);
@@ -109,6 +119,8 @@ void init_animal_data()
     _rainfall_range ( 15,  60);
     _percentage(60);
     _default_action(ANIMAL_ACT_CAPTURE);
+    _pack_chance(70);
+    _max_pack_size(5);
     _reproduction(30);
     _hardiness(2500);
     _food_killed(50);
@@ -125,6 +137,8 @@ void init_animal_data()
     _rainfall_range ( 15,  60);
     _percentage(60);
     _default_action(ANIMAL_ACT_CAPTURE);
+    _pack_chance(60);
+    _max_pack_size(3);
     _reproduction(30);
     _hardiness(3500);
     _food_killed(250);
@@ -141,6 +155,8 @@ void init_animal_data()
     _rainfall_range ( 15,  60);
     _percentage(30);
     _default_action(ANIMAL_ACT_CAPTURE);
+    _pack_chance(45);
+    _max_pack_size(3);
     _danger(10);
     _reproduction(20);
     _hardiness(4000);
@@ -160,6 +176,8 @@ void init_animal_data()
     _rainfall_range ( 10,  75);
     _percentage(90);
     _default_action(ANIMAL_ACT_KILL);
+    _pack_chance(25);
+    _max_pack_size(3);
     _reproduction(50);
     _hardiness(800);
     _food_killed(2);
@@ -175,12 +193,14 @@ void init_animal_data()
     _rainfall_range (  5,  60);
     _percentage(70);
     _default_action(ANIMAL_ACT_KILL);
+    _pack_chance(5);
+    _max_pack_size(2);
     _reproduction(25);
     _hardiness(2000);
     _food_killed(15);
     _food_eaten(50);
     _carnivore();
-    _tameness(40);
+    _tameness(35);
     _resource_killed(RES_FUR, 5);
 
   _animal(ANIMAL_BOAR);
@@ -191,13 +211,15 @@ void init_animal_data()
     _rainfall_range (  0,  70);
     _percentage(60);
     _default_action(ANIMAL_ACT_KILL);
+    _pack_chance(35);
+    _max_pack_size(5);
     _danger(14);
     _flee_chance(90);
     _reproduction(28);
     _hardiness(3400);
     _food_killed(75);
     _food_eaten(50);
-    _tameness(30);
+    _tameness(25);
 
   _animal(ANIMAL_DEER);
     _name("deer");
@@ -207,11 +229,13 @@ void init_animal_data()
     _rainfall_range ( 10,  60);
     _percentage(80);
     _default_action(ANIMAL_ACT_KILL);
+    _pack_chance(30);
+    _max_pack_size(3);
     _reproduction(20);
     _hardiness(3000);
     _food_killed(80);
     _food_eaten(120);
-    _tameness(35);
+    _tameness(30);
     _resource_killed(RES_LEATHER, 6);
 
 
@@ -231,7 +255,7 @@ void init_animal_data()
     _hardiness(3400);
     _food_killed(300);
     _food_eaten(200);
-    _tameness(10);
+    _tameness(15);
     _resource_killed(RES_FUR, 15);
 
   _animal(ANIMAL_WOLF);
@@ -242,6 +266,8 @@ void init_animal_data()
     _rainfall_range ( 15,  60);
     _percentage(60);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(55);
+    _max_pack_size(5);
     _danger(26);
     _flee_chance(60);
     _reproduction(25);
@@ -278,6 +304,8 @@ void init_animal_data()
     _rainfall_range (  0,  25);
     _percentage(35);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(45);
+    _max_pack_size(4);
     _danger(28);
     _flee_chance(65);
     _reproduction(15);
@@ -285,7 +313,7 @@ void init_animal_data()
     _food_killed(250);
     _food_eaten(250);
     _carnivore();
-    _tameness(5);
+    _tameness(10);
     _resource_killed(RES_LEATHER, 12);
 
 // Legit question: could we drink elephant milk?
@@ -297,13 +325,15 @@ void init_animal_data()
     _rainfall_range (  0,  30);
     _percentage(25);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(60);
+    _max_pack_size(4);
     _danger(30);
     _flee_chance(85);
     _reproduction(8);
     _hardiness(7000);
     _food_killed(1500);
     _food_eaten(800);
-    _tameness(8);
+    _tameness(4);
     _resource_killed(RES_LEATHER, 40);
 
 
@@ -317,6 +347,8 @@ void init_animal_data()
     _rainfall_range ( 30,  90);
     _percentage(50);
     _default_action(ANIMAL_ACT_KILL);
+    _pack_chance(20);
+    _max_pack_size(4);
     _danger(5);
     _flee_chance(95);
     _reproduction(50);
@@ -335,6 +367,8 @@ void init_animal_data()
     _rainfall_range (  5,  70);
     _percentage(20);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(20);
+    _max_pack_size(3);
     _danger(40);
     _flee_chance(20);
     _reproduction(18);
@@ -342,7 +376,7 @@ void init_animal_data()
     _food_killed(180);
     _food_eaten(250);
     _carnivore();
-    _tameness(4);
+    _tameness(3);
     _resource_killed(RES_FUR, 20);
 
 // Inuit legend - half orca, half wolf, amphibious
@@ -354,6 +388,8 @@ void init_animal_data()
     _rainfall_range (  0,  80);
     _percentage(10);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(15);
+    _max_pack_size(2);
     _danger(50);
     _flee_chance(10);
     _reproduction(10);
@@ -361,7 +397,7 @@ void init_animal_data()
     _food_killed(320);
     _food_eaten(300);
     _carnivore();
-    _tameness(3);
+    _tameness(2);
     _resource_killed(RES_FUR,     10);
     _resource_killed(RES_LEATHER, 10);
 
@@ -407,6 +443,8 @@ void init_animal_data()
     _rainfall_range (  0,  40);
     _percentage(8);
     _default_action(ANIMAL_ACT_FLEE);
+    _pack_chance(15);
+    _max_pack_size(3);
     _danger(60);
     _flee_chance(80);
     _reproduction(8);
@@ -430,6 +468,6 @@ void init_animal_data()
     _food_killed(1600);
     _food_eaten(1000);
     _carnivore();
-    _tameness(2);
+    _tameness(1);
 
 }

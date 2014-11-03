@@ -38,6 +38,8 @@ Animal_datum::Animal_datum()
   default_action = ANIMAL_ACT_KILL;
   danger = 0;
   flee_chance = 100;
+  pack_chance = 0;
+  max_pack_size = 1;
 
   reproduction_rate =   30;
   hardiness         = 2000;
