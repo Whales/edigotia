@@ -33,12 +33,14 @@ enum Animal
 // Dangerous game - mostly more trouble than they're worth
   ANIMAL_BEAR,
   ANIMAL_WOLF,
+  ANIMAL_JAGUAR,
   ANIMAL_LION,
   ANIMAL_ELEPHANT,
 
 // Fantasy creatures.  Generally very dangerous.
   ANIMAL_JELLY,
   ANIMAL_DIRE_WOLF,
+  ANIMAL_AKHLUT,      // Inuit legend - half orca, half wolf, amphibious
   ANIMAL_MANTICORE,
   ANIMAL_UNICORN,
   ANIMAL_BASILISK,
@@ -50,10 +52,16 @@ enum Animal
 struct Animal_amount
 {
   Animal_amount(Animal A = ANIMAL_NULL, int N = 0) :
-    animal (A), amount (N) { }
+    type (A), amount (N) { }
 
-  Animal animal;
+  Animal type;
   int amount;
+
+  bool is_infinite(); // True if amount == INFINITE_RESOURCE
+// Returns this, with amount set to 10%-20% of the original.
+  Animal_amount make_small();
+// Returns this, with amount set to 80%-120% of the original.
+  Animal_amount randomize();
 };
 
 struct Animal_datum
@@ -62,6 +70,7 @@ struct Animal_datum
   ~Animal_datum();
 
   std::string name;
+  std::string name_plural;
   int uid;
 
 // Placement data
@@ -90,6 +99,9 @@ struct Animal_datum
 // Defined in animal.cpp - searches for a partial match of the name, not caps
 // sensitive, ignores whitespace
 Animal search_for_animal(std::string name);
+// Returns a description of the amount of the animal there.
+// E.g. "A few", "A pack of", "A colony of", "A large colony of", etc
+std::string animal_amount_ranking(Animal_amount amt);
 
 // Defined in animal_data.cpp
 extern Animal_datum* Animal_data[ANIMAL_MAX];

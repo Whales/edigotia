@@ -8,6 +8,9 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _name(n) \
   Animal_data[cur_id]->name = (n)
 
+#define _name_plural(n) \
+  Animal_data[cur_id]->name_plural = (n)
+
 #define _temp_range(a, b) \
   Animal_data[cur_id]->min_temp = (a); Animal_data[cur_id]->max_temp = (b)
 
@@ -65,6 +68,7 @@ void init_animal_data()
 
   _animal(ANIMAL_CHICKEN);
     _name("chicken");
+    _name_plural("chickens");
     _temp_range     ( 25,  80);
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  50);
@@ -78,6 +82,7 @@ void init_animal_data()
 
   _animal(ANIMAL_PIG);
     _name("pig");
+    _name_plural("pigs");
     _temp_range     ( 35,  75);
     _altitude_range (  0,  85);
     _rainfall_range ( 20,  70);
@@ -90,6 +95,7 @@ void init_animal_data()
 
   _animal(ANIMAL_SHEEP);
     _name("sheep");
+    _name_plural("sheep");
     _temp_range     ( 10,  60);
     _altitude_range (  0,  95);
     _rainfall_range ( 15,  60);
@@ -104,6 +110,7 @@ void init_animal_data()
 
   _animal(ANIMAL_COW);
     _name("cow");
+    _name_plural("cows");
     _temp_range     ( 20,  85);
     _altitude_range (  0,  85);
     _rainfall_range ( 15,  60);
@@ -118,6 +125,7 @@ void init_animal_data()
 
   _animal(ANIMAL_HORSE);
     _name("horse");
+    _name_plural("horses");
     _temp_range     ( 20,  80);
     _altitude_range (  0,  80);
     _rainfall_range ( 15,  60);
@@ -135,6 +143,7 @@ void init_animal_data()
 
   _animal(ANIMAL_HARE);
     _name("hare");
+    _name_plural("hares");
     _temp_range     ( 10,  60);
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  75);
@@ -148,6 +157,7 @@ void init_animal_data()
 
   _animal(ANIMAL_FOX);
     _name("fox");
+    _name_plural("foxes");
     _temp_range     (  5,  90);
     _altitude_range (  0,  85);
     _rainfall_range (  5,  60);
@@ -162,6 +172,7 @@ void init_animal_data()
 
   _animal(ANIMAL_BOAR);
     _name("boar");
+    _name_plural("boars");
     _temp_range     ( 35,  90);
     _altitude_range (  0,  60);
     _rainfall_range (  0,  70);
@@ -175,6 +186,7 @@ void init_animal_data()
 
   _animal(ANIMAL_DEER);
     _name("deer");
+    _name_plural("deer");
     _temp_range     ( 12,  85);
     _altitude_range (  0,  90);
     _rainfall_range ( 10,  60);
@@ -191,6 +203,7 @@ void init_animal_data()
 
   _animal(ANIMAL_BEAR);
     _name("bear");
+    _name_plural("bears");
     _temp_range     (  0,  55);
     _altitude_range (  5,  80);
     _rainfall_range ( 15,  65);
@@ -205,6 +218,7 @@ void init_animal_data()
 
   _animal(ANIMAL_WOLF);
     _name("wolf");
+    _name_plural("wolves");
     _temp_range     (  5,  60);
     _altitude_range (  0,  75);
     _rainfall_range ( 15,  60);
@@ -218,8 +232,25 @@ void init_animal_data()
     _tameness(12);
     _resource_killed(RES_FUR, 10);
 
+  _animal(ANIMAL_JAGUAR);
+    _name("jaguar");
+    _name_plural("jaguars");
+    _temp_range     ( 60, 120);
+    _altitude_range (  0,  80);
+    _rainfall_range (  5,  90);
+    _percentage(30);
+    _danger(11);
+    _reproduction(15);
+    _hardiness(3200);
+    _food_killed(115);
+    _food_eaten(150);
+    _carnivore();
+    _tameness(8);
+    _resource_killed(RES_LEATHER,  8);
+
   _animal(ANIMAL_LION);
     _name("lion");
+    _name_plural("lions");
     _temp_range     ( 70, 110);
     _altitude_range (  0,  50);
     _rainfall_range (  0,  25);
@@ -236,6 +267,7 @@ void init_animal_data()
 // Legit question: could we drink elephant milk?
   _animal(ANIMAL_ELEPHANT);
     _name("elephant");
+    _name_plural("elephants");
     _temp_range     ( 65, 100);
     _altitude_range (  0,  60);
     _rainfall_range (  0,  30);
@@ -253,6 +285,7 @@ void init_animal_data()
 
   _animal(ANIMAL_JELLY);
     _name("jelly");
+    _name_plural("jellies");
     _temp_range     ( 32,  75);
     _altitude_range (  0,  80);
     _rainfall_range ( 30,  90);
@@ -264,10 +297,11 @@ void init_animal_data()
     _food_eaten(150);
     _tameness(50);
 // TODO: Should jellies provide some kind of resource?  Right now they're
-//       worthless.
+//       worthless, just an annoyance.
 
   _animal(ANIMAL_DIRE_WOLF);
     _name("dire wolf");
+    _name_plural("dire wolves");
     _temp_range     (  2,  40);
     _altitude_range (  0,  90);
     _rainfall_range (  5,  70);
@@ -281,8 +315,27 @@ void init_animal_data()
     _tameness(4);
     _resource_killed(RES_FUR, 20);
 
+// Inuit legend - half orca, half wolf, amphibious
+  _animal(ANIMAL_AKHLUT);
+    _name("akhlut");
+    _name_plural("akhlut");
+    _temp_range     (  0,  30);
+    _altitude_range (-20,  20);
+    _rainfall_range (  0,  80);
+    _percentage(10);
+    _danger(18);
+    _reproduction(10);
+    _hardiness(9000);
+    _food_killed(320);
+    _food_eaten(300);
+    _carnivore();
+    _tameness(3);
+    _resource_killed(RES_FUR,     10);
+    _resource_killed(RES_LEATHER, 10);
+
   _animal(ANIMAL_MANTICORE);
     _name("manticore");
+    _name_plural("manticores");
     _temp_range     ( 50, 110);
     _altitude_range ( 60, 100);
     _rainfall_range (  0,  40);
@@ -297,6 +350,7 @@ void init_animal_data()
 
   _animal(ANIMAL_UNICORN);
     _name("unicorn");
+    _name_plural("unicorns");
     _temp_range     ( 30,  65);
     _altitude_range (  0,  95);
     _rainfall_range ( 40,  60);
@@ -311,6 +365,7 @@ void init_animal_data()
 
   _animal(ANIMAL_BASILISK);
     _name("basilisk");
+    _name_plural("basilisks");
     _temp_range     ( 60, 110);
     _altitude_range (  0, 100);
     _rainfall_range (  0,  40);
@@ -324,6 +379,7 @@ void init_animal_data()
 
   _animal(ANIMAL_WYVERN);
     _name("wyvern");
+    _name_plural("wyverns");
     _temp_range     ( 30,  90);
     _altitude_range ( 70, 100);
     _rainfall_range ( 10,  70);

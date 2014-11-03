@@ -1,5 +1,27 @@
 #include "animal.h"
 #include "stringfunc.h" // search_for_animal() needs trim() and no_caps()
+#include "rng.h"
+
+bool Animal_amount::is_infinite()
+{
+  return (amount == INFINITE_RESOURCE);
+}
+
+Animal_amount Animal_amount::make_small()
+{
+  Animal_amount ret;
+  ret.type = type;
+  ret.amount = rng( amount * .1, amount * .2);
+  return ret;
+}
+
+Animal_amount Animal_amount::randomize()
+{
+  Animal_amount ret;
+  ret.type = type;
+  ret.amount = rng( amount * .8, amount * 1.2);
+  return ret;
+}
 
 Animal_datum::Animal_datum()
 {
@@ -42,3 +64,30 @@ Animal search_for_animal(std::string name)
   return ANIMAL_NULL;
 }
 
+std::string animal_amount_ranking(Animal_amount amt)
+{
+  if (amt.amount <= 5) {
+    return "a few";
+
+  } else if (amt.amount <= 15) {
+    return "a pack of";
+
+  } else if (amt.amount <= 50) {
+    return "a small colony of";
+
+  } else if (amt.amount <= 300) {
+    return "a colony of";
+
+  } else if (amt.amount <= 750) {
+    return "a large colony of";
+
+  } else if (amt.amount <= 1500) {
+    return "an abundance of";
+
+  } else if (amt.amount <= 3000) {
+    return "thousands of";
+
+  }
+
+  return "uncountable";
+}
