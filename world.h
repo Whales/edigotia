@@ -28,8 +28,9 @@ public:
  * specified crop/mineral.  If it's omitted (or {CROP,MINERAL}_NULL is passed)
  * then they return the number of tiles with ANY crop/mineral.
  */
-  int crop_count(Crop crop = CROP_NULL);
-  int mineral_count(Mineral mineral = MINERAL_NULL);
+  int crop_count    (Crop crop = CROP_NULL);
+  int mineral_count (Mineral mineral = MINERAL_NULL);
+  int animal_count  (Animal animal = ANIMAL_NULL);
 
   Map_type get_map_type(Point p);
   Map_type get_map_type(int x, int y);

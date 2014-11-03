@@ -806,7 +806,7 @@ Point World_map::draw(Window* w_map)
               gl = gl.hilite(c_green);
             } else if (do_mineral_hilite) {
               gl = gl.hilite(c_red);
-            } else if (do_animal_hilite) {
+            } else if (do_animal_hilite && (x != center.x || y != center.y)) {
               gl = gl.hilite(c_blue);
             }
           }
@@ -1058,6 +1058,19 @@ int World_map::mineral_count(Mineral mineral)
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       if (has_mineral(mineral, x, y)) {
+        ret++;
+      }
+    }
+  }
+  return ret;
+}
+
+int World_map::animal_count(Animal animal)
+{
+  int ret = 0;
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      if (has_animal(animal, x, y)) {
         ret++;
       }
     }
