@@ -92,13 +92,16 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
+
     std::stringstream ss_race;
     Race_datum* race_dat = Race_data[city->get_race()];
     ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
                capitalize(race_dat->plural_name) << "<c=/>";
     i_main.set_data("text_race", ss_race.str());
+
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
                    show_terrain);
+
     i_main.set_data("num_population",   city->get_total_population());
     i_main.set_data("num_gold",         city->get_resource_amount(RES_GOLD) );
     i_main.set_data("num_food",         city->get_resource_amount(RES_FOOD) );
@@ -189,7 +192,11 @@ void Interface::handle_key(long ch)
 // Get info on currently-selected tile
         } else if (ch == '\n') {
           if (current_area != AREA_NULL) {
-            enqueue_area();
+            if (city->area_at(sel)) {
+              set_temp_info("There is already an area there!");
+            } else {
+              enqueue_area();
+            }
           } else {
             popup( city->get_map_info(sel).c_str() );
           }
