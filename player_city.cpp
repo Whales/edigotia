@@ -564,6 +564,7 @@ Area_queue_status Player_city::add_area_to_queue(Area_type type, Point location)
   if (!inside_radius(location)) {
     return AREA_QUEUE_OUTSIDE_RADIUS;
   }
+
   Terrain_datum* ter_dat = map.get_terrain_datum(location);
   bool build_ok = false;
   for (int i = 0; !build_ok && i < ter_dat->buildable_areas.size(); i++) {
@@ -571,12 +572,15 @@ Area_queue_status Player_city::add_area_to_queue(Area_type type, Point location)
       build_ok = true;
     }
   }
+
   if (!build_ok) {
     return AREA_QUEUE_BAD_TERRAIN;
   }
+
   if (area_at(location)) {
     return AREA_QUEUE_OCCUPIED;
   }
+
   Area tmp(type, location);
   return add_area_to_queue(tmp);
 }
