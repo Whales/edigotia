@@ -39,6 +39,7 @@ enum Animal
 
 // Fantasy creatures.  Generally very dangerous.
   ANIMAL_JELLY,
+  ANIMAL_MAN_EATING_PLANT,
   ANIMAL_DIRE_WOLF,
   ANIMAL_AKHLUT,      // Inuit legend - half orca, half wolf, amphibious
   ANIMAL_MANTICORE,

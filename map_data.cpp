@@ -272,6 +272,7 @@ void init_terrain_data()
     _animal(ANIMAL_BEAR,       1000);
     _animal(ANIMAL_WOLF,        500);
     _animal(ANIMAL_JELLY,       200);
+    _animal(ANIMAL_MAN_EATING_PLANT,  20);
     _animal(ANIMAL_DIRE_WOLF,    50);
     _animal(ANIMAL_UNICORN,      80);
     _animal(ANIMAL_BASILISK,     10);
@@ -378,6 +379,7 @@ void init_terrain_data()
     _animal(ANIMAL_BEAR,        600);
     _animal(ANIMAL_WOLF,        200);
     _animal(ANIMAL_JELLY,       300);
+    _animal(ANIMAL_MAN_EATING_PLANT, 400);
     _animal(ANIMAL_DIRE_WOLF,    30);
     _animal(ANIMAL_UNICORN,      40);
     _buildable(AREA_HOVELS);
@@ -407,6 +409,7 @@ void init_terrain_data()
     _animal(ANIMAL_JAGUAR,      400);
     _animal(ANIMAL_ELEPHANT,     50);
     _animal(ANIMAL_JELLY,       100);
+    _animal(ANIMAL_MAN_EATING_PLANT, 400);
     _animal(ANIMAL_MANTICORE,   200);
     _buildable(AREA_SAWMILL);
 
