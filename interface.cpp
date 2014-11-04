@@ -540,6 +540,7 @@ void Interface::enqueue_area()
   if (current_area == AREA_NULL) {
     return;
   }
+
   Building_datum* build = get_building_for(current_area);
 
   if (city->expend_resources(build->build_costs)) {
