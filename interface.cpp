@@ -61,6 +61,7 @@ bool Interface::init(Game* G, Player_city* C)
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
 "Food",
+"Hunting",
 "Mining",
 "Morale",
 0
@@ -390,10 +391,13 @@ void Interface::do_menu_action(Menu_id menu, int index)
         case 2: // Food minister
           minister_food();
           break;
-        case 3: // Mining minister
+        case 3: // Master of the Hunt
+          minister_hunt();
+          break;
+        case 4: // Mining minister
           minister_mining();
           break;
-        case 4: // Morale minister
+        case 5: // Morale minister
           minister_morale();
           break;
       }
@@ -1095,6 +1099,169 @@ void Interface::list_farm_crops(Area* cur_farm, cuss::interface& i_food)
   i_food.set_data("list_crop_type",  crop_types);
   i_food.set_data("list_crop_food",  crop_food );
   i_food.set_data("list_crop_grown", crop_grown);
+}
+
+void Interface::minister_hunt()
+{
+  cuss::interface i_hunt;
+  if (!i_hunt.load_from_file("cuss/hunting.cuss")) {
+    return;
+  }
+  Window w_hunt(0, 0, 80, 24);
+
+// Set up static data (left side)
+  std::vector<std::string> names, actions, killed, livestock;
+
+// Start at 1 to skip ANIMAL_NULL
+  for (int i = 1; i < ANIMAL_MAX; i++) {
+    Animal animal = Animal(i);
+    names.push_back( capitalize( Animal_data[i]->name ) );
+    actions.push_back( capitalize( animal_action_name(
+                       city->get_hunting_action(animal)   ) ) );
+    if (city->hunt_kills.count(animal)) {
+      killed.push_back( itos( city->hunt_kills[animal] ) );
+    } else {
+      killed.push_back("0");
+    }
+    if (city->livestock.count(animal)) {
+      livestock.push_back( itos( city->livestock[animal] ) );
+    } else {
+      livestock.push_back("0");
+    }
+  }
+
+  i_hunt.set_data("list_animals", names);
+  i_hunt.ref_data("list_action", &actions); // ref_data cause they may chance
+  i_hunt.set_data("list_killed", killed);
+  i_hunt.set_data("list_livestock", livestock);
+
+// Start with ANIMAL_NULL so that our "check if we picked a new animal" check at
+// the start of our loop will hit the first go-through.
+  Animal cur_animal = ANIMAL_NULL;
+  bool done = false;
+  i_hunt.select("list_animals");
+
+  while (!done) {
+// Check if we picked a new animal.
+// + 1 because it doesn't contain ANIMAL_NULL, so the 0th index item is actually
+// Animal(1).
+    Animal new_animal = Animal( i_hunt.get_int("list_animals") + 1 );
+    if (new_animal != cur_animal) { // We changed!
+      cur_animal = new_animal;
+      Animal_datum* animal_dat = Animal_data[cur_animal];
+      i_hunt.set_data("text_danger", animal_danger_ranking(animal_dat->danger));
+      i_hunt.set_data("num_pack_size", animal_dat->max_pack_size);
+      i_hunt.set_data("num_flee_chance", animal_dat->flee_chance);
+      i_hunt.set_data("num_capture_chance", animal_dat->tameness);
+      i_hunt.set_data("num_food_killed", animal_dat->food_killed);
+
+      i_hunt.clear_data("list_resources_killed");
+
+      if (animal_dat->resources_killed.empty()) {
+        i_hunt.add_data("list_resourcs_killed", "<c=dkgray>None<c=/>");
+
+      } else {
+        for (int i = 0; i < animal_dat->resources_killed.size(); i++) {
+          std::stringstream ss_res;
+          Resource_amount res = animal_dat->resources_killed[i];
+          ss_res << resource_name(res.type) << " x " << res.amount;
+          i_hunt.add_data("list_resources_killed", ss_res.str());
+        }
+      }
+// food_livestock and food_eaten are measured in food per 100 animals.  So, we
+// need to divide it by 100 and display decimals.
+      std::stringstream ss_food_daily, ss_food_eaten;
+
+      ss_food_daily << animal_dat->food_livestock / 100 << ".";
+      int food_decimal = animal_dat->food_livestock % 100;
+      if (food_decimal < 10) {
+        ss_food_daily << "0"; // So we get "1.07" not "1.7"
+      }
+      ss_food_daily << food_decimal;
+      i_hunt.set_data("text_food_livestock",       ss_food_daily.str());
+
+      ss_food_eaten << animal_dat->food_eaten / 100 << ".";
+      food_decimal = animal_dat->food_eaten % 100;
+      if (food_decimal < 10) {
+        ss_food_eaten << "0"; // So we get "1.07" not "1.7"
+      }
+      ss_food_eaten << food_decimal;
+      i_hunt.set_data("text_food_eaten_livestock", ss_food_eaten.str());
+
+      if (animal_dat->carnivore) {
+        i_hunt.set_data("text_diet", "<c=ltred>Carnivorous<c=/>");
+      } else {
+        i_hunt.set_data("text_diet", "<c=ltgreen>Will eat hay<c=/>");
+      }
+
+      i_hunt.clear_data("list_resources_livestock");
+
+      if (animal_dat->resources_livestock.empty()) {
+        i_hunt.add_data("list_resources_livestock", "<c=dkgray>None<c=/>");
+
+      } else {
+        for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
+          std::stringstream ss_res;
+          Resource_amount res = animal_dat->resources_livestock[i];
+          ss_res << resource_name(res.type) << " x ";
+// Like food_livestock, these amounts are per 100 animals.  Same solution.
+          ss_res << res.amount / 100;
+          int res_decimal = res.amount % 100;
+          if (res_decimal < 10) {
+            ss_res << "0"; // So we get "1.07" not "1.7"
+          }
+          ss_res << res_decimal;
+          i_hunt.add_data("list_resources_livestock", ss_res.str());
+        }
+      }
+
+    } // if (new_animal != cur_animal)
+
+    i_hunt.draw(&w_hunt);
+    w_hunt.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
+        done = true;
+        break;
+
+      case 'a':
+      case 'A': {
+        Animal_action act = city->get_hunting_action(cur_animal);
+        act = Animal_action(act + 1);
+        if (act == ANIMAL_ACT_MAX) {
+          act = Animal_action(1);
+        }
+// Animal(1) is index 0, so subtract 1 from the animal to get index for actions
+        actions[cur_animal - 1] = capitalize( animal_action_name( act ) );
+        city->set_hunting_action(cur_animal, act);
+      } break;
+
+      default: {
+        i_hunt.handle_keypress(ch);
+// Make sure all our lists line up together.
+// TODO: This is messy.  cuss::interface should handle this for us.
+        cuss::ele_list* list_animals =
+          static_cast<cuss::ele_list*>(i_hunt.find_by_name("list_animals"));
+        cuss::ele_list* list_action =
+          static_cast<cuss::ele_list*>(i_hunt.find_by_name("list_action"));
+        cuss::ele_list* list_killed =
+          static_cast<cuss::ele_list*>(i_hunt.find_by_name("list_killed"));
+        cuss::ele_list* list_livestock =
+          static_cast<cuss::ele_list*>(i_hunt.find_by_name("list_livestock"));
+        list_action->offset    = list_animals->offset;
+        list_killed->offset    = list_animals->offset;
+        list_livestock->offset = list_animals->offset;
+      } break;
+    } // switch (ch)
+
+  } // while (!done)
+
 }
 
 void Interface::minister_mining()

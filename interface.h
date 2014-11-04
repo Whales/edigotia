@@ -108,6 +108,8 @@ private:
   void minister_food();
   // Helper functions for minister_food()
   void list_farm_crops(Area* cur_farm, cuss::interface& i_food);
+// Hunt minister, view hunt history and decide what action to take for animals
+  void minister_hunt();
 // Mine minister, define what minerals to mine and view stats
   void minister_mining();
   // Helper function for minister_mining()
