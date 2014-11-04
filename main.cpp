@@ -72,6 +72,7 @@ int main()
 // Set up a game.
   Game game;
   game.init();
+  city.set_game(&game);
 
 // Set up an interface bound to our city and game, and kick off its loop.
   Interface interface;
