@@ -100,13 +100,13 @@ struct Animal_datum
   int reproduction_rate;  // A percentage increase per year (range: 0 - 100)
   int hardiness;          // Livestock has a one-in-THIS chance of dying daily
                           // Use 0 if the livestock will never die randomly
+  int tameness;           // The chance that, when captured, becomes livestock
 
 // Resource-related data
   int food_killed;        // Food gained when killed (hunted or slaughtered)
   int food_livestock;     // Food gained daily, per 100 units, when livestock
   int food_eaten;         // Food eaten daily, per 100 units, when livestock
   bool carnivore;         // If false, this creature will eat hay if you have it
-  int tameness;           // The chance that, when captured, becomes livestock
   std::vector<Resource_amount> resources_killed; // Res gained when killed
   std::vector<Resource_amount> resources_livestock; // Res per 100, gained daily
 
@@ -120,6 +120,10 @@ Animal search_for_animal(std::string name);
 // Returns a description of the amount of the animal there.
 // E.g. "A few", "A pack of", "A colony of", "A large colony of", etc
 std::string animal_amount_ranking(Animal_amount amt);
+
+// Resturns a COLOR-CODED description of an animal's danger level.
+// E.g. "Harmless", "Weak", "Mild", "Moderate", "High", "Deadly", "Nightmare"
+std::string animal_danger_ranking(int danger);
 
 // Defined in animal_data.cpp
 extern Animal_datum* Animal_data[ANIMAL_MAX];

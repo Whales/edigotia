@@ -120,3 +120,28 @@ std::string animal_amount_ranking(Animal_amount amt)
 
   return "uncountable";
 }
+
+std::string animal_danger_ranking(int danger)
+{
+  if (danger == 0) {
+    return "<c=ltblue>Harmless<c=/>";
+  }
+
+  if (danger <= 10) {
+    return "<c=ltblue>Mild<c=/>";
+  }
+
+  if (danger <= 20) {
+    return "<c=yellow>Moderate<c=/>";
+  }
+
+  if (danger <= 30) {
+    return "<c=red>High<c=/>";
+  }
+
+  if (danger <= 40) {
+    return "<c=red>Deadly<c=/>";
+  }
+
+  return "<c=ltred>Nightmarish<c=/>";
+}
