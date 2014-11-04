@@ -359,14 +359,14 @@ void init_animal_data()
 // TODO: Should jellies provide some kind of resource?  Right now they're
 //       worthless, just an annoyance.
 
-  _animal(MAN_EATING_PLANT);
+  _animal(ANIMAL_MAN_EATING_PLANT);
   _name("man-eating plant");
   _name_plural("man-eating plants");
   _temp_range     ( 60, 120);
   _altitude_range (  0,  80);
   _rainfall_range ( 50, 100);
   _percentage(30);
-  _default_action(ANIMAL_ACT_AVOID);
+  _default_action(ANIMAL_ACT_FLEE);
   _danger(30);
   _flee_chance(100);
   _reproduction(10);
