@@ -74,6 +74,47 @@ std::string resource_name(Resource res)
   return "BUG - Escaped resource_name() switch.";
 }
 
+nc_color resource_color(Resource res)
+{
+  switch (res) {
+
+    case RES_NULL:          return c_ltgray;
+
+    case RES_GOLD:          return c_yellow;
+    case RES_FOOD:          return c_green;
+    case RES_WOOD:          return c_ltred;
+    case RES_STONE:         return c_ltgray;
+
+    case RES_FIBER:         return c_ltgray;
+    case RES_FUR:           return c_ltred;
+    case RES_LEATHER:       return c_brown;
+
+    case RES_UNICORN_HORN:  return c_pink;
+
+    case RES_FARMING:       return c_magenta;
+    case RES_MINING:        return c_magenta;
+    case RES_HUNTING:       return c_magenta;
+    case RES_LOGGING:       return c_magenta;
+
+    case RES_MAX:           return c_ltgray;
+    default:                return c_ltgray;
+
+  }
+  return c_ltgray;
+}
+
+bool resource_is_meta(Resource res)
+{
+  switch (res) {
+    case RES_FARMING:
+    case RES_MINING:
+    case RES_HUNTING:
+    case RES_LOGGING:
+      return true;
+  }
+  return false;
+}
+
 Crop_type lookup_crop_type(std::string name)
 {
   name = no_caps( trim( name ) );

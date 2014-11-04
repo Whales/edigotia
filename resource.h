@@ -48,6 +48,8 @@ enum Resource
 
 Resource lookup_resource(std::string name);
 std::string resource_name(Resource res);
+nc_color resource_color(Resource res);
+bool resource_is_meta(Resource res);  // Returns true for farming, mining, etc
 
 struct Resource_amount
 {
