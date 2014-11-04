@@ -390,6 +390,7 @@ bool World_map::save_to_file(std::string filename)
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       fout << tiles       [x][y] << " " <<
               continent_id[x][y] << " " << // Not sure if we really need this
+              kingdom_id  [x][y] << " " <<
               crops       [x][y] << " " <<
               minerals    [x][y] << " ";
     }
@@ -421,8 +422,9 @@ bool World_map::load_from_file(std::string filename)
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
       fin >> tmp_map_type >>
              continent_id[x][y] >>
-             crops[x][y] >>
-             minerals[x][y];
+             kingdom_id  [x][y] >>
+             crops       [x][y] >>
+             minerals    [x][y];
       tiles[x][y] = Map_type(tmp_map_type);
     }
   }
