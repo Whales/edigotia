@@ -1,6 +1,7 @@
-#include <sstream>
 #include "stringfunc.h"
 #include "window.h"
+#include <sstream>
+#include <math.h> // For digits_in(); it uses log10()
 
 std::vector<std::string> break_into_lines(std::string text, int linesize)
 {
@@ -239,6 +240,18 @@ std::string itos(int num)
   std::stringstream ret;
   ret << num;
   return ret.str();
+}
+
+int digits_in(int num)
+{
+  if (num == 0) {
+    return 1; // pow10() chokes on 0
+  }
+  if (num < 0) {
+    return 1 + digits_in(0 - num);  // 1 extra for the - character
+  }
+
+  return 1 + log10(num);  // 1 extra since log10 is logarythmic
 }
 
 std::string color_gradient(int value, std::vector<int> breakpoints,
