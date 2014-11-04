@@ -18,12 +18,12 @@ Battle_result quick_battle(int attacker_number, int attacker_strength,
 
     while (attacker_hp <= 0) {
       attacker_hp += 100;
-      attackers_left++;
+      attackers_left--;
     }
 
     while (defender_hp <= 0) {
       defender_hp += 100;
-      defenders_left++;
+      defenders_left--;
     }
   }
 
