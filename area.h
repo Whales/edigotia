@@ -76,6 +76,8 @@ struct Area
   void make_queued(); // Set our construction_left, etc.
   void close(City* city); // Fire all workers, set open to false, etc.
 
+  bool under_construction();  // True if building.construction_left > 0
+
   Area_datum* get_area_datum();
   std::string get_name();
   Building_type get_building_type();

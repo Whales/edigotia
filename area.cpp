@@ -51,6 +51,11 @@ void Area::close(City* city)
   }
 }
 
+bool Area::under_construction()
+{
+  return (building.construction_left > 0);
+}
+
 Area_datum* Area::get_area_datum()
 {
   return Area_data[type];
