@@ -17,7 +17,9 @@ Interface::Interface()
   next_menu_posx = 2;
   sel = Point(4, 4);
   city_radius = true;
+  show_terrain = false;
   current_area = AREA_NULL;
+  temp_text = false;
   game = NULL;
   city = NULL;
 }
@@ -108,10 +110,12 @@ void Interface::main_loop()
     i_main.set_data("num_wood",         city->get_resource_amount(RES_WOOD) );
     i_main.set_data("num_stone",        city->get_resource_amount(RES_STONE));
 
-    if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
-      display_area_stats(current_area);
-    } else {
-      i_main.set_data("text_map_info", city->get_map_info(sel));
+    if (!temp_text) {
+      if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
+        display_area_stats(current_area);
+      } else {
+        i_main.set_data("text_map_info", city->get_map_info(sel));
+      }
     }
 
     i_main.draw(&w_main);
@@ -428,12 +432,14 @@ void Interface::do_menu_action(Menu_id menu, int index)
 
 void Interface::set_temp_info(std::string text)
 {
+  temp_text = true;
   original_info_text = i_main.get_str("text_map_info");
   i_main.set_data("text_map_info", text);
 }
 
 void Interface::restore_info_text()
 {
+  temp_text = false;
   if (!original_info_text.empty()) {
     i_main.set_data("text_map_info", original_info_text);
     original_info_text = "";
@@ -543,9 +549,11 @@ void Interface::enqueue_area()
 
   Building_datum* build = get_building_for(current_area);
 
-  if (city->expend_resources(build->build_costs)) {
+  if (city->has_resources(build->build_costs)) {
     Area_queue_status stat = city->add_area_to_queue(current_area, sel);
-    if (stat != AREA_QUEUE_OK) {
+    if (stat == AREA_QUEUE_OK) {
+      city->expend_resources(build->build_costs);
+    } else {
       std::stringstream fail;
       fail << "<c=ltred>";
       switch (stat) {
