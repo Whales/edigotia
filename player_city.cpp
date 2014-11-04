@@ -242,7 +242,7 @@ void Player_city::do_turn()
   resources[RES_GOLD] += get_taxes();
 
 // Check for starvation.
-  for (int i = 0; i < CIT_MAX; i++) {
+  for (int i = 1; i < CIT_MAX; i++) {
     int starve_chance = population[i].get_starvation_chance();
 // TODO: Tweak this?
     if (starve_chance > 3) {
@@ -826,6 +826,10 @@ void Player_city::kill_citizens(Citizen_type type, int amount,
   if (type == CIT_NULL || type == CIT_MAX) {
     debugmsg("Player_city::kill_citizens(%s) called!",
              citizen_type_name(type).c_str());
+    return;
+  }
+
+  if (amount <= 0) {
     return;
   }
 
@@ -1481,23 +1485,39 @@ void Player_city::do_hunt(Area* hunting_camp)
         
         if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
 // If we want to, try to capture it.
+          bool caught = false;
           if (hunting_action[prey] == ANIMAL_ACT_CAPTURE) {
+// Try to catch each one seperately.
+            for (int n = 0; n < pack_size; n++) {
 // We use a mix of livestock & hunting skills for capturing things
-            int livestock_skill = Race_data[race]->skill_level[SKILL_LIVESTOCK];
-            int capture_skill = (livestock_skill * 2 + skill_level) / 3;
-            bool caught = (rng(1, 100) <= prey_dat->tameness);
-            if (capture_skill < 3) {  // 1 or 2 extra chances to FAIL
-              for (int n = 0; caught && n < 3 - capture_skill; n++) {
-                caught = rng(1, 100) <= prey_dat->tameness;
+              int livestock_skill =
+                Race_data[race]->skill_level[SKILL_LIVESTOCK];
+              int capture_skill = (livestock_skill * 2 + skill_level) / 3;
+              caught = (rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness);
+              if (capture_skill < 3) {  // 1 or 2 extra chances to FAIL
+                for (int n = 0; caught && n < 3 - capture_skill; n++) {
+                  caught = rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness;
+                }
+              } else if (capture_skill > 3) { // 1 or 2 extra chances to SUCCEED
+                for (int n = 0; !caught && n < capture_skill - 3; n++) {
+                  caught = rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness;
+                }
               }
-            } else if (capture_skill > 3) { // 1 or 2 extra chances to SUCCEED
-              for (int n = 0; !caught && n < capture_skill - 3; n++) {
-                caught = rng(1, 100) <= prey_dat->tameness;
+
+              if (caught) {
+// Add them to our livestock
+                if (livestock.count(prey)) {
+                  livestock[prey]++;
+                } else {
+                  livestock[prey] = 1;
+                }
               }
             }
           }
 // TODO: Add a message?
-          kill_animals(prey, pack_size, hunting_camp->pos);
+          if (!caught) {
+            kill_animals(prey, pack_size, hunting_camp->pos);
+          }
         } // if (result.result == COMBAT_RES_ATTACKER_WON)
 
 // Even if we won, some hunters may have died.
@@ -1523,10 +1543,18 @@ void Player_city::kill_animals(Animal animal, int amount, Point pos)
     gain_resource(res);
   }
 
-// Remove animals from the map, if appropriate.
 // pos defaults to (-1, -1) which means the animal didn't come from the map.
+// Otherwise, the animal came from the map, while hunting.
   Map_tile* tile = map.get_tile(pos);
   if (tile) {
+// If we have a tile, this was a hunt kill; so add the animals to our records.
+    if (hunt_kills.count(animal)) {
+      hunt_kills[animal] += amount;
+    } else {
+      hunt_kills[animal] = amount;
+    }
+
+// Remove animals from the map.
     bool done = false;
     for (int i = 0; !done && i < tile->animals.size(); i++) {
       if (tile->animals[i].type == animal) {
