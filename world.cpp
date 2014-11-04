@@ -772,6 +772,9 @@ Point World_map::draw(Window* w_map)
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
           Map_type_datum* data = Map_type_data[type];
+          if (!data) {
+            debugmsg("No data for tile[%d][%d] (type %d)!", x, y, type);
+          }
           glyph gl = data->symbol;
 
           City* city_here = city[x][y];
