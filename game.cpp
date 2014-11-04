@@ -27,6 +27,11 @@ void Game::advance_time(int days, City* city)
   }
 }
 
+Date Game::get_date()
+{
+  return date;
+}
+
 // TODO: Allow other formats of the date.
 std::string Game::get_date_str(int length)
 {

@@ -23,6 +23,7 @@ public:
  * it properly (white on blue) and make sure it fills the field (put in blue-on-
  * blue x until the tagless length matches the parameter).
  */
+  Date get_date();
   std::string get_date_str(int length = -1);
 
 private:
