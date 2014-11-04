@@ -69,6 +69,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_ICY_HILL);
@@ -92,6 +93,7 @@ void init_terrain_data()
     _buildable(AREA_HOUSES);
 // Burghers refuse to live on an icy hill!
     _buildable(AREA_KEEP);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -112,6 +114,7 @@ void init_terrain_data()
     _buildable(AREA_HOVELS);
 // Merchants and burghers refuse to live on an icy mountain!
     _buildable(AREA_KEEP);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
 
   _ter(TER_GLACIER);
@@ -120,6 +123,7 @@ void init_terrain_data()
     _farm(0);
     _hunting_difficulty(1000);
     _animal(ANIMAL_AKHLUT,      150);
+    _buildable(AREA_HUNTING_CAMP);
 // Glaciers are totally useless!  Except for Akhluts, which are very dangerous.
     
 
@@ -149,6 +153,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
 
@@ -183,6 +188,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -221,6 +227,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -250,6 +257,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
 
   _ter(TER_FOREST);
@@ -280,6 +288,7 @@ void init_terrain_data()
 // Houses and manors take up too much space to be built in a forest!
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_SAWMILL);
 
 // TER_BARREN should only appear after a forest has been totally cleared.
@@ -309,6 +318,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -358,6 +368,7 @@ void init_terrain_data()
     _buildable(AREA_MANOR);
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_SWAMP);
@@ -386,6 +397,7 @@ void init_terrain_data()
 // Merchants and burghers refuse to live in the swamp!
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
 
@@ -411,6 +423,7 @@ void init_terrain_data()
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_MAN_EATING_PLANT, 400);
     _animal(ANIMAL_MANTICORE,   200);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_SAWMILL);
 
   _ter(TER_ICE);
@@ -421,5 +434,6 @@ void init_terrain_data()
     _animal(ANIMAL_AKHLUT,       50);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
+    _buildable(AREA_HUNTING_CAMP);
     _buildable(AREA_BARRACKS);
 }
