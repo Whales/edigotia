@@ -82,6 +82,7 @@ City::City()
 {
   type = CITY_TYPE_CITY;
   race = RACE_NULL;
+  game = NULL;
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
   }
@@ -111,6 +112,16 @@ void City::start_new_city()
 // We always start with the maximum amount of food, regardless of our race.
   resources[RES_FOOD]  = get_food_cap();
 
+}
+
+void City::set_game(Game* G)
+{
+  if (!G) {
+    debugmsg("City::set_game(NULL) called!");
+    return;
+  }
+
+  game = G;
 }
 
 void City::do_turn()

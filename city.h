@@ -7,6 +7,7 @@
 #include "map.h"
 #include "military.h"
 #include "race.h"
+#include "game.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -80,6 +81,7 @@ public:
 
 // General-data mutators
   virtual void start_new_city();  // Sets up our population and more!
+  void set_game(Game* G);
   virtual void do_turn();
   void set_random_name();
   void set_race(Race new_race);
@@ -133,6 +135,7 @@ protected:
   std::string name;
   City_type type;
   Race race;
+  Game* game;
 };
 
 #endif
