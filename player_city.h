@@ -10,6 +10,8 @@
 #include "military.h"
 #include "race.h"
 #include "resource.h"
+#include "game.h"
+#include "date.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -17,6 +19,26 @@
 #include <vector>
 #include <string>
 #include <map>
+
+enum Message_type
+{
+  MESSAGE_NULL = 0,
+  MESSAGE_MINOR,    // Player MIGHT want to take action on this
+  MESSAGE_MAJOR,    // Player will almost certainly want to take action on this
+  MESSAGE_URGENT,   // Player MUST take action on this!
+// TODO: MESSAGE_UNLOCK, for when we've unlocked new buildings etc.
+  MESSAGE_MAX
+};
+
+struct Message
+{
+  Message(Message_type MT = MESSAGE_MINOR, std::string T = "") :
+    type (MT), text (T) { }
+
+  Message_type type;
+  std::string text;
+  Date date;
+};
 
 class Player_city : public City
 {
@@ -39,7 +61,7 @@ public:
 // Standard turn functions
   virtual void do_turn();
 
-// Changes
+// Mutators
   Area_queue_status add_area_to_queue(Area_type type, Point location);
   Area_queue_status add_area_to_queue(Area area);
 
@@ -57,7 +79,9 @@ public:
   void kill_citizens  (Citizen_type type, int amount,
                        Cause_of_death cause = DEATH_UNKNOWN);
 
-// Data functions
+  void add_message(Message_type type, std::string text);
+
+// Data accessor functions
 
 // Map-related functions
   bool inside_radius(int x, int y);
@@ -86,6 +110,7 @@ public:
  * 20 peasants before a merchant can be born.
  */
   int get_required_ratio(Citizen_type cit_type);
+  int get_population_cap(Citizen_type cit_type);  // Based on get_required_ratio
 /* When a new citizen is born, we need to choose its type; this function returns
  * the chance that its type will be cit_type.  The chances are independant of
  * each other; they may total to more than 100%.
@@ -158,6 +183,9 @@ public:
 
   std::map<Animal,int> livestock;
   std::map<Animal,int> hunt_kills;
+
+  int unread_messages;
+  std::vector<Message> messages;
 
   City_map map;
 

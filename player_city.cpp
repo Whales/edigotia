@@ -33,6 +33,7 @@ Player_city::Player_city()
   }
 
   radius = 1;
+  unread_messages = 0;
 }
 
 Player_city::~Player_city()
@@ -878,6 +879,26 @@ workerless building!");
 //       more?  Stats?
 }
 
+void Player_city::add_message(Message_type type, std::string text)
+{
+  if (type == MESSAGE_NULL || type == MESSAGE_MAX) {
+    debugmsg("Player_city::add_message() called with type %d.", type);
+    return;
+  }
+
+  if (text.empty()) {
+    return; // Might happen for valid reasons, so no debugmsg()
+  }
+
+  Message new_message(type, text);
+  if (game) {
+    new_message.date = game->get_date();
+  }
+
+  unread_messages++;
+  messages.push_back(new_message);
+}
+
 bool Player_city::inside_radius(int x, int y)
 {
   return inside_radius( Point(x, y) );
@@ -1041,6 +1062,16 @@ int Player_city::get_daily_birth_points()
 int Player_city::get_required_ratio(Citizen_type cit_type)
 {
   return Race_data[race]->citizen_ratio[cit_type];
+}
+
+int Player_city::get_population_cap(Citizen_type cit_type)
+{
+  if (cit_type <= CIT_PEASANT) {
+    return 0;
+  }
+  int ratio = get_required_ratio(cit_type);
+  int type_below = cit_type - 1;
+  return population[type_below].count / ratio;
 }
 
 int Player_city::get_chance_to_birth(Citizen_type cit_type)
