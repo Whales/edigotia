@@ -731,6 +731,14 @@ void Player_city::destroy_area_at(Point pos)
       return;
     }
   }
+
+// Check under-construction areas too
+  for (int i = 0; i < area_queue.size(); i++) {
+    if (area_queue[i].pos == pos) {
+      area_queue.erase( area_queue.begin() + i );
+      return;
+    }
+  }
 }
 
 Building_queue_status Player_city::add_building_to_queue(Building_type type)

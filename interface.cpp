@@ -245,7 +245,15 @@ void Interface::handle_key(long ch)
             int cost = area_selected->get_building_datum()->destroy_cost;
             int gold = city->get_resource_amount(RES_GOLD);
 
-            if (gold < cost) {
+// Areas under construction are free to "destroy" (but we won't get the build
+// costs back).
+            if (area_selected->under_construction()) {
+              if (query_yn("Cancel %s construction? You will lose all \
+resources spent to build it.")) {
+                city->destroy_area_at(sel);
+              }
+
+            } else if (gold < cost) {
               popup("Destroying that %s costs <c=ltred>%d<c=/> gold.  You have \
 <c=ltred>%d<c=/> gold.", area_selected->get_name().c_str(), cost, gold);
 
