@@ -14,6 +14,7 @@ Interface::Interface()
 {
   cur_menu = MENU_NULL;
   cur_mode = IMODE_NULL;
+  cur_data_mode = DATA_MODE_CITIZENS;
   next_menu_posx = 2;
   sel = Point(4, 4);
   city_radius = true;
@@ -77,6 +78,9 @@ bool Interface::init(Game* G, Player_city* C)
 
   set_menu_str();
 
+// Set data mode, so that the selectors are set too
+  set_data_mode(DATA_MODE_CITIZENS);
+
   return true;
 }
 
@@ -103,6 +107,10 @@ void Interface::main_loop()
 
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
                    show_terrain);
+
+    if (cur_mode != IMODE_MENU) {
+      print_data();
+    }
 
     i_main.set_data("num_population",   city->get_total_population());
     i_main.set_data("num_gold",         city->get_resource_amount(RES_GOLD) );
@@ -267,12 +275,18 @@ resources spent to build it.")) {
         } else if (ch == '.') {
           game->advance_time(1, city);
 
+        } else if (ch == '[') {
+          shift_data_mode(-1);
+
+        } else if (ch == ']') {
+          shift_data_mode(1);
+
 // Move time forward by 1 week
         } else if (ch == '>') {
           game->advance_time(7, city);
         }
 
-      } break;
+      } break;  // case IMODE_VIEW_MAP
 
       default:
         break;
@@ -321,6 +335,249 @@ void Interface::set_mode(Interface_mode mode)
   } // switch (mode)
 
 }
+
+void Interface::set_data_mode(Data_mode mode)
+{
+  cur_data_mode = mode;
+// Set up text_data_help
+  Data_mode last = Data_mode( mode - 1 );
+  if (last == DATA_MODE_NULL) {
+    last = Data_mode( DATA_MODE_MAX - 1 );
+  }
+  std::stringstream ss_last;
+  ss_last << "<c=pink>[ <c=white>" << data_mode_name(last) << "<c=/>";
+  i_main.set_data("text_data_last", ss_last.str());
+
+  Data_mode next = Data_mode( mode + 1 );
+  if (next == DATA_MODE_MAX) {
+    next = Data_mode( DATA_MODE_NULL + 1 );
+  }
+  std::stringstream ss_next;
+  ss_next << "<c=white>" << data_mode_name(next) << " <c=pink>]<c=/>";
+  i_main.set_data("text_data_next", ss_next.str());
+
+  print_data();
+}
+
+void Interface::shift_data_mode(int offset)
+{
+  int result = cur_data_mode + offset;
+  while (result <= DATA_MODE_NULL) {
+    result += (DATA_MODE_MAX - 1);
+  }
+  if (result >= DATA_MODE_MAX) {
+    result = result % (DATA_MODE_MAX - 1);
+  }
+
+  set_data_mode( Data_mode(result) );
+}
+
+void Interface::print_data()
+{
+  std::stringstream ss_data;
+
+  if (cur_data_mode != DATA_MODE_NULL) {
+    i_main.clear_data("text_data");
+  }
+
+  switch (cur_data_mode) {
+
+    case DATA_MODE_NULL:
+      break;  // Do nothing.
+
+    case DATA_MODE_CITIZENS:
+      ss_data << "              <c=ltblue>Citizens<c=/>" << std::endl <<
+                 std::endl;
+// First, population & unemployment data
+// Header
+      ss_data << "              Population   Unemployed" << std::endl;
+      for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
+        Citizen_type cit_type = Citizen_type(i);
+        if (true || city->population[i].count > 0) {
+// We use "true" in citizen_type_name() to indicate pluralization
+          std::string cit_name = capitalize(citizen_type_name(cit_type, true));
+          ss_data << "<c=yellow>" << cit_name << "<c=/>";
+// Add spaces for alignment
+          for (int n = 0; n < 14 - cit_name.length(); n++) {
+            ss_data << " ";
+          }
+// Add spaces for alignment
+          int spaces = 6 - digits_in(city->population[i].count);
+          for (int n = 0; n < spaces; n++) {
+            ss_data << " ";
+          }
+          ss_data << city->population[i].count;
+          ss_data << "       "; // Align under "Unemployed"
+
+          int unemployed = city->population[i].get_unemployed();
+          spaces = 6 - digits_in(unemployed);
+          for (int n = 0; n < spaces; n++) {
+            ss_data << " ";
+          }
+          ss_data << unemployed << std::endl;
+        } // if (city->population[i].count > 0)
+      } // for (int i = 0; i < CIT_MAX; i++)
+
+      ss_data << std::endl;
+
+// Housing data
+      for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
+        Citizen_type cit_type = Citizen_type(i);
+        std::string cit_name = capitalize( citizen_type_name(cit_type) );
+        ss_data << cit_name;
+        for (int n = 0; n < 9 - cit_name.length(); n++) {
+          ss_data << " ";
+        }
+        ss_data << "housing available:";
+        int housing = city->get_total_housing(cit_type);
+        int spaces = 6 - digits_in(housing);
+        for (int n = 0; n < spaces; n++) {
+          ss_data << " ";
+        }
+        if (housing <= city->get_total_population(cit_type)) {
+          ss_data << "<c=red>";
+        } else if (housing * 0.8 <= city->get_total_population(cit_type)) {
+          ss_data << "<c=yellow>";
+        }
+        ss_data << housing << "<c=/>" << std::endl;
+      }
+      ss_data << std::endl;
+
+// Finally, population limits.
+      ss_data << "<c=yellow>Population limits:<c=/>" << std::endl;
+      for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
+        Citizen_type cit_type = Citizen_type(i);
+        std::string cit_name = capitalize( citizen_type_name(cit_type) );
+        ss_data << cit_name << ":";
+// Insert spacing for alignment.
+        for (int n = 0; n < 9 - cit_name.length(); n++) {
+          ss_data << " ";
+        }
+        int cap = city->get_population_cap(cit_type);
+// Insert spacing for alignment.
+        for (int n = 0; n < 4 - digits_in(cap); n++) {
+          ss_data << " ";
+        }
+        ss_data << city->get_population_cap(cit_type) << std::endl;
+      }
+      break;
+
+    case DATA_MODE_RESOURCES: {
+      ss_data << "              <c=ltblue>Resources<c=/>" << std::endl <<
+                 std::endl;
+// We do two columns; resources on the left, minerals on the right.
+// We do them in the same loop and check to see if they're valid for both.
+// First loop figures out what we've got.
+      std::vector<Resource> resource_list;
+      std::vector<Mineral>  mineral_list;
+      for (int i = 0; i < RES_MAX || i < MINERAL_MAX; i++) {
+        if (i < RES_MAX) {
+          Resource res = Resource(i);
+          if (!resource_is_meta(res) && city->get_resource_amount(res) > 0) {
+            resource_list.push_back(res);
+          }
+        }
+        if (i < MINERAL_MAX) {
+          Mineral min = Mineral(i);
+          if (city->get_mineral_amount(min) > 0) {
+            mineral_list.push_back(min);
+          }
+        }
+      }
+// Now actually print.
+      for (int i = 0; i < resource_list.size() || i < mineral_list.size(); i++){
+        if (i < resource_list.size()) {
+          Resource res = resource_list[i];
+          std::string res_name = capitalize( resource_name(res) );
+          int amount = city->get_resource_amount(res);
+// Colorize it
+          ss_data << "<c=" << color_tag( resource_color(res) ) << ">";
+          ss_data << res_name << "<c=/>:";
+// Insert spaces for alignment.  length() + 1 because of the :
+          for (int n = 0; n < 15 - (res_name.length() + 1); n++) {
+            ss_data << " ";
+          }
+// More spaces for number alignment.
+          for (int n = 0; n < 5 - digits_in(amount); n++) {
+            ss_data << " ";
+          }
+          ss_data << amount;
+
+        } else if (i < mineral_list.size()) {
+// If we DON'T have a resource to print in this line, but we DO have a mineral
+// to print, we need to put in black spaces so the mineral starts at the right.
+          for (int n = 0; n < 20; n++) {  // 15 for the name, 5 for the amount
+            ss_data << " ";
+          }
+        }
+
+// Now, print mineral if we are still in range.
+        if (i < mineral_list.size()) {
+// Spacing to seperate us from resources (even if there wasn't a resource)
+          ss_data << "  <c=white>|<c=/>  ";
+          Mineral min = mineral_list[i];
+          std::string min_name = capitalize( Mineral_data[min]->name );
+          int amount = city->get_mineral_amount(min);
+          ss_data << min_name << ":";
+// Insert spaces for alignment.  length() + 1 because of the :
+          for (int n = 0; n < 10 - (min_name.length() + 1); n++) {
+            ss_data << " ";
+          }
+// More spaces for number alignment.
+          for (int n = 0; n < 5 - digits_in(amount); n++) {
+            ss_data << " ";
+          }
+          ss_data << amount;
+        } // if (i < mineral_list.size())
+
+        ss_data << std::endl;
+      } // for (int i = 0; i < res_list.size() || i < min_list.size(); i++)
+
+    } break;
+
+    case DATA_MODE_MESSAGES: {
+      ss_data << "              <c=ltblue>Messages<c=/>" << std::endl <<
+                 std::endl;
+// If there's no new messages, let us know that.
+      if (city->unread_messages == 0 || city->messages.empty()) {
+        ss_data << "<c=dkgray>No new messages.<c=/>";
+      }
+// Show the last N messages, where N = city->unread_messages.
+      if (city->unread_messages > city->messages.size()) {
+        city->unread_messages = city->messages.size();
+      }
+      Date last_date(1, 1, 1); // Make sure the date check fails
+      for (int i = city->messages.size() - city->unread_messages;
+           i < city->messages.size();
+           i++) {
+        Message* mes = &(city->messages[i]);
+        if (mes->date != last_date) { // Print the date
+          last_date = mes->date;
+          ss_data << "<c=ltblue>" << last_date.get_text() << ":<c=/>" <<
+                     std::endl;
+        }
+        switch (mes->type) {
+          case MESSAGE_MINOR:
+            ss_data << "<c=ltgray>";
+            break;
+          case MESSAGE_MAJOR:
+            ss_data << "<c=yellow>";
+            break;
+          case MESSAGE_URGENT:
+            ss_data << "<c=ltred>";
+            break;
+        }
+        ss_data << mes->text << "<c=/>" << std::endl;
+      } // for (i from first message to last message)
+// Reset city->unread_messages.
+      city->unread_messages = 0;
+    } break;
+  } // switch (cur_data_mode)
+
+  i_main.set_data("text_data", ss_data.str());
+
+}
+
 
 void Interface::set_menu(Menu_id item)
 {
@@ -2747,6 +3004,31 @@ void Interface::set_menu_str()
       menu_str += 'x';
     }
   }
+}
+
+Data_mode lookup_data_mode(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < DATA_MODE_MAX; i++) {
+    Data_mode ret = Data_mode(i);
+    if (name == no_caps( data_mode_name( ret ) ) ) {
+      return ret;
+    }
+  }
+  return DATA_MODE_NULL;
+}
+
+std::string data_mode_name(Data_mode mode)
+{
+  switch (mode) {
+    case DATA_MODE_NULL:      return "BUG - DATA_MODE_NULL";
+    case DATA_MODE_CITIZENS:  return "Citizens";
+    case DATA_MODE_RESOURCES: return "Resources";
+    case DATA_MODE_MESSAGES:  return "Messages";
+    case DATA_MODE_MAX:       return "BUG - DATA_MODE_MAX";
+    default:                  return "Unnamed Data_mode";
+  }
+  return "BUG - Escaped data_mode_name() switch!";
 }
 
 std::string menuify(std::string name)

@@ -25,6 +25,19 @@ enum Interface_mode
   IMODE_MAX
 };
 
+// What to put in text_data?
+enum Data_mode
+{
+  DATA_MODE_NULL = 0,     // Don't put any minatoka9@hotmail.com
+  DATA_MODE_CITIZENS,     // Population, employment, etc for citizens
+  DATA_MODE_RESOURCES,    // Quantity of all resources & minerals
+  DATA_MODE_MESSAGES,     // City's messages
+  DATA_MODE_MAX
+};
+
+Data_mode lookup_data_mode(std::string name);
+std::string data_mode_name(Data_mode mode);
+
 enum Game_state
 {
   GAME_NORMAL,
@@ -72,6 +85,12 @@ private:
 
 // Set the current mode
   void set_mode(Interface_mode mode);
+// Set the data mode; also calls print_data().
+  void set_data_mode(Data_mode mode);
+// Calls set_data_mode()
+  void shift_data_mode(int offset); // offset generally is -1 or 1
+// Print the data according to our data mode
+  void print_data();
 
 
 // *** Menus ***
@@ -165,6 +184,7 @@ private:
 // Current mode.
   Game_state game_state; // e.g. "quit"
   Interface_mode cur_mode;
+  Data_mode cur_data_mode;
   Menu_id cur_menu;
 
 // Pointers to game data.
