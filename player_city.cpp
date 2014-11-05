@@ -1600,6 +1600,7 @@ void Player_city::do_hunt(Area* hunting_camp)
   }
 
   int combat_points = camp_bldg->hunter_level;
+  int hunter_hp = Race_data[race]->hp;
   int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
 
 // These are for adding a message at the bottom of the function.
@@ -1642,9 +1643,9 @@ void Player_city::do_hunt(Area* hunting_camp)
 
       if (combat) {
 // "2" limits us to 2 hunters fighting at once
-        Battle_result result = quick_battle(hunters, combat_points,
+        Battle_result result = quick_battle(hunters, combat_points, hunter_hp,
                                             pack_size, prey_dat->danger,
-                                            2);
+                                            prey_dat->hp);
         
         if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
 // If we want to, try to capture it.
