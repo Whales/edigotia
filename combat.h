@@ -35,7 +35,9 @@ struct Battle_result
  * overwhelming) advantage of having bigger numbers.
  */
 Battle_result quick_battle(int attacker_number, int attacker_strength,
+                           int attacker_hp,
                            int defender_number, int defender_strength,
-                           int max_attacks);
+                           int defender_hp,
+                           int max_attacks = 0);
 
 #endif

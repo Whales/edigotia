@@ -1,18 +1,22 @@
 #include "combat.h"
 #include "rng.h"
 
+// max_attacks defaults to 0 (no maximum)
 Battle_result quick_battle(int attacker_number, int attacker_strength,
+                           int attacker_hp,
                            int defender_number, int defender_strength,
+                           int defender_hp,
                            int max_attacks)
 {
-  int attacker_hp = 100, defender_hp = 100;
   int attackers_left = attacker_number, defenders_left = defender_number;
 
   while (attackers_left > 0 && defenders_left > 0) {
-    for (int i = 0; i < defenders_left && i < max_attacks; i++) {
+    for (int i = 0; i < defenders_left && (max_attacks == 0 || i < max_attacks);
+         i++) {
       attacker_hp -= rng(0, defender_strength);
     }
-    for (int i = 0; i < attackers_left && i < max_attacks; i++) {
+    for (int i = 0; i < attackers_left && (max_attacks == 0 || i < max_attacks);
+         i++) {
       defender_hp -= rng(0, attacker_strength);
     }
 
