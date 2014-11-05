@@ -136,9 +136,10 @@ void init_building_data()
     _cost(RES_GOLD, 50);
     _build_time(1);
     _destroy_cost(100);
-    _jobs(CIT_PEASANT, 5);
+    _upkeep(5);
+    _jobs(CIT_PEASANT, 3);
     _wages(3);
-    _produces(RES_HUNTING, 10);
+    _produces(RES_HUNTING, 1);
 
   _build(BUILD_MINE);
     _name("mine");
