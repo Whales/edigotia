@@ -831,9 +831,6 @@ Point World_map::draw(Window* w_map)
       i_legend.set_data("text_position", c_white);
       i_legend.set_data("text_map_type", data->name);
       i_legend.set_data("text_map_type", data->symbol.fg);
-      i_legend.set_data("num_temp", temperature[center.x][center.y]);
-      i_legend.set_data("num_altitude", altitude[center.x][center.y]);
-      i_legend.set_data("num_rainfall", rainfall[center.x][center.y]);
 /* We want two crops/minerals per line, so I split the text fields into two.
  * Each one has its own stringstream; so we put the first crop/mineral into the
  * left stringstream/field, the second into the right, etc.
