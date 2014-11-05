@@ -145,6 +145,15 @@ void ele_textbox::draw(Window *win)
  
  win->clear_area(posx, posy, posx + sizex - 1, posy + sizey - 1);
 
+// Make sure offset isn't too high
+ if (offset > broken.size() - sizey) {
+  offset = broken.size() - sizey;
+ }
+
+ if (offset < 0) {
+  offset = 0;
+ }
+
  for (int i = 0; i + offset <= broken.size() && i < sizey; i++) {
   int ypos, index;
   if (v_align == ALIGN_BOTTOM) {
@@ -233,16 +242,16 @@ bool ele_textbox::ref_data(std::string *data)
 bool ele_textbox::set_data(int data)
 {
  std::vector<std::string> broken = break_into_lines(*text, sizex);
- if (data <= 0)
+ offset = data;
+ int text_size = broken.size(); // Since broken.size() is an unsigned int
+ if (offset > text_size - sizey)
+  offset = text_size - sizey;
+ if (offset < 0)
   offset = 0;
- else if (data > broken.size() - 1)
-  offset = broken.size() - 1;
 /*
  else if (data > sizey - broken.size())
   offset = sizey - broken.size();
 */
- else
-  offset = data;
  return true;
 }
 
