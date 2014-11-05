@@ -95,6 +95,7 @@ struct Animal_datum
 // Hunting/livestock data
   Animal_action default_action; // Default action taken when hunting
   int danger;             // Dangerous to hunt? 10 = unarmed man, 20 = hunter
+  int hp;                 // Health points - how hard it is to kill
   int flee_chance;        // Chance to flee, if we choose to.
   int pack_chance;        // Chance that we'll appear in a pack.
   int max_pack_size;      // What's the biggest group we'll appear in?

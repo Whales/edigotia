@@ -37,6 +37,7 @@ Animal_datum::Animal_datum()
 
   default_action = ANIMAL_ACT_KILL;
   danger = 0;
+  hp = 50;
   flee_chance = 100;
   pack_chance = 0;
   max_pack_size = 1;
