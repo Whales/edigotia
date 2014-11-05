@@ -30,6 +30,9 @@ enum Message_type
   MESSAGE_MAX
 };
 
+// Color-coding for the different message types.
+nc_color message_type_color(Message_type type);
+
 struct Message
 {
   Message(Message_type MT = MESSAGE_MINOR, std::string T = "") :
@@ -77,11 +80,19 @@ public:
   bool employ_citizens(Citizen_type type, int amount, Building* job_site);
   bool fire_citizens  (Citizen_type type, int amount, Building* job_site);
   void kill_citizens  (Citizen_type type, int amount,
-                       Cause_of_death cause = DEATH_UNKNOWN);
+                       Cause_of_death cause = DEATH_UNKNOWN,
+                       std::string cause_text = "");
 
-  void add_message(Message_type type, std::string text);
+// The variadic arguments allow for printf-style substitution.
+  void add_message(Message_type type, std::string text, ...);
 
 // Data accessor functions
+
+// Message-related functions
+
+// The vector returned always has one element for each message type
+// It goes through the unread messages and adds 1 for each messages of that type
+  std::vector<int> get_unread_message_count();
 
 // Map-related functions
   bool inside_radius(int x, int y);
@@ -116,7 +127,7 @@ public:
  * each other; they may total to more than 100%.
  */
   int get_chance_to_birth(Citizen_type cit_type);
-  void birth_citizen(); // Create a new citizen, including picking its type
+  void birth_citizens(int num = 1); // Picks a Citizen_type and adds new citizen
 
 // Building/Area-related functions
   std::vector<Building*> get_all_buildings();

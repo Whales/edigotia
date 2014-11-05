@@ -227,11 +227,12 @@ void Player_city::do_turn()
 {
 // Birth a new citizen(s)?
   birth_points += get_daily_birth_points();
+  int births = 0;
   while (birth_points >= 100) {
-// TODO: Add a message alerting the player that citizens have been born.
     birth_points -= 100;
-    birth_citizen();
+    births++;
   }
+  birth_citizens(births); // Handles the message, too
 
 // Import resources.
   for (int i = 1; i < RES_MAX; i++) {
@@ -306,7 +307,7 @@ void Player_city::do_turn()
         } else {  // Some people eat.
           population[cit_type].starvation = hungry_citizens;
         }
-// TODO: Add a message alerting the player of insufficient food.
+        add_message(MESSAGE_URGENT, "We have run out of food!");
         resources[RES_FOOD] = 0;
       }
     }
@@ -390,7 +391,11 @@ void Player_city::do_turn()
                 minerals[min_mined.type] += min_mined.amount;
 
               } else if (tile_min->amount < min_mined.amount) {
-// TODO: Add an alert for the player that we've exhausted this source of mineral
+                Mineral_datum* min_dat = Mineral_data[min_mined.type];
+                add_message(MESSAGE_MAJOR,
+                            "Our mine has exhausted its supply of %s!",
+                            min_dat->name.c_str());
+
                 minerals[min_mined.type] += tile_min->amount;
                 tile->minerals.erase( tile->minerals.begin() + m );
 // Fire any workers associated with that mineral.
@@ -423,7 +428,11 @@ void Player_city::do_turn()
                        Race_data[race]->skill_level[SKILL_FORESTRY]) / 5;
 
       if (tile->wood != INFINITE_RESOURCE && tile->wood < wood_produced) {
-// TODO: Add a message alerting the player that the wood is exhausted.
+        add_message(MESSAGE_MAJOR,
+                    "Our %s has cleared the %s and is now closed.",
+                    areas[i].get_name().c_str(),
+                    tile->get_terrain_name().c_str());
+
         resources[RES_WOOD] += tile->wood;
         tile->wood = 0;
         tile->clear_wood();
@@ -530,8 +539,8 @@ void Player_city::do_turn()
       if (min_amt->amount == HIDDEN_RESOURCE &&
           (amount_buried == INFINITE_RESOURCE ||
            rng(1, 20000) < amount_buried)) {
-// TODO: Announce mineral discovery!
-        popup("Discovered %s!", Mineral_data[min_amt->type]->name.c_str());
+        add_message(MESSAGE_MAJOR, "Our mine has discovered %s!",
+                    Mineral_data[min_amt->type]->name.c_str());
         min_amt->amount = 0;
       }
     }
@@ -542,7 +551,8 @@ void Player_city::do_turn()
     Area* area_to_build = &(area_queue[0]);
     area_to_build->building.construction_left--;
     if (area_to_build->building.construction_left <= 0) {
-// TODO: Add a message alerting the player that an area is finished
+      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
+                  area_queue[0].get_name().c_str());
       add_open_area(area_queue[0]);
       area_queue.erase( area_queue.begin() );
     }
@@ -553,7 +563,8 @@ void Player_city::do_turn()
     Building* building_to_build = &(building_queue[0]);
     building_to_build->construction_left--;
     if (building_to_build->construction_left <= 0){
-// TODO: Add a message alerting the player that a building is finished
+      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
+                  building_queue[0].get_name().c_str());
       add_open_building(building_queue[0]);
       building_queue.erase( building_queue.begin() );
     }
@@ -663,7 +674,9 @@ void Player_city::add_open_area(Area area)
 
 // Hunting camps are set up specially.
   if (area.produces_resource(RES_HUNTING)) {
-    area.building.hunter_level = 4* Race_data[race]->skill_level[SKILL_HUNTING];
+    int level = Race_data[race]->base_combat / 2 +
+                3 * Race_data[race]->skill_level[SKILL_HUNTING];
+    area.building.hunter_level = level;
   }
 
 // Now attempt to employ citizens to fill it up.
@@ -671,7 +684,9 @@ void Player_city::add_open_area(Area area)
   int num_jobs = area_bldg->get_total_jobs();
   Citizen_type cit_type = area_bldg->get_job_citizen_type();
   if (employ_citizens(cit_type, num_jobs, area_bldg)) {
-// TODO: Add a message telling the player we hired citizens.
+    add_message(MESSAGE_MINOR, "%d %s have started work at the %s.",
+                num_jobs, citizen_type_name(cit_type, true).c_str(),
+                area.get_name().c_str());
 // If it's a farm, we need to set crops to grow.
     if (area_bldg->produces_resource(RES_FARMING)) {
 // Find whatever crop produces the most food.
@@ -684,9 +699,15 @@ void Player_city::add_open_area(Area area)
           best_food = food;
         }
       }
-// TODO: Add a message telling the player if we chose crops or not
       if (best_index >= 0) {
+        Crop crop = area_bldg->crops_grown[best_index].type;
+        Crop_datum* crop_dat = Crop_data[crop];
+        add_message(MESSAGE_MINOR, "Our %s is now growing %s.",
+                    area.get_name().c_str(), crop_dat->name.c_str());
         area_bldg->crops_grown[best_index].amount += num_jobs;
+      } else {
+        add_message(MESSAGE_MAJOR, "Our %s needs to select a crop to grow.",
+                    area.get_name().c_str());
       }
     }
 // Mines need to have minerals chosen
@@ -702,13 +723,20 @@ void Player_city::add_open_area(Area area)
           best_value = value;
         }
       }
-// TODO: Add a message telling the player if we chose minerals or not
       if (best_index >= 0) {
+        Mineral min = area_bldg->minerals_mined[best_index].type;
+        Mineral_datum* min_dat = Mineral_data[min];
+        add_message(MESSAGE_MINOR, "Our %s is now mining %s.",
+                    area.get_name().c_str(), min_dat->name.c_str());
         area_bldg->minerals_mined[best_index].amount += num_jobs;
+      } else {
+        add_message(MESSAGE_MAJOR, "Our %s needs to select a mineral to mine.",
+                    area.get_name().c_str());
       }
     }
   } else if (num_jobs > 0) {
-// TODO: Add a message telling the player that we failed to hire citizens
+    add_message(MESSAGE_MINOR, "Our %s could not hire citizens.",
+                area.get_name().c_str());
   }
 
   areas.push_back( area );
@@ -833,7 +861,7 @@ bool Player_city::fire_citizens(Citizen_type type, int amount,
 }
 
 void Player_city::kill_citizens(Citizen_type type, int amount,
-                                Cause_of_death cause)
+                                Cause_of_death cause, std::string cause_text)
 {
 // Sanity check
   if (type == CIT_NULL || type == CIT_MAX) {
@@ -873,13 +901,22 @@ workerless building!");
 
 // OK, now we can kill them off.
   population[type].remove_citizens(amount);
+
+// And add a message.
+  if (cause_text.empty()) {
+    cause_text = cause_of_death_text(cause, (amount > 1));
+  }
+
+  add_message(MESSAGE_URGENT, "%d %s %s.",
+              amount,
+              citizen_type_name(type, (amount > 1)).c_str(),
+              cause_text.c_str());
 // TODO: Morale penalty here.
-// TODO: Message.
 // TODO: Do something with our Cause_of_death.  Modify the message for sure, but
 //       more?  Stats?
 }
 
-void Player_city::add_message(Message_type type, std::string text)
+void Player_city::add_message(Message_type type, std::string text, ...)
 {
   if (type == MESSAGE_NULL || type == MESSAGE_MAX) {
     debugmsg("Player_city::add_message() called with type %d.", type);
@@ -890,13 +927,39 @@ void Player_city::add_message(Message_type type, std::string text)
     return; // Might happen for valid reasons, so no debugmsg()
   }
 
-  Message new_message(type, text);
+  va_list ap;
+  va_start(ap, text);
+  char buff[8192];
+  vsprintf(buff, text.c_str(), ap);
+  va_end(ap);
+
+  std::string formatted_text = buff;
+
+  Message new_message(type, formatted_text);
   if (game) {
     new_message.date = game->get_date();
   }
 
   unread_messages++;
   messages.push_back(new_message);
+}
+
+std::vector<int> Player_city::get_unread_message_count()
+{
+  std::vector<int> ret;
+  for (int i = 0; i < MESSAGE_MAX; i++) {
+    ret.push_back(0);
+  }
+
+  if (unread_messages == 0) {
+    return ret;
+  }
+
+  for (int i = messages.size() - unread_messages; i < messages.size(); i++) {
+    ret[ messages[i].type ]++;
+  }
+
+  return ret;
 }
 
 bool Player_city::inside_radius(int x, int y)
@@ -1098,20 +1161,76 @@ int Player_city::get_chance_to_birth(Citizen_type cit_type)
   return 100;
 }
 
-void Player_city::birth_citizen()
+// num defaults to 1
+void Player_city::birth_citizens(int num)
 {
+  if (num <= 0) {
+    return;
+  }
+// Total born, for our message below
+  std::vector<Citizen_amount> born;
+  for (int i = 0; i < num; i++) {
 // Decide what type the new citizen will be.
-  Citizen_type new_cit_type = CIT_NULL;
-  for (int i = CIT_MAX - 1; new_cit_type == CIT_NULL && i >= CIT_PEASANT; i--) {
-    Citizen_type cit_type = Citizen_type(i);
-    int chance = get_chance_to_birth(cit_type);
-    if (chance > 0 && rng(1, 100) <= chance) {
-      new_cit_type = cit_type;
+    Citizen_type new_cit_type = CIT_NULL;
+    for (int i = CIT_MAX - 1;
+         new_cit_type == CIT_NULL && i >= CIT_PEASANT;
+         i--) {
+      Citizen_type cit_type = Citizen_type(i);
+      int chance = get_chance_to_birth(cit_type);
+      if (chance > 0 && rng(1, 100) <= chance) {
+        new_cit_type = cit_type;
+      }
     }
+// Add to born, either an existing element or a new one
+    bool found = false;
+    for (int i = 0; !found && i < born.size(); i++) {
+      if (born[i].type == new_cit_type) {
+        found = true;
+        born[i].amount++;
+      }
+    }
+    if (!found) {
+      born.push_back( Citizen_amount( new_cit_type, 1 ) );
+    }
+// Add the baby!
+    population[new_cit_type].add_citizens(1);
   }
 
-  population[new_cit_type].add_citizens(1);
+  if (born.empty()) { // Should never happen... right?
+    return;
+  }
+
+// Draft and add a new message.
+  std::stringstream ss_message;
+  for (int i = 0; i < born.size(); i++) {
+
+    if (i > 0) {  // Conjunction (or comma)
+      if (i == born.size() - 1) {
+        ss_message << " and ";
+      } else {
+        ss_message << ", ";
+      }
+    }
+
+    if (born[i].amount == 1) { // Article (or the number)
+      ss_message << "a";
+    } else {
+      ss_message << born[i].amount;
+    }
+
+    ss_message << " " << citizen_type_name( born[i].type );
+  }
+// Verb
+  if (born.size() > 1 || born[0].amount > 1) {
+    ss_message << " were born!";
+  } else {
+    ss_message << " was born!";
+  }
+
+  std::string message = capitalize( ss_message.str() );
+  add_message( MESSAGE_MINOR, message );
 }
+
 
 std::vector<Building*> Player_city::get_all_buildings()
 {
@@ -1465,27 +1584,28 @@ void Player_city::do_hunt(Area* hunting_camp)
     return;
   }
 
-  Building* camp_bldg = &(hunting_camp->building);
-
-  int hunters = camp_bldg->workers;
-
-  int num_hunts = camp_bldg->amount_produced(RES_HUNTING) * hunters;
-
-  int combat_points = camp_bldg->hunter_level;
-
-  if (num_hunts <= 0) {
-    return;
-  }
-
-  int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
-
   Map_tile* tile = map.get_tile(hunting_camp->pos);
   if (!tile) {
     debugmsg("BUG - Hunting on NULL ground!");
     return;
   }
 
-  for (int i = 0; i < num_hunts; i++) {
+  Building* camp_bldg = &(hunting_camp->building);
+
+  int hunters = camp_bldg->workers;
+  int num_hunts = camp_bldg->amount_produced(RES_HUNTING) * hunters;
+
+  if (num_hunts <= 0) {
+    return;
+  }
+
+  int combat_points = camp_bldg->hunter_level;
+  int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
+
+// These are for adding a message at the bottom of the function.
+  std::vector<Animal_amount> animals_killed, animals_caught;
+
+  for (int i = 0; camp_bldg->workers > 0 && i < num_hunts; i++) {
     Animal prey = tile->choose_hunt_animal(skill_level);
     Animal_datum* prey_dat = Animal_data[prey];
     int pack_size = 1;
@@ -1495,7 +1615,7 @@ void Player_city::do_hunt(Area* hunting_camp)
 
     if (prey != ANIMAL_NULL) {  // Ensure we actually caught something!
 
-      bool combat = true;  // Handle combat after checking if we flee.
+      bool combat = true;  // If we flee, set this to false; if true, do combat
 
 // If we want to flee, try that first.
       if (hunting_action[prey] == ANIMAL_ACT_FLEE) {
@@ -1529,6 +1649,7 @@ void Player_city::do_hunt(Area* hunting_camp)
         if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
 // If we want to, try to capture it.
           bool caught = false;
+          int num_caught = 0;
           if (hunting_action[prey] == ANIMAL_ACT_CAPTURE) {
 // Try to catch each one seperately.
             for (int n = 0; n < pack_size; n++) {
@@ -1548,6 +1669,7 @@ void Player_city::do_hunt(Area* hunting_camp)
               }
 
               if (caught) {
+                num_caught++;
 // Add them to our livestock
                 if (livestock.count(prey)) {
                   livestock[prey]++;
@@ -1557,21 +1679,146 @@ void Player_city::do_hunt(Area* hunting_camp)
               }
             }
           }
-// TODO: Add a message?
-          if (!caught) {
+          if (caught) {
+// Add us to the list of capture animals
+            bool found = false;
+            for (int n = 0; !found && n < animals_caught.size(); n++) {
+              if (animals_caught[n].type == prey) {
+                found = true;
+                animals_caught[n].amount++;
+              }
+            }
+            if (!found) {
+              animals_caught.push_back( Animal_amount(prey, 1) );
+            }
+          } else {
+            bool found = false;
+            for (int n = 0; !found && n < animals_killed.size(); n++) {
+              if (animals_killed[n].type == prey) {
+                found = true;
+                animals_killed[n].amount++;
+              }
+            }
+            if (!found) {
+              animals_killed.push_back( Animal_amount(prey, 1) );
+            }
+
             kill_animals(prey, pack_size, hunting_camp->pos);
           }
         } // if (result.result == COMBAT_RES_ATTACKER_WON)
 
 // Even if we won, some hunters may have died.
         if (result.attackers_dead > 0) {
-// TODO: Add a message
+// Remove them from this building.
           fire_citizens(CIT_PEASANT, result.attackers_dead, camp_bldg);
-          kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING);
+          std::stringstream death_reason;
+          if (result.attackers_dead > 1) {
+            death_reason << "were ";
+          } else {
+            death_reason << "was ";
+          }
+          death_reason << "killed by ";
+          if (pack_size > 1) {
+            death_reason << "a pack of " << prey_dat->name_plural;
+          } else {
+            death_reason << "a " << prey_dat->name;
+          }
+          kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING,
+                        death_reason.str());
         }
       } // if (combat)
     } // if (prey != ANIMAL_NULL)
   } // for (int i = 0; i < num_hunts; i++)
+
+// Now, add a message about what we killed/caught.
+  std::stringstream ss_message;
+  ss_message << "Hunt result: ";
+  if (animals_killed.empty() && animals_caught.empty()) {
+    ss_message << "No animals killed or caught.";
+  }
+
+  if (!animals_killed.empty()) {
+
+    for (int i = 0; i < animals_killed.size(); i++) {
+// Conjunction (or comma)
+      Animal_datum* animal_dat = Animal_data[ animals_killed[i].type ];
+      if (i > 0) {
+        if (i == animals_killed.size() - 1) {
+          ss_message << " and ";
+        } else {
+          ss_message << ", ";
+        }
+      }
+
+// Article (or number)
+      if (animals_killed[i].amount == 1) {
+        ss_message << "a";
+      } else {
+        ss_message << animals_killed[i].amount;
+      }
+
+      ss_message << " ";
+      if (animals_killed[i].amount == 1) {
+        ss_message << animal_dat->name;
+      } else {
+        ss_message << animal_dat->name_plural;
+      }
+    }
+// Verb
+    if (animals_killed.size() > 1 || animals_killed[0].amount > 1) {
+      ss_message << " were ";
+    } else {
+      ss_message << " was ";
+    }
+    ss_message << "killed";
+// Do we need to link to animals_caught?
+    if (animals_caught.empty()) { // Just end the sentence.
+      ss_message << ".";
+    } else {  // Continue the sentence with a description of the animals caught.
+      ss_message << ", and ";
+    }
+  }
+
+  if (!animals_caught.empty()) {
+
+    for (int i = 0; i < animals_caught.size(); i++) {
+// Conjunction (or comma)
+      Animal_datum* animal_dat = Animal_data[ animals_caught[i].type ];
+      if (i > 0) {
+        if (i == animals_caught.size() - 1) {
+          ss_message << " and ";
+        } else {
+          ss_message << ", ";
+        }
+      }
+
+// Article (or number)
+      if (animals_caught[i].amount == 1) {
+        ss_message << "a";
+      } else {
+        ss_message << animals_caught[i].amount;
+      }
+
+      ss_message << " ";
+      if (animals_caught[i].amount == 1) {
+        ss_message << animal_dat->name;
+      } else {
+        ss_message << animal_dat->name_plural;
+      }
+    }
+// Verb
+    if (animals_caught.size() > 1 || animals_caught[0].amount > 1) {
+      ss_message << " were ";
+    } else {
+      ss_message << " was ";
+    }
+    ss_message << "captured.";
+  }
+
+  std::string message = capitalize( ss_message.str() );
+
+  add_message(MESSAGE_MINOR, message);
+
 }
 
 void Player_city::kill_animals(Animal animal, int amount, Point pos)
@@ -1621,6 +1868,19 @@ int Player_city::get_import(Resource res)
 int Player_city::get_export(Resource res)
 {
   return 0;
+}
+
+nc_color message_type_color(Message_type type)
+{
+  switch (type) {
+    case MESSAGE_NULL:    return c_dkgray;
+    case MESSAGE_MINOR:   return c_ltgray;
+    case MESSAGE_MAJOR:   return c_yellow;
+    case MESSAGE_URGENT:  return c_ltred;
+    case MESSAGE_MAX:     return c_dkgray;
+    default:              return c_magenta;
+  }
+  return c_magenta;
 }
 
 City_type lookup_city_type(std::string name)
