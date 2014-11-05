@@ -41,6 +41,7 @@ Race_datum::Race_datum()
 // Non-array-based variables
   cluster_min = 3;
   cluster_max = 4;
+  base_combat = 10;
   food_consumption = 100;
 
 }

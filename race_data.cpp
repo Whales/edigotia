@@ -36,6 +36,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _city_name_end(...) \
   Race_data[cur_id]->add_city_names("end", __VA_ARGS__, 0)
 
+#define _base_combat(n) \
+  Race_data[cur_id]->base_combat = (n)
+
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
@@ -117,6 +120,7 @@ void init_races()
                    "ham", "ia", "kirk", "mouth", "neck", "over", "pool", "pool",
                    "sex", "ter", "tol", "ton", "ton", "vale", "ville");
 
+    _base_combat(10);
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -186,6 +190,7 @@ void init_races()
                    "lond", "mar", "men", "min", "o", "on", "os", "se", "th",
                    "the", "thon", "thrion", "thrond", "vin", "vin", "vin");
 
+    _base_combat(9);
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
@@ -266,6 +271,7 @@ void init_races()
                    "lan", "lind", "nar", "nar", "roth", "th", "th", "thun",
                    "thundar");
 
+    _base_combat(11);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
@@ -343,6 +349,7 @@ void init_races()
                    "arth", "ath", "az", "e", "el", "en", "ez", "o", "one", "or",
                    "ork", "orz", "os", "os", "ur", "urk", "urk", "uz", "uz");
 
+    _base_combat(14);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  120);
@@ -415,6 +422,7 @@ void init_races()
                    "spak", "sprak", "suk", "tak", "tek", "tik", "to", "trak",
                    "trik", "truk");
 
+    _base_combat(8);
     _food_consumption( 90);
 
     _starting_population(CIT_PEASANT,  140);
@@ -505,6 +513,7 @@ void init_races()
                    "ton", "tor", "tot", "tord", "tork", "tort", "tud", "tuk",
                    "tun", "tut", "turd", "turk", "turt");
 
+    _base_combat(15);
     _food_consumption(140);
 
     _starting_population(CIT_PEASANT,   90);
@@ -567,6 +576,7 @@ void init_races()
 
     _city_name_end("", "k", "k", "k", "k", "k", "r", "r", "r", "rk", "rk");
 
+    _base_combat(20);
     _food_consumption(180);
 
     _starting_population(CIT_PEASANT,   20);
@@ -635,6 +645,7 @@ void init_races()
                    "gale", "ham", "ham", "ham", "skirk", "smouth", "sneck",
                    "ton", "ton", "wood", "svale", "sville");
 
+    _base_combat(5);
     _food_consumption(120);
 
     _starting_population(CIT_PEASANT,  100);
