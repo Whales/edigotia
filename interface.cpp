@@ -15,6 +15,7 @@ Interface::Interface()
   cur_menu = MENU_NULL;
   cur_mode = IMODE_NULL;
   cur_data_mode = DATA_MODE_CITIZENS;
+  message_offset = 0;
   next_menu_posx = 2;
   sel = Point(4, 4);
   city_radius = true;
@@ -64,7 +65,7 @@ bool Interface::init(Game* G, Player_city* C)
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
 "Food",
-"Hunting",
+"Hunting & Livestock",
 "Mining",
 "Morale",
 0
@@ -109,6 +110,7 @@ void Interface::main_loop()
                    show_terrain);
 
     if (cur_mode != IMODE_MENU) {
+      print_message_alert();
       print_data();
     }
 
@@ -271,19 +273,33 @@ resources spent to build it.")) {
             }
           }
 
-// Move time forward by 1 day
-        } else if (ch == '.') {
-          game->advance_time(1, city);
-
         } else if (ch == '[') {
           shift_data_mode(-1);
 
         } else if (ch == ']') {
           shift_data_mode(1);
 
+// Move time forward by 1 day
+        } else if (ch == '.') {
+          game->advance_time(1, city);
+
 // Move time forward by 1 week
         } else if (ch == '>') {
           game->advance_time(7, city);
+        }
+
+        if (cur_data_mode == DATA_MODE_MESSAGES) {  // It has a few special keys
+
+          if (ch == '\'' && cur_data_mode == DATA_MODE_MESSAGES) {
+            city->unread_messages = 0;
+            message_offset = 0;
+
+          } else if (ch == '+' || ch == '=') {
+            message_offset++;
+
+          } else if (ch == '-') {
+            message_offset--;
+          }
         }
 
       } break;  // case IMODE_VIEW_MAP
@@ -339,6 +355,7 @@ void Interface::set_mode(Interface_mode mode)
 void Interface::set_data_mode(Data_mode mode)
 {
   cur_data_mode = mode;
+  message_offset = 0; // Reset any scrolling we've done
 // Set up text_data_help
   Data_mode last = Data_mode( mode - 1 );
   if (last == DATA_MODE_NULL) {
@@ -370,6 +387,40 @@ void Interface::shift_data_mode(int offset)
   }
 
   set_data_mode( Data_mode(result) );
+}
+
+void Interface::print_message_alert()
+{
+  i_main.clear_data("text_messages");
+
+  std::vector<int> msg_count = city->get_unread_message_count();
+
+// Get a total message count
+  int total_messages = 0;
+  for (int i = 0; i < msg_count.size(); i++) {
+    total_messages += msg_count[i];
+  }
+
+  if (total_messages == 0) {
+    i_main.set_data("text_messages", "<c=dkgray>No new messages.<c=/>");
+    return;
+  }
+
+  std::stringstream ss_msgs;
+  ss_msgs << total_messages << " messages (";
+
+// Print a number for each type, color-coded
+  for (int i = MESSAGE_MINOR; i < MESSAGE_MAX; i++) {
+    Message_type mtype = Message_type(i);
+    if (i > MESSAGE_MINOR) {
+      ss_msgs << " ";
+    }
+    ss_msgs << "<c=" << color_tag( message_type_color( mtype ) ) << ">" <<
+               msg_count[i] << "<c=/>";
+  }
+  ss_msgs << ")";
+
+  i_main.set_data("text_messages", ss_msgs.str());
 }
 
 void Interface::print_data()
@@ -536,18 +587,31 @@ void Interface::print_data()
     } break;
 
     case DATA_MODE_MESSAGES: {
-      ss_data << "              <c=ltblue>Messages<c=/>" << std::endl <<
-                 std::endl;
+      ss_data << "<c=ltblue>Messages<c=/> (<c=pink>'<c=/>: Clear  " <<
+                 "<c=pink>+<c=/>/<c=pink>-<c=/>: Scroll)" <<
+                 std::endl << std::endl;
 // If there's no new messages, let us know that.
       if (city->unread_messages == 0 || city->messages.empty()) {
         ss_data << "<c=dkgray>No new messages.<c=/>";
       }
-// Show the last N messages, where N = city->unread_messages.
+// We show the last N messages, where N = city->unread_messages.
+// Ensure that unread_messages is safe.
       if (city->unread_messages > city->messages.size()) {
         city->unread_messages = city->messages.size();
       }
+// Ensure that message_offset is safe.
+      int mess_size = city->messages.size();
+      if (mess_size - city->unread_messages + message_offset < 0) {
+        message_offset = city->unread_messages - mess_size;
+      }
+      if (city->unread_messages + message_offset > mess_size) {
+        message_offset = mess_size - city->unread_messages;
+      }
+
       Date last_date(1, 1, 1); // Make sure the date check fails
-      for (int i = city->messages.size() - city->unread_messages;
+
+      for (int i = city->messages.size() - city->unread_messages +
+                   message_offset;
            i < city->messages.size();
            i++) {
         Message* mes = &(city->messages[i]);
@@ -556,26 +620,16 @@ void Interface::print_data()
           ss_data << "<c=ltblue>" << last_date.get_text() << ":<c=/>" <<
                      std::endl;
         }
-        switch (mes->type) {
-          case MESSAGE_MINOR:
-            ss_data << "<c=ltgray>";
-            break;
-          case MESSAGE_MAJOR:
-            ss_data << "<c=yellow>";
-            break;
-          case MESSAGE_URGENT:
-            ss_data << "<c=ltred>";
-            break;
-        }
+// Print color-coding.
+        ss_data << "<c=" << color_tag( message_type_color( mes->type ) ) << ">";
         ss_data << mes->text << "<c=/>" << std::endl;
       } // for (i from first message to last message)
-// Reset city->unread_messages.
-      city->unread_messages = 0;
     } break;
   } // switch (cur_data_mode)
 
   i_main.set_data("text_data", ss_data.str());
 
+  i_main.set_data("text_data", 999999); // Scroll to the bottom
 }
 
 
@@ -769,9 +823,6 @@ void Interface::display_area_stats(Area_type type)
     case AREA_HUNTING_CAMP:
       stats << "Game in this " << tile->get_terrain_name() << ":" << std::endl;
       stats << tile->get_animals_info() << std::endl;
-      stats << "Food consumed each day: " << city->get_food_consumption() <<
-               std::endl;
-      stats << "Food produced each day: " << city->get_food_production();
       break;
 
     case AREA_MINE:
@@ -1399,15 +1450,17 @@ void Interface::minister_hunt()
     names.push_back( capitalize( Animal_data[i]->name ) );
     actions.push_back( capitalize( animal_action_name(
                        city->get_hunting_action(animal)   ) ) );
+
     if (city->hunt_kills.count(animal)) {
       killed.push_back( itos( city->hunt_kills[animal] ) );
     } else {
-      killed.push_back("0");
+      killed.push_back("<c=dkgray>0<c=/>");
     }
+
     if (city->livestock.count(animal)) {
       livestock.push_back( itos( city->livestock[animal] ) );
     } else {
-      livestock.push_back("0");
+      livestock.push_back("<c=dkgray>0<c=/>");
     }
   }
 

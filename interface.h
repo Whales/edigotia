@@ -89,6 +89,8 @@ private:
   void set_data_mode(Data_mode mode);
 // Calls set_data_mode()
   void shift_data_mode(int offset); // offset generally is -1 or 1
+// Print how many messages are waiting to be viewed
+  void print_message_alert();
 // Print the data according to our data mode
   void print_data();
 
@@ -185,6 +187,7 @@ private:
   Game_state game_state; // e.g. "quit"
   Interface_mode cur_mode;
   Data_mode cur_data_mode;
+  int message_offset;  // We can scroll messages; the first message to start w/
   Menu_id cur_menu;
 
 // Pointers to game data.
