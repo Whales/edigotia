@@ -57,25 +57,19 @@ int citizen_idle_income(Citizen_type type)
   return 0;
 }
 
-Cause_of_death lookup_cause_of_death(std::string name)
-{
-  name = no_caps( trim( name ) );
-  for (int i = 0; i < DEATH_MAX; i++) {
-    Cause_of_death ret = Cause_of_death(i);
-    if (name == no_caps( cause_of_death_name( ret ) ) ) {
-      return ret;
-    }
-  }
-  return DEATH_NULL;
-}
-
-std::string cause_of_death_name(Cause_of_death cause)
+std::string cause_of_death_text(Cause_of_death cause, bool plural)
 {
   switch (cause) {
     case DEATH_NULL:        return "NULL";
-    case DEATH_UNKNOWN:     return "unknown causes";
-    case DEATH_STARVATION:  return "starvation";
-    case DEATH_HUNTING:     return "hunting";
+    case DEATH_UNKNOWN:     return "died mysteriously";
+    case DEATH_STARVATION:  return "starved to death";
+
+    case DEATH_HUNTING:
+      if (plural) {
+        return "were killed while hunting";
+      }
+      return "was killed while hunting";
+
     case DEATH_MAX:         return "BUG - DEATH_MAX";
     default:                return "Unnamed Cause_of_death";
   }

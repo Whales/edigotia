@@ -43,7 +43,7 @@ enum Cause_of_death
   DEATH_MAX
 };
 
-Cause_of_death lookup_cause_of_death(std::string name);
-std::string cause_of_death_name(Cause_of_death cause);
+// Format is "Citizens ______" e.g. "starved to death" or "were killed hunting"
+std::string cause_of_death_text(Cause_of_death cause, bool plural);
 
 #endif
