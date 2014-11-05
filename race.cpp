@@ -42,6 +42,7 @@ Race_datum::Race_datum()
   cluster_min = 3;
   cluster_max = 4;
   base_combat = 10;
+  hp = 100;
   food_consumption = 100;
 
 }

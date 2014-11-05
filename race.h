@@ -95,6 +95,7 @@ struct Race_datum
 // GENERAL RACE VALUES
 
   int base_combat;      // Applies to fighting & hunting
+  int hp;               // hp for combat; default is 100
   int food_consumption; // Default is 100
 
 

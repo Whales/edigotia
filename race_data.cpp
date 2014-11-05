@@ -39,6 +39,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _base_combat(n) \
   Race_data[cur_id]->base_combat = (n)
 
+#define _hp(n) \
+  Race_data[cur_id]->hp = (n)
+
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
@@ -121,6 +124,7 @@ void init_races()
                    "sex", "ter", "tol", "ton", "ton", "vale", "ville");
 
     _base_combat(10);
+    _hp(100);
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -191,6 +195,7 @@ void init_races()
                    "the", "thon", "thrion", "thrond", "vin", "vin", "vin");
 
     _base_combat(9);
+    _hp(90);
     _food_consumption(95);
 
     _starting_population(CIT_PEASANT,  100);
@@ -272,6 +277,7 @@ void init_races()
                    "thundar");
 
     _base_combat(11);
+    _hp(120);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
@@ -350,6 +356,7 @@ void init_races()
                    "ork", "orz", "os", "os", "ur", "urk", "urk", "uz", "uz");
 
     _base_combat(14);
+    _hp(130);
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  120);
@@ -374,7 +381,7 @@ void init_races()
     _skill(SKILL_FARMING,   1);
     _skill(SKILL_HUNTING,   4);
     _skill(SKILL_LIVESTOCK, 2);
-    _skill(SKILL_MINING,    4);
+    _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  3);
 
 
@@ -423,6 +430,7 @@ void init_races()
                    "trik", "truk");
 
     _base_combat(8);
+    _hp(85);
     _food_consumption( 90);
 
     _starting_population(CIT_PEASANT,  140);
@@ -514,6 +522,7 @@ void init_races()
                    "tun", "tut", "turd", "turk", "turt");
 
     _base_combat(15);
+    _hp(150);
     _food_consumption(140);
 
     _starting_population(CIT_PEASANT,   90);
@@ -577,6 +586,7 @@ void init_races()
     _city_name_end("", "k", "k", "k", "k", "k", "r", "r", "r", "rk", "rk");
 
     _base_combat(20);
+    _hp(200);
     _food_consumption(180);
 
     _starting_population(CIT_PEASANT,   20);
@@ -646,6 +656,7 @@ void init_races()
                    "ton", "ton", "wood", "svale", "sville");
 
     _base_combat(5);
+    _hp(80);
     _food_consumption(120);
 
     _starting_population(CIT_PEASANT,  100);
