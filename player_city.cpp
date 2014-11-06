@@ -697,65 +697,8 @@ void Player_city::add_open_area(Area area)
     area.building.hunter_level = level;
   }
 
-// Now attempt to employ citizens to fill it up.
-  Building* area_bldg = &(area.building);
-  int num_jobs = area_bldg->get_total_jobs();
-  Citizen_type cit_type = area_bldg->get_job_citizen_type();
-  if (employ_citizens(cit_type, num_jobs, area_bldg)) {
-    add_message(MESSAGE_MINOR, "%d %s have started work at the %s.",
-                num_jobs, citizen_type_name(cit_type, true).c_str(),
-                area.get_name().c_str());
-// If it's a farm, we need to set crops to grow.
-    if (area_bldg->produces_resource(RES_FARMING)) {
-// Find whatever crop produces the most food.
-      int best_index = -1, best_food = -1;
-      for (int i = 0; i < area_bldg->crops_grown.size(); i++) {
-        Crop crop = area_bldg->crops_grown[i].type;
-        int food = Crop_data[crop]->food;
-        if (food > best_food) {
-          best_index = i;
-          best_food = food;
-        }
-      }
-      if (best_index >= 0) {
-        Crop crop = area_bldg->crops_grown[best_index].type;
-        Crop_datum* crop_dat = Crop_data[crop];
-        add_message(MESSAGE_MINOR, "Our %s is now growing %s.",
-                    area.get_name().c_str(), crop_dat->name.c_str());
-        area_bldg->crops_grown[best_index].amount += num_jobs;
-      } else {
-        add_message(MESSAGE_MAJOR, "Our %s needs to select a crop to grow.",
-                    area.get_name().c_str());
-      }
-    }
-// Mines need to have minerals chosen
-    if (area_bldg->produces_resource(RES_MINING)) {
-// Find whatever mineral is worth the most
-      int best_index = -1, best_value = -1;
-      for (int i = 0; i < area_bldg->minerals_mined.size(); i++) {
-        Mineral mineral = area_bldg->minerals_mined[i].type;
-        int value = Mineral_data[mineral]->value;
-        if (area_bldg->minerals_mined[i].amount != HIDDEN_RESOURCE && 
-            value > best_value) {
-          best_index = i;
-          best_value = value;
-        }
-      }
-      if (best_index >= 0) {
-        Mineral min = area_bldg->minerals_mined[best_index].type;
-        Mineral_datum* min_dat = Mineral_data[min];
-        add_message(MESSAGE_MINOR, "Our %s is now mining %s.",
-                    area.get_name().c_str(), min_dat->name.c_str());
-        area_bldg->minerals_mined[best_index].amount += num_jobs;
-      } else {
-        add_message(MESSAGE_MAJOR, "Our %s needs to select a mineral to mine.",
-                    area.get_name().c_str());
-      }
-    }
-  } else if (num_jobs > 0) {
-    add_message(MESSAGE_MINOR, "Our %s could not hire citizens.",
-                area.get_name().c_str());
-  }
+// Automatically hire workers and set crops/minerals
+  area.auto_hire(this);
 
   areas.push_back( area );
 
