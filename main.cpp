@@ -50,22 +50,27 @@ int main()
   Player_city city;
   bool placed = false;
   while (!placed) {
-    std::vector<Crop>    crops    = world.crops_at    (p);
-    std::vector<Mineral> minerals = world.minerals_at (p);
-    std::vector<Animal>  animals  = world.animals_at  (p);
+    if (!world.get_city(p)) {
+      std::vector<Crop>    crops    = world.crops_at    (p);
+      std::vector<Mineral> minerals = world.minerals_at (p);
+      std::vector<Animal>  animals  = world.animals_at  (p);
 
-    city.map.generate( world.get_map_type(p),
-                       crops, minerals, animals,
-                       world.coast_from(p),
-                       world.river_start_for(p), world.river_end_for(p) );
+      city.map.generate( world.get_map_type(p),
+                         crops, minerals, animals,
+                         world.coast_from(p),
+                         world.river_start_for(p), world.river_end_for(p) );
 
-    placed = city.place_keep();
+      placed = city.place_keep();
+    } else {
+      popup("There is already a city there!");
+    }
     if (!placed) {
       p = world.draw(p);
     }
   }
 
   city.location = p;
+  world.set_city(p, &city);
 // Crude race picker; TODO: replace this.
   city.pick_race();
   city.start_new_city();
@@ -77,7 +82,7 @@ int main()
 
 // Set up an interface bound to our city and game, and kick off its loop.
   Interface interface;
-  interface.init(&game, &city);
+  interface.init(&game, &world, &city);
   interface.main_loop();
 
   endwin();
