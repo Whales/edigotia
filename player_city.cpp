@@ -310,12 +310,20 @@ void Player_city::do_turn()
         if (citizen_consumption > 0) {
           hungry_citizens = food_deficit / citizen_consumption;
         }
-// Add starvation for those we did not feed, but remove starvation for those we
-// DID feed.
+// Everyone starves.  No reduction in starvation, only an increase.
         if (hungry_citizens >= population[cit_type].count) {
           *ptr_starvation += hungry_citizens;
-        } else {  // Some people eat.
-          *ptr_starvation = (*ptr_starvation + hungry_citizens) / 2;
+
+        } else { // Some people eat; normal increase, then a reduction
+          int pop = population[cit_type].count;
+          *ptr_starvation += hungry_citizens;
+/* At best (0 hungry citizens), this is equivalent to dividing starvation by 2;
+ * which is exactly what we do when all citizens are fed.  As hungry_citizens
+ * approaches pop this gets closer to dividing starvation by 1; which is exactly
+ * what we do when no citizens are fed.
+ */
+          *ptr_starvation = (*ptr_starvation * (pop + hungry_citizens)) /
+                            (pop * 2);
         }
         add_message(MESSAGE_URGENT, "We have run out of food!");
         resources[RES_FOOD] = 0;
