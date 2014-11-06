@@ -5,6 +5,7 @@
 #include "window.h"
 #include "area.h"
 #include "game.h"
+#include "world.h"
 #include <vector>
 #include <string>
 
@@ -71,7 +72,7 @@ public:
   Interface();
   ~Interface();
 
-  bool init(Game* G, Player_city* C);
+  bool init(Game* G, World_map* W, Player_city* C);
 
   void main_loop();
 
@@ -194,6 +195,7 @@ private:
 
 // Pointers to game data.
   Game* game;
+  World_map* world;
   Player_city* city;
 
 // Varius values used in user interaction.

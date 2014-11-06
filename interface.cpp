@@ -30,22 +30,31 @@ Interface::~Interface()
 {
 }
 
-bool Interface::init(Game* G, Player_city* C)
+bool Interface::init(Game* G, World_map* W, Player_city* C)
 {
+  bool errors = false;
+  std::stringstream ss_errors;
+  ss_errors << "Interface initialized with ";
   if (!G) {
-    if (!C) {
-      debugmsg("Interface init'd with NULL game AND NULL city!");
-    } else {
-      debugmsg("Interface init'd with NULL game.");
-    }
-    return false;
-  } else if (!C) {
-    debugmsg("Interface init'd with NULL city.");
+    errors = true;
+    ss_errors << "NULL Game ";
+  }
+  if (!W) {
+    errors = true;
+    ss_errors << "NULL World_map ";
+  }
+  if (!C) {
+    errors = true;
+    ss_errors << "NULL Player_city";
+  }
+
+  if (errors) {
     return false;
   }
 
-  game = G;
-  city = C;
+  game  = G;
+  world = W;
+  city  = C;
 
   if (!i_main.load_from_file("cuss/interface.cuss")) {
     debugmsg("Failed to load critical interface file cuss/interface.cuss!");
@@ -78,7 +87,7 @@ bool Interface::init(Game* G, Player_city* C)
 );
 
   add_menu(MENU_WORLD, "World",
-"View",
+"View Map",
 0
 );
 
@@ -777,6 +786,14 @@ void Interface::do_menu_action(Menu_id menu, int index)
           break;
         case 2: // Build building
           build_building();
+          break;
+      }
+      break;
+
+    case MENU_WORLD:
+      switch (index) {
+        case 1: // View map
+          world->draw( city->location );
           break;
       }
       break;
