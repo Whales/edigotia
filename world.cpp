@@ -1009,6 +1009,8 @@ Point World_map::draw(Point start)
           break;
         
         case KEY_ESC:
+        case 'q':
+        case 'Q':
         case '\n':
           if (ch == '\n') {
             pos.x += (xdim / 2);
