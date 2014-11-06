@@ -1,4 +1,5 @@
 #include "city.h"
+#include "rng.h"
 
 Citizens::Citizens()
 {
@@ -49,7 +50,12 @@ int Citizens::get_starvation_chance()
   if (count == 0) {
     return 0;
   }
-  return starvation / count;
+  int ret = starvation / count;
+  int remainder = starvation % count;
+  if (rng(1, count) <= remainder) {
+    ret++;
+  }
+  return ret;
 }
 
 void Citizens::add_citizens(int amount)
