@@ -225,7 +225,7 @@ void init_animal_data()
     _max_pack_size(5);
     _danger(10);
     _hp(70);
-    _flee_chance(90);
+    _flee_chance(98);
     _reproduction(28);
     _hardiness(3400);
     _food_killed(75);
@@ -263,7 +263,7 @@ void init_animal_data()
     _default_action(ANIMAL_ACT_FLEE);
     _danger(12);
     _hp(110);
-    _flee_chance(80);
+    _flee_chance(92);
     _reproduction(18);
     _hardiness(3400);
     _food_killed(300);
@@ -283,7 +283,7 @@ void init_animal_data()
     _max_pack_size(5);
     _danger(16);
     _hp(85);
-    _flee_chance(60);
+    _flee_chance(90);
     _reproduction(25);
     _hardiness(3000);
     _food_killed(80);
@@ -302,7 +302,7 @@ void init_animal_data()
     _default_action(ANIMAL_ACT_FLEE);
     _danger(15);
     _hp(80);
-    _flee_chance(40);
+    _flee_chance(92);
     _reproduction(15);
     _hardiness(3200);
     _food_killed(115);
@@ -323,7 +323,7 @@ void init_animal_data()
     _max_pack_size(4);
     _danger(18);
     _hp(110);
-    _flee_chance(65);
+    _flee_chance(85);
     _reproduction(15);
     _hardiness(3500);
     _food_killed(250);
@@ -345,7 +345,7 @@ void init_animal_data()
     _max_pack_size(4);
     _danger(20);
     _hp(250);
-    _flee_chance(85);
+    _flee_chance(96);
     _reproduction(8);
     _hardiness(7000);
     _food_killed(1500);
@@ -368,7 +368,7 @@ void init_animal_data()
     _max_pack_size(4);
     _danger(3);
     _hp(50);
-    _flee_chance(95);
+    _flee_chance(98);
     _reproduction(50);
     _hardiness(600);
     _food_killed(0);
@@ -408,7 +408,7 @@ void init_animal_data()
     _max_pack_size(3);
     _danger(30);
     _hp(110);
-    _flee_chance(20);
+    _flee_chance(60);
     _reproduction(18);
     _hardiness(5000);
     _food_killed(180);
@@ -430,7 +430,7 @@ void init_animal_data()
     _max_pack_size(2);
     _danger(40);
     _hp(130);
-    _flee_chance(10);
+    _flee_chance(40);
     _reproduction(10);
     _hardiness(9000);
     _food_killed(320);
@@ -450,7 +450,7 @@ void init_animal_data()
     _default_action(ANIMAL_ACT_FLEE);
     _danger(42);
     _hp(150);
-    _flee_chance(5);
+    _flee_chance(25);
     _reproduction(15);
     _hardiness(7500);
     _food_killed(400);
@@ -468,7 +468,7 @@ void init_animal_data()
     _default_action(ANIMAL_ACT_FLEE);
     _danger(32);
     _hp(120);
-    _flee_chance(50);
+    _flee_chance(70);
     _reproduction(5);
     _hardiness(8000);
     _food_killed(200);
@@ -488,7 +488,7 @@ void init_animal_data()
     _max_pack_size(3);
     _danger(50);
     _hp(70);
-    _flee_chance(80);
+    _flee_chance(92);
     _reproduction(8);
     _hardiness(7000);
     _food_killed(100);
@@ -505,7 +505,7 @@ void init_animal_data()
     _default_action(ANIMAL_ACT_FLEE);
     _danger(60);
     _hp(300);
-    _flee_chance(5);
+    _flee_chance(15);
     _reproduction(15);
     _hardiness(9000);
     _food_killed(1600);
