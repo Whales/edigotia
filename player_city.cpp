@@ -279,9 +279,13 @@ void Player_city::do_turn()
   int food_consumed = get_food_consumption();
   if (resources[RES_FOOD] >= food_consumed) {
     resources[RES_FOOD] -= food_consumed;
-// Everyone eats!  Clear starvation.
+// Everyone eats!  Reduce starvation.
     for (int i = 0; i < CIT_MAX; i++) {
-      population[i].starvation = 0;
+      if (population[i].starvation <= 5) {
+        population[i].starvation = 0;
+      } else {
+        population[i].starvation /= 2;
+      }
     }
   } else {
 // We can't feed everyone!  So figure out who we can feed.
@@ -290,9 +294,15 @@ void Player_city::do_turn()
     for (int i = CIT_MAX - 1; i > CIT_NULL; i--) {
       Citizen_type cit_type = Citizen_type(i);
       int type_consumption = get_food_consumption(cit_type);
+      int* ptr_starvation = &(population[i].starvation);
       if (resources[RES_FOOD] >= type_consumption)  {
         resources[RES_FOOD] -= type_consumption;
-        population[i].starvation = 0; // We ate, hooray!
+// We ate, hooray!  Reduce starvation.
+        if (*ptr_starvation <= 5) {
+          *ptr_starvation = 0;
+        } else {
+          *ptr_starvation /= 2;
+        }
       } else {
         int food_deficit = type_consumption - resources[RES_FOOD];
         int citizen_consumption = citizen_food_consumption(cit_type);
@@ -303,9 +313,9 @@ void Player_city::do_turn()
 // Add starvation for those we did not feed, but remove starvation for those we
 // DID feed.
         if (hungry_citizens >= population[cit_type].count) {
-          population[cit_type].starvation += hungry_citizens;
+          *ptr_starvation += hungry_citizens;
         } else {  // Some people eat.
-          population[cit_type].starvation = hungry_citizens;
+          *ptr_starvation = (*ptr_starvation + hungry_citizens) / 2;
         }
         add_message(MESSAGE_URGENT, "We have run out of food!");
         resources[RES_FOOD] = 0;
