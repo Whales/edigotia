@@ -1,7 +1,7 @@
 #include "area.h"
 #include "window.h"       // For debugmsg()
 #include "city.h"         // For Area::close()
-#include "player_city.h"  // For Area::close()
+#include "player_city.h"  // For Area::close() and Area::reopen()
 #include "stringfunc.h"   // For no_caps() and trim()
 #include <map>
 
@@ -46,7 +46,12 @@ void Area::close(City* city)
   Citizen_type cit_type = building.get_job_citizen_type();
 
 // Handle any stuff specific to farms, mines, etc
-  building.crops_grown.clear();
+  for (int i = 0; i < building.crops_grown.size(); i++) {
+    if (building.crops_grown[i].amount != HIDDEN_RESOURCE) {
+      building.crops_grown[i].amount = 0;
+    }
+  }
+
   for (int i = 0; i < building.minerals_mined.size(); i++) {
     if (building.minerals_mined[i].amount != HIDDEN_RESOURCE) {
       building.minerals_mined[i].amount = 0;
@@ -57,6 +62,76 @@ void Area::close(City* city)
     Player_city* p_city = static_cast<Player_city*>(city);
     p_city->fire_citizens(cit_type, building.workers, &building);
   }
+}
+
+void Area::auto_hire(Player_city* city)
+{
+// First, attempt to hire citizens.
+  int num_jobs = building.get_total_jobs();
+  Citizen_type cit_type = building.get_job_citizen_type();
+  if (city->employ_citizens(cit_type, num_jobs, &building)) {
+    city->add_message(MESSAGE_MINOR, "%d %s have started work at the %s.",
+                      num_jobs, citizen_type_name(cit_type, true).c_str(),
+                      get_name().c_str());
+
+// If it's a farm, we need to set crops to grow.
+    if (building.produces_resource(RES_FARMING)) {
+// Find whatever crop produces the most food.
+      int best_index = -1, best_food = -1;
+      for (int i = 0; i < building.crops_grown.size(); i++) {
+        Crop crop = building.crops_grown[i].type;
+        int food = Crop_data[crop]->food;
+        if (food > best_food) {
+          best_index = i;
+          best_food = food;
+        }
+      }
+// We found a good crop to grow!
+      if (best_index >= 0) {
+        Crop crop = building.crops_grown[best_index].type;
+        Crop_datum* crop_dat = Crop_data[crop];
+        city->add_message(MESSAGE_MINOR, "Our %s is now growing %s.",
+                          get_name().c_str(), crop_dat->name.c_str());
+        building.crops_grown[best_index].amount += num_jobs;
+      } else {
+        city->add_message(MESSAGE_MAJOR,
+                          "Our %s needs to select a crop to grow.",
+                          get_name().c_str());
+      }
+    }
+// Mines need to have minerals chosen
+    if (building.produces_resource(RES_MINING)) {
+// Find whatever mineral is worth the most
+      int best_index = -1, best_value = -1;
+      for (int i = 0; i < building.minerals_mined.size(); i++) {
+        Mineral mineral = building.minerals_mined[i].type;
+        int value = Mineral_data[mineral]->value;
+        if (building.minerals_mined[i].amount != HIDDEN_RESOURCE && 
+            value > best_value) {
+          best_index = i;
+          best_value = value;
+        }
+      }
+// We found a good mineral to mine!
+      if (best_index >= 0) {
+        Mineral min = building.minerals_mined[best_index].type;
+        Mineral_datum* min_dat = Mineral_data[min];
+        city->add_message(MESSAGE_MINOR, "Our %s is now mining %s.",
+                          get_name().c_str(), min_dat->name.c_str());
+        building.minerals_mined[best_index].amount += num_jobs;
+      } else {
+        city->add_message(MESSAGE_MAJOR,
+                          "Our %s needs to select a mineral to mine.",
+                          get_name().c_str());
+      }
+    }
+
+  } else if (num_jobs > 0) {
+// We failed to hire citizens.
+    city->add_message(MESSAGE_MINOR, "Our %s could not hire citizens.",
+                      get_name().c_str());
+  }
+
 }
 
 bool Area::under_construction()
