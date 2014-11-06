@@ -45,6 +45,14 @@ void Area::close(City* city)
   open = false;
   Citizen_type cit_type = building.get_job_citizen_type();
 
+// Handle any stuff specific to farms, mines, etc
+  building.crops_grown.clear();
+  for (int i = 0; i < building.minerals_mined.size(); i++) {
+    if (building.minerals_mined[i].amount != HIDDEN_RESOURCE) {
+      building.minerals_mined[i].amount = 0;
+    }
+  }
+
   if (city->is_player_city()) {
     Player_city* p_city = static_cast<Player_city*>(city);
     p_city->fire_citizens(cit_type, building.workers, &building);
@@ -82,6 +90,30 @@ Building_datum* Area::get_building_datum()
     return Building_data[BUILD_NULL]; // Safer than returning NULL
   }
   return datum->get_building_datum();
+}
+
+int Area::get_destroy_cost()
+{
+  Building_datum* build_dat = get_building_datum();
+  if (build_dat) {
+    return build_dat->destroy_cost;
+  }
+  return 0;
+}
+
+int Area::get_reopen_cost()
+{
+  Building_datum* build_dat = get_building_datum();
+  if (build_dat) {
+    int cost = 0;
+    for (int i = 0; cost == 0 && i < build_dat->build_costs.size(); i++) {
+      if (build_dat->build_costs[i].type == RES_GOLD) {
+        cost = build_dat->build_costs[i].amount / 10;
+      }
+    }
+    return cost;
+  }
+  return 0;
 }
 
 std::map<Resource,int> Area::get_maintenance()

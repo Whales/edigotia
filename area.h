@@ -83,6 +83,8 @@ struct Area
   Building_type get_building_type();
   Building_datum* get_building_datum();
 
+  int get_destroy_cost();
+  int get_reopen_cost();
   std::map<Resource,int> get_maintenance();
 
   bool produces_resource(Resource res);
