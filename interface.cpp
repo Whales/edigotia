@@ -279,6 +279,7 @@ void Interface::handle_key(long ch)
               set_temp_info(ss_mes.str());
             } else if (query_yn("Open your %s at a cost of %d gold?",
                                 area_selected->get_name().c_str(), cost)) {
+              area_selected->auto_hire(city);
               area_selected->open = true;
             }
           }
