@@ -14,6 +14,8 @@ enum Menu_id
   MENU_GAME,
   MENU_MINISTERS,
   MENU_BUILDINGS,
+  MENU_WORLD,
+  MENU_HELP,
   MENU_MAX
 };
 

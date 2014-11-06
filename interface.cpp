@@ -77,6 +77,17 @@ bool Interface::init(Game* G, Player_city* C)
 0
 );
 
+  add_menu(MENU_WORLD, "World",
+"View",
+0
+);
+
+  add_menu(MENU_HELP, "Help",
+"Index",
+"Start Tutorial",
+0
+);
+
   set_menu_str();
 
 // Set data mode, so that the selectors are set too
