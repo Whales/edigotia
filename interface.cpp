@@ -64,9 +64,9 @@ bool Interface::init(Game* G, Player_city* C)
 
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
-"Food",
+"Farms & Food",
 "Hunting & Livestock",
-"Mining",
+"Mines & Minerals",
 "Morale",
 0
 );
