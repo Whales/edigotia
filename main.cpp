@@ -61,10 +61,11 @@ int main()
 
     placed = city.place_keep();
     if (!placed) {
-      p = world.draw();
+      p = world.draw(p);
     }
   }
 
+  city.location = p;
 // Crude race picker; TODO: replace this.
   city.pick_race();
   city.start_new_city();
