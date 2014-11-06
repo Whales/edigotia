@@ -1622,7 +1622,7 @@ void Player_city::do_hunt(Area* hunting_camp)
       if (hunting_action[prey] == ANIMAL_ACT_FLEE) {
 // Affect chance of fleeing based on pack size.
         int flee_chance = prey_dat->flee_chance;
-        flee_chance = (flee_chance * 10) / (9 + pack_size);
+        flee_chance = (flee_chance * 20) / (19 + pack_size);
         bool fled = (rng(1, 100) <= prey_dat->flee_chance);
 
         if (skill_level < 3) {  // 1 or 2 extra chances to FAIL
@@ -1636,8 +1636,8 @@ void Player_city::do_hunt(Area* hunting_camp)
           }
         }
 
-        if (!fled) {  // Forced into combat!
-          combat = true;
+        if (fled) {  // Avoided combat!
+          combat = false;
         }
       } // if (hunting_action[prey] == ANIMAL_ACT_FLEE)
 
