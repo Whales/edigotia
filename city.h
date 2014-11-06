@@ -126,6 +126,8 @@ public:
   void gain_resources(std::map<Resource,int>       res_used);
 
 // Public data
+  Point location;
+
   Citizens population[CIT_MAX];
 
   int resources[RES_MAX];
