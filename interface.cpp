@@ -253,17 +253,41 @@ void Interface::handle_key(long ch)
 // Close an area
         } else if (ch == 'c' || ch == 'C') {
           Area* area_selected = city->area_at(sel);
-          if (area_selected && area_selected->open &&
-              query_yn("Really close your %s?",
-                       area_selected->get_name().c_str())) {
+          if (!area_selected) {
+            set_temp_info("No area there.");
+          } else if (!area_selected->open) {
+            set_temp_info("That area is already closed.");
+          } else if (query_yn("Really close your %s?",
+                              area_selected->get_name().c_str())) {
             area_selected->close(city);
+          }
+
+// Open a closed area
+        } else if (ch == 'o' || ch == 'O') {
+          Area* area_selected = city->area_at(sel);
+          if (!area_selected) {
+            set_temp_info("No area there.");
+          } else if (area_selected->open) {
+            set_temp_info("That area is already open.");
+          } else {
+            int cost = area_selected->get_reopen_cost();
+            if (city->get_resource_amount(RES_GOLD) < cost) {
+              std::stringstream ss_mes;
+              ss_mes << "You do not have enough gold to re-open your " <<
+                        area_selected->get_name() << ". (Cost: " << cost <<
+                        "  You: " << city->get_resource_amount(RES_GOLD);
+              set_temp_info(ss_mes.str());
+            } else if (query_yn("Open your %s at a cost of %d gold?",
+                                area_selected->get_name().c_str(), cost)) {
+              area_selected->open = true;
+            }
           }
 
 // Destroy an area
         } else if (ch == 'd' || ch == 'D') {
           Area* area_selected = city->area_at(sel);
           if (area_selected) {
-            int cost = area_selected->get_building_datum()->destroy_cost;
+            int cost = area_selected->get_destroy_cost();
             int gold = city->get_resource_amount(RES_GOLD);
 
 // Areas under construction are free to "destroy" (but we won't get the build
@@ -353,6 +377,7 @@ void Interface::set_mode(Interface_mode mode)
       }
       commands << "area" << std::endl;
       commands << "<c=pink>C<c=/>: Close area" << std::endl;
+      commands << "<c=pink>O<c=/>: Re-open area" << std::endl;
       commands << "<c=pink>D<c=/>: Destroy area" << std::endl;
 
       i_main.set_data("text_commands", commands.str());
