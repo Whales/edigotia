@@ -724,36 +724,29 @@ bool World_map::tile_okay_for_animal(int x, int y, Animal animal)
           rainfall[x][y]    <= animal_dat->max_rainfall);
 }
 
-Point World_map::draw(Window* w_map)
+Point World_map::draw(Point start)
 {
-  bool owns_window = false;
+  cuss::interface i_legend;
+  if (!i_legend.load_from_file("cuss/world_legend.cuss")) {
+    return Point();
+  }
+
   int screen_x, screen_y;
   get_screen_dims(screen_x, screen_y);
   int xdim, ydim;
-  if (w_map == NULL) {
-    owns_window = true;
-    xdim = screen_x - 26;
-    ydim = screen_y;
-    w_map = new Window(0, 0, xdim, ydim);
-  } else {
-    xdim = w_map->sizex();
-    ydim = w_map->sizey();
-  }
+  xdim = screen_x - 26;
+  ydim = screen_y;
+  Window w_map(0, 0, xdim, ydim);
+  Window w_legend(xdim, 0, 26, ydim);
 
-  Window* w_legend = NULL;
-  cuss::interface i_legend;
-  if (owns_window) {
-    if (!i_legend.load_from_file("cuss/world_legend.cuss")) {
-      delete w_map;
-      return Point();
-    }
-    w_legend = new Window(xdim, 0, 26, ydim);
+  if (start.x < 0 || start.x >= WORLD_MAP_SIZE ||
+      start.y < 0 || start.y >= WORLD_MAP_SIZE   ) {
+    start = continents[0];
   }
-
-  int cur_cont = 0;
-  Point pos = continents[0];
-  pos.x -= (xdim / 2);
-  pos.y -= (ydim / 2);
+  int cur_cont = 0; // Which continent are we on?  So we can use >< to move
+  Point pos = start;
+  pos.x -= (xdim / 2);  // Pos is in the upper-left corner of our screen
+  pos.y -= (ydim / 2);  // So we need to move it from the center to there
 
   bool hilite_crops       = false;
   Crop crop_hilited       = CROP_NULL;
@@ -798,9 +791,7 @@ Point World_map::draw(Window* w_map)
                                     has_animal( animal_hilited,  x, y) );
 
 // See if we need to change the background color for any reason.
-          if (x == center.x && y == center.y) {
-            gl = gl.hilite(c_blue);
-          } else if (!city_here) { // No highlighting if there's a city
+          if (!city_here) { // No highlighting if there's a city
             if (do_crop_hilite && do_mineral_hilite && do_animal_hilite) {
               gl = gl.hilite(c_ltgray);
             } else if (do_crop_hilite && do_mineral_hilite) {
@@ -817,85 +808,91 @@ Point World_map::draw(Window* w_map)
               gl = gl.hilite(c_blue);
             }
           }
-          w_map->putglyph(x - pos.x, y - pos.y, gl);
-        } else {
-          w_map->putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
+// Highlighting the center tile takes precedence over everything else
+          if (x == center.x && y == center.y) {
+            gl = gl.hilite(c_blue);
+          }
+
+          w_map.putglyph(x - pos.x, y - pos.y, gl);
+
+        } else {  // Out of bounds glyph
+          w_map.putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
         }
-      }
-    }
-// Now draw the legend, if we have one
-    if (w_legend) {
-      Map_type type = get_map_type(center);
-      Map_type_datum* data = Map_type_data[type];
-      i_legend.set_data("text_position", center.str());
-      i_legend.set_data("text_position", c_white);
-      i_legend.set_data("text_map_type", data->name);
-      i_legend.set_data("text_map_type", data->symbol.fg);
+
+      } // for (int y = pos.y; y < pos.y + ydim; y++)
+    } // for (int x = pos.x; x < pos.x + xdim; x++)
+
+// Now draw the legend
+    Map_type type = get_map_type(center);
+    Map_type_datum* data = Map_type_data[type];
+    i_legend.set_data("text_position", center.str());
+    i_legend.set_data("text_position", c_white);
+    i_legend.set_data("text_map_type", data->name);
+    i_legend.set_data("text_map_type", data->symbol.fg);
 /* We want two crops/minerals per line, so I split the text fields into two.
  * Each one has its own stringstream; so we put the first crop/mineral into the
  * left stringstream/field, the second into the right, etc.
  */
-      std::stringstream crops_left_ss,  minerals_left_ss,
-                        crops_right_ss, minerals_right_ss;
-      std::vector<Crop>    crops_here    = crops_at(center);
-      std::vector<Mineral> minerals_here = minerals_at(center);
-      for (int i = 0; i < crops_here.size(); i++) {
-        std::stringstream* crop_ss;
-        if (i % 2 == 0) {
-          crop_ss = &(crops_left_ss);
-        } else {
-          crop_ss = &(crops_right_ss);
-        }
-        Crop_datum* crop_dat = Crop_data[crops_here[i]];
-        nc_color crop_color = crop_type_color(crop_dat->type);
-        (*crop_ss) << "<c=" << color_tag(crop_color) << ">" << crop_dat->name <<
-                      "<c=/>" << std::endl;
+    std::stringstream crops_left_ss,  minerals_left_ss,
+                      crops_right_ss, minerals_right_ss;
+    std::vector<Crop>    crops_here    = crops_at(center);
+    std::vector<Mineral> minerals_here = minerals_at(center);
+    for (int i = 0; i < crops_here.size(); i++) {
+      std::stringstream* crop_ss;
+      if (i % 2 == 0) {
+        crop_ss = &(crops_left_ss);
+      } else {
+        crop_ss = &(crops_right_ss);
       }
-      for (int i = 0; i < minerals_here.size(); i++) {
-        std::stringstream* mineral_ss;
-        if (i % 2 == 0) {
-          mineral_ss = &(minerals_left_ss);
-        } else {
-          mineral_ss = &(minerals_right_ss);
-        }
-        Mineral_datum* mineral_dat = Mineral_data[minerals_here[i]];
-        nc_color mineral_color = mineral_dat->color;
-        (*mineral_ss) << "<c=" << color_tag(mineral_color) << ">" <<
-                         mineral_dat->name << "<c=/>" << std::endl;
+      Crop_datum* crop_dat = Crop_data[crops_here[i]];
+      nc_color crop_color = crop_type_color(crop_dat->type);
+      (*crop_ss) << "<c=" << color_tag(crop_color) << ">" << crop_dat->name <<
+                    "<c=/>" << std::endl;
+    }
+    for (int i = 0; i < minerals_here.size(); i++) {
+      std::stringstream* mineral_ss;
+      if (i % 2 == 0) {
+        mineral_ss = &(minerals_left_ss);
+      } else {
+        mineral_ss = &(minerals_right_ss);
       }
-      i_legend.set_data("text_crops_here_left",     crops_left_ss.str());
-      i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
-      i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
-      i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
+      Mineral_datum* mineral_dat = Mineral_data[minerals_here[i]];
+      nc_color mineral_color = mineral_dat->color;
+      (*mineral_ss) << "<c=" << color_tag(mineral_color) << ">" <<
+                       mineral_dat->name << "<c=/>" << std::endl;
+    }
+    i_legend.set_data("text_crops_here_left",     crops_left_ss.str());
+    i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
+    i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
+    i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
 
 // Kingdom info
-      int kingdom_id = get_kingdom_id(center);
-      i_legend.set_data("num_kingdom_id", kingdom_id);
-      if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
-        Kingdom* kingdom = Kingdoms[kingdom_id];
-        Race_datum* race_dat = Race_data[ kingdom->race ];
-        std::stringstream ss_race;
-        ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
-                   capitalize(race_dat->plural_name) << "<c=/>";
-        i_legend.set_data("text_kingdom_race", ss_race.str());
-      } else {
-        i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
-      }
-
-// City info
-      City* city_here = get_city(center);
-      if (city_here) {
-        i_legend.set_data("text_city_name", city_here->get_name());
-        i_legend.set_data("text_city_name", c_yellow);
-      } else {
-        i_legend.clear_data("text_city_name");
-      }
-
-      i_legend.draw(w_legend);
-      w_legend->refresh();
+    int kingdom_id = get_kingdom_id(center);
+    i_legend.set_data("num_kingdom_id", kingdom_id);
+    if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
+      Kingdom* kingdom = Kingdoms[kingdom_id];
+      Race_datum* race_dat = Race_data[ kingdom->race ];
+      std::stringstream ss_race;
+      ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
+                 capitalize(race_dat->plural_name) << "<c=/>";
+      i_legend.set_data("text_kingdom_race", ss_race.str());
+    } else {
+      i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
     }
 
-    w_map->refresh();
+// City info
+    City* city_here = get_city(center);
+    if (city_here) {
+      i_legend.set_data("text_city_name", city_here->get_name());
+      i_legend.set_data("text_city_name", c_yellow);
+    } else {
+      i_legend.clear_data("text_city_name");
+    }
+
+    i_legend.draw(&w_legend);
+
+    w_legend.refresh();
+    w_map.refresh();
 
     long ch = getch();
 // true in input_direction() means we accept capital letters
@@ -911,8 +908,7 @@ Point World_map::draw(Window* w_map)
     } else {
       switch (ch) {
         case '0':
-          pos.x = 0;
-          pos.y = 0;
+          pos = start;
           break;
 
         case '>':
@@ -1014,9 +1010,6 @@ Point World_map::draw(Window* w_map)
         
         case KEY_ESC:
         case '\n':
-          if (owns_window) {
-            delete w_map;
-          }
           if (ch == '\n') {
             pos.x += (xdim / 2);
             pos.y += (ydim / 2);

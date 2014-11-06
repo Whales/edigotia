@@ -21,7 +21,7 @@ public:
   bool save_to_file  (std::string filename);
   bool load_from_file(std::string filename);
 
-  Point draw(Window* w_map = NULL);
+  Point draw(Point start = Point(-1, -1));
 
   int land_count(); // Returns the number of tiles that are not ocean
 /* crop_count() and mineral_count() return the number of tiles with the
