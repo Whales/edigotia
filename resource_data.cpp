@@ -12,7 +12,7 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
 #define _food(s) \
   Crop_data[cur_id]->food = (s)
 #define _bonus(t, a) \
-  Crop_data[cur_id]->bonus_resources.push_back( Resource_amount (t), (a) )
+  Crop_data[cur_id]->bonus_resources.push_back( Resource_amount ( (t), (a) ) )
 #define _type(s) \
   Crop_data[cur_id]->type = (s)
 
@@ -141,6 +141,7 @@ void init_crop_and_mineral_data()
   _crop(CROP_HAY);
     _cname("hay");
     _cpercent(90);
+    _bonus(RES_ANIMAL_FEED, 2);
     _type(CROPTYPE_OTHER);
 
 

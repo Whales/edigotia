@@ -49,26 +49,28 @@ std::string resource_name(Resource res)
 {
   switch (res) {
 
-    case RES_NULL:          return "NULL";
+    case RES_NULL:            return "NULL";
 
-    case RES_GOLD:          return "gold";
-    case RES_FOOD:          return "food";
-    case RES_WOOD:          return "wood";
-    case RES_STONE:         return "stone";
+    case RES_GOLD:            return "gold";
+    case RES_FOOD:            return "food";
+    case RES_WOOD:            return "wood";
+    case RES_STONE:           return "stone";
 
-    case RES_FIBER:         return "fibers";
-    case RES_FUR:           return "fur";
-    case RES_LEATHER:       return "leather";
+    case RES_FIBER:           return "fibers";
+    case RES_FUR:             return "fur";
+    case RES_LEATHER:         return "leather";
 
-    case RES_UNICORN_HORN:  return "unicorn horn";
+    case RES_UNICORN_HORN:    return "unicorn horn";
 
-    case RES_FARMING:       return "farming";
-    case RES_MINING:        return "mining";
-    case RES_HUNTING:       return "hunting";
-    case RES_LOGGING:       return "logging";
+    case RES_ANIMAL_FEED:     return "animal feed";
 
-    case RES_MAX:           return "BUG - RES_MAX";
-    default:                return "BUG - Unnamed Resource";
+    case RES_FARMING:         return "farming";
+    case RES_MINING:          return "mining";
+    case RES_HUNTING:         return "hunting";
+    case RES_LOGGING:         return "logging";
+
+    case RES_MAX:             return "BUG - RES_MAX";
+    default:                  return "BUG - Unnamed Resource";
 
   }
   return "BUG - Escaped resource_name() switch.";
@@ -78,26 +80,28 @@ nc_color resource_color(Resource res)
 {
   switch (res) {
 
-    case RES_NULL:          return c_ltgray;
+    case RES_NULL:            return c_ltgray;
 
-    case RES_GOLD:          return c_yellow;
-    case RES_FOOD:          return c_green;
-    case RES_WOOD:          return c_ltred;
-    case RES_STONE:         return c_ltgray;
+    case RES_GOLD:            return c_yellow;
+    case RES_FOOD:            return c_green;
+    case RES_WOOD:            return c_ltred;
+    case RES_STONE:           return c_ltgray;
 
-    case RES_FIBER:         return c_ltgray;
-    case RES_FUR:           return c_ltred;
-    case RES_LEATHER:       return c_brown;
+    case RES_FIBER:           return c_ltgray;
+    case RES_FUR:             return c_brown;
+    case RES_LEATHER:         return c_brown;
 
-    case RES_UNICORN_HORN:  return c_pink;
+    case RES_UNICORN_HORN:    return c_pink;
 
-    case RES_FARMING:       return c_magenta;
-    case RES_MINING:        return c_magenta;
-    case RES_HUNTING:       return c_magenta;
-    case RES_LOGGING:       return c_magenta;
+    case RES_ANIMAL_FEED:     return c_brown;
 
-    case RES_MAX:           return c_ltgray;
-    default:                return c_ltgray;
+    case RES_FARMING:         return c_magenta;
+    case RES_MINING:          return c_magenta;
+    case RES_HUNTING:         return c_magenta;
+    case RES_LOGGING:         return c_magenta;
+
+    case RES_MAX:             return c_ltgray;
+    default:                  return c_ltgray;
 
   }
   return c_ltgray;
