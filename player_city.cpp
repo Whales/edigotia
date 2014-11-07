@@ -306,6 +306,200 @@ void Player_city::do_turn()
     kill_citizens( Citizen_type(i), dead, DEATH_STARVATION );
   } // for (int i = 0; i < CIT_MAX; i++)
 
+// Handle livestock.
+  for (std::map<Animal,int>::iterator it = livestock.begin();
+       it != livestock.end();
+       it++) {
+    int skill = Race_data[race]->skill_level[SKILL_LIVESTOCK];
+    Animal animal = it->first;
+    Animal_datum* animal_dat = Animal_data[animal];
+    int animal_amount = it->second;
+
+// First, we need to ensure that we can feed them.
+
+// food_eaten is per 100 animals!
+    int feed = (animal_amount * animal_dat->food_eaten) / 100;
+// Round randomly.
+    if (rng(1, 100) >= (animal_amount * animal_dat->food_eaten) % 100) {
+      feed++;
+    }
+// Adjust feed based on our livestock skill.
+    feed = (feed * 7) / (4 + skill);
+
+    bool fed = false;
+// Check if we can feed them using feed exclusively.
+    if (!animal_dat->carnivore && has_resource(RES_ANIMAL_FEED, feed)) {
+      expend_resource(RES_ANIMAL_FEED, feed);
+      fed = true;
+
+// Partially feed them using feed.
+    } else if (!animal_dat->carnivore && resources[RES_ANIMAL_FEED] > 0) {
+      feed -= resources[RES_ANIMAL_FEED];
+      resources[RES_ANIMAL_FEED] = 0;
+    }
+
+// Now, feed them using human food (if we can!)
+    if (has_resource(RES_FOOD, feed)) {
+      expend_resource(RES_FOOD, feed);
+      fed = true;
+
+// Not enough food!  Partially feed them.
+    } else if (resources[RES_FOOD] > 0) {
+      feed -= resources[RES_FOOD];
+      resources[RES_FOOD] = 0;
+    }
+
+    if (!fed) { // Oh no, some animals immediately starve!
+      int starved = 1 + feed / animal_dat->food_eaten;
+// Round randomly.
+      if (rng(1, animal_dat->food_eaten) <= feed % animal_dat->food_eaten) {
+        starved++;
+      }
+      it->second -= starved;
+      if (it->second < 0) { // Shouldn't happen but let's be safe
+        it->second = 0;
+      }
+      animal_amount = it->second;
+// At least we get to slaughter them for food!
+      int food_gain = starved * animal_dat->food_killed;
+      kill_animals(animal, starved);
+// Add a message about it.
+      std::stringstream ss_mes;
+      ss_mes << starved << " ";
+      if (starved == 1) {
+        ss_mes << animal_dat->name_plural << " has starved!  They were ";
+      } else {
+        ss_mes << animal_dat->name << " has starved!  It was ";
+      }
+      ss_mes << "slaughtered for " << food_gain << " food.";
+      add_message(MESSAGE_MAJOR, ss_mes.str());
+    }
+
+// Now we make any daily food gains (e.g. milk, eggs, etc)
+    int food_made = animal_dat->food_livestock;
+    if (food_made > 0) {
+// food_livestock is per 100 animals!
+      int food_gained = (animal_amount * food_made) / 100;
+// Round randomly.
+      if (rng(1, 100) >= (animal_amount * food_made) % 100) {
+        food_gained++;
+      }
+// Adjust based on our livestock skill.
+      food_gained = (food_gained * (5 + skill)) / 8;
+      gain_resource(RES_FOOD, food_gained);
+    }
+
+// Other daily resource gains.
+    for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
+      Resource_amount res = animal_dat->resources_livestock[i];
+      int orig_amount = res.amount; // For rounding, below.
+// Again, the amount is per 100 animals.
+      res.amount = (animal_amount * res.amount) / 100;
+// Round randomly.
+      if (rng(1, 100) >= (animal_amount * orig_amount) % 100) {
+        res.amount++;
+      }
+// Adjust based on our livestock skill.
+      res.amount = (res.amount * (7 + skill)) / 10;
+      gain_resource(res);
+    }
+
+// Do any die randomly?
+    int num_died = 0;
+    for (int i = 0; i < animal_amount; i++) {
+      int hardiness = animal_dat->hardiness;
+// Adjust based on our livestock skill.
+      hardiness = (hardiness * (7 + skill)) / 10;
+      if (one_in(hardiness)) {
+        num_died++;
+      }
+    }
+
+    if (num_died > 0) {
+      it->second -= num_died;
+      if (it->second < 0) { // Shouldn't happen but let's be safe
+        it->second = 0;
+      }
+      animal_amount = it->second;
+// At least we get to slaughter them for food!
+      int food_gain = num_died * animal_dat->food_killed;
+      kill_animals(animal, num_died);
+// Add a message about it.
+      std::stringstream ss_mes;
+      ss_mes << num_died << " ";
+      if (num_died == 1) {
+        ss_mes << animal_dat->name << " has died naturally.  It was ";
+      } else {
+        ss_mes << animal_dat->name_plural << " have died naturally.  They " <<
+                  "were ";
+      }
+      ss_mes << "slaughtered for " << food_gain << " food.";
+      add_message(MESSAGE_MINOR, ss_mes.str());
+    }
+
+// Finally, check to see if any were born.
+    int num_born = 0;
+    for (int i = 0; i < animal_amount; i++) {
+// reproduction_rate is the percentage chance of an ANNUAL birth.
+// So first do a 1-in-365 chance, then check against reproduction_rate.
+      int yearly = 365;
+// Use our skill to decide what "annual" actually means...
+      switch (skill) {
+        case 1:   yearly = 500;
+        case 2:   yearly = 400;
+        case 3:   yearly = 365;
+        case 4:   yearly = 300;
+        case 5:   yearly = 200;
+
+        default:  yearly = 365; // Should never happen
+      }
+      if (one_in(yearly) && rng(1, 100) <= animal_dat->reproduction_rate) {
+        num_born++;
+      }
+    }
+
+    if (num_born > 0) {
+      int new_total = get_livestock_total() + num_born;
+      int capacity = get_livestock_capacity();
+      int overflow = 0;
+// num_born is for the message, real_num_born is added to the population
+// (it may change if we overflow our capacity)
+      int real_num_born = num_born;
+      if (new_total >= capacity) {
+// Oh no, we're over capacity!
+        overflow = new_total - capacity;
+// Kill the overflow rather than just setting them loose.
+        kill_animals(animal, overflow);
+        real_num_born -= overflow;
+      }
+
+// Add a message.
+      std::stringstream ss_mes;
+      ss_mes << num_born << " ";
+      if (num_born == 1) {
+        ss_mes << animal_dat->name << " was born!";
+      } else {
+        ss_mes << animal_dat->name_plural << " were born!";
+      }
+      add_message(MESSAGE_MINOR, ss_mes.str());
+      if (overflow > 0) {
+        std::stringstream ss_overflow;
+        ss_overflow << overflow << " ";
+        if (overflow == 1) {
+          ss_overflow << animal_dat->name;
+        } else {
+          ss_overflow << animal_dat->name_plural;
+        }
+        ss_overflow << " had to be slaughtered to make room.",
+        add_message(MESSAGE_MAJOR, ss_overflow.str());
+      }
+      if (real_num_born > 0) {
+        it->second += real_num_born;
+      }
+    } // if (num_born > 0)
+  } // Done with animals!
+      
+
 // Produce / eat food.
   resources[RES_FOOD] += get_food_production();
   int food_consumed = get_food_consumption();
@@ -612,7 +806,7 @@ void Player_city::do_turn()
   if (!building_queue.empty()) {
     Building* building_to_build = &(building_queue[0]);
     building_to_build->construction_left--;
-    if (building_to_build->construction_left <= 0){
+    if (building_to_build->construction_left <= 0) {
       add_message(MESSAGE_MINOR, "Our %s has finished construction.",
                   building_queue[0].get_name().c_str());
       add_open_building(building_queue[0]);
@@ -1195,6 +1389,7 @@ void Player_city::birth_citizens(int num)
 
 // Draft and add a new message.
   std::stringstream ss_message;
+  Message_type mtype = MESSAGE_MINOR;
   for (int i = 0; i < born.size(); i++) {
 
     if (i > 0) {  // Conjunction (or comma)
@@ -1212,6 +1407,12 @@ void Player_city::birth_citizens(int num)
     }
 
     ss_message << " " << citizen_type_name( born[i].type );
+
+// If this was the first citizen of that class, the player probably wants to
+// know that they can start using buildings/etc that need that class.
+    if (population[ born[i].type ].count == born[i].amount) {
+      mtype = MESSAGE_MAJOR;
+    }
   }
 // Verb
   if (born.size() > 1 || born[0].amount > 1) {
@@ -1221,7 +1422,7 @@ void Player_city::birth_citizens(int num)
   }
 
   std::string message = capitalize( ss_message.str() );
-  add_message( MESSAGE_MINOR, message );
+  add_message( mtype, message );
 }
 
 
@@ -1597,7 +1798,9 @@ void Player_city::do_hunt(Area* hunting_camp)
   int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
 
 // These are for adding a message at the bottom of the function.
-  std::vector<Animal_amount> animals_killed, animals_caught;
+// animals_both are for when we caught an animal but didn't have space for it,
+// so we slaughtered it anyway.
+  std::vector<Animal_amount> animals_killed, animals_caught, animals_both;
 
   for (int i = 0; camp_bldg->workers > 0 && i < num_hunts; i++) {
     Animal prey = tile->choose_hunt_animal(skill_level);
@@ -1643,6 +1846,7 @@ void Player_city::do_hunt(Area* hunting_camp)
         if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
 // If we want to, try to capture it.
           bool caught = false;
+          bool caught_and_killed = false; // If we don't have livestock space
           int num_caught = 0;
           if (hunting_action[prey] == ANIMAL_ACT_CAPTURE) {
 // Try to catch each one seperately.
@@ -1664,16 +1868,43 @@ void Player_city::do_hunt(Area* hunting_camp)
 
               if (caught) {
                 num_caught++;
-// Add them to our livestock
-                if (livestock.count(prey)) {
-                  livestock[prey]++;
+// Add them to our livestock, if we can...
+                if (get_livestock_total() < get_livestock_capacity()) {
+                  if (livestock.count(prey)) {
+                    livestock[prey]++;
+                  } else {
+                    livestock[prey] = 1;
+                  }
                 } else {
-                  livestock[prey] = 1;
+                  caught_and_killed = true;
+                  kill_animals(prey, 1, hunting_camp->pos);
                 }
               }
             }
           }
-          if (caught) {
+          if (caught_and_killed) {
+// Add us to the list of slaughtered animals, AND the list of killed animals.
+            bool found = false;
+            for (int n = 0; !found && n < animals_both.size(); n++) {
+              if (animals_both[n].type == prey) {
+                found = true;
+                animals_both[n].amount++;
+              }
+            }
+            if (!found) {
+              animals_both.push_back( Animal_amount(prey, 1) );
+            }
+            found = false;
+            for (int n = 0; !found && n < animals_killed.size(); n++) {
+              if (animals_killed[n].type == prey) {
+                found = true;
+                animals_killed[n].amount++;
+              }
+            }
+            if (!found) {
+              animals_killed.push_back( Animal_amount(prey, 1) );
+            }
+          } else if (caught) {
 // Add us to the list of capture animals
             bool found = false;
             for (int n = 0; !found && n < animals_caught.size(); n++) {
@@ -1685,7 +1916,7 @@ void Player_city::do_hunt(Area* hunting_camp)
             if (!found) {
               animals_caught.push_back( Animal_amount(prey, 1) );
             }
-          } else {
+          } else {  // Not caught-and-killed, not caught - just killed
             bool found = false;
             for (int n = 0; !found && n < animals_killed.size(); n++) {
               if (animals_killed[n].type == prey) {
@@ -1719,15 +1950,18 @@ void Player_city::do_hunt(Area* hunting_camp)
           }
           kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING,
                         death_reason.str());
-        }
+        } // if (result.attackers_dead > 0)
       } // if (combat)
     } // if (prey != ANIMAL_NULL)
   } // for (int i = 0; i < num_hunts; i++)
 
 // Now, add a message about what we killed/caught.
   std::stringstream ss_message;
-  ss_message << "Hunt result: ";
-  if (animals_killed.empty() && animals_caught.empty()) {
+  if (!animals_killed.empty() || !animals_caught.empty()) {
+    ss_message << "Hunt result: ";
+  }
+  if (animals_killed.empty() && animals_caught.empty() &&
+      animals_both.empty()) {
     ss_message << "No animals killed or caught.";
   }
 
@@ -1809,6 +2043,49 @@ void Player_city::do_hunt(Area* hunting_camp)
     ss_message << "captured.";
   }
 
+// Special sentence for animals we caught but couldn't keep.
+  if (!animals_both.empty()) {
+    std::stringstream ss_out_of_space;
+    ss_out_of_space << "We are out of space for livestock.  ";
+    for (int i = 0; i < animals_both.size(); i++) {
+// Conjunction (or comma)
+      Animal_datum* animal_dat = Animal_data[ animals_both[i].type ];
+      if (i > 0) {
+        if (i == animals_both.size() - 1) {
+          ss_out_of_space << " and ";
+        } else {
+          ss_out_of_space << ", ";
+        }
+      }
+
+// Article (or number)
+      if (animals_both[i].amount == 1) {
+        if (i == 0) {
+          ss_out_of_space << "A";
+        } else {
+          ss_out_of_space << "a";
+        }
+      } else {
+        ss_out_of_space << animals_both[i].amount;
+      }
+
+      ss_out_of_space << " ";
+      if (animals_both[i].amount == 1) {
+        ss_out_of_space << animal_dat->name;
+      } else {
+        ss_out_of_space << animal_dat->name_plural;
+      }
+    } // for (int i = 0; i < animals_both.size(); i++)
+    if (animals_both.size() > 1 || animals_both[0].amount > 1) {
+      ss_out_of_space << " were ";
+    } else {
+      ss_out_of_space << " was ";
+    }
+    ss_out_of_space << "captured, but had to be slaughtered.";
+
+    add_message(MESSAGE_MAJOR, ss_out_of_space.str());
+  }
+
   std::string message = capitalize( ss_message.str() );
 
   add_message(MESSAGE_MINOR, message);
@@ -1850,6 +2127,28 @@ void Player_city::kill_animals(Animal animal, int amount, Point pos)
       }
     }
   }
+}
+
+int Player_city::get_livestock_total()
+{
+  int ret = 0;
+  for (std::map<Animal,int>::iterator it = livestock.begin();
+       it != livestock.end();
+       it++) {
+    ret += it->second;
+  }
+  return ret;
+}
+
+int Player_city::get_livestock_capacity()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].open) {
+      ret += areas[i].building.livestock_space();
+    }
+  }
+  return ret;
 }
 
 // TODO: This function.
