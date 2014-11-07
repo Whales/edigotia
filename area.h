@@ -30,6 +30,7 @@ enum Area_type
 // Raw resource production
   AREA_FARM,
   AREA_HUNTING_CAMP,
+  AREA_PASTURE, // For livestock!
   AREA_MINE,
   AREA_SAWMILL,
 

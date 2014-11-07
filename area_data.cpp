@@ -69,6 +69,12 @@ void init_area_data()
     _category(AREACAT_RESOURCES);
     _building(BUILD_SAWMILL);
 
+  _area(AREA_PASTURE);
+    _name("pasture");
+    _symbol('O', c_brown);
+    _category(AREACAT_FOOD);
+    _building(BUILD_PASTURE);
+
   _area(AREA_BARRACKS);
     _name("barracks");
     _symbol('B', c_red);
