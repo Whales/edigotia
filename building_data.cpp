@@ -48,6 +48,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _produces(t, n) \
   Building_data[cur_id]->add_production( (t), (n) )
 
+#define _livestock(n) \
+  Building_data[cur_id]->livestock_space = (n)
+
 // <recipes>
 
 #define _recipe(r, a) \
@@ -104,7 +107,7 @@ void init_building_data()
   _build(BUILD_MANOR);
     _name("manor");
     _cost(RES_GOLD, 800);
-    _cost(RES_STONE, 20);
+    _cost(RES_STONE, 100);
     _build_time(30);
     _destroy_cost(1250);
     _upkeep(20);
@@ -113,7 +116,7 @@ void init_building_data()
   _build(BUILD_KEEP);
     _name("keep");
     _cost(RES_GOLD, 1500);
-    _cost(RES_STONE, 50);
+    _cost(RES_STONE, 500);
     _build_time(90);
     _destroy_cost(2500);
     _upkeep(30);
@@ -154,13 +157,23 @@ void init_building_data()
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
-    _cost(RES_GOLD, 100);
+    _cost(RES_GOLD,  100);
+    _cost(RES_STONE,  50);
     _build_time(5);
     _destroy_cost(200);
     _upkeep(3);
     _jobs(CIT_PEASANT, 5);
     _wages(3);
     _produces(RES_LOGGING, 5);
+
+  _build(BUILD_PASTURE);
+    _name("pasture");
+    _cost(RES_GOLD, 50);
+    _cost(RES_WOOD, 10);
+    _build_time(1);
+    _destroy_cost(20);
+    _upkeep(1);
+    _livestock(50);
 
   _build(BUILD_BARRACKS);
     _name("barracks");
@@ -176,7 +189,7 @@ void init_building_data()
     _category(BUILDCAT_MANUFACTURING);
     _name("masonry");
     _cost(RES_GOLD, 150);
-    _cost(RES_WOOD, 25);
+    _cost(RES_WOOD, 35);
     _build_time(5);
     _upkeep(8);
     _jobs(CIT_PEASANT, 3);
@@ -188,8 +201,8 @@ void init_building_data()
   _build(BUILD_MINT);
     _category(BUILDCAT_MANUFACTURING);
     _name("mint");
-    _cost(RES_GOLD, 150);
-    _cost(RES_STONE, 15);
+    _cost(RES_GOLD,  150);
+    _cost(RES_STONE, 150);
     _build_time(6);
     _upkeep(6);
     _jobs(CIT_MERCHANT, 3);

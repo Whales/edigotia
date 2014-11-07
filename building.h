@@ -25,6 +25,7 @@ enum Building_type
   BUILD_HUNTING_CAMP,
   BUILD_MINE,
   BUILD_SAWMILL,
+  BUILD_PASTURE,
 
 // Military - ALL AREAS, not real buildings
   BUILD_BARRACKS,
@@ -130,6 +131,7 @@ struct Building_datum
 
   std::vector<Citizen_amount> housing;
   int military_support;
+  int livestock_space;
 
   Citizen_amount jobs;
   int wages;  // Measured in 1/10th of a gold!
@@ -158,6 +160,7 @@ struct Building
   bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
   int  amount_built     (Resource res, City* city);
+  int  livestock_space  ();
 
   int get_total_jobs    (Citizen_type cit_type = CIT_NULL);
   int get_available_jobs(Citizen_type cit_type = CIT_NULL);

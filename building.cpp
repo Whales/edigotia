@@ -142,6 +142,11 @@ int Building::amount_built(Resource res, City* city)
   return 0;
 }
 
+int Building::livestock_space()
+{
+  return get_building_datum()->livestock_space;
+}
+
 // cit_type defaults to CIT_NULL
 int Building::get_total_jobs(Citizen_type cit_type)
 {
@@ -219,6 +224,7 @@ Building_datum::Building_datum()
   category = BUILDCAT_NULL; // i.e. is an Area-only building
   upkeep = 0;
   military_support = 0;
+  livestock_space = 0;
   build_time = 0;
   destroy_cost = 0;
 }
