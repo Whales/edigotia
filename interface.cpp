@@ -110,7 +110,15 @@ void Interface::main_loop()
   sel = Point(4, 4);
   city_radius = true;
 
+// All the truly constant data.
   i_main.set_data("text_menu_bar", menu_str);
+
+  std::stringstream ss_city_race;
+  Race_datum* race_dat = Race_data[city->get_race()];
+  ss_city_race << "<c=white>" << city->get_name() << " - <c=" <<
+                  color_tag(race_dat->color) << ">" <<
+                  capitalize(race_dat->plural_name) << "<c=/>";
+  i_main.set_data("text_city_race", ss_city_race.str());
 
   set_mode(IMODE_VIEW_MAP);
 
@@ -119,12 +127,6 @@ void Interface::main_loop()
   bool done = false;
   while (!done) {
     i_main.set_data("text_date", game->get_date_str(date_size));
-
-    std::stringstream ss_race;
-    Race_datum* race_dat = Race_data[city->get_race()];
-    ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
-               capitalize(race_dat->plural_name) << "<c=/>";
-    i_main.set_data("text_race", ss_race.str());
 
     city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
                    show_terrain);
@@ -634,7 +636,7 @@ void Interface::print_data()
 
     case DATA_MODE_MESSAGES: {
       ss_data << "<c=ltblue>Messages<c=/> (<c=pink>'<c=/>: Clear  " <<
-                 "<c=pink>+<c=/>/<c=pink>-<c=/>: Scroll)" <<
+                 "<c=pink>-<c=/>/<c=pink>+<c=/>: Scroll)" <<
                  std::endl << std::endl;
 // If there's no new messages, let us know that.
       if (city->unread_messages == 0 || city->messages.empty()) {
@@ -1502,8 +1504,17 @@ void Interface::minister_hunt()
   for (int i = 1; i < ANIMAL_MAX; i++) {
     Animal animal = Animal(i);
     names.push_back( capitalize( Animal_data[i]->name ) );
-    actions.push_back( capitalize( animal_action_name(
-                       city->get_hunting_action(animal)   ) ) );
+
+    std::stringstream action_text;
+    Animal_action act = city->get_hunting_action(animal);
+    nc_color act_col = animal_action_color(act);
+// If we're not using the default action, brighten the color.
+    if (act != Animal_data[i]->default_action) {
+      act_col = brighten(act_col);
+    }
+    action_text << "<c=" << color_tag(act_col) << ">" <<
+                   capitalize( animal_action_name( act ) ) << "<c=/>";
+    actions.push_back( action_text.str() );
 
     if (city->hunt_kills.count(animal)) {
       killed.push_back( itos( city->hunt_kills[animal] ) );
@@ -1511,7 +1522,7 @@ void Interface::minister_hunt()
       killed.push_back("<c=dkgray>0<c=/>");
     }
 
-    if (city->livestock.count(animal)) {
+    if (city->livestock.count(animal) && city->livestock[animal] > 0) {
       livestock.push_back( itos( city->livestock[animal] ) );
     } else {
       livestock.push_back("<c=dkgray>0<c=/>");
@@ -1519,9 +1530,15 @@ void Interface::minister_hunt()
   }
 
   i_hunt.set_data("list_animals", names);
-  i_hunt.ref_data("list_action", &actions); // ref_data cause they may chance
+  i_hunt.ref_data("list_action", &actions); // ref_data cause they may change
   i_hunt.set_data("list_killed", killed);
-  i_hunt.set_data("list_livestock", livestock);
+  i_hunt.ref_data("list_livestock", &livestock);  // May change as well
+
+// Also, livestock numbers are semi-static.
+// total_livestock will change if we slaughter animals, so ref_data not set_data
+  int total_livestock = city->get_livestock_total();
+  i_hunt.ref_data("num_total_livestock", &total_livestock);
+  i_hunt.set_data("num_livestock_limit", city->get_livestock_capacity());
 
 // Start with ANIMAL_NULL so that our "check if we picked a new animal" check at
 // the start of our loop will hit the first go-through.
@@ -1543,18 +1560,19 @@ void Interface::minister_hunt()
       i_hunt.set_data("num_capture_chance", animal_dat->tameness);
       i_hunt.set_data("num_food_killed", animal_dat->food_killed);
 
-      i_hunt.clear_data("list_resources_killed");
+      i_hunt.clear_data("text_resources_killed");
+      std::stringstream res_killed;
 
       if (animal_dat->resources_killed.empty()) {
-        i_hunt.add_data("list_resourcs_killed", "<c=dkgray>None<c=/>");
+        i_hunt.set_data("text_resources_killed", "<c=dkgray>None<c=/>");
 
       } else {
         for (int i = 0; i < animal_dat->resources_killed.size(); i++) {
           std::stringstream ss_res;
           Resource_amount res = animal_dat->resources_killed[i];
-          ss_res << resource_name(res.type) << " x " << res.amount;
-          i_hunt.add_data("list_resources_killed", ss_res.str());
+          res_killed << resource_name(res.type) << " x " << res.amount;
         }
+        i_hunt.set_data("text_resources_killed", res_killed.str());
       }
 // food_livestock and food_eaten are measured in food per 100 animals.  So, we
 // need to divide it by 100 and display decimals.
@@ -1582,24 +1600,24 @@ void Interface::minister_hunt()
         i_hunt.set_data("text_diet", "<c=ltgreen>Will eat hay<c=/>");
       }
 
-      i_hunt.clear_data("list_resources_livestock");
+      i_hunt.clear_data("text_resources_livestock");
+      std::stringstream res_livestock;
 
       if (animal_dat->resources_livestock.empty()) {
-        i_hunt.add_data("list_resources_livestock", "<c=dkgray>None<c=/>");
+        i_hunt.set_data("text_resources_livestock", "<c=dkgray>None<c=/>");
 
       } else {
         for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
-          std::stringstream ss_res;
           Resource_amount res = animal_dat->resources_livestock[i];
-          ss_res << resource_name(res.type) << " x ";
+          res_livestock << resource_name(res.type) << " x ";
 // Like food_livestock, these amounts are per 100 animals.  Same solution.
-          ss_res << res.amount / 100;
+          res_livestock << res.amount / 100;
           int res_decimal = res.amount % 100;
           if (res_decimal < 10) {
-            ss_res << "0"; // So we get "1.07" not "1.7"
+            res_livestock << "0"; // So we get "1.07" not "1.7"
           }
-          ss_res << res_decimal;
-          i_hunt.add_data("list_resources_livestock", ss_res.str());
+          res_livestock << res_decimal;
+          i_hunt.set_data("text_resources_livestock", res_livestock.str());
         }
       }
 
@@ -1625,10 +1643,53 @@ void Interface::minister_hunt()
         if (act == ANIMAL_ACT_MAX) {
           act = Animal_action(1);
         }
+        nc_color act_col = animal_action_color(act);
+// If we're not using the default action, brighten the color.
+        if (act != Animal_data[cur_animal]->default_action) {
+          act_col = brighten(act_col);
+        }
+        std::stringstream action_text;
+        action_text << "<c=" << color_tag(act_col) << ">" <<
+                       capitalize( animal_action_name( act ) ) << "<c=/>";
 // Animal(1) is index 0, so subtract 1 from the animal to get index for actions
-        actions[cur_animal - 1] = capitalize( animal_action_name( act ) );
+        actions[cur_animal - 1] = action_text.str();
         city->set_hunting_action(cur_animal, act);
       } break;
+
+      case 's':
+      case 'S':
+        if (city->livestock[cur_animal] >= 1) {
+          city->livestock[cur_animal]--;
+          total_livestock--;
+          city->kill_animals(cur_animal, 1);
+// Animal(1) is index 0 so subtract 1 from the animal to get index for livestock
+          if (city->livestock[cur_animal] > 0) {
+            livestock[cur_animal - 1] = itos( city->livestock[cur_animal] );
+          } else {
+            livestock[cur_animal - 1] = "<c=dkgray>0<c=/>";
+          }
+        }
+        break;
+
+      case 'd':
+      case 'D':
+        if (city->livestock[cur_animal] >= 5) {
+          city->livestock[cur_animal] -= 5;
+          total_livestock -= 5;
+          city->kill_animals(cur_animal, 5);
+        } else {  // Just kill whatever we've got.
+          int num_killed = city->livestock[cur_animal];
+          city->livestock[cur_animal] = 0;
+          total_livestock -= num_killed;
+          city->kill_animals(cur_animal, num_killed);
+        }
+// Animal(1) is index 0 so subtract 1 from the animal to get index for livestock
+        if (city->livestock[cur_animal] > 0) {
+          livestock[cur_animal - 1] = itos( city->livestock[cur_animal] );
+        } else {
+          livestock[cur_animal - 1] = "<c=dkgray>0<c=/>";
+        }
+        break;
 
       default: {
         i_hunt.handle_keypress(ch);
