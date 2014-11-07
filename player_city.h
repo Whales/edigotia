@@ -54,6 +54,7 @@ public:
 // Starting functions
   bool place_keep();
   void pick_race();
+  void set_name();
   virtual void start_new_city();
 
 // Display output

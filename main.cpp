@@ -73,6 +73,7 @@ int main()
   world.set_city(p, &city);
 // Crude race picker; TODO: replace this.
   city.pick_race();
+  city.set_name();
   city.start_new_city();
 
 // Set up a game.

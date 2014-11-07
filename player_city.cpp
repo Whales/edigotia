@@ -79,6 +79,38 @@ void Player_city::pick_race()
   race = Race(race_index);
 }
 
+void Player_city::set_name()
+{
+  cuss::interface i_name;
+  if (!i_name.load_from_file("cuss/set_name.cuss")) {
+    name = "ERRORTOWN";
+    return;
+  }
+
+  Window w_name;
+
+  i_name.select("entry_name");
+  i_name.ref_data("entry_name", &name);
+  bool done = false;
+
+  while (!done) {
+    i_name.draw(&w_name);
+    w_name.refresh();
+
+    long ch = input();
+
+    if (ch == '!') {
+      set_random_name();
+
+    } else if (ch == '\n') {
+      done = true;
+
+    } else {
+      i_name.handle_keypress(ch);
+    }
+  }
+}
+
 void Player_city::start_new_city()
 {
   City::start_new_city();
