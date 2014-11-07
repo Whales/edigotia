@@ -61,6 +61,7 @@ enum Animal_action
 
 Animal_action lookup_animal_action(std::string name);
 std::string animal_action_name(Animal_action action);
+nc_color animal_action_color(Animal_action action);
 
 struct Animal_amount
 {

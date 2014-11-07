@@ -82,6 +82,19 @@ std::string animal_action_name(Animal_action action)
   return "BUG - Escaped animal_action_name() switch!";
 }
 
+nc_color animal_action_color(Animal_action action)
+{
+  switch (action) {
+    case ANIMAL_ACT_NULL:     return c_dkgray;
+    case ANIMAL_ACT_FLEE:     return c_cyan;
+    case ANIMAL_ACT_KILL:     return c_red;
+    case ANIMAL_ACT_CAPTURE:  return c_green;
+    case ANIMAL_ACT_MAX:      return c_dkgray;
+    default:                  return c_magenta;
+  }
+  return c_magenta;
+}
+
 Animal search_for_animal(std::string name)
 {
   name = no_caps( trim(name) );
