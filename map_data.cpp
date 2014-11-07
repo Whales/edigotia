@@ -70,6 +70,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_ICY_HILL);
@@ -94,6 +95,7 @@ void init_terrain_data()
 // Burghers refuse to live on an icy hill!
     _buildable(AREA_KEEP);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -154,6 +156,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
 
@@ -189,6 +192,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -228,6 +232,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_MINE);
     _buildable(AREA_SAWMILL);
     _buildable(AREA_BARRACKS);
@@ -319,6 +324,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_MINE);
     _buildable(AREA_BARRACKS);
 
@@ -369,6 +375,7 @@ void init_terrain_data()
     _buildable(AREA_KEEP);
     _buildable(AREA_FARM);
     _buildable(AREA_HUNTING_CAMP);
+    _buildable(AREA_PASTURE);
     _buildable(AREA_BARRACKS);
 
   _ter(TER_SWAMP);
