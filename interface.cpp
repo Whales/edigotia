@@ -1539,6 +1539,10 @@ void Interface::minister_hunt()
   int total_livestock = city->get_livestock_total();
   i_hunt.ref_data("num_total_livestock", &total_livestock);
   i_hunt.set_data("num_livestock_limit", city->get_livestock_capacity());
+  if (total_livestock == city->get_livestock_capacity()) {
+    i_hunt.set_data("num_total_livestock", c_red);
+    i_hunt.set_data("num_livestock_limit", c_red);
+  }
 
 // Start with ANIMAL_NULL so that our "check if we picked a new animal" check at
 // the start of our loop will hit the first go-through.
@@ -1659,6 +1663,11 @@ void Interface::minister_hunt()
       case 's':
       case 'S':
         if (city->livestock[cur_animal] >= 1) {
+// If they were red before, set them back to ltgray.
+          if (total_livestock == city->get_livestock_capacity()) {
+            i_hunt.set_data("num_total_livestock", c_ltgray);
+            i_hunt.set_data("num_livestock_limit", c_ltgray);
+          }
           city->livestock[cur_animal]--;
           total_livestock--;
           city->kill_animals(cur_animal, 1);
@@ -1674,10 +1683,20 @@ void Interface::minister_hunt()
       case 'd':
       case 'D':
         if (city->livestock[cur_animal] >= 5) {
+// If they were red before, set them back to ltgray.
+          if (total_livestock == city->get_livestock_capacity()) {
+            i_hunt.set_data("num_total_livestock", c_ltgray);
+            i_hunt.set_data("num_livestock_limit", c_ltgray);
+          }
           city->livestock[cur_animal] -= 5;
           total_livestock -= 5;
           city->kill_animals(cur_animal, 5);
         } else {  // Just kill whatever we've got.
+// If they were red before, set them back to ltgray.
+          if (total_livestock == city->get_livestock_capacity()) {
+            i_hunt.set_data("num_total_livestock", c_ltgray);
+            i_hunt.set_data("num_livestock_limit", c_ltgray);
+          }
           int num_killed = city->livestock[cur_animal];
           city->livestock[cur_animal] = 0;
           total_livestock -= num_killed;
