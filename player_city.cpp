@@ -498,7 +498,18 @@ void Player_city::do_turn()
       }
     } // if (num_born > 0)
   } // Done with animals!
-      
+
+// Produce non-food resources from our crops.
+  std::vector<Crop_amount> crops = get_crops_grown();
+  for (int i = 0; i < crops.size(); i++) {
+    Crop crop = crops[i].type;
+    Crop_datum* crop_dat = Crop_data[crop];
+    for (int n = 0; n < crop_dat->bonus_resources.size(); n++) {
+      Resource_amount res = crop_dat->bonus_resources[n];
+      res.amount *= crops[i].amount;
+      gain_resource(res);
+    }
+  }
 
 // Produce / eat food.
   resources[RES_FOOD] += get_food_production();
@@ -2046,7 +2057,7 @@ void Player_city::do_hunt(Area* hunting_camp)
 // Special sentence for animals we caught but couldn't keep.
   if (!animals_both.empty()) {
     std::stringstream ss_out_of_space;
-    ss_out_of_space << "We are out of space for livestock.  ";
+    ss_out_of_space << "We are out of space for livestock!  ";
     for (int i = 0; i < animals_both.size(); i++) {
 // Conjunction (or comma)
       Animal_datum* animal_dat = Animal_data[ animals_both[i].type ];
