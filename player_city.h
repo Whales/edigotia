@@ -130,6 +130,7 @@ public:
   int get_chance_to_birth(Citizen_type cit_type);
   void birth_citizens(int num = 1); // Picks a Citizen_type and adds new citizen
 
+
 // Building/Area-related functions
   std::vector<Building*> get_all_buildings();
   std::vector<Building*> get_pure_buildings(); // i.e. those not of an Area
@@ -146,6 +147,7 @@ public:
   int get_empty_fields();
   int get_shafts_worked();
   int get_free_shafts();
+
 
 // Resource-related functions
   int get_resource_production(Resource res);  // From all sources
@@ -176,6 +178,10 @@ public:
   void set_hunting_action(Animal animal, Animal_action action);
   void do_hunt(Area* hunting_camp);
   void kill_animals(Animal animal, int amount, Point pos = Point(-1, -1));
+
+  // Livestock
+  int get_livestock_total();  // Number of animals we have
+  int get_livestock_capacity(); // Amount of RES_LIVESTOCK_SPACE from areas
 
 // Trade-related functions
   int get_import(Resource res);
