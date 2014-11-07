@@ -275,6 +275,22 @@ bool is_bright(nc_color col)
           col == c_pink     || col == c_yellow);
 }
 
+nc_color brighten(nc_color col)
+{
+  switch (col) {
+    case c_black:   return c_dkgray;
+    case c_ltgray:  return c_white;
+    case c_red:     return c_ltred;
+    case c_green:   return c_ltgreen;
+    case c_blue:    return c_ltblue;
+    case c_cyan:    return c_ltcyan;
+    case c_magenta: return c_pink;
+    case c_brown:   return c_yellow;
+    default:        return col;
+  }
+  return c_null;
+}
+
 nc_color non_bright(nc_color col)
 {
  switch (col) {
