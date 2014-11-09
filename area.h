@@ -40,7 +40,7 @@ enum Area_type
   AREA_MAX
 };
 
-// NOTE: There should be no more than 9 buildings in each category!
+// NOTE: There should be no more than 9 areas in each category!
 //       If a category is full, split it into two categories.
 
 enum Area_category
