@@ -1760,7 +1760,7 @@ void Player_city::do_hunt(Area* hunting_camp)
 // Affect chance of fleeing based on pack size.
         int flee_chance = prey_dat->flee_chance;
         flee_chance = (flee_chance * 20) / (19 + pack_size);
-        bool fled = (rng(1, 100) <= prey_dat->flee_chance);
+        bool fled = (rng(1, 1000) <= prey_dat->flee_chance);
 
         if (skill_level < 3) {  // 1 or 2 extra chances to FAIL
           for (int n = 0; fled && n < 3 - skill_level; n++) {
