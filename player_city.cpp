@@ -270,9 +270,6 @@ void Player_city::draw_map(cuss::element* e_draw, Point sel, bool radius_limited
 
 void Player_city::do_turn()
 {
-// Check if we've unlocked any new areas, buildings, etc.
-  check_unlockables();
-
 // Birth a new citizen(s)?
   birth_points += get_daily_birth_points();
   int births = 0;
@@ -770,6 +767,9 @@ void Player_city::do_turn()
       building_queue.erase( building_queue.begin() );
     }
   }
+
+// Check if we've unlocked any new areas, buildings, etc.
+  check_unlockables();
 }
 
 void Player_city::check_unlockables()
