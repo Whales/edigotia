@@ -227,6 +227,7 @@ Building_datum::Building_datum()
   livestock_space = 0;
   build_time = 0;
   destroy_cost = 0;
+  unlockable = false;
 }
 
 Building_datum::~Building_datum()

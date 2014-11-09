@@ -5,6 +5,15 @@
 #include "stringfunc.h"   // For no_caps() and trim()
 #include <map>
 
+Area_datum::Area_datum()
+{
+  name = "Uninitialized Area";
+  uid = -1;
+  category = AREACAT_NULL;
+  building = BUILD_NULL;
+  unlockable = false;
+}
+
 Building_datum* Area_datum::get_building_datum()
 {
   return Building_data[building];

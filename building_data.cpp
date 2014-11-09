@@ -21,6 +21,10 @@ Building_datum* Building_data[BUILD_MAX];
 #define _cost(t, n) \
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 
+#define _unlock(t, a, b) \
+  Building_data[cur_id]->unlockable = true; \
+  Building_data[cur_id]->unlock_condition = City_achievement( (t), (a), (b) )
+
 #define _destroy_cost(n) \
   Building_data[cur_id]->destroy_cost = (n)
 

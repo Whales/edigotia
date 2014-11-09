@@ -11,6 +11,7 @@
 #include "building.h"
 #include "geometry.h"
 #include "resource.h"
+#include "city_achievement.h" // For unlockable areas.
 #include <string>
 #include <map>
 
@@ -62,6 +63,7 @@ std::string area_category_name(Area_category category);
 
 struct Area_datum
 {
+  Area_datum();
   std::string name;
   int uid;
   glyph symbol;
@@ -69,6 +71,9 @@ struct Area_datum
   Area_category category;
 
   Building_type building;
+
+  bool unlockable;
+  City_achievement unlock_condition;
 
   Building_datum* get_building_datum();
 };

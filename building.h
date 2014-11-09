@@ -4,6 +4,7 @@
 #include "citizen.h"
 #include "resource.h"
 #include "geometry.h"
+#include "city_achievement.h" // For unlockable buildings.
 #include <string>
 #include <vector>
 #include <map>
@@ -127,6 +128,10 @@ struct Building_datum
 
   int build_time;
   std::vector<Resource_amount> build_costs;
+
+  bool unlockable;  // If false, this building is available from the start.
+  City_achievement unlock_condition;
+
   int destroy_cost; // How much gold it costs to destroy this
 
   std::vector<Citizen_amount> housing;

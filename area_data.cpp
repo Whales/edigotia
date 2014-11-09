@@ -4,14 +4,22 @@ Area_datum* Area_data[AREA_MAX];
 
 #define _area(x) \
   cur_id = (x)
+
 #define _name(n) \
   Area_data[cur_id]->name = (n)
+
 #define _symbol(s, f) \
   Area_data[cur_id]->symbol = glyph((s), (f), c_black)
+
 #define _category(c) \
   Area_data[cur_id]->category = (c)
+
 #define _building(bt) \
   Area_data[cur_id]->building = (bt)
+
+#define _unlock(t, a, b) \
+  Area_data[cur_id]->unlockable = true; \
+  Area_data[cur_id]->unlock_condition = City_achievement( (t), (a), (b) )
 
 void init_area_data()
 {
@@ -32,12 +40,14 @@ void init_area_data()
     _symbol('O', c_ltgreen);
     _category(AREACAT_HOUSING);
     _building(BUILD_HOUSE);
+    _unlock(CITY_ACHIEVE_POP, CIT_MERCHANT, 1);
 
   _area(AREA_MANOR);
     _name("manor");
     _symbol('Q', c_blue);
     _category(AREACAT_HOUSING);
     _building(BUILD_MANOR);
+    _unlock(CITY_ACHIEVE_POP, CIT_BURGHER,  1);
 
   _area(AREA_KEEP);
     _name("keep");

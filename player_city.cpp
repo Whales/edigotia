@@ -32,6 +32,18 @@ Player_city::Player_city()
     hunting_action[i] = Animal_data[i]->default_action;
   }
 
+  for (int i = 0; i < AREA_MAX; i++) {
+    Area_datum* area_dat = Area_data[i];
+// If the area is NOT unlockable, that means it starts out unlocked!
+    area_unlocked[i] = !(area_dat->unlockable);
+  }
+
+  for (int i = 0; i < BUILD_MAX; i++) {
+    Building_datum* build_dat = Building_data[i];
+// If the building is NOT unlockable, that means it starts out unlocked!
+    building_unlocked[i] = !(build_dat->unlockable);
+  }
+
   radius = 1;
   unread_messages = 0;
   show_hunting_messages = true;

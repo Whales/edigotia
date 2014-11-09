@@ -26,7 +26,7 @@ enum Message_type
   MESSAGE_MINOR,    // Player MIGHT want to take action on this
   MESSAGE_MAJOR,    // Player will almost certainly want to take action on this
   MESSAGE_URGENT,   // Player MUST take action on this!
-// TODO: MESSAGE_UNLOCK, for when we've unlocked new buildings etc.
+  MESSAGE_UNLOCK,    // We've unlocked a new area, building, or other feature
   MESSAGE_MAX
 };
 
@@ -193,6 +193,9 @@ public:
   std::vector<Military_unit> units_stationed;
 
   int radius;
+
+  bool area_unlocked[AREA_MAX];
+  bool building_unlocked[BUILD_MAX];
 
   std::vector<Building> buildings;
   std::vector<Building> building_queue;
