@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "game.h"
 #include "date.h"
+#include "city_achievement.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -64,6 +65,7 @@ public:
 
 // Standard turn functions
   virtual void do_turn();
+  void check_unlockables();// Go through all unlockable items & see if we get it
 
 // Mutators
   Area_queue_status add_area_to_queue(Area_type type, Point location);
@@ -95,6 +97,7 @@ public:
 // It goes through the unread messages and adds 1 for each messages of that type
   std::vector<int> get_unread_message_count();
 
+
 // Map-related functions
   bool inside_radius(int x, int y);
   bool inside_radius(Point p);
@@ -103,6 +106,7 @@ public:
   Area* area_at(Point p);
 
   std::string get_map_info(Point p);
+
 
 // Citizens/population/housing-related functions
   int get_total_population(Citizen_type type = CIT_NULL);
@@ -183,9 +187,14 @@ public:
   int get_livestock_total();  // Number of animals we have
   int get_livestock_capacity(); // Amount of RES_LIVESTOCK_SPACE from areas
 
+
 // Trade-related functions
   int get_import(Resource res);
   int get_export(Resource res);
+
+
+// Misc functions
+  bool meets_achievement(City_achievement achievement);
 
 // Data
   int tax_rate[CIT_MAX];

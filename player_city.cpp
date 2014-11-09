@@ -270,6 +270,9 @@ void Player_city::draw_map(cuss::element* e_draw, Point sel, bool radius_limited
 
 void Player_city::do_turn()
 {
+// Check if we've unlocked any new areas, buildings, etc.
+  check_unlockables();
+
 // Birth a new citizen(s)?
   birth_points += get_daily_birth_points();
   int births = 0;
@@ -768,6 +771,42 @@ void Player_city::do_turn()
     }
   }
 }
+
+void Player_city::check_unlockables()
+{
+// First, do areas
+  for (int i = 0; i < AREA_MAX; i++) {
+// Only check if it's not already unlocked.
+    if (!area_unlocked[i]) {
+      Area_datum* area_dat = Area_data[i];
+      City_achievement achievement = area_dat->unlock_condition;
+
+      if (meets_achievement( achievement ) ) {
+// We did it!
+        area_unlocked[i] = true;
+        add_message(MESSAGE_UNLOCK, "New area unlocked: %s!",
+                    area_dat->name.c_str());
+      }
+    }
+  }
+
+// Now, buildings
+  for (int i = 0; i < BUILD_MAX; i++) {
+// Only check if it's not already unlocked.
+    if (!building_unlocked[i]) {
+      Building_datum* build_dat = Building_data[i];
+      City_achievement achievement = build_dat->unlock_condition;
+
+      if (meets_achievement( achievement ) ) {
+// We did it!
+        building_unlocked[i] = true;
+        add_message(MESSAGE_UNLOCK, "New building unlocked: %s!",
+                    build_dat->name.c_str());
+      }
+    }
+  }
+}
+
 
 Area_queue_status Player_city::add_area_to_queue(Area_type type, Point location)
 {
@@ -2119,6 +2158,26 @@ int Player_city::get_export(Resource res)
   return 0;
 }
 
+bool Player_city::meets_achievement(City_achievement achievement)
+{
+  int a = achievement.value_a, b = achievement.value_b;
+  switch (achievement.type) {
+
+    case CITY_ACHIEVE_NULL:
+      return true;  // Not a real condition!
+
+    case CITY_ACHIEVE_POP:
+      return (population[a].count >= b);
+
+    default:
+      debugmsg("No code for City_achievement type %d", achievement.type);
+      return false;
+  }
+
+  debugmsg("Escaped Player_city::meets_achievement switch.");
+  return false;
+}
+
 nc_color message_type_color(Message_type type)
 {
   switch (type) {
@@ -2126,6 +2185,7 @@ nc_color message_type_color(Message_type type)
     case MESSAGE_MINOR:   return c_ltgray;
     case MESSAGE_MAJOR:   return c_yellow;
     case MESSAGE_URGENT:  return c_ltred;
+    case MESSAGE_UNLOCK:  return c_ltgreen;
     case MESSAGE_MAX:     return c_dkgray;
     default:              return c_magenta;
   }
