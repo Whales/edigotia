@@ -37,9 +37,6 @@ enum Resource
 // Rare/monster resources
   RES_UNICORN_HORN,
 
-// Misc resources
-  RES_ANIMAL_FEED,
-
 // Meta-resources
   RES_FARMING,  // Can be any available crop
   RES_MINING,   // Available minerals, decided by the terrain
@@ -113,9 +110,6 @@ enum Crop
 // Materials
   CROP_COTTON,
   CROP_HEMP,
-
-// Other
-  CROP_HAY,
 
   CROP_MAX
 };

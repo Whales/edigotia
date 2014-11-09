@@ -1578,9 +1578,9 @@ void Interface::minister_hunt()
         }
         i_hunt.set_data("text_resources_killed", res_killed.str());
       }
-// food_livestock and food_eaten are measured in food per 100 animals.  So, we
-// need to divide it by 100 and display decimals.
-      std::stringstream ss_food_daily, ss_food_eaten;
+// food_livestock is measured in food per 100 animals.  So, we need to divide it
+// by 100 and display decimals.
+      std::stringstream ss_food_daily;
 
       ss_food_daily << animal_dat->food_livestock / 100 << ".";
       int food_decimal = animal_dat->food_livestock % 100;
@@ -1589,20 +1589,6 @@ void Interface::minister_hunt()
       }
       ss_food_daily << food_decimal;
       i_hunt.set_data("text_food_livestock",       ss_food_daily.str());
-
-      ss_food_eaten << animal_dat->food_eaten / 100 << ".";
-      food_decimal = animal_dat->food_eaten % 100;
-      if (food_decimal < 10) {
-        ss_food_eaten << "0"; // So we get "1.07" not "1.7"
-      }
-      ss_food_eaten << food_decimal;
-      i_hunt.set_data("text_food_eaten_livestock", ss_food_eaten.str());
-
-      if (animal_dat->carnivore) {
-        i_hunt.set_data("text_diet", "<c=ltred>Carnivorous<c=/>");
-      } else {
-        i_hunt.set_data("text_diet", "<c=ltgreen>Will eat hay<c=/>");
-      }
 
       i_hunt.clear_data("text_resources_livestock");
       std::stringstream res_livestock;

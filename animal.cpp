@@ -47,7 +47,6 @@ Animal_datum::Animal_datum()
 
   food_killed     = 0;
   food_livestock  = 0;
-  food_eaten      = 0;
   carnivore       = false;
 
   tameness        = 0;

@@ -108,7 +108,6 @@ struct Animal_datum
 // Resource-related data
   int food_killed;        // Food gained when killed (hunted or slaughtered)
   int food_livestock;     // Food gained daily, per 100 units, when livestock
-  int food_eaten;         // Food eaten daily, per 100 units, when livestock
   bool carnivore;         // If false, this creature will eat hay if you have it
   std::vector<Resource_amount> resources_killed; // Res gained when killed
   std::vector<Resource_amount> resources_livestock; // Res per 100, gained daily

@@ -315,66 +315,6 @@ void Player_city::do_turn()
     Animal_datum* animal_dat = Animal_data[animal];
     int animal_amount = it->second;
 
-// First, we need to ensure that we can feed them.
-
-// food_eaten is per 100 animals!
-    int feed = (animal_amount * animal_dat->food_eaten) / 100;
-// Round randomly.
-    if (rng(1, 100) >= (animal_amount * animal_dat->food_eaten) % 100) {
-      feed++;
-    }
-// Adjust feed based on our livestock skill.
-    feed = (feed * 7) / (4 + skill);
-
-    bool fed = false;
-// Check if we can feed them using feed exclusively.
-    if (!animal_dat->carnivore && has_resource(RES_ANIMAL_FEED, feed)) {
-      expend_resource(RES_ANIMAL_FEED, feed);
-      fed = true;
-
-// Partially feed them using feed.
-    } else if (!animal_dat->carnivore && resources[RES_ANIMAL_FEED] > 0) {
-      feed -= resources[RES_ANIMAL_FEED];
-      resources[RES_ANIMAL_FEED] = 0;
-    }
-
-// Now, feed them using human food (if we can!)
-    if (has_resource(RES_FOOD, feed)) {
-      expend_resource(RES_FOOD, feed);
-      fed = true;
-
-// Not enough food!  Partially feed them.
-    } else if (resources[RES_FOOD] > 0) {
-      feed -= resources[RES_FOOD];
-      resources[RES_FOOD] = 0;
-    }
-
-    if (!fed) { // Oh no, some animals immediately starve!
-      int starved = 1 + feed / animal_dat->food_eaten;
-// Round randomly.
-      if (rng(1, animal_dat->food_eaten) <= feed % animal_dat->food_eaten) {
-        starved++;
-      }
-      it->second -= starved;
-      if (it->second < 0) { // Shouldn't happen but let's be safe
-        it->second = 0;
-      }
-      animal_amount = it->second;
-// At least we get to slaughter them for food!
-      int food_gain = starved * animal_dat->food_killed;
-      kill_animals(animal, starved);
-// Add a message about it.
-      std::stringstream ss_mes;
-      ss_mes << starved << " ";
-      if (starved == 1) {
-        ss_mes << animal_dat->name_plural << " has starved!  They were ";
-      } else {
-        ss_mes << animal_dat->name << " has starved!  It was ";
-      }
-      ss_mes << "slaughtered for " << food_gain << " food.";
-      add_message(MESSAGE_MAJOR, ss_mes.str());
-    }
-
 // Now we make any daily food gains (e.g. milk, eggs, etc)
     int food_made = animal_dat->food_livestock;
     if (food_made > 0) {

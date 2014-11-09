@@ -138,13 +138,6 @@ void init_crop_and_mineral_data()
     _cpercent(60);
     _type(CROPTYPE_MATERIAL);
 
-  _crop(CROP_HAY);
-    _cname("hay");
-    _cpercent(90);
-    _bonus(RES_ANIMAL_FEED, 2);
-    _type(CROPTYPE_OTHER);
-
-
 // Minerals
 
   _mineral(MINERAL_NULL);

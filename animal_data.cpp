@@ -55,9 +55,6 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _food_livestock(n) \
   Animal_data[cur_id]->food_livestock = (n)
 
-#define _food_eaten(n) \
-  Animal_data[cur_id]->food_eaten = (n)
-
 #define _carnivore() \
   Animal_data[cur_id]->carnivore = true
 
@@ -96,7 +93,6 @@ void init_animal_data()
     _hardiness(1800);
     _food_killed(2);
     _food_livestock(80);
-    _food_eaten(10);
     _tameness(100);
 
   _animal(ANIMAL_PIG);
@@ -113,7 +109,6 @@ void init_animal_data()
     _reproduction(32);
     _hardiness(2800);
     _food_killed(60);
-    _food_eaten(50);
     _tameness(92);
 
   _animal(ANIMAL_SHEEP);
@@ -130,7 +125,6 @@ void init_animal_data()
     _reproduction(30);
     _hardiness(2500);
     _food_killed(50);
-    _food_eaten(40);
     _tameness(98);
     _resource_killed(RES_FIBER, 50);
     _resource_livestock(RES_FIBER, 15);
@@ -150,7 +144,6 @@ void init_animal_data()
     _hardiness(3500);
     _food_killed(250);
     _food_livestock(75);
-    _food_eaten(100);
     _tameness(100);
     _resource_killed(RES_LEATHER, 10);
 
@@ -169,7 +162,6 @@ void init_animal_data()
     _reproduction(20);
     _hardiness(4000);
     _food_killed(200);
-    _food_eaten(180);
     _tameness(80);
     _resource_killed(RES_LEATHER, 8);
 
@@ -190,7 +182,6 @@ void init_animal_data()
     _reproduction(50);
     _hardiness(800);
     _food_killed(2);
-    _food_eaten(12);
     _tameness(75);
     _resource_killed(RES_FUR, 1);
 
@@ -208,7 +199,6 @@ void init_animal_data()
     _reproduction(25);
     _hardiness(2000);
     _food_killed(15);
-    _food_eaten(50);
     _carnivore();
     _tameness(35);
     _resource_killed(RES_FUR, 5);
@@ -229,7 +219,6 @@ void init_animal_data()
     _reproduction(28);
     _hardiness(3400);
     _food_killed(75);
-    _food_eaten(50);
     _tameness(25);
 
   _animal(ANIMAL_DEER);
@@ -246,7 +235,6 @@ void init_animal_data()
     _reproduction(20);
     _hardiness(3000);
     _food_killed(80);
-    _food_eaten(120);
     _tameness(30);
     _resource_killed(RES_LEATHER, 6);
 
@@ -267,7 +255,6 @@ void init_animal_data()
     _reproduction(18);
     _hardiness(3400);
     _food_killed(300);
-    _food_eaten(200);
     _tameness(15);
     _resource_killed(RES_FUR, 15);
 
@@ -287,7 +274,6 @@ void init_animal_data()
     _reproduction(25);
     _hardiness(3000);
     _food_killed(80);
-    _food_eaten(100);
     _carnivore();
     _tameness(12);
     _resource_killed(RES_FUR, 10);
@@ -306,7 +292,6 @@ void init_animal_data()
     _reproduction(15);
     _hardiness(3200);
     _food_killed(115);
-    _food_eaten(150);
     _carnivore();
     _tameness(8);
     _resource_killed(RES_LEATHER,  8);
@@ -327,7 +312,6 @@ void init_animal_data()
     _reproduction(15);
     _hardiness(3500);
     _food_killed(250);
-    _food_eaten(250);
     _carnivore();
     _tameness(10);
     _resource_killed(RES_LEATHER, 12);
@@ -349,7 +333,6 @@ void init_animal_data()
     _reproduction(8);
     _hardiness(7000);
     _food_killed(1500);
-    _food_eaten(800);
     _tameness(4);
     _resource_killed(RES_LEATHER, 40);
 
@@ -372,7 +355,6 @@ void init_animal_data()
     _reproduction(50);
     _hardiness(600);
     _food_killed(0);
-    _food_eaten(150);
     _tameness(50);
 // TODO: Should jellies provide some kind of resource?  Right now they're
 //       worthless, just an annoyance.
@@ -391,7 +373,6 @@ void init_animal_data()
   _reproduction(10);
   _hardiness(15000);
   _food_killed(300);
-  _food_eaten(150);
   _tameness(0); // Can't be captured!
   _resource_killed(RES_FIBER, 25);
   
@@ -412,7 +393,6 @@ void init_animal_data()
     _reproduction(18);
     _hardiness(5000);
     _food_killed(180);
-    _food_eaten(250);
     _carnivore();
     _tameness(3);
     _resource_killed(RES_FUR, 20);
@@ -434,7 +414,6 @@ void init_animal_data()
     _reproduction(10);
     _hardiness(9000);
     _food_killed(320);
-    _food_eaten(300);
     _carnivore();
     _tameness(2);
     _resource_killed(RES_FUR,     10);
@@ -454,7 +433,6 @@ void init_animal_data()
     _reproduction(15);
     _hardiness(7500);
     _food_killed(400);
-    _food_eaten(350);
     _carnivore();
     _tameness(5);
 
@@ -472,7 +450,6 @@ void init_animal_data()
     _reproduction(5);
     _hardiness(8000);
     _food_killed(200);
-    _food_eaten(180);
     _tameness(10);
     _resource_killed(RES_UNICORN_HORN, 1);
 
@@ -492,7 +469,6 @@ void init_animal_data()
     _reproduction(8);
     _hardiness(7000);
     _food_killed(100);
-    _food_eaten(100);
     _tameness(0);
 
   _animal(ANIMAL_WYVERN);
@@ -509,7 +485,6 @@ void init_animal_data()
     _reproduction(15);
     _hardiness(9000);
     _food_killed(1600);
-    _food_eaten(1000);
     _carnivore();
     _tameness(1);
 

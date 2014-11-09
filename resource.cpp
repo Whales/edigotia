@@ -62,8 +62,6 @@ std::string resource_name(Resource res)
 
     case RES_UNICORN_HORN:    return "unicorn horn";
 
-    case RES_ANIMAL_FEED:     return "animal feed";
-
     case RES_FARMING:         return "farming";
     case RES_MINING:          return "mining";
     case RES_HUNTING:         return "hunting";
@@ -92,8 +90,6 @@ nc_color resource_color(Resource res)
     case RES_LEATHER:         return c_brown;
 
     case RES_UNICORN_HORN:    return c_pink;
-
-    case RES_ANIMAL_FEED:     return c_brown;
 
     case RES_FARMING:         return c_magenta;
     case RES_MINING:          return c_magenta;

@@ -139,7 +139,6 @@ void init_terrain_data()
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
     _crop(CROP_COTTON);
-    _crop(CROP_HAY);
     _animal(ANIMAL_HARE,       5000);
     _animal(ANIMAL_FOX,        1000);
     _animal(ANIMAL_BOAR,        200);
@@ -170,7 +169,6 @@ void init_terrain_data()
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
     _crop(CROP_HEMP);
-    _crop(CROP_HAY);
     _mineral(MINERAL_STONE,   10000);
     _mineral(MINERAL_TIN,       500);
     _mineral(MINERAL_COPPER,   1000);
