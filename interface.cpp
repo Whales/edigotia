@@ -1561,6 +1561,13 @@ void Interface::minister_hunt()
     i_hunt.set_data("num_livestock_limit", c_red);
   }
 
+// Are hunting messages on?
+  if (city->show_hunting_messages) {
+    i_hunt.set_data("text_hunting_messages", "<c=ltgreen>on<c=/>");
+  } else {
+    i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
+  }
+
 // Start with ANIMAL_NULL so that our "check if we picked a new animal" check at
 // the start of our loop will hit the first go-through.
   Animal cur_animal = ANIMAL_NULL;
@@ -1712,6 +1719,17 @@ void Interface::minister_hunt()
           livestock[cur_animal - 1] = "<c=dkgray>0<c=/>";
         }
         break;
+
+      case 't':
+      case 'T':
+        city->show_hunting_messages = !city->show_hunting_messages;
+        if (city->show_hunting_messages) {
+          i_hunt.set_data("text_hunting_messages", "<c=ltgreen>on<c=/>");
+        } else {
+          i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
+        }
+        break;
+
 
       default: {
         i_hunt.handle_keypress(ch);

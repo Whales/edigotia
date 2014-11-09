@@ -34,6 +34,7 @@ Player_city::Player_city()
 
   radius = 1;
   unread_messages = 0;
+  show_hunting_messages = true;
 }
 
 Player_city::~Player_city()
@@ -2029,7 +2030,9 @@ void Player_city::do_hunt(Area* hunting_camp)
 
   std::string message = capitalize( ss_message.str() );
 
-  add_message(MESSAGE_MINOR, message);
+  if (show_hunting_messages) {
+    add_message(MESSAGE_MINOR, message);
+  }
 
 }
 

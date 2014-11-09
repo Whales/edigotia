@@ -204,6 +204,7 @@ public:
 
   int unread_messages;
   std::vector<Message> messages;
+  bool show_hunting_messages;
 
   City_map map;
 
