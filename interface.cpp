@@ -154,6 +154,11 @@ void Interface::main_loop()
     w_main.refresh();
     long ch = input();
 
+// Mark all messages as read if we're on the message tab
+    if (cur_data_mode == DATA_MODE_MESSAGES) {
+      city->unread_messages = 0;
+    }
+
     restore_info_text();  // Undo temporary change to text_map_info
 
     if (ch == KEY_ESC) {
