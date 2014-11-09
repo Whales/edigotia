@@ -2705,10 +2705,12 @@ void Interface::set_building_list(cuss::interface& i_build,
     i_build.clear_data("list_cost_gold"       );
     i_build.clear_data("list_cost_wood"       );
     i_build.clear_data("list_cost_stone"      );
+
 // Find all the buildings that match our given category and put them in types
     for (int i = 0; i < BUILD_MAX; i++) {
       Building_datum* bldg_dat = Building_data[i];
-      if (bldg_dat->category == category) { // It's a match!
+// It's a match!
+      if (city->building_unlocked[i] && bldg_dat->category == category) {
         types.push_back( Building_type(i) );
       }
     }
@@ -3106,7 +3108,7 @@ void Interface::set_area_list(Area_category category,
 // First, find all areas that belong to our chosen category.
     for (int i = 0; i < AREA_MAX; i++) {
       Area_datum* area_dat = Area_data[i];
-      if (area_dat->category == category) {
+      if (city->area_unlocked[i] && area_dat->category == category) {
         types.push_back( Area_type(i) );
       }
     }
