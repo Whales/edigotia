@@ -393,7 +393,7 @@ bool World_map::save_to_file(std::string filename)
               kingdom_id  [x][y] << " " <<
               crops       [x][y] << " " <<
               minerals    [x][y] << " " <<
-              animals     [x][y];
+              animals     [x][y] << " ";
     }
     fout << std::endl;
   }
