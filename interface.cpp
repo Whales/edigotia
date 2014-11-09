@@ -1005,9 +1005,21 @@ void Interface::minister_finance()
     citizen_taxes   [i] = city->get_taxes(cit_type);
 
     i_finance.ref_data(wealth_name.str(),   &(citizen_wealth  [i]));
+    if (citizen_wealth[i] == 0) {
+      i_finance.set_data(wealth_name.str(), c_dkgray);
+    }
     i_finance.ref_data(income_name.str(),   &(citizen_income  [i]));
+    if (citizen_income[i] == 0) {
+      i_finance.set_data(income_name.str(), c_dkgray);
+    }
     i_finance.ref_data(tax_rate_name.str(), &(citizen_tax_rate[i]));
+    if (citizen_tax_rate[i] == 0) {
+      i_finance.set_data(tax_rate_name.str(), c_dkgray);
+    }
     i_finance.ref_data(taxes_name.str(),    &(citizen_taxes   [i]));
+    if (citizen_taxes[i] == 0) {
+      i_finance.set_data(taxes_name.str(), c_dkgray);
+    }
 
     income_taxes += citizen_taxes[i];
   }
