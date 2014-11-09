@@ -53,7 +53,7 @@ void init_area_data()
 
   _area(AREA_HUNTING_CAMP);
     _name("hunting camp");
-    _symbol('H', c_yellow);
+    _symbol('H', c_ltred);
     _category(AREACAT_FOOD);
     _building(BUILD_HUNTING_CAMP);
 
