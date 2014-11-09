@@ -301,7 +301,7 @@ void init_races()
 
     _skill(SKILL_FARMING,   2);
     _skill(SKILL_HUNTING,   2);
-    _skill(SKILL_LIVESTOCK, 2);
+    _skill(SKILL_LIVESTOCK, 3);
     _skill(SKILL_MINING,    5);
     _skill(SKILL_FORESTRY,  2);
 
