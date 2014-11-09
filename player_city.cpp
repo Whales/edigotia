@@ -373,27 +373,17 @@ void Player_city::do_turn()
         ss_mes << animal_dat->name_plural << " have died naturally.  They " <<
                   "were ";
       }
-      ss_mes << "slaughtered for " << food_gain << " food.";
+      ss_mes << "butchered for " << food_gain << " food.";
       add_message(MESSAGE_MINOR, ss_mes.str());
     }
 
 // Finally, check to see if any were born.
     int num_born = 0;
     for (int i = 0; i < animal_amount; i++) {
-// reproduction_rate is the percentage chance of an ANNUAL birth.
-// So first do a 1-in-365 chance, then check against reproduction_rate.
-      int yearly = 365;
-// Use our skill to decide what "annual" actually means...
-      switch (skill) {
-        case 1:   yearly = 500;
-        case 2:   yearly = 400;
-        case 3:   yearly = 365;
-        case 4:   yearly = 300;
-        case 5:   yearly = 200;
-
-        default:  yearly = 365; // Should never happen
-      }
-      if (one_in(yearly) && rng(1, 100) <= animal_dat->reproduction_rate) {
+      int repro_chance = animal_dat->reproduction_rate;
+// Adjust based on our livestock skill.
+      repro_chance = (repro_chance * 10) / (7 + skill);
+      if (one_in(repro_chance)) {
         num_born++;
       }
     }

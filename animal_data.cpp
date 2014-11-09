@@ -89,7 +89,7 @@ void init_animal_data()
     _hp(5);
     _pack_chance(80);
     _max_pack_size(8);
-    _reproduction(45);
+    _reproduction(800);
     _hardiness(1800);
     _food_killed(2);
     _food_livestock(80);
@@ -106,7 +106,7 @@ void init_animal_data()
     _hp(70);
     _pack_chance(70);
     _max_pack_size(5);
-    _reproduction(32);
+    _reproduction(1000);
     _hardiness(2800);
     _food_killed(60);
     _tameness(92);
@@ -122,7 +122,7 @@ void init_animal_data()
     _hp(50);
     _pack_chance(70);
     _max_pack_size(5);
-    _reproduction(30);
+    _reproduction(1100);
     _hardiness(2500);
     _food_killed(50);
     _tameness(98);
@@ -140,7 +140,7 @@ void init_animal_data()
     _hp(120);
     _pack_chance(60);
     _max_pack_size(3);
-    _reproduction(30);
+    _reproduction(1400);
     _hardiness(3500);
     _food_killed(250);
     _food_livestock(75);
@@ -159,7 +159,7 @@ void init_animal_data()
     _max_pack_size(3);
     _danger(6);
     _hp(140);
-    _reproduction(20);
+    _reproduction(2000);
     _hardiness(4000);
     _food_killed(200);
     _tameness(80);
@@ -179,7 +179,7 @@ void init_animal_data()
     _hp(5);
     _pack_chance(25);
     _max_pack_size(3);
-    _reproduction(50);
+    _reproduction(300);
     _hardiness(800);
     _food_killed(2);
     _tameness(75);
@@ -196,7 +196,7 @@ void init_animal_data()
     _hp(30);
     _pack_chance(5);
     _max_pack_size(2);
-    _reproduction(25);
+    _reproduction(1400);
     _hardiness(2000);
     _food_killed(15);
     _carnivore();
@@ -216,7 +216,7 @@ void init_animal_data()
     _danger(10);
     _hp(70);
     _flee_chance(98);
-    _reproduction(28);
+    _reproduction(1600);
     _hardiness(3400);
     _food_killed(75);
     _tameness(25);
@@ -232,7 +232,7 @@ void init_animal_data()
     _hp(110);
     _pack_chance(30);
     _max_pack_size(3);
-    _reproduction(20);
+    _reproduction(1800);
     _hardiness(3000);
     _food_killed(80);
     _tameness(30);
@@ -252,7 +252,7 @@ void init_animal_data()
     _danger(12);
     _hp(110);
     _flee_chance(92);
-    _reproduction(18);
+    _reproduction(2400);
     _hardiness(3400);
     _food_killed(300);
     _tameness(15);
@@ -271,7 +271,7 @@ void init_animal_data()
     _danger(16);
     _hp(85);
     _flee_chance(90);
-    _reproduction(25);
+    _reproduction(2000);
     _hardiness(3000);
     _food_killed(80);
     _carnivore();
@@ -289,7 +289,7 @@ void init_animal_data()
     _danger(15);
     _hp(80);
     _flee_chance(92);
-    _reproduction(15);
+    _reproduction(2800);
     _hardiness(3200);
     _food_killed(115);
     _carnivore();
@@ -309,7 +309,7 @@ void init_animal_data()
     _danger(18);
     _hp(110);
     _flee_chance(85);
-    _reproduction(15);
+    _reproduction(2600);
     _hardiness(3500);
     _food_killed(250);
     _carnivore();
@@ -330,7 +330,7 @@ void init_animal_data()
     _danger(20);
     _hp(250);
     _flee_chance(96);
-    _reproduction(8);
+    _reproduction(5000);
     _hardiness(7000);
     _food_killed(1500);
     _tameness(4);
@@ -352,7 +352,7 @@ void init_animal_data()
     _danger(3);
     _hp(50);
     _flee_chance(98);
-    _reproduction(50);
+    _reproduction(100);
     _hardiness(600);
     _food_killed(0);
     _tameness(50);
@@ -370,7 +370,7 @@ void init_animal_data()
   _danger(20);
   _hp(160);
   _flee_chance(100);
-  _reproduction(10);
+  _reproduction(5000);
   _hardiness(15000);
   _food_killed(300);
   _tameness(0); // Can't be captured!
@@ -390,7 +390,7 @@ void init_animal_data()
     _danger(30);
     _hp(110);
     _flee_chance(60);
-    _reproduction(18);
+    _reproduction(3500);
     _hardiness(5000);
     _food_killed(180);
     _carnivore();
@@ -411,7 +411,7 @@ void init_animal_data()
     _danger(40);
     _hp(130);
     _flee_chance(40);
-    _reproduction(10);
+    _reproduction(3800);
     _hardiness(9000);
     _food_killed(320);
     _carnivore();
@@ -430,7 +430,7 @@ void init_animal_data()
     _danger(42);
     _hp(150);
     _flee_chance(25);
-    _reproduction(15);
+    _reproduction(3600);
     _hardiness(7500);
     _food_killed(400);
     _carnivore();
@@ -447,8 +447,8 @@ void init_animal_data()
     _danger(32);
     _hp(120);
     _flee_chance(70);
-    _reproduction(5);
-    _hardiness(8000);
+    _reproduction(6000);
+    _hardiness(9000);
     _food_killed(200);
     _tameness(10);
     _resource_killed(RES_UNICORN_HORN, 1);
@@ -466,8 +466,8 @@ void init_animal_data()
     _danger(50);
     _hp(70);
     _flee_chance(92);
-    _reproduction(8);
-    _hardiness(7000);
+    _reproduction(6000);
+    _hardiness(8000);
     _food_killed(100);
     _tameness(0);
 
@@ -482,8 +482,8 @@ void init_animal_data()
     _danger(60);
     _hp(300);
     _flee_chance(15);
-    _reproduction(15);
-    _hardiness(9000);
+    _reproduction(7000);
+    _hardiness(12000);
     _food_killed(1600);
     _carnivore();
     _tameness(1);

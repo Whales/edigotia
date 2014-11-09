@@ -100,7 +100,7 @@ struct Animal_datum
   int flee_chance;        // Chance to flee, if we choose to.
   int pack_chance;        // Chance that we'll appear in a pack.
   int max_pack_size;      // What's the biggest group we'll appear in?
-  int reproduction_rate;  // A percentage increase per year (range: 0 - 100)
+  int reproduction_rate;  // Livestock has a one-in-THIS chance of birth daily
   int hardiness;          // Livestock has a one-in-THIS chance of dying daily
                           // Use 0 if the livestock will never die randomly
   int tameness;           // The chance that, when captured, becomes livestock
