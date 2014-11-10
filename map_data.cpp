@@ -52,6 +52,7 @@ void init_terrain_data()
     _symbol('*', c_white);
     _farm(10);
     _hunting_difficulty(400);
+    _wood(0, 400);
     _crop(CROP_CABBAGE);
     _crop(CROP_AMANITAS);
     _mineral(MINERAL_TIN,       300);
@@ -78,6 +79,7 @@ void init_terrain_data()
     _symbol('=', c_ltgray);
     _farm(0);
     _hunting_difficulty(600);
+    _wood(0, 350);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      2000);
     _mineral(MINERAL_COPPER,   5000);
@@ -104,6 +106,7 @@ void init_terrain_data()
     _symbol('^', c_white);
     _farm(0);
     _hunting_difficulty(1000);
+    _wood(0, 100);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      5000);
     _mineral(MINERAL_COPPER,  10000);
@@ -134,7 +137,7 @@ void init_terrain_data()
     _symbol('_', c_green);
     _farm(100);
     _hunting_difficulty(100);
-    _wood(0, 80);
+    _wood(100, 1000);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
@@ -164,7 +167,7 @@ void init_terrain_data()
     _symbol(',', c_brown);
     _farm(60);
     _hunting_difficulty(500);
-    _wood(0, 40);
+    _wood(0, 200);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_TOBACCO);
@@ -200,7 +203,7 @@ void init_terrain_data()
     _symbol('=', c_brown);
     _farm(50);
     _hunting_difficulty(400);
-    _wood(0, 30);
+    _wood(50, 300);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
     _crop(CROP_GRAPES);
@@ -240,6 +243,7 @@ void init_terrain_data()
     _symbol('^', c_ltgray);
     _farm(10);
     _hunting_difficulty(1000);
+    _wood(0, 200);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
@@ -268,7 +272,7 @@ void init_terrain_data()
     _symbol(';', c_ltgreen);
     _farm(20);
     _hunting_difficulty(900);
-    _wood(2000, 8000);
+    _wood(20000, 80000);
     _wood_cleared(TER_BARREN);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
@@ -381,7 +385,7 @@ void init_terrain_data()
     _symbol('~', c_cyan);
     _farm(80);
     _hunting_difficulty(1000);
-    _wood(500, 4000);
+    _wood(5000, 40000);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);
     _crop(CROP_CINNAMON);
@@ -411,7 +415,7 @@ void init_terrain_data()
     _symbol('J', c_ltcyan);
     _farm(15);
     _hunting_difficulty(1200);
-    _wood(3000, 10000);
+    _wood(30000, 100000);
     _wood_cleared(TER_FIELD);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);

@@ -216,22 +216,22 @@ std::string trees_amount_ranking(int wood)
   if (wood == 0) {
     return "no";
   }
-  if (wood < 15) {
+  if (wood < 40) {
     return "one or two";
   }
-  if (wood < 50) {
+  if (wood < 100) {
     return "very few";
   }
-  if (wood < 100) {
+  if (wood < 300) {
     return "few";
   }
   if (wood < 1000) {
     return "many";
   }
-  if (wood < 3000) {
+  if (wood < 10000) {
     return "dense";
   }
-  if (wood < 5000) {
+  if (wood < 30000) {
     return "very dense";
   }
   return "overgrown with";
