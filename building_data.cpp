@@ -198,7 +198,6 @@ void init_building_data()
     _cost(RES_GOLD, 150);
     _cost(RES_WOOD, 35);
     _build_time(5);
-    _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(8);
     _jobs(CIT_PEASANT, 3);
     _wages(5);
