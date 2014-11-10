@@ -1310,7 +1310,7 @@ int Player_city::get_required_ratio(Citizen_type cit_type)
 int Player_city::get_population_cap(Citizen_type cit_type)
 {
   if (cit_type <= CIT_PEASANT) {
-    return 0;
+    return -1;
   }
   int ratio = get_required_ratio(cit_type);
   int type_below = cit_type - 1;

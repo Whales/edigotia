@@ -558,11 +558,15 @@ void Interface::print_data()
           ss_data << " ";
         }
         int cap = city->get_population_cap(cit_type);
+        if (cap == -1) {  // No cap.
+          ss_data << " <c=blue>N/A<c=/>" << std::endl;
+        } else {
 // Insert spacing for alignment.
-        for (int n = 0; n < 4 - digits_in(cap); n++) {
-          ss_data << " ";
+          for (int n = 0; n < 4 - digits_in(cap); n++) {
+            ss_data << " ";
+          }
+          ss_data << cap << std::endl;
         }
-        ss_data << city->get_population_cap(cit_type) << std::endl;
       }
       break;
 
