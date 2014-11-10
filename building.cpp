@@ -3,6 +3,7 @@
 #include "city.h" // Needed in Building::amount_built()
 #include "window.h" // For debugmsg
 #include "stringfunc.h" // Needed in lookup_building_category()
+#include "player_city.h"  // For close()
 #include <sstream>
 
 // R defaults to RES_NULL, A defaults to 1
@@ -64,6 +65,39 @@ NULL!");
 
   construction_left = datum->build_time;
 }
+
+void Building::close(City* city)
+{
+  if (!city) {
+    debugmsg("%s called Building::close(NULL)!", get_name().c_str());
+    return;
+  }
+
+  if (!open) {  // We're already closed!
+    return;
+  }
+
+  open = false;
+  Citizen_type cit_type = get_job_citizen_type();
+
+// Handle any stuff specific to farms, mines, etc
+  for (int i = 0; i < crops_grown.size(); i++) {
+    if (crops_grown[i].amount != HIDDEN_RESOURCE) {
+      crops_grown[i].amount = 0;
+    }
+  }
+
+  for (int i = 0; i < minerals_mined.size(); i++) {
+    if (minerals_mined[i].amount != HIDDEN_RESOURCE) {
+      minerals_mined[i].amount = 0;
+    }
+  }
+
+  if (city->is_player_city()) {
+    Player_city* p_city = static_cast<Player_city*>(city);
+    p_city->fire_citizens(cit_type, workers, this);
+  }
+} 
 
 int Building::get_empty_fields()
 {
@@ -191,6 +225,35 @@ Citizen_type Building::get_job_citizen_type()
 int Building::get_upkeep()
 {
   return get_building_datum()->upkeep;
+}
+
+int Building::get_total_wages()
+{
+  return (workers * get_building_datum()->wages);
+}
+
+int Building::get_destroy_cost()
+{
+  Building_datum* build_dat = get_building_datum();
+  if (build_dat) {
+    return build_dat->destroy_cost;
+  }
+  return 0;
+} 
+
+int Building::get_reopen_cost()
+{
+  Building_datum* build_dat = get_building_datum();
+  if (build_dat) {
+    int cost = 0;
+    for (int i = 0; cost == 0 && i < build_dat->build_costs.size(); i++) {
+      if (build_dat->build_costs[i].type == RES_GOLD) {
+        cost = build_dat->build_costs[i].amount / 10;
+      }
+    }
+    return cost;
+  }
+  return 0;
 }
 
 std::map<Resource,int> Building::get_maintenance()

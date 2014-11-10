@@ -25,7 +25,7 @@ Area::Area(Area_type T, Point P)
   building.set_type(get_building_type());
   pos = P;
   building.pos = P;
-  open = true;
+  building.open = true;
   building.construction_left = 0;
 }
 
@@ -36,7 +36,7 @@ void Area::make_queued()
     return;
   }
 
-  open = false;
+  building.open = false;
   building.construction_left = bd_data->build_time;
 }
 
@@ -47,30 +47,11 @@ void Area::close(City* city)
     return;
   }
 
-  if (!open) {  // We're already closed!
+  if (!is_open()) {  // We're already closed!
     return;
   }
 
-  open = false;
-  Citizen_type cit_type = building.get_job_citizen_type();
-
-// Handle any stuff specific to farms, mines, etc
-  for (int i = 0; i < building.crops_grown.size(); i++) {
-    if (building.crops_grown[i].amount != HIDDEN_RESOURCE) {
-      building.crops_grown[i].amount = 0;
-    }
-  }
-
-  for (int i = 0; i < building.minerals_mined.size(); i++) {
-    if (building.minerals_mined[i].amount != HIDDEN_RESOURCE) {
-      building.minerals_mined[i].amount = 0;
-    }
-  }
-
-  if (city->is_player_city()) {
-    Player_city* p_city = static_cast<Player_city*>(city);
-    p_city->fire_citizens(cit_type, building.workers, &building);
-  }
+  building.close(city);
 }
 
 void Area::auto_hire(Player_city* city)
@@ -148,6 +129,11 @@ bool Area::under_construction()
   return (building.construction_left > 0);
 }
 
+bool Area::is_open()
+{
+  return building.open;
+}
+
 Area_datum* Area::get_area_datum()
 {
   return Area_data[type];
@@ -178,26 +164,12 @@ Building_datum* Area::get_building_datum()
 
 int Area::get_destroy_cost()
 {
-  Building_datum* build_dat = get_building_datum();
-  if (build_dat) {
-    return build_dat->destroy_cost;
-  }
-  return 0;
+  return building.get_destroy_cost();
 }
 
 int Area::get_reopen_cost()
 {
-  Building_datum* build_dat = get_building_datum();
-  if (build_dat) {
-    int cost = 0;
-    for (int i = 0; cost == 0 && i < build_dat->build_costs.size(); i++) {
-      if (build_dat->build_costs[i].type == RES_GOLD) {
-        cost = build_dat->build_costs[i].amount / 10;
-      }
-    }
-    return cost;
-  }
-  return 0;
+  return building.get_reopen_cost();
 }
 
 std::map<Resource,int> Area::get_maintenance()
@@ -207,12 +179,12 @@ std::map<Resource,int> Area::get_maintenance()
 
 bool Area::produces_resource(Resource res)
 {
-  return (open && get_building_datum()->produces_resource(res));
+  return (is_open() && get_building_datum()->produces_resource(res));
 }
 
 int Area::amount_produced(Resource res)
 {
-  if (!open) {
+  if (!is_open()) {
     return 0;
   }
   return get_building_datum()->amount_produced(res);

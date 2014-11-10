@@ -143,6 +143,9 @@ private:
   void minister_morale();
 // Info on buildings; allows player to hire workers.
   void building_status();
+  // Sets up the help box depending on circumstances
+  void set_building_status_help(cuss::interface& i_buildings,
+                                bool adjusting_production);
 // Pick a recipe for a building to build
 // We stick the data in new_recipe; if we cancel, return false, otherwise true
   bool pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe);

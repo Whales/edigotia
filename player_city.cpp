@@ -217,7 +217,7 @@ void Player_city::draw_map(cuss::element* e_draw, Point sel, bool radius_limited
       glyph sym = areadata->symbol;
       if (area->pos == sel) {
         sym.bg = c_blue;
-      } else if (!area->open) {
+      } else if (!area->is_open()) {
         sym.bg = c_ltgray;
       }
       drawing[area->pos] = sym;
@@ -514,7 +514,7 @@ void Player_city::do_turn()
 // Handle building production.
   for (int i = 0; i < buildings.size(); i++) {
     Building* bldg = &(buildings[i]);
-    if (!bldg->build_queue.empty()) {
+    if (bldg->open && !bldg->build_queue.empty()) {
       Recipe_amount* rec_amt = &(bldg->build_queue[0]);
       Recipe* rec = &(rec_amt->recipe);
 // Check if we can build the recipe today.
@@ -672,7 +672,7 @@ void Player_city::do_turn()
   std::map<Resource,int> total_maintenance;
 // Deduct maintenance for all areas
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open) {
+    if (areas[i].is_open()) {
       std::map<Resource,int> maintenance = areas[i].get_maintenance();
       for (std::map<Resource,int>::iterator it = maintenance.begin();
            it != maintenance.end();
@@ -687,14 +687,16 @@ void Player_city::do_turn()
   }
 // Deduct maintenance for all buildings
   for (int i = 0; i < buildings.size(); i++) {
-    std::map<Resource,int> maintenance = buildings[i].get_maintenance();
-    for (std::map<Resource,int>::iterator it = maintenance.begin();
-         it != maintenance.end();
-         it++) {
-      if (total_maintenance.count(it->first)) {
-        total_maintenance[it->first] += it->second;
-      } else {
-        total_maintenance[it->first] = it->second;
+    if (buildings[i].open) {
+      std::map<Resource,int> maintenance = buildings[i].get_maintenance();
+      for (std::map<Resource,int>::iterator it = maintenance.begin();
+           it != maintenance.end();
+           it++) {
+        if (total_maintenance.count(it->first)) {
+          total_maintenance[it->first] += it->second;
+        } else {
+          total_maintenance[it->first] = it->second;
+        }
       }
     }
   }
@@ -844,7 +846,7 @@ Area_queue_status Player_city::add_area_to_queue(Area area)
 void Player_city::add_open_area(Area area)
 {
 // Set it as open
-  area.open = true;
+  area.building.open = true;
 // Figure out how many crops per field we get
   Building_datum* build_dat = area.get_building_datum();
   if (!build_dat) {
@@ -972,6 +974,7 @@ Building_queue_status Player_city::add_building_to_queue(Building building)
 void Player_city::add_open_building(Building building)
 {
 // TODO: Anything at all?  Should we try to auto-employ workers?
+  building.open = true; // Just in case
   buildings.push_back(building);
 }
 
@@ -1184,7 +1187,7 @@ std::string Player_city::get_map_info(Point p)
     ret << "<c=pink>" << area->get_name() << "<c=/>";
     if (area->building.construction_left > 0) {
       ret << " (<c=brown>Under Construction<c=/>)";
-    } else if (!area->open) {
+    } else if (!area->is_open()) {
       ret << " (<c=red>Closed<c=/>)";
     }
   }
@@ -1234,7 +1237,7 @@ int Player_city::get_total_housing(Citizen_type type)
   }
   for (int i = 0; i < buildings.size(); i++) {
     Building_datum* build_dat = buildings[i].get_building_datum();
-    if (build_dat) {
+    if (buildings[i].open && build_dat) {
       for (int n = 0; n < build_dat->housing.size(); n++) {
         if (type == CIT_NULL || type == build_dat->housing[n].type) {
           ret += build_dat->housing[n].amount;
@@ -1266,7 +1269,7 @@ int Player_city::get_military_supported()
   }
   for (int i = 0; i < buildings.size(); i++) {
     Building_datum* build_dat = buildings[i].get_building_datum();
-    if (build_dat) {
+    if (buildings[i].open && build_dat) {
       ret += build_dat->military_support;
     }
   }
@@ -1449,7 +1452,7 @@ std::vector<Building*> Player_city::get_employers(Citizen_type cit_type)
   std::vector<Building*> ret;
   for (int i = 0; i < buildings.size(); i++) {
     Building* bldg = &(buildings[i]);
-    if (bldg->get_filled_jobs(cit_type) > 0) {
+    if (bldg->open && bldg->get_filled_jobs(cit_type) > 0) {
       ret.push_back(bldg);
     }
   }
@@ -1489,12 +1492,14 @@ int Player_city::get_total_maintenance()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open) {
+    if (areas[i].is_open()) {
       ret += areas[i].get_building_datum()->upkeep;
     }
   }
   for (int i = 0; i < buildings.size(); i++) {
-    ret += buildings[i].get_building_datum()->upkeep;
+    if (buildings[i].open) {
+      ret += buildings[i].get_building_datum()->upkeep;
+    }
   }
   return ret / 10;  // Since maintenance is in 1/10th of a gold
 }
@@ -1503,7 +1508,7 @@ int Player_city::get_fields_worked()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open && areas[i].type == AREA_FARM) {
+    if (areas[i].is_open() && areas[i].type == AREA_FARM) {
       ret += areas[i].building.workers;
     }
   }
@@ -1514,7 +1519,7 @@ int Player_city::get_empty_fields()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open && areas[i].type == AREA_FARM) {
+    if (areas[i].is_open() && areas[i].type == AREA_FARM) {
       Building_datum* build_dat = areas[i].get_building_datum();
       if (build_dat && areas[i].building.workers < build_dat->jobs.amount) {
         ret += build_dat->jobs.amount - areas[i].building.workers;
@@ -1528,7 +1533,7 @@ int Player_city::get_shafts_worked()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open && areas[i].type == AREA_MINE) {
+    if (areas[i].is_open() && areas[i].type == AREA_MINE) {
       ret += areas[i].building.workers;
     }
   }
@@ -1539,7 +1544,7 @@ int Player_city::get_free_shafts()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open && areas[i].type == AREA_MINE) {
+    if (areas[i].is_open() && areas[i].type == AREA_MINE) {
       Building_datum* build_dat = areas[i].get_building_datum();
       if (build_dat && areas[i].building.workers < build_dat->jobs.amount) {
         ret += build_dat->jobs.amount - areas[i].building.workers;
@@ -1556,8 +1561,10 @@ int Player_city::get_resource_production(Resource res)
   int ret = 0;
 
   for (int i = 0; i < bldgs.size(); i++) {
-    ret += bldgs[i]->amount_produced(res);
-    ret += bldgs[i]->amount_built(res, this);
+    if (bldgs[i]->open) {
+      ret += bldgs[i]->amount_produced(res);
+      ret += bldgs[i]->amount_built(res, this);
+    }
   }
 
   return ret;
@@ -1577,7 +1584,8 @@ int Player_city::get_total_wages(Citizen_type type)
   for (int i = 0; i < buildings.size(); i++) {
     Building_datum* build_dat = buildings[i].get_building_datum();
     int workers = buildings[i].workers;
-    if (workers > 0 && (type == CIT_NULL || type == build_dat->jobs.type)) {
+    if (buildings[i].open && workers > 0 &&
+        (type == CIT_NULL || type == build_dat->jobs.type)) {
       ret += build_dat->wages * workers;
     }
   }
@@ -2139,7 +2147,7 @@ int Player_city::get_livestock_capacity()
 {
   int ret = 0;
   for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].open) {
+    if (areas[i].is_open()) {
       ret += areas[i].building.livestock_space();
     }
   }

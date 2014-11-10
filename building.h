@@ -161,6 +161,7 @@ struct Building
 
   void set_type(Building_type new_type);
   void make_queued(); // Prepare it for being in a building queue
+  void close(City* city);
 
   Building_datum* get_building_datum();
   std::string get_name();
@@ -176,9 +177,13 @@ struct Building
   Citizen_type get_job_citizen_type();
 
   int get_upkeep();
+  int get_total_wages();
+  int get_destroy_cost();
+  int get_reopen_cost();
   std::map<Resource,int> get_maintenance();
 
 // ALL-BUILDINGS DATA
+  bool open;  // If false, we can't hire workers, pay no maintenance, etc etc
   Point pos;  // Position of the area we belong to, if any.
   int construction_left;  // Days of construction remaining.
 
