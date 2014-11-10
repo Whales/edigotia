@@ -2053,7 +2053,7 @@ void Interface::building_status()
     std::stringstream name_ss, workers_ss, max_workers_ss, worker_class_ss;
     
     name_ss << capitalize( bldg->get_name() );
-    if (bldg->open) {
+    if (!bldg->open) {
       name_ss << " <c=red>(Closed)<c=/>";
     } else if (bldg->pos.x != -1) { // It belongs to an area (and isn't closed)
       name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
@@ -2090,10 +2090,10 @@ void Interface::building_status()
  * workers on this screen), so use ref_data() instead - that way, as soon as we
  * update the workers vector, the interface will update as well.
  */
-  i_buildings.set_data("list_building_names", building_names);
-  i_buildings.ref_data("list_workers",        &workers      );
-  i_buildings.set_data("list_max_workers",    max_workers   );
-  i_buildings.set_data("list_worker_class",   worker_class  );
+  i_buildings.ref_data("list_building_names", &building_names);
+  i_buildings.ref_data("list_workers",        &workers       );
+  i_buildings.set_data("list_max_workers",    max_workers    );
+  i_buildings.set_data("list_worker_class",   worker_class   );
 
 // Set the fields that indicate our number of unemployed citizens of each class
   int free_peasants  = city->get_unemployed_citizens(CIT_PEASANT );
@@ -2297,7 +2297,7 @@ void Interface::building_status()
       case 'L':
       case '=':
       case '+':
-        if (!adjusting_production && cur_bldg) { // Safety check
+        if (!adjusting_production && cur_bldg && cur_bldg->open) {
 // Can't add workers for mines or farms - that's done via ministers
           if (cur_bldg->type == BUILD_FARM) {
             popup("To add workers to a farm, use the Minister of Food.");
@@ -2332,7 +2332,7 @@ void Interface::building_status()
       case 'h':
       case 'H':
       case '-':
-        if (!adjusting_production && cur_bldg) { // Safety check
+        if (!adjusting_production && cur_bldg && cur_bldg->open) {
 // Can't add workers for mines or farms - that's done via ministers
           if (cur_bldg->type == BUILD_FARM) {
             popup("To remove workers from a farm, use the Minister of Food.");
@@ -2365,6 +2365,14 @@ void Interface::building_status()
       case 'C':
         if (cur_bldg && cur_bldg->open && !adjusting_production &&
             query_yn("Really close your %s?", cur_bldg->get_name().c_str())) {
+
+          std::stringstream name_ss;
+// Update our names list
+          name_ss << capitalize( cur_bldg->get_name() ) <<
+                     " <c=red>(Closed)<c=/>";
+          building_names[index] = name_ss.str();
+          workers[index] = "<c=red>0<c=/>";
+
           if (cur_bldg->pos.x != -1) {  // It's an area
             Area* area = city->area_at(cur_bldg->pos);
             if (!area) {
@@ -2376,6 +2384,7 @@ void Interface::building_status()
           } else {  // It's not an area
             cur_bldg->close(city);
           }
+          move_index = -1;  // This will force our building data to update.
         }
         break;
 
@@ -2396,16 +2405,33 @@ void Interface::building_status()
 
             city->expend_resource(RES_GOLD, cost);
             cur_bldg->open = true;
+
+// Update our names list
+            std::stringstream name_ss;
+            name_ss << capitalize( cur_bldg->get_name() );
 // Check if there's an area, and if so, autohire
             if (cur_bldg->pos.x != -1) {
               Area* area = city->area_at(cur_bldg->pos);
+              name_ss << " (" << city->map.get_terrain_name(cur_bldg->pos) <<
+                         ")";
               if (!area) {
                 debugmsg("Building has position %s, but no area there!",
                          cur_bldg->pos.str().c_str());
               } else {
                 area->auto_hire(city);
+// Since we auto-hired, we might have some workers - so update the list
+                std::stringstream workers_ss;
+                if (cur_bldg->get_total_jobs() == 0) {
+                  workers_ss << "<c=dkgray>";
+                } else if (cur_bldg->workers == 0) {
+                  workers_ss << "<c=red>";
+                }
+                workers_ss << cur_bldg->workers          << "<c=/>";
+                workers[index] = workers_ss.str();
               }
             }
+            building_names[index] = name_ss.str();
+            move_index = -1;  // This will force our building data to update.
           }
         } // if (cur_bldg && !cur_bldg->open && !adjusting_production)
         break;
