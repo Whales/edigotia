@@ -154,9 +154,9 @@ void Interface::main_loop()
     w_main.refresh();
     long ch = input();
 
-// Mark all messages as read if we're on the message tab
-    if (cur_data_mode == DATA_MODE_MESSAGES) {
-      city->unread_messages = 0;
+// Mark all but 10 most recent messages as read if we're on the message tab
+    if (cur_data_mode == DATA_MODE_MESSAGES && city->unread_messages >= 10) {
+      city->unread_messages = 10;
     }
 
     restore_info_text();  // Undo temporary change to text_map_info
@@ -271,7 +271,7 @@ void Interface::handle_key(long ch)
           Area* area_selected = city->area_at(sel);
           if (!area_selected) {
             set_temp_info("No area there.");
-          } else if (!area_selected->open) {
+          } else if (!area_selected->is_open()) {
             set_temp_info("That area is already closed.");
           } else if (query_yn("Really close your %s?",
                               area_selected->get_name().c_str())) {
@@ -283,7 +283,7 @@ void Interface::handle_key(long ch)
           Area* area_selected = city->area_at(sel);
           if (!area_selected) {
             set_temp_info("No area there.");
-          } else if (area_selected->open) {
+          } else if (area_selected->is_open()) {
             set_temp_info("That area is already open.");
           } else {
             int cost = area_selected->get_reopen_cost();
@@ -295,8 +295,9 @@ void Interface::handle_key(long ch)
               set_temp_info(ss_mes.str());
             } else if (query_yn("Open your %s at a cost of %d gold?",
                                 area_selected->get_name().c_str(), cost)) {
+              city->expend_resource(RES_GOLD, cost);
               area_selected->auto_hire(city);
-              area_selected->open = true;
+              area_selected->building.open = true;
             }
           }
 
@@ -2045,7 +2046,6 @@ void Interface::building_status()
   std::vector<Building*> buildings = city->get_all_buildings();
 
   std::vector<std::string> building_names, workers, max_workers, worker_class;
-  std::vector<bool> closed;
 
 // Go through all the buildings and fill our string vectors with their info
   for (int i = 0; i < buildings.size(); i++) {
@@ -2053,16 +2053,10 @@ void Interface::building_status()
     std::stringstream name_ss, workers_ss, max_workers_ss, worker_class_ss;
     
     name_ss << capitalize( bldg->get_name() );
-    if (bldg->pos.x != -1) {  // It's an area building
-// TODO: This is messy.  Better to track whether the building itself is closed.
-      Area* bldg_area = city->area_at(bldg->pos);
-      if (bldg_area && !bldg_area->open) {
-        closed.push_back(true);
-        name_ss << " <c=red>(Closed)<c=/>";
-      } else {
-        closed.push_back(false);
-        name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
-      }
+    if (bldg->open) {
+      name_ss << " <c=red>(Closed)<c=/>";
+    } else if (bldg->pos.x != -1) { // It belongs to an area (and isn't closed)
+      name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
     }
 
 // Gray out worker-related lines if the building doesn't employ workers
@@ -2139,12 +2133,7 @@ void Interface::building_status()
   bool update_benefits = false;
 
 // Set our help text
-  i_buildings.set_data("text_help", "\
-<c=pink>Right<c=/>/<c=pink>L<c=/>/<c=pink>+<c=/>: Hire Citizen\n\
-<c=pink>Left <c=/>/<c=pink>H<c=/>/<c=pink>-<c=/>: Fire Citizen\n\
-<c=pink>TAB<c=/>: Edit production queue\n\
-<c=pink>Q<c=/>: Leave this screen\
-");
+  set_building_status_help(i_buildings, adjusting_production);
 
 // Start our control in the list of buildings
   i_buildings.select("list_building_names");
@@ -2161,15 +2150,32 @@ void Interface::building_status()
 
       std::stringstream upkeep_ss;
       int upkeep = cur_bldg->get_upkeep();
-      if (upkeep == 0) {
-        upkeep_ss << "<c=dkgray>0.0<c=/>";
-      } else if (closed[index]) {
+      if (!cur_bldg->open) {
         upkeep_ss << "<c=ltgray>---<c=/>";
+      } else if (upkeep == 0) {
+        upkeep_ss << "<c=dkgray>0.0<c=/>";
       } else {
 // Upkeep is reported in 1/10th of a gold, so display "13" as "1.3"
         upkeep_ss << "<c=red>" << upkeep / 10 << "." << upkeep % 10;
       }
       i_buildings.set_data("text_upkeep", upkeep_ss.str());
+
+      i_buildings.clear_data("text_benefits_label");
+      i_buildings.clear_data("list_benefits");
+// Mark us as needing to update list_benefits, since we just cleared it out
+      update_benefits = true;
+
+      std::stringstream wages_ss;
+      int wages = cur_bldg->get_total_wages();
+      if (!cur_bldg->open) {
+        wages_ss << "<c=ltgray>---<c=/>";
+      } else if (wages == 0) {
+        wages_ss << "<c=dkgray>0.0<c=/>";
+      } else {
+// Wages is reported in 1/10th of a gold, so display "13" as "1.3"
+        wages_ss << "<c=red>" << wages / 10 << "." << wages % 10;
+      }
+      i_buildings.set_data("text_wages", wages_ss.str());
 
       i_buildings.clear_data("text_benefits_label");
       i_buildings.clear_data("list_benefits");
@@ -2254,7 +2260,7 @@ void Interface::building_status()
         }
         i_buildings.set_data("list_benefits", housing_list);
 
-      } // TODO: An }else{ block for buildings that do none of the above?
+      } // TODO: An else block for buildings that do none of the above?
     } // End of updating info on newly-selected building
 
     i_buildings.draw(&w_buildings);
@@ -2276,7 +2282,13 @@ void Interface::building_status()
       case 'q':
       case 'Q':
       case KEY_ESC:
-        done = true;
+        if (adjusting_production) {
+          adjusting_production = false;
+          i_buildings.select("list_building_names");
+          set_building_status_help(i_buildings, adjusting_production);
+        } else {
+          done = true;
+        }
         break;
 
 // Hire workers
@@ -2285,7 +2297,7 @@ void Interface::building_status()
       case 'L':
       case '=':
       case '+':
-        if (cur_bldg) { // Safety check
+        if (!adjusting_production && cur_bldg) { // Safety check
 // Can't add workers for mines or farms - that's done via ministers
           if (cur_bldg->type == BUILD_FARM) {
             popup("To add workers to a farm, use the Minister of Food.");
@@ -2320,7 +2332,7 @@ void Interface::building_status()
       case 'h':
       case 'H':
       case '-':
-        if (cur_bldg) { // Safety check
+        if (!adjusting_production && cur_bldg) { // Safety check
 // Can't add workers for mines or farms - that's done via ministers
           if (cur_bldg->type == BUILD_FARM) {
             popup("To remove workers from a farm, use the Minister of Food.");
@@ -2349,37 +2361,61 @@ void Interface::building_status()
         } // if (cur_bldg)
         break;
 
+      case 'c':
+      case 'C':
+        if (cur_bldg && cur_bldg->open && !adjusting_production &&
+            query_yn("Really close your %s?", cur_bldg->get_name().c_str())) {
+          if (cur_bldg->pos.x != -1) {  // It's an area
+            Area* area = city->area_at(cur_bldg->pos);
+            if (!area) {
+              debugmsg("Building has position %s, but no area there!",
+                       cur_bldg->pos.str().c_str());
+            } else {
+              area->close(city);
+            }
+          } else {  // It's not an area
+            cur_bldg->close(city);
+          }
+        }
+        break;
+
+      case 'o':
+      case 'O':
+        if (cur_bldg && !cur_bldg->open && !adjusting_production) {
+          int cost = cur_bldg->get_reopen_cost();
+
+          if (city->get_resource_amount(RES_GOLD) < cost) {
+            std::stringstream ss_mes;
+            ss_mes << "You do not have enough gold to re-open your " <<
+                      cur_bldg->get_name() << ". (Cost: " << cost <<
+                      "  You: " << city->get_resource_amount(RES_GOLD);
+            popup(ss_mes.str().c_str());
+
+          } else if (query_yn("Open your %s at a cost of %d gold?",
+                              cur_bldg->get_name().c_str(), cost)) {
+
+            city->expend_resource(RES_GOLD, cost);
+            cur_bldg->open = true;
+// Check if there's an area, and if so, autohire
+            if (cur_bldg->pos.x != -1) {
+              Area* area = city->area_at(cur_bldg->pos);
+              if (!area) {
+                debugmsg("Building has position %s, but no area there!",
+                         cur_bldg->pos.str().c_str());
+              } else {
+                area->auto_hire(city);
+              }
+            }
+          }
+        } // if (cur_bldg && !cur_bldg->open && !adjusting_production)
+        break;
+
 // Move control between building selecting & production adjustment
       case '\t':
 // Only allow for adjusting production for buildings that produce things
         if (cur_bldg && cur_bldg->builds_resource()) {
           adjusting_production = !adjusting_production;
-
-          if (adjusting_production) {
-            i_buildings.select("list_benefits");
-
-// Set our help text
-            i_buildings.set_data("text_help", "\
-<c=pink>A<c=/>/<c=pink>+<c=/>: Add production item\n\
-<c=pink>R<c=/>/<c=pink>-<c=/>: Remove production item\n\
-<c=pink><<c=/>  : Move item up\n\
-<c=pink>><c=/>  : Move item down\n\
-<c=pink>TAB<c=/>: Return to building selection\n\
-<c=pink>ESC<c=/>/<c=pink>Q<c=/>: Leave this screen\
-");
-
-          } else {
-            i_buildings.select("list_building_names");
-
-// Set our help text (TODO: this is a duplicate of the code just before the
-//                          loop, don't do that)
-            i_buildings.set_data("text_help", "\
-<c=pink>Right<c=/>/<c=pink>L<c=/>/<c=pink>+<c=/>: Hire Citizen\n\
-<c=pink>Left <c=/>/<c=pink>H<c=/>/<c=pink>-<c=/>: Fire Citizen\n\
-<c=pink>TAB<c=/>: Edit production queue\n\
-<c=pink>Q<c=/>: Leave this screen\
-");
-          }
+          set_building_status_help(i_buildings, adjusting_production);
         }
         break;
 
@@ -2456,6 +2492,39 @@ void Interface::building_status()
         break;
     }
   } // while (!done)
+}
+
+void Interface::set_building_status_help(cuss::interface& i_buildings,
+                                         bool adjusting_production)
+{
+ if (adjusting_production) {
+   i_buildings.select("list_benefits");
+
+// Set our help text
+   i_buildings.set_data("text_help", "\
+<c=pink>A<c=/>/<c=pink>+<c=/>: Add production item\n\
+<c=pink>R<c=/>/<c=pink>-<c=/>: Remove production item\n\
+<c=pink><<c=/>  : Move item up\n\
+<c=pink>><c=/>  : Move item down\n\
+<c=pink>TAB<c=/>: Return to building selection\n\
+<c=pink>ESC<c=/>/<c=pink>Q<c=/>: Leave this screen\
+");
+
+ } else {
+   i_buildings.select("list_building_names");
+
+// Set our help text (TODO: this is a duplicate of the code just before the
+//                          loop, don't do that)
+   i_buildings.set_data("text_help", "\
+<c=pink>Right<c=/>/<c=pink>L<c=/>/<c=pink>+<c=/>: Hire Citizen\n\
+<c=pink>Left <c=/>/<c=pink>H<c=/>/<c=pink>-<c=/>: Fire Citizen\n\
+<c=pink>TAB<c=/>: Edit production queue\n\
+<c=pink>C<c=/>: Close building\n\
+<c=pink>O<c=/>: Reopen building\n\
+<c=pink>Q<c=/>: Leave this screen\
+");
+ }
+
 }
 
 void Interface::build_building()
