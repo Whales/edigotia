@@ -2214,13 +2214,13 @@ void Interface::building_status()
         } else {
           for (int i = 0; i < cur_bldg->build_queue.size(); i++) {
             std::stringstream production_ss;
-            Recipe_amount recipe = cur_bldg->build_queue[i];
-            production_ss << "<c=ltgray>" <<
-                             capitalize(resource_name(recipe.get_resource()));
-            if (recipe.amount == INFINITE_RESOURCE) {
+            Recipe_amount recipe_amt = cur_bldg->build_queue[i];
+            Recipe recipe = recipe_amt.recipe;
+            production_ss << "<c=ltgray>" << capitalize( recipe.get_name() );
+            if (recipe_amt.amount == INFINITE_RESOURCE) {
               production_ss << " <c=ltblue>(Infinite)<c=/>";
             } else {
-              production_ss <<  " x " << recipe.amount << "<c=/>";
+              production_ss <<  " x " << recipe_amt.amount << "<c=/>";
             }
             production_list.push_back( production_ss.str() );
           }
@@ -2925,9 +2925,8 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
     Recipe rec = bldg_dat->recipes[i];
 // Capitalize and color the name of the resource
     std::stringstream ss_name, ss_units, ss_stored, ss_components;
-    ss_name << "<c=yellow>" <<
-               capitalize( resource_name( rec.result.type ) ) <<
-               " x " << rec.result.amount << "<c=/>";
+    ss_name << "<c=yellow>" << capitalize( rec.get_name() ) << " x " <<
+               rec.result.amount << "<c=/>";
 // Fetch the units per day, converting from days per unit if necessary
     if (rec.units_per_day != 0) {
       ss_units << rec.units_per_day;

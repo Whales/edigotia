@@ -60,6 +60,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _recipe(r, a) \
   Building_data[cur_id]->recipes.push_back( Recipe( (r), (a) ) )
 
+#define _recipe_name(n) \
+  Building_data[cur_id]->recipes.back().name = (n)
+
 #define _units_per_day(a) \
   Building_data[cur_id]->recipes.back().units_per_day = (a); \
   Building_data[cur_id]->recipes.back().days_per_unit =  0
@@ -214,7 +217,14 @@ void init_building_data()
     _jobs(CIT_MERCHANT, 3);
     _wages(5);
     _recipe(RES_GOLD, 1);
+      _recipe_name("Gold (burn wood)");
       _units_per_day(3);
       _uses_mineral(MINERAL_GOLD, 1);
+      _uses_resource(RES_WOOD, 3);
+    _recipe(RES_GOLD, 3);
+      _recipe_name("Gold (burn coal)");
+      _units_per_day(3);
+      _uses_mineral(MINERAL_GOLD, 3);
+      _uses_mineral(MINERAL_COAL, 1);
 
 }

@@ -69,7 +69,10 @@ struct Recipe
 // R and A combine to form a Resource_amount.
   Recipe(Resource R = RES_NULL, int A = 1);
 
+  std::string get_name(); // Returns name, or the result name if name is empty
   Resource get_resource();  // Returns result.type()
+
+  std::string name;
 
   Resource_amount result;
 

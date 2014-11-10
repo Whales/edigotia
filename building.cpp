@@ -11,6 +11,16 @@ Recipe::Recipe(Resource R, int A)
   result = Resource_amount(R, A);
 }
 
+std::string Recipe::get_name()
+{
+  if (!name.empty()) {
+    return name;
+  }
+
+  Resource res = get_resource();
+  return resource_name( res );
+}
+
 Resource Recipe::get_resource()
 {
   return result.type;
