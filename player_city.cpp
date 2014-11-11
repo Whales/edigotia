@@ -272,7 +272,7 @@ void Player_city::do_turn()
 {
 // Reduce morale modifiers for all citizens.
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
-    citizens[i].decrease_morale_mods();
+    population[i].decrease_morale_mods();
   }
 // Birth a new citizen(s)?
   birth_points += get_daily_birth_points();
@@ -319,7 +319,8 @@ void Player_city::do_turn()
       }
     }
 // Lose morale, even if no one died.
-    citizens[i].add_morale_modifier(MORALE_MOD_HUNGER, -5 - 3 * dead);
+    int morale_penalty = (0 - starve_chance) / 10 - 3 * dead;
+    population[i].add_morale_modifier(MORALE_MOD_HUNGER, morale_penalty);
     kill_citizens( Citizen_type(i), dead, DEATH_STARVATION );
   } // for (int i = 0; i < CIT_MAX; i++)
 
@@ -1100,9 +1101,9 @@ workerless building!");
               cause_text.c_str());
 
 // Morale modifiers.  Citizens of the class that died get it slightly worse.
-  citizens[type].add_morale_modifier(MORALE_MOD_DEATH, -20);
+  population[type].add_morale_modifier(MORALE_MOD_DEATH, -20);
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
-    citizens[i].add_morale_modifier(MORALE_MOD_DEATH, -30);
+    population[i].add_morale_modifier(MORALE_MOD_DEATH, -30);
   }
 // TODO: Do something with our Cause_of_death.  Modify the message for sure, but
 //       more?  Stats?
@@ -1327,6 +1328,11 @@ int Player_city::get_population_cap(Citizen_type cit_type)
   int ratio = get_required_ratio(cit_type);
   int type_below = cit_type - 1;
   return population[type_below].count / ratio;
+}
+
+int Player_city::get_required_morale(Citizen_type cit_type)
+{
+  return Race_data[race]->morale_requirement[cit_type];
 }
 
 int Player_city::get_chance_to_birth(Citizen_type cit_type)

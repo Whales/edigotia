@@ -127,6 +127,11 @@ public:
  */
   int get_required_ratio(Citizen_type cit_type);
   int get_population_cap(Citizen_type cit_type);  // Based on get_required_ratio
+/* The morale of the class below this required for a citizen of this class.  For
+ * instance, if get_required_morale(CITY_MERCHANT) is 75, then our peasants'
+ * morale level must be at least 75 before a merchant can be born.
+ */
+  int get_required_morale(Citizen_type cit_type);
 /* When a new citizen is born, we need to choose its type; this function returns
  * the chance that its type will be cit_type.  The chances are independant of
  * each other; they may total to more than 100%.
