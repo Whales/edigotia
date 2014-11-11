@@ -270,6 +270,10 @@ void Player_city::draw_map(cuss::element* e_draw, Point sel, bool radius_limited
 
 void Player_city::do_turn()
 {
+// Reduce morale modifiers for all citizens.
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    citizens[i].decrease_morale_mods();
+  }
 // Birth a new citizen(s)?
   birth_points += get_daily_birth_points();
   int births = 0;
@@ -314,8 +318,8 @@ void Player_city::do_turn()
         }
       }
     }
-// TODO: Alert the player to the death of citizens.
-// TODO: Lose morale due to starvation?
+// Lose morale, even if no one died.
+    citizens[i].add_morale_modifier(MORALE_MOD_HUNGER, -5 - 3 * dead);
     kill_citizens( Citizen_type(i), dead, DEATH_STARVATION );
   } // for (int i = 0; i < CIT_MAX; i++)
 
@@ -1094,7 +1098,12 @@ workerless building!");
               amount,
               citizen_type_name(type, (amount > 1)).c_str(),
               cause_text.c_str());
-// TODO: Morale penalty here.
+
+// Morale modifiers.  Citizens of the class that died get it slightly worse.
+  citizens[type].add_morale_modifier(MORALE_MOD_DEATH, -20);
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    citizens[i].add_morale_modifier(MORALE_MOD_DEATH, -30);
+  }
 // TODO: Do something with our Cause_of_death.  Modify the message for sure, but
 //       more?  Stats?
 }
