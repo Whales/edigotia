@@ -82,7 +82,7 @@ struct Citizens
   int get_morale_percentage();
   int get_starvation_chance();
 
-  std::vector<std::string> get_morale_mods();
+  std::vector<std::string> get_morale_mods(bool colorize = false);
   std::vector<int>         get_morale_mod_amounts();
 
 

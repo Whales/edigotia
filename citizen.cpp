@@ -1,6 +1,7 @@
 #include "citizen.h"
 #include "stringfunc.h"
 #include "rng.h"
+#include <sstream>
 
 Citizens::Citizens()
 {
@@ -63,9 +64,42 @@ int Citizens::get_starvation_chance()
     return 0;
   }
   int ret = starvation / count;
+// Round randomly.
   int remainder = starvation % count;
   if (rng(1, count) <= remainder) {
     ret++;
+  }
+  return (ret > 100 ? 100 : ret);
+}
+
+// colorize defaults to false
+std::vector<std::string> Citizens::get_morale_mods(bool colorize)
+{
+  std::vector<std::string> ret;
+  for (int i = 0; i < morale_modifiers.size(); i++) {
+    if (colorize) {
+      std::stringstream text;
+      if (morale_modifiers[i].amount < 0) {
+        text << "<c=ltred>";
+      } else if (morale_modifiers[i].amount > 0) {
+        text << "<c=green>";
+      } else {
+        text << "<c=dkgray>";
+      }
+      text << capitalize( morale_modifiers[i].get_name() ) << "<c=/>";
+      ret.push_back( text.str() );
+    } else {
+      ret.push_back( capitalize( morale_modifiers[i].get_name() ) );
+    }
+  }
+  return ret;
+}
+
+std::vector<int> Citizens::get_morale_mod_amounts()
+{
+  std::vector<int> ret;
+  for (int i = 0; i < morale_modifiers.size(); i++) {
+    ret.push_back( morale_modifiers[i].amount / 10 );
   }
   return ret;
 }
@@ -73,8 +107,12 @@ int Citizens::get_starvation_chance()
 void Citizens::decrease_morale_mods()
 {
   for (int i = 0; i < morale_modifiers.size(); i++) {
-    morale_modifiers[i].amount -= 1;
-    if (morale_modifiers[i].amount <= 0) {
+    if (morale_modifiers[i].amount > 0) {
+      morale_modifiers[i].amount--;
+    } else if (morale_modifiers[i].amount < 0) {
+      morale_modifiers[i].amount++;
+    }
+    if (morale_modifiers[i].amount == 0) {
       morale_modifiers.erase( morale_modifiers.begin() + i);
       i--;
     }
@@ -107,10 +145,14 @@ int Citizens::add_possession(Resource res, int amount)
 
 void Citizens::add_morale_modifier(Morale_mod_type type, int amount)
 {
+  if (amount == 0 || type == MORALE_MOD_NULL || type == MORALE_MOD_MAX ||
+      count == 0) {
+    return;
+  }
 // Check if we have a modifier of that type.
   for (int i = 0; i < morale_modifiers.size(); i++) {
     if (morale_modifiers[i].type == type) {
-      morale_modifiers.amount += amount;
+      morale_modifiers[i].amount += amount;
       return;
     }
   }
