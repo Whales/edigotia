@@ -77,6 +77,7 @@ bool Interface::init(Game* G, World_map* W, Player_city* C)
 "Hunting & Livestock",
 "Mines & Minerals",
 "Morale",
+"Inventory",
 0
 );
 
@@ -2044,30 +2045,99 @@ void Interface::minister_morale()
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
     Citizen_type cit_type = Citizen_type(i);
     std::string type_name = citizen_type_name(cit_type);
-    std::stringstream morale_name, list_name, list_amount_name;
+
+// Set up the names of our interface elements.
+    std::stringstream morale_name, list_name, list_amount_name, required_name;
     morale_name << "num_morale_" << type_name;
     list_name << "list_morale_mod_" << type_name;
     list_amount_name << "list_morale_mod_amount_" << type_name;
+    required_name << "num_morale_required_" << type_name;
 
-    i_morale.set_data( morale_name.str(),
-                       city->citizens[i].get_morale_percentage() );
+    if (city->population[i].count <= 0) { // No citizens, don't fill out
+      i_morale.set_data( morale_name.str(), 0 );
+      i_morale.set_data( morale_name.str(), c_dkgray );
+      std::stringstream ss_nope;
+      ss_nope << "<c=dkgray>(No " << citizen_type_name(cit_type, true) <<
+                 ")<c=/>";
+      i_morale.add_data( list_name.str(), ss_nope.str() );
 
-    i_morale.set_data( list_name.str(), city->citizens[i].get_morale_mods() );
+    } else {
 
-    std::vector<int> mod_amounts = city->citizens[i].get_morale_mod_amounts();
-    for (int n = 0; n < mod_amounts.size(); n++) {
-      int amt = mod_amounts[n];
-      std::stringstream mod_amt;
-      if (n < 0) {
-        mod_amt << "<c=ltred>";
-      } else if (n == 0) {
-        mod_amt << "<c=dkgray>";
+// Set the end result, total morale.
+      int morale = city->population[i].get_morale_percentage();
+      i_morale.set_data( morale_name.str(), morale );
+// Colorize it, too.
+      if (morale < -50) {
+        i_morale.set_data( morale_name.str(), c_ltred );
+      } else if (morale < 0) {
+        i_morale.set_data( morale_name.str(), c_red );
+      } else if (morale == 0) {
+        i_morale.set_data( morale_name.str(), c_ltgray );
+      } else if (morale < 50) {
+        i_morale.set_data( morale_name.str(), c_green );
+      } else if (morale < 95) {
+        i_morale.set_data( morale_name.str(), c_ltgreen );
       } else {
-        mod_amt << "<c=green>";
+        i_morale.set_data( morale_name.str(), c_white );
       }
-      mod_amt << amt << "<c=/>";
-      i_morale.add_data( list_amount_name.str(), mod_amt.str() );
-    }
+
+      i_morale.set_data( required_name.str(),
+                         city->get_required_morale(cit_type );
+
+// Start the modifiers list with our tax-based morale
+      std::stringstream tax_morale;
+      tax_morale << "<c=ltblue>" << city->population[i].tax_morale << "<c=/>";
+      i_morale.add_data( list_name.str(), "<c=ltblue>Base (from taxes)<c=/>" );
+      i_morale.add_data( list_amount_name.str(), tax_morale.str() );
+
+// Now add the rest of the modifier names (the "true" means "colorize text")
+      i_morale.add_data( list_name.str(),
+                         city->population[i].get_morale_mods(true) );
+
+// And the modifier amounts.
+      std::vector<int> mod_amts = city->population[i].get_morale_mod_amounts();
+      for (int n = 0; n < mod_amts.size(); n++) {
+        int amt = mod_amts[n];
+        std::stringstream mod_amt;
+        if (amt < 0) {
+          mod_amt << "<c=ltred>";
+        } else if (amt == 0) {
+          mod_amt << "<c=dkgray>";
+        } else {
+          mod_amt << "<c=green>";
+        }
+        if (amt > 0) {
+          mod_amt << "+";
+        }
+        mod_amt << amt << "<c=/>";
+        i_morale.add_data( list_amount_name.str(), mod_amt.str() );
+      }
+    } // population > 0
+  }
+
+
+  while (true) {
+
+    i_morale.draw(&w_morale);
+    w_morale.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
+        return;
+
+    } // switch (ch)
+  } // while (true)
+}
+
+void Interface::minister_inventory()
+{
+  cuss::interface i_inventory;
+  if (!i_inventory.load_from_file("cuss/inventory.cuss")) {
+    return;
   }
 }
 
