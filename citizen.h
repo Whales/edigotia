@@ -1,7 +1,10 @@
 #ifndef _CITIZEN_H_
 #define _CITIZEN_H_
 
+#include "resource.h"
 #include <string>
+#include <vector>
+#include <map>
 
 enum Citizen_type
 {
@@ -26,6 +29,73 @@ struct Citizen_amount
   Citizen_amount(Citizen_type T, int A = 0) :
     type (T), amount (A) {}
   
+};
+
+// Morale gets modified by a variety of causes.
+enum Morale_mod_type
+{
+  MORALE_MOD_NULL = 0,
+
+// Good modifiers
+  MORALE_MOD_FESTIVAL,
+
+// Bad modifiers
+  MORALE_MOD_HUNGER,
+  MORALE_MOD_DEATH,
+
+  MORALE_MOD_MAX
+};
+
+Morale_mod_type lookup_morale_mod_type(std::string name);
+std::string morale_mod_type_name(Morale_mod_type type);
+
+struct Morale_modifier
+{
+  Morale_modifier( Morale_mod_type T = MORALE_MOD_NULL, int A = 0 ) :
+    type (T), amount (A) { }
+
+  std::string get_name(); // returns morale_mod_type_name(type)
+
+  Morale_mod_type type;
+  int amount; // Mesaured in 1/10th of a morale percentage.
+};
+
+struct Citizens
+{
+  Citizens();
+  ~Citizens();
+
+  Citizen_type type;
+
+  int count;
+  int employed;
+  int wealth;
+  int tax_morale;
+  int morale_points;
+  int starvation;
+
+  std::map<Resource,int>  possessions;  // These modify morale.
+  std::vector<Morale_modifier> morale_modifiers;
+
+  int get_unemployed();
+  int get_income();
+  int get_morale_percentage();
+  int get_starvation_chance();
+
+  std::vector<std::string> get_morale_mods();
+  std::vector<int>         get_morale_mod_amounts();
+
+
+  void decrease_morale_mods();
+// add_possession() returns the number of items we did not take.  We will only
+// take 1 item per citizen.
+  int add_possession(Resource_amount res);
+  int add_possession(Resource res, int amount);
+
+  void add_morale_modifier(Morale_mod_type type, int amount);
+
+  void add_citizens   (int amount);
+  void remove_citizens(int amount);
 };
 
 int citizen_food_consumption(Citizen_type type);

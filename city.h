@@ -17,29 +17,6 @@
 // For determining City::get_glyph() - above this uses O, below uses o
 #define CITY_POPULATION_LARGE 1000
 
-struct Citizens
-{
-  Citizens();
-  ~Citizens();
-
-  Citizen_type type;
-
-  int count;
-  int employed;
-  int wealth;
-  int tax_morale;
-  int morale_points;
-  int starvation;
-
-  int get_unemployed();
-  int get_income();
-  int get_morale_percentage();
-  int get_starvation_chance();
-
-  void add_citizens   (int amount);
-  void remove_citizens(int amount);
-};
-
 // Return value when we attempt to enqueue an area
 enum Area_queue_status
 {
