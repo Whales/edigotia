@@ -2033,6 +2033,42 @@ void Interface::list_mine_minerals(Area* cur_mine,
 
 void Interface::minister_morale()
 {
+  cuss::interface i_morale;
+  if (!i_morale.load_from_file("cuss/morale.cuss")) {
+    return;
+  }
+
+  Window w_morale(0, 0, 80, 24);
+
+// Set up the data.
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    Citizen_type cit_type = Citizen_type(i);
+    std::string type_name = citizen_type_name(cit_type);
+    std::stringstream morale_name, list_name, list_amount_name;
+    morale_name << "num_morale_" << type_name;
+    list_name << "list_morale_mod_" << type_name;
+    list_amount_name << "list_morale_mod_amount_" << type_name;
+
+    i_morale.set_data( morale_name.str(),
+                       city->citizens[i].get_morale_percentage() );
+
+    i_morale.set_data( list_name.str(), city->citizens[i].get_morale_mods() );
+
+    std::vector<int> mod_amounts = city->citizens[i].get_morale_mod_amounts();
+    for (int n = 0; n < mod_amounts.size(); n++) {
+      int amt = mod_amounts[n];
+      std::stringstream mod_amt;
+      if (n < 0) {
+        mod_amt << "<c=ltred>";
+      } else if (n == 0) {
+        mod_amt << "<c=dkgray>";
+      } else {
+        mod_amt << "<c=green>";
+      }
+      mod_amt << amt << "<c=/>";
+      i_morale.add_data( list_amount_name.str(), mod_amt.str() );
+    }
+  }
 }
 
 void Interface::building_status()
