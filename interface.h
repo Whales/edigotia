@@ -143,7 +143,7 @@ private:
   void minister_morale();
 // Information on your resources and minerals; allows the player to give fine
 // goods to citizens.
-  void minister_inventory();
+  void minister_supplies();
 // Info on buildings; allows player to hire workers.
   void building_status();
   // Sets up the help box depending on circumstances

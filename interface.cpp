@@ -2133,12 +2133,14 @@ void Interface::minister_morale()
   } // while (true)
 }
 
-void Interface::minister_inventory()
+void Interface::minister_supplies()
 {
-  cuss::interface i_inventory;
-  if (!i_inventory.load_from_file("cuss/inventory.cuss")) {
+  cuss::interface i_supplies;
+  if (!i_inventory.load_from_file("cuss/supplies.cuss")) {
     return;
   }
+
+  Window w_supplies(0, 0, 80, 24);
 }
 
 void Interface::building_status()
