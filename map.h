@@ -6,6 +6,7 @@
 #include "resource.h" // Crops and minerals
 #include "area.h"
 #include "animal.h"
+#include "ai.h"       // For City_role
 #include <vector>
 #include <string>
 
@@ -124,6 +125,8 @@ struct Map_type_datum
   bool is_water;
   bool is_river;
   glyph symbol;
+
+  std::vector<City_role> city_roles;
 
 };
 
