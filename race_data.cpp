@@ -27,6 +27,10 @@ Race_datum* Race_data[RACE_MAX];
 #define _cluster_size(a, b) \
   Race_data[cur_id]->cluster_min = (a); Race_data[cur_id]->cluster_max = (b)
 
+#define _city_size(t, a, b) \
+  Race_data[cur_id]->city_size_min[(t)] = (a); \
+  Race_data[cur_id]->city_size_max[(t)] = (b); \
+
 #define _city_name_start(...) \
   Race_data[cur_id]->add_city_names("start", __VA_ARGS__, 0)
 
@@ -106,6 +110,9 @@ void init_races()
     _map_type(MAP_MOUNTAINOUS,  -5);
 
     _cluster_size(3, 4);
+    _city_size(CITY_TYPE_CITY,     100, 1200);
+    _city_size(CITY_TYPE_DUCHY,    800, 4000);
+    _city_size(CITY_TYPE_CAPITAL, 2000, 8000);
 
     _city_name_start("al", "ba", "bir", "cam", "car", "chel", "co", "da", "der",
                      "ex", "glo", "her", "lam", "le", "li", "lo", "nor",
@@ -177,6 +184,9 @@ void init_races()
     _map_type(MAP_MOUNTAINOUS, -30);
 
     _cluster_size(2, 4);
+    _city_size(CITY_TYPE_CITY,      80,  900);
+    _city_size(CITY_TYPE_DUCHY,    600, 3500);
+    _city_size(CITY_TYPE_CAPITAL, 1600, 6000);
 
 // Should end with a vowel or "lnrs"
     _city_name_start("al", "bi", "bir", "bri", "dil", "e", "el", "en", "er",
@@ -248,6 +258,9 @@ void init_races()
     _map_type(MAP_PLAINS,      -20);
 
     _cluster_size(2, 5);
+    _city_size(CITY_TYPE_CITY,      90, 1000);
+    _city_size(CITY_TYPE_DUCHY,    650, 3800);
+    _city_size(CITY_TYPE_CAPITAL, 1800, 7200);
 
 // Start should end with any of "ioulr"
     _city_name_start("amo", "bel", "bil", "bor", "bur", "dai", "du",
@@ -331,6 +344,9 @@ void init_races()
     _map_type(MAP_DESERT,     -10);
 
     _cluster_size(4, 6);
+    _city_size(CITY_TYPE_CITY,     100, 1800);
+    _city_size(CITY_TYPE_DUCHY,    800, 4500);
+    _city_size(CITY_TYPE_CAPITAL, 2000, 9200);
 
     _city_name_start("arz", "bhor", "bor", "boz", "dhul", "dush", "ghal",
                      "ghor", "ghul", "grag", "gros", "kaz", "khar", "khaz",
@@ -405,6 +421,9 @@ void init_races()
     _map_type(MAP_DESERT,      -10);
 
     _cluster_size(5, 8);
+    _city_size(CITY_TYPE_CITY,     150,  2000);
+    _city_size(CITY_TYPE_DUCHY,   1200,  6000);
+    _city_size(CITY_TYPE_CAPITAL, 3000, 1200);
 
     _city_name_start("ak", "ar", "bek", "bik", "bir", "bu", "buk", "dak", "dek",
                      "dik", "dir", "du", "ek", "er", "fek", "fik", "fu", "hak",
@@ -481,6 +500,9 @@ void init_races()
     _map_type(MAP_MOUNTAINOUS, -10);
 
     _cluster_size(1, 3);
+    _city_size(CITY_TYPE_CITY,      50,  800);
+    _city_size(CITY_TYPE_DUCHY,    500, 2800);
+    _city_size(CITY_TYPE_CAPITAL, 1400, 5000);
 
 // End with lr
     _city_name_start("al", "ar", "bal", "bar", "bel", "bil", "dal", "dar",
@@ -570,6 +592,9 @@ void init_races()
     _map_type(MAP_PLAINS,      -20);
 
     _cluster_size(1, 2);
+    _city_size(CITY_TYPE_CITY,      25,  300);
+    _city_size(CITY_TYPE_DUCHY,    200,  800);
+    _city_size(CITY_TYPE_CAPITAL,  500, 2000);
 
     _city_name_start("ak", "ar", "ark", "buk", "bur", "burk", "duk", "dar",
                      "dark", "dur", "dor", "durk", "ek", "er", "hak", "har",
@@ -634,6 +659,9 @@ void init_races()
     _map_type(MAP_JUNGLE,      -70);
 
     _cluster_size(3, 4);
+    _city_size(CITY_TYPE_CITY,     100, 1200);
+    _city_size(CITY_TYPE_DUCHY,    800, 4000);
+    _city_size(CITY_TYPE_CAPITAL, 2000, 8000);
 
     _city_name_start("bl", "br", "ch", "cl", "cr", "dr", "fl", "fr", "gl", "gr",
                      "l", "pl", "pr", "r", "st", "str", "th", "tr", "wh", "wr");

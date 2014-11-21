@@ -4,6 +4,7 @@
 #include "citizen.h"  // Some race values are Citizen_type-dependent.
 #include "color.h"
 #include "map.h"      // For Map_type
+#include "city_type.h"  // We track population size for each City_type.
 #include <string>
 #include <map>
 
@@ -91,6 +92,8 @@ struct Race_datum
   std::vector<std::string> city_name_start, city_name_middle, city_name_end;
 // How many cities will be clustered around a duchy seat?
   int cluster_min, cluster_max;
+// How big are our cities?  Min/max for each type (city, ducy, capital)
+  int city_size_min[CITY_TYPE_MAX], city_size_max[CITY_TYPE_MAX];
 
 // GENERAL RACE VALUES
 
