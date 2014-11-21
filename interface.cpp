@@ -2082,7 +2082,7 @@ void Interface::minister_morale()
       }
 
       i_morale.set_data( required_name.str(),
-                         city->get_required_morale(cit_type );
+                         city->get_required_morale(cit_type) );
 
 // Start the modifiers list with our tax-based morale
       std::stringstream tax_morale;
@@ -2136,7 +2136,7 @@ void Interface::minister_morale()
 void Interface::minister_supplies()
 {
   cuss::interface i_supplies;
-  if (!i_inventory.load_from_file("cuss/supplies.cuss")) {
+  if (!i_supplies.load_from_file("cuss/supplies.cuss")) {
     return;
   }
 
