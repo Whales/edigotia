@@ -258,6 +258,7 @@ int citizen_food_consumption(Citizen_type type)
   return 0;
 }
 
+// This is per 100 citizens!
 int citizen_idle_income(Citizen_type type)
 {
   switch (type) {
