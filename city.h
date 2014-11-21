@@ -6,8 +6,9 @@
 #include "citizen.h"
 #include "map.h"
 #include "military.h"
-#include "race.h"
 #include "game.h"
+#include "race.h"
+#include "city_type.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -34,18 +35,6 @@ enum Building_queue_status
   BUILDING_QUEUE_NO_RESOURCES,  // We lack the necessary resources
   BUILDING_QUEUE_MAX
 };
-
-enum City_type
-{
-  CITY_TYPE_NULL = 0,
-  CITY_TYPE_CITY,
-  CITY_TYPE_DUCHY,    // Capital of a ducy
-  CITY_TYPE_CAPITAL,  // Capital of a kingdom
-  CITY_TYPE_MAX
-};
-
-City_type lookup_city_type(std::string name);
-std::string city_type_name(City_type type);
 
 class City
 {
