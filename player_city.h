@@ -13,6 +13,7 @@
 #include "game.h"
 #include "date.h"
 #include "city_achievement.h"
+#include "city_type.h"
 
 #include "window.h"
 #include "cuss.h"
