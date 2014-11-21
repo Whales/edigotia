@@ -1355,8 +1355,18 @@ int Player_city::get_chance_to_birth(Citizen_type cit_type)
     return 0;
   }
 
-// TODO: Check the morale of the class below this one, among other factors.
-  return 100;
+// Start from 100 percent
+  int ret = 100;
+
+// Are we below required morale?
+  int morale_req = get_required_morale(cit_type);
+  int morale_had = population[lower_class].get_morale_percentage();
+  if (morale_had < morale_req) {
+// Lose up to 80%!
+    ret = ret - 80 + (80 * morale_had) / morale_req;
+  }
+
+  return ret;
 }
 
 // num defaults to 1
@@ -1630,12 +1640,12 @@ void Player_city::set_tax_rate(Citizen_type type, int rate)
 // morale penalty.
   int low_rate = get_low_tax_rate(type), high_rate = get_high_tax_rate(type);
 // Set tax_morale of the relevant population;
-  if (rate < low_rate) {
-    population[type].tax_morale = low_rate - rate;
-  } else if (rate > high_rate) {
-    population[type].tax_morale = -150;
-  } else {
-    population[type].tax_morale = 0 - (50 * (rate - low_rate)) / high_rate;
+  if (rate < low_rate) {  // More than 20
+    population[type].tax_morale = 20 + low_rate - rate;
+  } else if (rate > high_rate) {  // Always -20, ouch!
+    population[type].tax_morale = -20;
+  } else {  // Between 0 and 20
+    population[type].tax_morale = 20 - (20 * (rate - low_rate)) / high_rate;
   }
 }
 // type defaults to CIT_NULL
