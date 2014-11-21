@@ -77,6 +77,8 @@ struct Citizens
   std::map<Resource,int>  possessions;  // These modify morale.
   std::vector<Morale_modifier> morale_modifiers;
 
+  void reset(); // Set all values to 0 (don't change type though!)
+
   int get_unemployed();
   int get_income();
   int get_morale_percentage();

@@ -17,6 +17,19 @@ Citizens::~Citizens()
 {
 }
 
+void Citizens::reset()
+{
+  count         = 0;
+  wealth        = 0;
+  employed      = 0;
+  tax_morale    = 0;
+  starvation    = 0;
+  morale_points = 0;
+
+  possessions.clear();
+  morale_modifiers.clear();
+}
+
 int Citizens::get_unemployed()
 {
   if (employed >= count) {
