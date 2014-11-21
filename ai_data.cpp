@@ -38,4 +38,8 @@ void init_city_roles()
     _mineral_export(MINERAL_COPPER);
     _mineral_export(MINERAL_IRON);
     _mineral_export(MINERAL_COAL);
+
+  _role(CITY_ROLE_LOGGING);
+    _name("logging");
+    _resource_export(RES_WOOD);
 }

@@ -11,10 +11,11 @@
 
 enum City_role
 {
-  CITY_ROLE_NULL = 0,    // No role
+  CITY_ROLE_NULL = 0,     // No role
 
-  CITY_ROLE_FARMING,     // Food production - exports lots of food
-  CITY_ROLE_MINING,      // Mining - exports ores
+  CITY_ROLE_FARMING,      // Food production - exports lots of food
+  CITY_ROLE_MINING,       // Mining - exports ores
+  CITY_ROLE_LOGGING,      // Logging - exports wood
 
   CITY_ROLE_MAX
 };
