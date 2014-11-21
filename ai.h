@@ -5,32 +5,32 @@
 #include <vector>
 
 
-// City_specialization is an attempt to abstract what makes an AI city
-// "special."  It primarily affects their imports and exports, but may also
+// City_role is an attempt to abstract what makes an AI city
+// "roleial."  It primarily affects their imports and exports, but may also
 // affect actions as well.
 
-enum City_specialization
+enum City_role
 {
-  CITYSPEC_NULL = 0,    // No specialization
+  CITY_ROLE_NULL = 0,    // No role
 
-  CITYSPEC_FARMING,     // Food production - exports lots of food
-  CITYSPEC_MINING,      // Mining - exports ores
+  CITY_ROLE_FARMING,     // Food production - exports lots of food
+  CITY_ROLE_MINING,      // Mining - exports ores
 
-  CITYSPEC_MAX
+  CITY_ROLE_MAX
 };
 
-struct City_spec_datum
+struct City_role_datum
 {
   std::string name;
 
-  std::vector<Resource> res_exports;
-  std::vector<Resource> res_imports;
-  std::vector<Mineral>  min_exports;
-  std::vector<Mineral>  min_imports;
+  std::vector<Resource> resource_exports;
+  std::vector<Resource> resource_imports;
+  std::vector<Mineral>  mineral_exports;
+  std::vector<Mineral>  mineral_imports;
 };
 
 // These are in ai_data.cpp
-City_spec_datum* City_spec_data[CITYSPEC_MAX];
-void init_city_specializiations();
+extern City_role_datum* City_role_data[CITY_ROLE_MAX];
+void init_city_roles();
 
 #endif
