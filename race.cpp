@@ -28,6 +28,11 @@ Race_datum::Race_datum()
     starting_resources[i] = 0;
   }
 
+  for (int i = 0; i < CITY_TYPE_MAX; i++) {
+    city_size_min[i] = 100 + 1000 * i;
+    city_size_max[i] = 1000 * i * i;
+  }
+
 // Some special cases...
   citizen_ratio[CIT_MERCHANT] = 10;
   citizen_ratio[CIT_BURGHER]  = 10;
