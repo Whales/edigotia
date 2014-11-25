@@ -153,35 +153,44 @@ void init_crop_and_mineral_data()
   _mineral(MINERAL_TIN);
     _mname("tin");
     _mpercent(70);
-    _mvalue(10);
+    _mvalue(5);
     _mcolor(c_ltcyan);
     _mhidden();
 
   _mineral(MINERAL_COPPER);
     _mname("copper");
     _mpercent(50);
-    _mvalue(60);
+    _mvalue(20);
     _mcolor(c_ltred);
     _mhidden();
 
   _mineral(MINERAL_IRON);
     _mname("iron");
     _mpercent(70);
-    _mvalue(50);
+    _mvalue(25);
     _mcolor(c_cyan);
     _mhidden();
 
+  _mineral(MINERAL_GEMS);
+    _mname("gems");
+    _mpercent(3);
+    _mvalue(100);
+    _mcolor(c_pink);
+    _mhidden();
+
+// The value of gold is less than 100 because it takes labor and fuel to
+// convert it into spendable currency!
   _mineral(MINERAL_GOLD);
     _mname("gold");
     _mpercent(4);
-    _mvalue(100);
+    _mvalue(80);
     _mcolor(c_yellow);
     _mhidden();
 
   _mineral(MINERAL_COAL);
     _mname("coal");
     _mpercent(20);
-    _mvalue(80);
+    _mvalue(50);
     _mcolor(c_dkgray);
     _mhidden();
 }

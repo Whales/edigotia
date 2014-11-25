@@ -118,14 +118,19 @@ enum Mineral
 {
   MINERAL_NULL = 0,
 
+// Building materials
   MINERAL_STONE,
 
+// Crafting metals
   MINERAL_TIN,
   MINERAL_COPPER,
   MINERAL_IRON,
 
+// Rare valuables
+  MINERAL_GEMS, // TODO: Should this be broken out into different TYPES of gems?
   MINERAL_GOLD,
 
+// Fuels
   MINERAL_COAL,
 
   MINERAL_MAX
