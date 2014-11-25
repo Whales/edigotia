@@ -20,11 +20,18 @@ public:
   void randomize_properties(World_map* world);
   void setup_resource_production(World_map* world);
 
-  int get_net_food();
+// class City provides get_food_consumption()
+// get_food_production() is just resource_production[RES_FOOD]
+  int get_net_food(); // production - consumption, obvs
 
 private:
   City_role role;
 
+/* City control radius, like the player uses, except we only use it to figure
+ * out what tiles we're going to be exploiting.  It's also largely abstracted;
+ * based on our population.
+ */
+  int radius;
   std::map<Resource,int> resource_production;
 
 };
