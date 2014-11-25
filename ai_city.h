@@ -19,8 +19,12 @@ public:
 // Randomize population, role, and more
   void randomize_properties(World_map* world);
 
+  int get_net_food();
+
 private:
   City_role role;
+
+  std::map<Resource,int> resource_production;
 
 };
 

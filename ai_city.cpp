@@ -51,9 +51,9 @@ void AI_city::randomize_properties(World_map* world)
   int merchants = (pop - burghers) / (1 + ratio_a);
   int peasants = pop - merchants - burghers;
 
-  population[CIT_PEASANT].add_citizens(peasants);
+  population[CIT_PEASANT ].add_citizens(peasants);
   population[CIT_MERCHANT].add_citizens(merchants);
-  population[CIT_BURGHER].add_citizens(burghers);
+  population[CIT_BURGHER ].add_citizens(burghers);
 
 // Now, pick a City_role from our terrain.
   Map_type mtype = world->get_map_type(location);
