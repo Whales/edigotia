@@ -18,6 +18,7 @@ public:
 
 // Randomize population, role, and more
   void randomize_properties(World_map* world);
+  void setup_resource_production(World_map* world);
 
   int get_net_food();
 

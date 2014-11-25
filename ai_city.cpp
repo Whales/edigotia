@@ -31,6 +31,7 @@ void AI_city::randomize_properties(World_map* world)
   }
 
   int pop = rng(race_dat->city_size_min[type], race_dat->city_size_max[type]);
+
 // Figure out how to arrange pop, using the ratios from our race
 /* Quick explanation of the equations below:
  * Let X = peasant pop, Y = merchant pop, Z = burgher pop, N = total pop
@@ -49,7 +50,7 @@ void AI_city::randomize_properties(World_map* world)
   }
   int burghers  = pop / (1 + ratio_a * ratio_b);
   int merchants = (pop - burghers) / (1 + ratio_a);
-  int peasants = pop - merchants - burghers;
+  int peasants  = pop - merchants - burghers;
 
   population[CIT_PEASANT ].add_citizens(peasants);
   population[CIT_MERCHANT].add_citizens(merchants);
@@ -65,4 +66,18 @@ void AI_city::randomize_properties(World_map* world)
     int index = rng(0, map_dat->city_roles.size() - 1);
     role = map_dat->city_roles[index];
   }
+
+  setup_resource_production(world);
+}
+
+void AI_city::setup_resource_production(World_map* world)
+{
+  if (!world) {
+    debugmsg("AI_city::setup_resource_production(NULL) called.");
+    return;
+  }
+
+  resource_production.clear();
+
+// Figure out the food that we produce
 }
