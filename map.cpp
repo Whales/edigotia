@@ -90,6 +90,25 @@ int Map_tile::get_farmability()
   return Terrain_data[ter]->farm_percent;
 }
 
+int Map_tile::get_max_food_output()
+{
+// First, find our best crop.
+  int best_food = 0;
+  for (int i = 0; i < crops.size(); i++) {
+    Crop crop = crops[i];
+    Crop_datum* crop_dat = Crop_data[crop];
+    if (crop_dat->food > best_food) {
+      best_food = crop_dat->food;
+    }
+  }
+  if (best_food == 0) { // No crops here produce food!
+    return 0;
+  }
+
+  int farmability = get_farmability();
+  return (best_food * farmability) / 100;
+}
+
 int Map_tile::get_mineral_amount(Mineral mineral)
 {
   for (int i = 0; i < minerals.size(); i++) {

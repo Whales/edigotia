@@ -147,6 +147,7 @@ struct Map_tile
   std::string    get_animals_info();
 
   int get_farmability();
+  int get_max_food_output();  // Pick the best crop and multiply by farmability
 
   int get_mineral_amount(Mineral mineral);
 
