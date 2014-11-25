@@ -50,7 +50,7 @@ void init_terrain_data()
   _ter(TER_TUNDRA);
     _name("tundra");
     _symbol('*', c_white);
-    _farm(10);
+    _farm(12);
     _hunting_difficulty(400);
     _wood(0, 400);
     _crop(CROP_CABBAGE);
@@ -77,7 +77,7 @@ void init_terrain_data()
   _ter(TER_ICY_HILL);
     _name("icy hill");
     _symbol('=', c_ltgray);
-    _farm(0);
+    _farm(5);
     _hunting_difficulty(600);
     _wood(0, 350);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
@@ -165,7 +165,7 @@ void init_terrain_data()
   _ter(TER_ROCKY);
     _name("Rocky");
     _symbol(',', c_brown);
-    _farm(60);
+    _farm(65);
     _hunting_difficulty(500);
     _wood(0, 200);
     _crop(CROP_WHEAT);
@@ -270,7 +270,7 @@ void init_terrain_data()
   _ter(TER_FOREST);
     _name("Forest");
     _symbol(';', c_ltgreen);
-    _farm(20);
+    _farm(25);
     _hunting_difficulty(900);
     _wood(20000, 80000);
     _wood_cleared(TER_BARREN);
@@ -302,7 +302,7 @@ void init_terrain_data()
   _ter(TER_BARREN);
     _name("Barren");
     _symbol(':', c_brown);
-    _farm(70);
+    _farm(75);
     _hunting_difficulty(400);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
