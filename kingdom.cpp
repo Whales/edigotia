@@ -409,6 +409,10 @@ Point Kingdom::pick_best_point(World_map* world,
 
 void Kingdom::add_city(World_map* world, Point loc, City_type type, int radius)
 {
+  if (!world) {
+    debugmsg("Kingdom::add_city() called with NULL world!");
+    return;
+  }
   Race_datum* race_dat = Race_data[race];
 // Mark the world map as claimed!
   for (int x = loc.x - radius; x <= loc.x + radius; x++) {
@@ -431,7 +435,7 @@ void Kingdom::add_city(World_map* world, Point loc, City_type type, int radius)
   city->set_city_type(type);
   city->set_race(race);
   city->set_random_name();
-  city->location = loc;
+  city->generate_map(world, loc);  // This sets city->location too
   city->randomize_properties(world);
 
   switch (type) {
