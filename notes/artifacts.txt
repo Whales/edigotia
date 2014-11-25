@@ -1,0 +1,23 @@
+Artifacts can be made or found.
+Making an artifact either happens randomly (very rarely) or by intentionally
+telling your blacksmith to work on an artifact.
+  Should this require:
+    -A special building?
+    -Unlocking it?
+    -Special resources?
+      Maybe the strength of the artifact is partially dependent on the resources
+      you spend on it.
+
+A constructed artifact has a few random abilities - all positive.
+
+Artifacts found in the wild have a few random abilities, which may be positive
+OR negative.  They are generally found in special locations (ancient temples,
+etc.) but may rarely be found simply by exploring the wilderness.
+
+A few very rare "ancient artifacts" are found in the wild.  These have unique
+abilities, and are only obtained via some very difficult task.
+  Raiding a large, dangerous dungeon
+  Killing a dragon
+  etc.
+
+

@@ -1,0 +1,156 @@
+The world is dotted with special locations.  You can't build cities on them, and
+they're placed after kingdom placement - guaranteeing that they don't appear
+close to any existing cities.
+
+Special locations may be visited by a hero or an army, and looted for special
+items or other benefits.  The majority of locations cannot be looted by an army,
+you must use a hero.  These locations may have multiple levels of increasing
+danger and reward; exploring each level takes a day.
+
+Each location also has a "count."  This is the approximate number of that
+location that can be found in any given 100x100 area (note that the standard
+world size is 400x400; so there are only 16 such areas in the entire world!
+
+Any line starting with ? should be reconsidered.
+
+Locations:
+
+Ancient Temple:
+  Desc:   A small temple.  Above ground, there are only a few crumbling pillars
+          and a cracked stone floor, but there is a hatch leading below ground.
+  Found:  Anywhere
+  Count:  8
+  Level 1/1:  Hero
+    Danger: Traps (easy), undead spirits
+    Loot:   One minor artifact (holy symbol, amulet, ring, staff); gold; gems
+
+Abandoned Mine:
+  Desc:   This mine has been abandoned for at least a century.  Who knows what
+          creatures have moved in since it was last occupied?
+  Found:  Wasteland, (Icy) Foothills, (Icy) Mountain, Canyon
+  Count:  10
+  Level 1/3:  Hero
+    Danger: Terrain (pitfalls, rockslides, etc) (easy)
+    Loot:   Random minerals (up to 50)
+  Level 2/3:  Hero
+    Danger: Misc monsters (moderate)
+    Loot:   Random minerals (up to 100); gold;
+            10% chance of minor artifact (weapon, armor)
+  Level 3/3:  Hero
+    Danger: One of: Giant Worm, Troglodytes, insectoids (dangerous)
+    Loot:   Artifact (minor or moderate) (weapon, armor)
+
+Pyramid:
+  Desc:   A vine-covered stepped pyramid.  The stone it's built of has survived
+          the untold centuries rather well.
+  Found:  Desert
+  Count:  4
+  Level 1/3:  Hero
+    Danger: Traps (easy)
+    Loot:   Gold
+  Level 2/3:  Hero
+    Danger: Traps (moderate), zombies
+    Loot:   One minor artifact (sword, armor); gold; gems
+  Level 3/3:  Hero
+    Danger: Traps (difficult), mummies
+    Loot:   One moderate artifact (staff, amulet, helmet); gold; gems
+
+Ziggurat:
+  Desc:   A vine-covered stepped pyramid.  The stone it's built of has survived
+          the untold centuries rather well.
+  Found:  Jungle
+  Count:  4
+  Level 1/3:  Hero
+    Danger: Traps (easy)
+    Loot:   Gold
+  Level 2/3:  Hero
+    Danger: Traps (moderate), giant spiders, giant snakes
+    Loot:   One minor artifact (sword, staff, amulet); gold; gems
+  Level 3/3:  Hero
+    Danger: Traps (difficult), lich
+    Loot:   One major artifact (statuette, holy symbol, sword); gold; gems
+
+Icy Cave:
+  Desc:   A ice-covered cave.  The stone around the entrance is covered with
+          ancient carvings or some kind of terrible beast.
+  Found:  Tundra
+  Count:  10
+  Level 1/2:  Army, Hero
+    Danger: Akhlut x3
+    Loot:   Wood
+    Other:  Safe resting place for army
+  Level 2/2:  Hero
+    Danger: Wumpus
+    Loot:   Minor artifact (animal skin, stone, staff)
+    Other:  Fountain of Healing (any hero may rest a day & receive full healing)
+
+Overgrown Farm:
+  Desc:   This homesteader's farm hasn't been inhabited for years, maybe
+          decades.  The fields are overgrown but the barn and house are mostly
+          intact.
+  Found:  Plains
+  Count:  15
+  Level 1/1:  Army, Hero
+    Danger: Nothing OR Zombies (2-10) OR Giant Spiders (3-6) OR Basilisk (1)
+    Loot:   Food (50-200), other...?
+
+Chasm:
+  Desc:   A chilly wind blows up from this deep, dark chasm.
+  Found:  Mountains, Icy Mountains
+  Count:  8
+  Level 1/2:  Hero
+    Danger: Giant Spiders
+    Loot:   Misc minerals; Gold; Gems
+  Level 2/2:  Hero
+    Danger: Giant Worms
+    Loot:   One minor artifact (any)
+
+Fairy Glen:
+  Desc:   The sunlight hits this clearing in a way that seems almost
+          supernatural.
+  Found:  Forest, Swamp
+  Count:  5
+  
+
+Stone Circle:
+  Desc:   A circle of upright stones.  Standing in the center of the stones
+          makes your skin tingle.  Perhaps a mage or priest could tap into the
+          power of this place...?
+  Found:  Anywhere
+  Count:  10
+  Level 1/1:  Mage, Priest
+    A mage may spend a day here to "unlock" the stone circle.  This has a random
+    result, selected from the list below.  Some results are only achievable if a
+    mage or priest is used; these are labeled M and P.
+    Healing:  The site is permanently converted to a Healing Circle.  Any army
+              or hero resting here recuperates at five times the normal rate!
+    Insight:  The site is permanently converted to a Circle of Visions.  Any
+              hero stationed here will have a 20% chance each day to be granted
+              a vision of everything within 10 (20?) tiles, including troop
+              movements and wandering monsters.  Enemy heroes also have a small
+              chance to be spotted, modified by their stealthiness.
+M   Wealth:   The stones crumble away, revealing that they are filled with
+              valuable items!  Each of the 8 stones picks a random resource;
+              "nothing" happens 30 or 40% of the time, and gold, gems, etc. are
+              other possible results.
+M   Summon:   A mixture of 3-10 randomly-chosen monsters are immediately
+              summoned!  Any heroes or armies present must fight them, and all
+              rewards (meat, pelts, etc) are gained as usual.  The Stone Circle
+              crumbles and may not be activated again.
+P   Manna:    Around 1,000 food is immediately produced.  The Stone Circle
+              crumbles and may not be activated again.
+P   Demon:    A powerful demon is immediately summoned!  Any heroes or armies
+              present must fight it, and all rewards (pelt, items) are gained as
+              usual.  The Stone Circle crumbles and may not be activated again.
+?   Blight:   The site is permanently converted to a Blighted Circle.  The world
+              within three tiles is converted to Blight terrain.  Note that this
+              may affect existing cities!
+?   Growth:   The site is permanently converted to a Circle of Growth.  This
+              tile immediately grows 5,000 wood worth of trees, and continues to
+              add 1,000 wood each day (to a cap of 100,000).  Additionall, all
+              world tiles within 3 tiles are converted as follows:
+      Desert    => Wasteland
+      Wasteland => plains
+      Plains    => Forest
+      Forest    => Jungle
+      Other:  Grow twice as many trees
