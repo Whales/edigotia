@@ -447,20 +447,30 @@ void Player_city::do_turn()
     } // if (num_born > 0)
   } // Done with animals!
 
-// Produce non-food resources from our crops.
-  std::vector<Crop_amount> crops = get_crops_grown();
-  for (int i = 0; i < crops.size(); i++) {
-    Crop crop = crops[i].type;
-    Crop_datum* crop_dat = Crop_data[crop];
-    for (int n = 0; n < crop_dat->bonus_resources.size(); n++) {
-      Resource_amount res = crop_dat->bonus_resources[n];
-      res.amount *= crops[i].amount;
-      gain_resource(res);
-    }
-  }
+// Produce non-food resources from our farms' crops.
+  for (int i = 0; i < areas.size(); i++) {
+    Building* build = &(areas[i].building);
+    if (build->workers > 0 && areas[i].produces_resource(RES_FARMING)) {
+      for (int n = 0; n < build->crops_grown.size(); n++) {
+        int amount = build->crops_grown[n].amount;
+        if (amount > 0) {
+          Crop crop = build->crops_grown[n].type;
+          Crop_datum* crop_dat = Crop_data[crop];
+          for (int m = 0; m < crop_dat->bonus_resources.size(); m++) {
+            Resource_amount res = crop_dat->bonus_resources[m];
+            res.amount *= amount;
+            res.amount *= build->field_output;
+// field_output needs to be divided by 500
+            res.amount /= 500;
+            gain_resource(res);
+          }
+        } // if (amount > 0)
+      } // for (int n = 0; n < build->crops_grown.size(); n++)
+    } // if (build->workers > 0 && areas[i].produces_resource(RES_FARMING))
+  } // for (int i = 0; i < areas.size(); i++)
 
-// Produce / eat food.
-  resources[RES_FOOD] += get_food_production();
+// Produce and consume food
+  gain_resource( RES_FOOD, get_food_production() );
   int food_consumed = get_food_consumption();
   if (resources[RES_FOOD] >= food_consumed) {
     resources[RES_FOOD] -= food_consumed;
@@ -870,10 +880,10 @@ void Player_city::add_open_area(Area area)
   if (farming > 0) {
     Map_tile* tile_here = map.get_tile(area.pos);
     Building* farm_bld = &(area.building);
-    farming = (farming * tile_here->get_farmability()) / 100;
+    farming *= tile_here->get_farmability();
 // Alter farming based on racial ability.
 // Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
-    farming = (farming * Race_data[race]->skill_level[SKILL_FARMING]) / 5;
+    farming *= Race_data[race]->skill_level[SKILL_FARMING];
     farm_bld->field_output = farming;
 // Set up area.building's list of crops based on what's available here.
     farm_bld->crops_grown.clear();
@@ -1693,14 +1703,30 @@ int Player_city::get_corruption_amount()
 int Player_city::get_food_production()
 {
   int ret = 0;
-  std::vector<Crop_amount> crops_grown = get_crops_grown();
-  for (int i = 0; i < crops_grown.size(); i++) {
-    Crop_amount crop = crops_grown[i];
-    ret += crop.amount * Crop_data[crop.type]->food;
-  }
-// Crop_data[]->food is per 100 units of the crop, so naturally we must divide
-// by 100.
-  ret /= 100;
+  for (int i = 0; i < areas.size(); i++) {
+    Building* build = &(areas[i].building);
+    if (build->workers > 0 && areas[i].produces_resource(RES_FARMING)) {
+      for (int n = 0; n < build->crops_grown.size(); n++) {
+        int amount = build->crops_grown[n].amount;
+        if (amount > 0) {
+          Crop crop = build->crops_grown[n].type;
+          Crop_datum* crop_dat = Crop_data[crop];
+          int food = crop_dat->food;
+          food *= amount;
+          food *= build->field_output;
+          ret += food;
+        } // if (amount > 0)
+      } // for (int n = 0; n < build->crops_grown.size(); n++)
+    } // if (build->workers > 0 && areas[i].produces_resource(RES_FARMING))
+  } // for (int i = 0; i < areas.size(); i++)
+
+/* Crop_data[]->food is per 100 units of the crop, so naturally we must divide
+ * by 100.  Additionally, Building::field_output is 500 times higher than it
+ * should be (since terrain farmability is a percentage, 0 to 100, and farming
+ * skill is a value from 0 to 5), so we must divide by 500.  Combining both
+ * means dividing by 50000.
+ */
+  ret /= 50000;
   return ret;
 }
 
@@ -1715,7 +1741,6 @@ std::vector<Crop_amount> Player_city::get_crops_grown()
 // Check if we already have that crop in ret
         if (build->crops_grown[n].amount > 0) {
           Crop_amount crop = build->crops_grown[n];
-          crop.amount *= build->field_output;
           bool found_crop = false;
           for (int m = 0; !found_crop && m < ret.size(); m++) {
             if (ret[m].type == crop.type) {
