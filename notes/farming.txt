@@ -1,0 +1,18 @@
+A building's field_output is defined as:
+(S * ((F * T) / 100)) / 5
+
+Where:
+S = our race's farming skill
+F = the amount of RES_FARMING the building produces
+T = the farmability of the terrain
+
+Example:  Humans (skill 4) using standard farm (RES_FARMING 10) on rocky
+          (farmability 65)
+(4 * ((10 * 65) / 100)) / 5
+(4 * (650 / 100)) / 5
+(4 * 6) / 5
+24 / 5
+4
+
+The amount of each crop is multiplied by our field_output.  In the scenario
+above, each field produces 4 instances of the given crop!
