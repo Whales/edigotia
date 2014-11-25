@@ -110,6 +110,12 @@ void AI_city::setup_resource_production(World_map* world)
 // ...and try to match that need.
 // TODO: Skip this is there's a nearby, friendly CITY_ROLE_FARMING city
 //       (or at least include it in our considerations)
+/*
+  while (food_req > 0 && !tiles.empty()) {
+// Find the most food-producing tile.
+  }
+*/
+    
 }
 
 
