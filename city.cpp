@@ -1,5 +1,6 @@
 #include "city.h"
 #include "rng.h"
+#include "world.h"
 
 City::City()
 {
@@ -35,6 +36,29 @@ void City::start_new_city()
 // We always start with the maximum amount of food, regardless of our race.
   resources[RES_FOOD]  = get_food_cap();
 
+}
+
+// loc defaults to (-1, -1)
+void City::generate_map(World_map* world, Point loc)
+{
+  if (!world) {
+    debugmsg("City::generate_map(NULL) called!");
+    return;
+  }
+  if (loc.x >= 0 && loc.x < WORLD_MAP_SIZE &&
+      loc.y >= 0 && loc.y < WORLD_MAP_SIZE   ) {
+    location = loc;
+  }
+
+  std::vector<Crop>    crops    = world->crops_at   (location);
+  std::vector<Mineral> minerals = world->minerals_at(location);
+  std::vector<Animal>  animals  = world->animals_at (location);
+
+  map.generate( world->get_map_type(location),
+                crops, minerals, animals,
+                world->coast_from(location),
+                world->river_start_for(location), world->river_end_for(location)
+              );
 }
 
 void City::set_game(Game* G)

@@ -18,6 +18,8 @@
 // For determining City::get_glyph() - above this uses O, below uses o
 #define CITY_POPULATION_LARGE 1000
 
+class World_map;
+
 // Return value when we attempt to enqueue an area
 enum Area_queue_status
 {
@@ -47,6 +49,7 @@ public:
 
 // General-data mutators
   virtual void start_new_city();  // Sets up our population and more!
+  void generate_map(World_map* world, Point loc = Point(-1, -1));
   void set_game(Game* G);
   virtual void do_turn();
   void set_random_name();
@@ -98,6 +101,8 @@ public:
 
   int resources[RES_MAX];
   int minerals[MINERAL_MAX];
+
+  City_map map;
 
 protected:
   std::string name;

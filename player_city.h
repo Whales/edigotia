@@ -224,8 +224,6 @@ public:
   std::vector<Message> messages;
   bool show_hunting_messages;
 
-  City_map map;
-
 private:
   int birth_points; // We gain these each turn; at 100, a citizen is born.
 
