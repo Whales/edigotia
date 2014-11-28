@@ -1,5 +1,4 @@
-A building's field_output is defined as:
-(S * ((F * T) / 100)) / 5
+A building's field_output is defined as (S * F * T)
 
 Where:
 S = our race's farming skill
@@ -8,11 +7,18 @@ T = the farmability of the terrain
 
 Example:  Humans (skill 4) using standard farm (RES_FARMING 10) on rocky
           (farmability 65)
-(4 * ((10 * 65) / 100)) / 5
-(4 * (650 / 100)) / 5
-(4 * 6) / 5
-24 / 5
-4
+(4 * 10 * 65)
+2600
 
-The amount of each crop is multiplied by our field_output.  In the scenario
-above, each field produces 4 instances of the given crop!
+The amount of food and resources each crop provides is multiplied by our
+field_output, then divided by 500 (as late as possible).  It's divided by 500
+because terrain farmability is meant to be a percentage, from 0 to 100, so that
+requires dividing by 100; also, farming skill is percentage-like, from 0 to 5,
+so that requires dividing by 5.
+In the scenario above, each field produces 5.2 times the crop's food output.  If
+we are farming, for example, cabbage, its food value of 120 becomes 624.  This
+value is meant to be 100 times the actual food output, so we divide by 100 again
+to get a final value of 6.24 per field.
+This final division by 100 is done after ALL crops are totaled.  So if we have
+15 fields of cabbage, our food output is (624 * 15) / 100, for a grand total of
+93 food (we round this final division down).
