@@ -24,6 +24,8 @@ public:
 // get_food_production() is just resource_production[RES_FOOD]
   int get_net_food(); // production - consumption, obvs
 
+  std::string list_production();  // For now, this is just debug output.
+
 private:
 // add_farms(), add_hunting_camps(), and add_pastures() have two forms; one with
 // an int& and one without.  Use the one WITH the int& if you want to stop

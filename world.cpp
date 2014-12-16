@@ -7,6 +7,7 @@
 #include "kingdom.h"  // To color map based on Kingdom.
 #include "stringfunc.h" // For capitalize()
 #include "animal.h"
+#include "ai_city.h"
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow() and sqrt()
@@ -1001,12 +1002,20 @@ Point World_map::draw(Point start)
           hilite_animals  = false;
           break;
 
-        case '?':
+        case '?': {
+          City* city_checked = get_city(center);
+          if (city_checked) {
+            AI_city* ai_city = static_cast<AI_city*>(city_checked);
+            popup_fullscreen(ai_city->list_production().c_str());
+          }
+          
+/*
           debugmsg("%s\nRiver Start: %s\nRiver End:   %s",
                    (is_river(center) ? "River" : "Not River"),
                    Direction_name(river_start_for(center)).c_str(),
                    Direction_name(river_end_for  (center)).c_str());
-          break;
+*/
+        } break;
         
         case KEY_ESC:
         case 'q':
