@@ -1857,7 +1857,7 @@ void Player_city::do_hunt(Area* hunting_camp)
     Animal prey = tile->choose_hunt_animal(skill_level);
     Animal_datum* prey_dat = Animal_data[prey];
     int pack_size = 1;
-    if (rng(1, 100) <= prey_dat->pack_chance) {
+    if (prey_dat->pack_chance > 0 && rng(1, 100) <= prey_dat->pack_chance) {
       pack_size = rng(1, prey_dat->max_pack_size);
     }
 
