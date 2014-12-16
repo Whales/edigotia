@@ -791,3 +791,4 @@ bool City_map::is_oob(int x, int y)
 {
   return (x < 0 || x >= CITY_MAP_SIZE || y < 0 || y >= CITY_MAP_SIZE);
 }
+
