@@ -92,6 +92,9 @@ int Map_tile::get_farmability()
 
 int Map_tile::get_max_food_output()
 {
+  if (!can_build(AREA_FARM)) {
+    return 0;
+  }
 // First, find our best crop.
   int best_food = 0;
   for (int i = 0; i < crops.size(); i++) {
@@ -106,7 +109,48 @@ int Map_tile::get_max_food_output()
   }
 
   int farmability = get_farmability();
-  return (best_food * farmability) / 100;
+// We don't divide by 100 at this point, in order to avoid rounding errors.
+  return (best_food * farmability);
+}
+
+int Map_tile::get_max_hunting_output()
+{
+  if (!can_build(AREA_HUNTING_CAMP)) {
+    return 0;
+  }
+// Find the most food-providing animal
+  int best_food = 0;
+  for (int i = 0; i < animals.size(); i++) {
+    Animal_datum* animal_dat = Animal_data[ animals[i].type ];
+    int food = animal_dat->food_killed;
+// Get average pack size...
+    if (animal_dat->pack_chance > 0 && animal_dat->max_pack_size > 1) {
+      int pack_size = animal_dat->max_pack_size / 2;
+// Only multiply by pack_size if it represents an increase
+// Add the chance of extra food we have.
+      food += (food * (pack_size - 1) * animal_dat->pack_chance) / 100;
+    }
+
+    if (food > best_food) {
+      best_food = food;
+    }
+  }
+  return best_food;
+}
+
+bool Map_tile::can_build(Area_type area)
+{
+  Terrain_datum* ter_dat = get_terrain_datum();
+  if (!ter_dat) {
+    return false;
+  }
+
+  for (int i = 0; i < ter_dat->buildable_areas.size(); i++) {
+    if (ter_dat->buildable_areas[i] == area) {
+      return true;
+    }
+  }
+  return false;
 }
 
 int Map_tile::get_mineral_amount(Mineral mineral)
