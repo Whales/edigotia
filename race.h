@@ -1,12 +1,14 @@
 #ifndef _RACE_H_
 #define _RACE_H_
 
-#include "citizen.h"  // Some race values are Citizen_type-dependent.
-#include "color.h"
-#include "map.h"      // For Map_type
+#include "citizen.h"    // Some race values are Citizen_type-dependent.
+#include "color.h"      // Race_datum stores the race's color.
+#include "map_type.h"   // For Map_type
 #include "city_type.h"  // We track population size for each City_type.
 #include <string>
 #include <map>
+
+enum Map_type;
 
 enum Race
 {
