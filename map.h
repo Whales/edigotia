@@ -1,6 +1,7 @@
 #ifndef _MAP_H_
 #define _MAP_H_
 
+#include "map_type.h" // For enum Map_type
 #include "geometry.h" // For direction
 #include "glyph.h"    // For terrain glyph
 #include "resource.h" // Crops and minerals
@@ -82,37 +83,6 @@ struct Terrain_datum
 extern Terrain_datum* Terrain_data[TER_MAX];
 void init_terrain_data();
 
-// Map_type defines what your City_map looks like.  It's also used as the basic
-// tile for World_map.
-enum Map_type
-{
-  MAP_NULL = 0,
-
-  MAP_TUNDRA,       // Mostly tundra, some forest
-
-  MAP_DESERT,       // Mostly desert
-  MAP_WASTELAND,    // Mostly rocky and hills
-  MAP_PLAINS,       // Mostly field and rocky
-  MAP_FOREST,       // Mostly forest and plains
-  MAP_SWAMP,        // Mostly swamp
-  MAP_JUNGLE,       // Jungle, forest and swamp.
-
-  MAP_FOOTHILLS,    // Mostly hills and mountains
-  MAP_ICY_FOOTHILLS,// Frozen hills and mountains
-  MAP_MOUNTAINOUS,  // Almost all mountains
-  MAP_ICY_MOUNTAIN, // The most forbidding of all terrains!
-
-  MAP_BASIN,        // River, then fields and swamp
-  MAP_CANYON,       // River, then mountains and hills
-  MAP_GLACIER,      // Frozen river
-
-  MAP_COASTAL,      // Ocean along one side
-  MAP_OCEAN,        // Almost all ocean, occasional island
-  MAP_ICECAP,       // Frozen ocean
-
-  MAP_MAX
-};
-
 struct Map_type_datum
 {
   Map_type_datum()
@@ -148,6 +118,9 @@ struct Map_tile
 
   int get_farmability();
   int get_max_food_output();  // Pick the best crop and multiply by farmability
+  int get_max_hunting_output(); // Ditto but for hunting
+
+  bool can_build(Area_type area);
 
   int get_mineral_amount(Mineral mineral);
 
