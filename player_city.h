@@ -217,7 +217,6 @@ public:
   std::vector<Area> areas;
   std::vector<Area> area_queue;
 
-  std::map<Animal,int> livestock;
   std::map<Animal,int> hunt_kills;
 
   int unread_messages;

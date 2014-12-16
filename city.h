@@ -101,6 +101,7 @@ public:
 
   int resources[RES_MAX];
   int minerals[MINERAL_MAX];
+  std::map<Animal,int> livestock;
 
   City_map map;
 
