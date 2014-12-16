@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "race.h"
 #include "animal.h"
+#include "ai.h"
 
 bool init_all_data()
 {
@@ -14,6 +15,7 @@ bool init_all_data()
   init_crop_and_mineral_data();
   init_animal_data();
   init_races();
+  init_city_roles();
 
   return true;
 }
