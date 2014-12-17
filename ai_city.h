@@ -44,6 +44,9 @@ private:
   void add_mines        (std::vector<Map_tile*>& tiles);
   void add_sawmills     (std::vector<Map_tile*>& tiles);
 
+// This adds 1 to the count in areas_built
+  void add_area(Area_type type);
+
   void add_resource_production(Resource_amount res_amt);
   void add_resource_production(Resource res, int amount);
 
@@ -58,6 +61,9 @@ private:
  */
   int radius;
   int free_peasants;
+
+  std::map<Area_type,int> areas_built;
+
   std::map<Resource,int> resource_production;
   std::map<Mineral,int>  mineral_production;
 

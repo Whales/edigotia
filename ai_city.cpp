@@ -198,6 +198,19 @@ std::string AI_city::list_production()
 {
   std::stringstream ret;
   ret << "Type: " << City_role_data[role]->name << std::endl;
+  ret << "Areas: ";
+  if (areas_built.empty()) {
+    ret << "<c=red>None<c=/>" << std::endl;
+  } else {
+    ret << std::endl;
+    for (std::map<Area_type,int>::iterator it = areas_built.begin();
+         it != areas_built.end();
+         it++) {
+      ret << "  " << Area_data[it->first]->name << " x " << it->second <<
+             std::endl;
+    }
+  }
+
   for (std::map<Resource,int>::iterator it = resource_production.begin();
        it != resource_production.end();
        it++) {
@@ -249,6 +262,7 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
       best_food = best_food * farm_skill * res_farming * num_workers;
       food_req -= best_food;
       free_peasants -= num_workers;
+      add_area(AREA_FARM);
       add_resource_production(RES_FOOD, best_food / 50000);
       tiles.erase(tiles.begin() + best_index);
     }
@@ -288,7 +302,7 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
     if (best_index == -1) { // No tiles produce food!  At all!
       done = true;
     } else {
-// Multiply by our race's farming skill, and res_farming from above.
+// Multiply by our race's hunting skill, and res_hunting from above.
 // Also multiply by 50,000 since food_req is multiplied by 50,000!  But also
 // divide by 10 since we multiply by (5 + hunting_skill).
       if (free_peasants < num_workers) {
@@ -299,6 +313,7 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
       food_req -= best_food;
       free_peasants -= num_workers;
       add_resource_production(RES_FOOD, best_food / 50000);
+      add_area(AREA_HUNTING_CAMP);
       tiles.erase(tiles.begin() + best_index);
     }
   } // while (!done && food_req > 0 && !tiles.empty())
@@ -382,6 +397,7 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
     int food_amount = 100 * food_amounts[ animal_index ];
     food_req -= food_amount;
     add_resource_production(RES_FOOD, food_amount / 50000);
+    add_area(AREA_PASTURE);
 
 // Add resource production for anything else the animal may produce.
     Animal_datum* ani_dat = Animal_data[new_livestock];
@@ -427,6 +443,7 @@ void AI_city::add_mines(std::vector<Map_tile*>& tiles)
       if (free_peasants < num_workers) {
         num_workers = free_peasants;
       }
+      add_area(AREA_MINE);
       for (int n = 0; n < tile->minerals.size(); n++) {
         add_mineral_production(tile->minerals[n].type, num_workers);
       }
@@ -455,10 +472,19 @@ void AI_city::add_sawmills(std::vector<Map_tile*>& tiles)
         num_workers = free_peasants;
       }
       add_resource_production(RES_WOOD, num_workers * res_wood);
+      add_area(AREA_SAWMILL);
     }
   }
 }
-  
+
+void AI_city::add_area(Area_type type)
+{
+  if (areas_built.count(type)) {
+    areas_built[type]++;
+  } else {
+    areas_built[type] = 1;
+  }
+}
 
 void AI_city::add_resource_production(Resource_amount res_amt)
 {
