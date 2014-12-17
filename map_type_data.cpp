@@ -34,26 +34,32 @@ void init_map_type_data()
   _ter(MAP_TUNDRA);
     _name("tundra");
     _symbol('*', c_white);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_DESERT);
     _name("desert");
     _symbol('x', c_yellow);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_WASTELAND);
     _name("wasteland");
     _symbol(',', c_brown);
     _role(CITY_ROLE_FARMING);
     _role(CITY_ROLE_MINING);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_PLAINS);
     _name("plains");
     _symbol('.', c_green);
     _role(CITY_ROLE_FARMING);
+    _role(CITY_ROLE_HUNTING);
+    _role(CITY_ROLE_LIVESTOCK);
 
   _ter(MAP_FOREST);
     _name("forest");
     _symbol('7', c_ltgreen);
     _role(CITY_ROLE_LOGGING);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_SWAMP);
     _name("swamp");
@@ -65,17 +71,21 @@ void init_map_type_data()
     _name("jungle");
     _symbol('J', c_ltcyan);
     _role(CITY_ROLE_LOGGING);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_FOOTHILLS);
     _name("foothills");
     _symbol('n', c_brown);
     _role(CITY_ROLE_FARMING);
     _role(CITY_ROLE_MINING);
+    _role(CITY_ROLE_HUNTING);
+    _role(CITY_ROLE_LIVESTOCK);
 
   _ter(MAP_ICY_FOOTHILLS);
     _name("icy foothills");
     _symbol('n', c_ltcyan);
     _role(CITY_ROLE_MINING);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_MOUNTAINOUS);
     _name("mountain range");
@@ -93,6 +103,8 @@ void init_map_type_data()
     _water();
     _symbol('S', c_blue);
     _role(CITY_ROLE_FARMING);
+    _role(CITY_ROLE_HUNTING);
+    _role(CITY_ROLE_LIVESTOCK);
 
   _ter(MAP_CANYON);
     _name("canyon");
@@ -101,6 +113,7 @@ void init_map_type_data()
     _symbol('S', c_ltblue);
     _role(CITY_ROLE_FARMING);
     _role(CITY_ROLE_MINING);
+    _role(CITY_ROLE_HUNTING);
 
   _ter(MAP_GLACIER);
     _name("glacier");
