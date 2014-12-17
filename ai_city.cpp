@@ -197,7 +197,8 @@ int AI_city::get_net_food()
 std::string AI_city::list_production()
 {
   std::stringstream ret;
-  ret << "Type: " << City_role_data[role]->name << std::endl;
+  ret << "Type: " << City_role_data[role]->name << std::endl <<
+         "Radius: " << radius << std::endl;
   ret << "Areas: ";
   if (areas_built.empty()) {
     ret << "<c=red>None<c=/>" << std::endl;
@@ -386,7 +387,7 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
       pasture_indices.push_back( i );
     }
   }
-  while (!pastures.empty() && food_req > 0) {
+  while (!pastures.empty() && (unlimited_food || food_req > 0)) {
     int index = rng(0, pastures.size());
     int orig_index = pasture_indices[index];
     pastures.erase( pastures.begin() + index );
