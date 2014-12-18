@@ -147,11 +147,12 @@ public:
  * tiles, and they should appear in smaller amounts.
  */
   void generate(Map_type type,
-                std::vector<Crop> crops, std::vector<Mineral> minerals,
-                std::vector<Animal> animals,
+                std::vector<Crop> world_crops,
+                std::vector<Mineral> world_minerals,
+                std::vector<Animal> world_animals,
                 Direction coast = DIR_NULL,
                 Direction_full river_start = DIRFULL_NULL,
-                Direction_full river_end = DIRFULL_NULL);
+                Direction_full river_end   = DIRFULL_NULL);
 
   Map_tile* get_tile(Point p);
   Map_tile* get_tile(int x, int y);

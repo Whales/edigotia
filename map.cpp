@@ -123,12 +123,19 @@ int Map_tile::get_max_hunting_output()
   for (int i = 0; i < animals.size(); i++) {
     Animal_datum* animal_dat = Animal_data[ animals[i].type ];
     int food = animal_dat->food_killed;
-// Get average pack size...
+
+// Increase food if the animal appears in packs.
     if (animal_dat->pack_chance > 0 && animal_dat->max_pack_size > 1) {
       int pack_size = animal_dat->max_pack_size / 2;
 // Only multiply by pack_size if it represents an increase
 // Add the chance of extra food we have.
       food += (food * (pack_size - 1) * animal_dat->pack_chance) / 100;
+    }
+
+// Reduce food output if it's dangerous.  TODO: Tweak?
+// This uses danger / 60 as a percentage to lose; e.g. danger 6 => lose 10%
+    if (animal_dat->danger > 0) {
+      food = food - (food * animal_dat->danger) / 60;
     }
 
     if (food > best_food) {
@@ -209,8 +216,9 @@ City_map::~City_map()
 }
 
 void City_map::generate(Map_type type,
-                        std::vector<Crop> crops, std::vector<Mineral> minerals,
-                        std::vector<Animal> animals,
+                        std::vector<Crop> world_crops,
+                        std::vector<Mineral> world_minerals,
+                        std::vector<Animal> world_animals,
                         Direction coast,
                         Direction_full river_start, Direction_full river_end)
 {
@@ -374,13 +382,16 @@ void City_map::generate(Map_type type,
   }
 
   if (type != MAP_OCEAN && coast != DIR_NULL) {  // Alter chances a bit.
-    chance[TER_TUNDRA]    *= 1.5;
-    chance[TER_FIELD]     *= 1.5;
-    chance[TER_ROCKY]     *=  .8;
-    chance[TER_HILL]      *=  .6;
-    chance[TER_MOUNTAIN]  *=  .2;
-    chance[TER_FOREST]    *= 1.3;
-    chance[TER_SWAMP]     *= 1.2;
+    chance[TER_TUNDRA]        *= 1.5;
+    chance[TER_ICY_HILL]      *=  .7;
+    chance[TER_ICY_MOUNTAIN]  *=  .3;
+    chance[TER_FIELD]         *= 1.5;
+    chance[TER_ROCKY]         *=  .8;
+    chance[TER_HILL]          *=  .6;
+    chance[TER_MOUNTAIN]      *=  .2;
+    chance[TER_FOREST]        *= 1.3;
+    chance[TER_SWAMP]         *= 1.2;
+    chance[TER_JUNGLE]        *= 1.2;
   }
 
   for (int i = 0; i < TER_MAX; i++) {
@@ -614,8 +625,8 @@ void City_map::generate(Map_type type,
 // Check if the world map assigned us this crop.
         Crop crop = ter_dat->crops[i];
         bool crop_assigned = false;
-        for (int n = 0; !crop_assigned && n < crops.size(); n++) {
-          if (crops[n] == crop) {
+        for (int n = 0; !crop_assigned && n < world_crops.size(); n++) {
+          if (world_crops[n] == crop) {
             crop_assigned = true;
           }
         }
@@ -638,8 +649,8 @@ void City_map::generate(Map_type type,
         Mineral mineral = min_amount.type;
 // Check if the world map assigned us this mineral.
         bool mineral_assigned = false;
-        for (int n = 0; !mineral_assigned && n < minerals.size(); n++) {
-          if (minerals[n] == mineral) {
+        for (int n = 0; !mineral_assigned && n < world_minerals.size(); n++) {
+          if (world_minerals[n] == mineral) {
             mineral_assigned = true;
           }
         }
@@ -660,12 +671,12 @@ void City_map::generate(Map_type type,
 
 // Animals
       for (int i = 0; i < ter_dat->animals.size(); i++) {
-        Animal_amount min_amount = ter_dat->animals[i];
-        Animal animal = min_amount.type;
+        Animal_amount ani_amount = ter_dat->animals[i];
+        Animal animal = ani_amount.type;
 // Check if the world map assigned us this animal.
         bool animal_assigned = false;
-        for (int n = 0; !animal_assigned && n < animals.size(); n++) {
-          if (animals[n] == animal) {
+        for (int n = 0; !animal_assigned && n < world_animals.size(); n++) {
+          if (world_animals[n] == animal) {
             animal_assigned = true;
           }
         }
@@ -677,12 +688,12 @@ void City_map::generate(Map_type type,
  * This is copied from minerals above; should we NOT do this?  It doesn't seem
  * likely to ever occur.
  */
-        if (min_amount.is_infinite()) {
-          tiles[x][y].animals.push_back( min_amount );
+        if (ani_amount.is_infinite()) {
+          tiles[x][y].animals.push_back( ani_amount );
         } else if (animal_assigned) {
-          tiles[x][y].animals.push_back( min_amount.randomize() );
-        } else if (rng(1, 150) <= animal_dat->percentage) {
-          tiles[x][y].animals.push_back( min_amount.make_small() );
+          tiles[x][y].animals.push_back( ani_amount.randomize() );
+        } else if (rng(1, 1000) <= animal_dat->percentage) {
+          tiles[x][y].animals.push_back( ani_amount.make_small() );
         }
       }
 
