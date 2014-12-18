@@ -388,7 +388,7 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
     }
   }
   while (!pastures.empty() && (unlimited_food || food_req > 0)) {
-    int index = rng(0, pastures.size());
+    int index = rng(0, pastures.size() - 1);
     int orig_index = pasture_indices[index];
     pastures.erase( pastures.begin() + index );
     tiles.erase( tiles.begin() + orig_index );
