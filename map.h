@@ -118,7 +118,7 @@ struct Map_tile
 
   int get_farmability();
   int get_max_food_output();  // Pick the best crop and multiply by farmability
-  int get_max_hunting_output(); // Ditto but for hunting
+  int get_avg_hunting_output(); // Averages food values of animals
 
   bool can_build(Area_type area);
 

@@ -113,16 +113,18 @@ int Map_tile::get_max_food_output()
   return (best_food * farmability);
 }
 
-int Map_tile::get_max_hunting_output()
+int Map_tile::get_avg_hunting_output()
 {
   if (!can_build(AREA_HUNTING_CAMP)) {
     return 0;
   }
-// Find the most food-providing animal
-  int best_food = 0;
+// Find the sums and divide by the total count
+  int food_sum = 0;
+  int divisor = 0;
   for (int i = 0; i < animals.size(); i++) {
     Animal_datum* animal_dat = Animal_data[ animals[i].type ];
     int food = animal_dat->food_killed;
+    int count = animals[i].amount;
 
 // Increase food if the animal appears in packs.
     if (animal_dat->pack_chance > 0 && animal_dat->max_pack_size > 1) {
@@ -138,11 +140,14 @@ int Map_tile::get_max_hunting_output()
       food = food - (food * animal_dat->danger) / 60;
     }
 
-    if (food > best_food) {
-      best_food = food;
-    }
+    food_sum += food * count;
+    divisor += count;
+
   }
-  return best_food;
+  if (divisor == 0) {
+    return 0;
+  }
+  return (food_sum / divisor);
 }
 
 bool Map_tile::can_build(Area_type area)

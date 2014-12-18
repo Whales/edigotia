@@ -294,7 +294,7 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
          (unlimited_food || food_req > 0)) {
     int best_food = 0, best_index = -1;
     for (int i = 0; i < tiles.size(); i++) {
-      int food = tiles[i]->get_max_hunting_output();
+      int food = tiles[i]->get_avg_hunting_output();
       if (food > best_food) {
         best_food = food;
         best_index = i;
