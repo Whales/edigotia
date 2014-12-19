@@ -606,7 +606,8 @@ void init_races()
     _city_name_middle(" A", " Ba", " Be", " Bu", " Da", " De", " Du", " E",
                       " Ha", " He", " Hu", " La", " Le", " Lu", " Ma", " Me",
                       " Mu", " Ra", " Re", " Ro", " Ru", " Ta", " Te", " Tu",
-                      " U", "a", "e", "l", "r", "t", "u");
+                      " U", "a", "e", "la", "le", "lu", "ra", "re", "ro", "ru",
+                      "ta", "te", "u");
 
     _city_name_end("", "k", "k", "k", "k", "k", "r", "r", "r", "rk", "rk");
 
