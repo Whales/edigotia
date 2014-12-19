@@ -483,6 +483,7 @@ void Interface::print_data()
   std::stringstream ss_data;
 
   if (cur_data_mode != DATA_MODE_NULL) {
+    i_main.clear_data("text_data_header");
     i_main.clear_data("text_data");
   }
 
@@ -492,8 +493,8 @@ void Interface::print_data()
       break;  // Do nothing.
 
     case DATA_MODE_CITIZENS:
-      ss_data << "              <c=ltblue>Citizens<c=/>" << std::endl <<
-                 std::endl;
+      i_main.set_data("text_data_header",
+                      "              <c=ltblue>Citizens<c=/>");
 // First, population & unemployment data
 // Header
       ss_data << "              Population   Unemployed" << std::endl;
@@ -573,8 +574,8 @@ void Interface::print_data()
       break;
 
     case DATA_MODE_RESOURCES: {
-      ss_data << "              <c=ltblue>Resources<c=/>" << std::endl <<
-                 std::endl;
+      i_main.set_data("text_data_header",
+                      "              <c=ltblue>Resources<c=/>");
 // We do two columns; resources on the left, minerals on the right.
 // We do them in the same loop and check to see if they're valid for both.
 // First loop figures out what we've got.
@@ -646,9 +647,9 @@ void Interface::print_data()
     } break;
 
     case DATA_MODE_MESSAGES: {
-      ss_data << "<c=ltblue>Messages<c=/> (<c=pink>'<c=/>: Clear  " <<
-                 "<c=pink>-<c=/>/<c=pink>+<c=/>: Scroll)" <<
-                 std::endl << std::endl;
+      i_main.set_data("text_data_header", 
+"<c=ltblue>Messages<c=/> (<c=pink>'<c=/>: Clear  \
+<c=pink>-<c=/>/<c=pink>+<c=/>: Scroll)");
 // If there's no new messages, let us know that.
       if (city->unread_messages == 0 || city->messages.empty()) {
         ss_data << "<c=dkgray>No new messages.<c=/>";
