@@ -109,7 +109,7 @@ int Map_tile::get_max_food_output()
   }
 
   int farmability = get_farmability();
-// We don't divide by 100 at this point, in order to avoid rounding errors.
+// We don't divide by 10000 at this point, in order to avoid rounding errors.
   return (best_food * farmability);
 }
 
@@ -120,7 +120,8 @@ int Map_tile::get_avg_hunting_output()
   }
 // Find the sums and divide by the total count
   int food_sum = 0;
-  int divisor = 0;
+// Divisor should include terrain's hunting difficulty (chance of no animals)
+  int divisor = get_terrain_datum()->hunting_difficulty;
   for (int i = 0; i < animals.size(); i++) {
     Animal_datum* animal_dat = Animal_data[ animals[i].type ];
     int food = animal_dat->food_killed;
