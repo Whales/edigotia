@@ -1289,7 +1289,7 @@ void Interface::minister_food()
       std::stringstream empty_fields_ss;
       int empty_fields = build->get_empty_fields();
 
-      output_ss << build->field_output << "0%%%%";
+      output_ss << build->field_output << "%%%%";
       if (empty_fields > 0) {
         empty_fields_ss << "<c=ltgreen>" << empty_fields << "<c=/>";
       } else {
@@ -1501,10 +1501,23 @@ void Interface::list_farm_crops(Area* cur_farm, cuss::interface& i_food)
     Crop_amount cur_crop = farm_build->crops_grown[i];
     Crop_datum* crop_dat = Crop_data[cur_crop.type];
     int crop_food_amount = crop_dat->food * farm_build->field_output;
+// crop_food_amount is 10,000 times the actual food output.
+// To get the decimals, we mod it by 10,000 (thus chopping off anything >= 1k).
+// We only want two decimal places, so we then divide THAT by 100 (thus chopping
+// off anything but the first two digits).
+    int food_decimal = (crop_food_amount % 10000) / 100;
 
     crop_names.push_back(crop_dat->name);
     crop_types.push_back( crop_type_name( crop_dat->type ) );
-    crop_food.push_back ( itos( crop_food_amount ) );
+
+    std::stringstream ss_crop_food;
+    ss_crop_food << crop_food_amount / 10000 << ".";
+    if (food_decimal < 10) {
+// Insert a 0; otherwise 1.08 will render as "1.8"
+      ss_crop_food << "0";
+    }
+    ss_crop_food << food_decimal;
+    crop_food.push_back ( ss_crop_food.str() );
     crop_grown.push_back( itos( cur_crop.amount ) );
   }
   i_food.set_data("list_crop_name",  crop_names);
