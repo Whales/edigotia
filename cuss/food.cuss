@@ -3,8 +3,8 @@ food </> 80 24 20 1 BG </> 0 0 80 24 0 0 0 678 0 0 4194412 9 0 0 1 4194424 9 0 0
 3 list_farm_output </> 17 3 7 7 0 1 138757280 0 
 3 list_empty_fields </> 28 3 5 7 0 1 -1 0 
 3 list_crop_name </> 1 12 19 11 1 0 32 0 
-3 list_crop_type </> 20 12 9 11 0 1 27749 0 
-3 list_crop_food </> 29 12 6 11 0 1 164566128 0 
+3 list_crop_type </> 20 12 7 11 0 1 27749 0 
+3 list_crop_food </> 27 12 7 11 0 1 164566128 0 
 3 list_crop_grown </> 35 12 6 11 0 1 164484568 0 
 5 num_farms </> 58 1 7 1 0 1 0 0
 5 num_fields_worked </> 58 2 7 1 0 1 0 0
