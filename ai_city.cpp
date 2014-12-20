@@ -124,15 +124,14 @@ void AI_city::setup_resource_production(World_map* world)
 
 // Figure out the food that we need...
   int food_req = get_food_consumption();
-/* We multiply by 50,000 to avoid rounding errors.  50,000 is the product of:
+/* We multiply by 10,000 to avoid rounding errors.  10,000 is the product of:
  * 100 - terrain farmability is a percentage (0 to 100)
- * 5 - Farming skill is measured from 0 to 5.
  * 100 - crop food output is per 100 units of the crop.
  * We also multiply by our chosen role's food_percentage, then divide by 100.
  * This is because some roles aim to produce more food than we require, while
  * others produce less and assume we'll import the deficit.
  */
-  food_req = (food_req * 50000 * role_dat->food_percentage) / 100;
+  food_req = (food_req * 10000 * role_dat->food_percentage) / 100;
 // TODO: If there's a nearby, friendly CITY_ROLE_FARMING city, decrease food_req
 
 
@@ -233,14 +232,9 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
 {
   bool unlimited_food = (food_req == -1);
   int farm_skill = Race_data[race]->skill_level[SKILL_FARMING];
-  int res_farming = 0;
   Building_datum* farm_dat = Building_data[BUILD_FARM];
+  int res_farming = farm_dat->amount_produced(RES_FARMING);
   int num_workers = farm_dat->get_total_jobs(CIT_PEASANT);
-  for (int i = 0; res_farming == 0 && i < farm_dat->production.size(); i++) {
-    if (farm_dat->production[i].type == RES_FARMING) {
-      res_farming = farm_dat->production[i].amount;
-    }
-  }
 // Find the most food-producing tile.
   bool done = false;
   while (!done && !tiles.empty() && free_peasants > 0 &&
@@ -264,7 +258,7 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
       food_req -= best_food;
       free_peasants -= num_workers;
       add_area(AREA_FARM);
-      add_resource_production(RES_FOOD, best_food / 50000);
+      add_resource_production(RES_FOOD, best_food / 10000);
       tiles.erase(tiles.begin() + best_index);
     }
   } // while (!done && food_req > 0 && !tiles.empty())
@@ -280,14 +274,9 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
 {
   bool unlimited_food = (food_req == -1);
   int hunting_skill = Race_data[race]->skill_level[SKILL_HUNTING];
-  int res_hunting = 0;
   Building_datum* camp_dat = Building_data[BUILD_HUNTING_CAMP];
+  int res_hunting = camp_dat->amount_produced(RES_HUNTING);
   int num_workers = camp_dat->get_total_jobs(CIT_PEASANT);
-  for (int i = 0; res_hunting == 0 && i < camp_dat->production.size(); i++) {
-    if (camp_dat->production[i].type == RES_HUNTING) {
-      res_hunting = camp_dat->production[i].amount;
-    }
-  }
 // Find the most food-producing tile.
   bool done = false;
   while (!done && !tiles.empty() && free_peasants > 0 &&
@@ -304,16 +293,16 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
       done = true;
     } else {
 // Multiply by our race's hunting skill, and res_hunting from above.
-// Also multiply by 50,000 since food_req is multiplied by 50,000!  But also
+// Also multiply by 10,000 since food_req is multiplied by 10,000!  But also
 // divide by 10 since we multiply by (5 + hunting_skill).
       if (free_peasants < num_workers) {
         free_peasants = num_workers;
       }
-      best_food = (5000 * best_food * (5 + hunting_skill) * res_hunting *
+      best_food = (1000 * best_food * (5 + hunting_skill) * res_hunting *
                    num_workers);
       food_req -= best_food;
       free_peasants -= num_workers;
-      add_resource_production(RES_FOOD, best_food / 50000);
+      add_resource_production(RES_FOOD, best_food / 10000);
       add_area(AREA_HUNTING_CAMP);
       tiles.erase(tiles.begin() + best_index);
     }
@@ -331,9 +320,9 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
   bool unlimited_food = (food_req == -1);
   int livestock_skill = Race_data[race]->skill_level[SKILL_LIVESTOCK];
 /* First, figure out the three most food-producing animals.
- * We look at how much food is produced in 50,000 days; this makes calculating
+ * We look at how much food is produced in 10,000 days; this makes calculating
  * the food we can get by slaughtering animals easier.  It also makes our food
- * amounts work directly with food_req (since that's multiplied by 50,000).
+ * amounts work directly with food_req (since that's multiplied by 10,000).
  * If food_req is -1, then we're not just trying to produce food; other
  * resources are valuable too.  So pick ANY livestock animals.
  */
@@ -342,12 +331,12 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
   int min_food = 0;
   for (int i = 0; i < ANIMAL_MAX; i++) {
     Animal_datum* ani_dat = Animal_data[i];
-// Only multiply food_livestock by 500 since it's measured per 100 animals
-    int animal_food = ani_dat->food_livestock * 500;
+// Only multiply food_livestock by 100 since it's measured per 100 animals
+    int animal_food = ani_dat->food_livestock * 100;
 // Now, food from slaughtering animals (divided by how long it takes to birth 1)
-// We multiply by 50,000 to match our required food; then also multiply by 100
+// We multiply by 10,000 to match our required food; then also multiply by 100
 // since we have 100 animals (and thus need to divide reproduction_rate by 100)
-    animal_food += (5000000 * ani_dat->food_killed) /
+    animal_food += (1000000 * ani_dat->food_killed) /
                    ani_dat->reproduction_rate;
 // At livestock skill of 1, tameness must be >= 88; at skill of 5, >= 40
     if (ani_dat->tameness + 12 * livestock_skill >= 100 &&
@@ -397,7 +386,7 @@ void AI_city::add_pastures(std::vector<Map_tile*>& tiles, int& food_req)
     Animal new_livestock = food_animals[ animal_index ];
     int food_amount = 100 * food_amounts[ animal_index ];
     food_req -= food_amount;
-    add_resource_production(RES_FOOD, food_amount / 50000);
+    add_resource_production(RES_FOOD, food_amount / 10000);
     add_area(AREA_PASTURE);
 
 // Add resource production for anything else the animal may produce.
@@ -456,13 +445,8 @@ void AI_city::add_sawmills(std::vector<Map_tile*>& tiles)
 {
 // TODO: Get info on how much a sawmill outputs per worker, and our race's skill
   Building_datum* sawmill_dat = Building_data[BUILD_SAWMILL];
+  int res_wood = sawmill_dat->amount_produced(RES_LOGGING);
   int num_workers = sawmill_dat->get_total_jobs(CIT_PEASANT);
-  int res_wood = 0;
-  for (int i = 0; res_wood == 0 && i < sawmill_dat->production.size(); i++) {
-    if (sawmill_dat->production[i].type == RES_LOGGING) {
-      res_wood = sawmill_dat->production[i].amount;
-    }
-  }
   for (int i = 0; free_peasants > 0 && i < tiles.size(); i++) {
     Map_tile* tile = tiles[i];
     if (tile->can_build(AREA_SAWMILL) && tile->wood >= 3000) {
