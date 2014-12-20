@@ -135,7 +135,7 @@ std::string crop_type_name(Crop_type type)
     case CROPTYPE_SPICE:    return "spice";
     case CROPTYPE_DRUG:     return "drug";
     case CROPTYPE_POISON:   return "poison";
-    case CROPTYPE_MATERIAL: return "material";
+    case CROPTYPE_FIBER:    return "fiber";
     case CROPTYPE_OTHER:    return "other";
     case CROPTYPE_MAX:      return "BUG - CROPTYPE_MAX";
     default:                return "Unnamed Crop_type";
@@ -151,7 +151,7 @@ nc_color crop_type_color(Crop_type type)
     case CROPTYPE_SPICE:    return c_yellow;
     case CROPTYPE_DRUG:     return c_magenta;
     case CROPTYPE_POISON:   return c_ltred;
-    case CROPTYPE_MATERIAL: return c_ltblue;
+    case CROPTYPE_FIBER:    return c_ltblue;
     case CROPTYPE_OTHER:    return c_brown;
     case CROPTYPE_MAX:      return c_ltgray;
     default:                return c_ltgray;

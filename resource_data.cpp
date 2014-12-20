@@ -131,12 +131,12 @@ void init_crop_and_mineral_data()
   _crop(CROP_COTTON);
     _cname("cotton");
     _cpercent(70);
-    _type(CROPTYPE_MATERIAL);
+    _type(CROPTYPE_FIBER);
 
   _crop(CROP_HEMP);
     _cname("hemp");
     _cpercent(60);
-    _type(CROPTYPE_MATERIAL);
+    _type(CROPTYPE_FIBER);
 
 // Minerals
 
