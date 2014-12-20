@@ -1,0 +1,44 @@
+Farming:
+  We can farm for "food crops" or "special crops."  Each area only has a few
+  crops available, so you'll need to trade to get most!
+
+  Farms can support up to 10 workers.
+
+  Food crops all produce <farm skill> food per day:
+  SKILL     FOOD
+      1     1.0
+      2     2.0
+      3     3.0
+      4     4.0
+      5     5.0
+
+  This is also multipled by the terrain's farmability:
+  SKILL     TERRAIN     FOOD
+      1         25%     0.25
+      2                 0.5
+      3                 0.75
+      4                 1.0
+      5                 1.25
+ 
+      1         50%     0.5
+      2                 1.0
+      3                 1.5
+      4                 2.0
+      5                 2.5
+ 
+      1         75%     0.75
+      2                 1.5
+      3                 2.25
+      4                 3.0
+      5                 3.75
+ 
+Special crops include:
+  -Spices:  Morale commodity.
+  -Drugs:   Morale commodity.  May be addictive (i.e. failure to meet demand has
+            negative social effects)
+  -Poisons: Used by nobility (heroes, assassins) and military units to turn
+            wounding hits into killing hits.
+  -Fibers:  Used for constructing cloth.
+
+
+
