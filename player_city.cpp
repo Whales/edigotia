@@ -871,12 +871,7 @@ void Player_city::add_open_area(Area area)
 
 // Farms are set up specially.
 // Check if this area produces RES_FARMING.
-  int farming = 0;
-  for (int i = 0; farming == 0 && i < build_dat->production.size(); i++) {
-    if (build_dat->production[i].type == RES_FARMING) {
-      farming = build_dat->production[i].amount; // The amount of RES_FARMING
-    }
-  }
+  int farming = build_dat->amount_produced(RES_FARMING);
   if (farming > 0) {
     Map_tile* tile_here = map.get_tile(area.pos);
     Building* farm_bld = &(area.building);
@@ -895,12 +890,7 @@ void Player_city::add_open_area(Area area)
 
 // Mines are set up specially.
 // Check if this area produces RES_MINING.
-  int mining = 0;
-  for (int i = 0; mining == 0 && i < build_dat->production.size(); i++) {
-    if (build_dat->production[i].type == RES_MINING) {
-      mining = build_dat->production[i].amount;
-    }
-  }
+  int mining = build_dat->amount_produced(RES_MINING);
   if (mining > 0) {
 // Alter mining based on racial ability.
 // Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
@@ -1721,12 +1711,11 @@ int Player_city::get_food_production()
   } // for (int i = 0; i < areas.size(); i++)
 
 /* Crop_data[]->food is per 100 units of the crop, so naturally we must divide
- * by 100.  Additionally, Building::field_output is 500 times higher than it
- * should be (since terrain farmability is a percentage, 0 to 100, and farming
- * skill is a value from 0 to 5), so we must divide by 500.  Combining both
- * means dividing by 50000.
+ * by 100.  Additionally, Building::field_output is 100 times higher than it
+ * should be (since terrain farmability is a percentage, 0 to 100) so we must
+ * divide by 100.  Combining both means dividing by 10000.
  */
-  ret /= 50000;
+  ret /= 10000;
   return ret;
 }
 
