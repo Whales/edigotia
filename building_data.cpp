@@ -137,9 +137,9 @@ void init_building_data()
     _build_time(1);
     _destroy_cost(50);
     _upkeep(1);
-    _jobs(CIT_PEASANT, 5);
+    _jobs(CIT_PEASANT, 10);
     _wages(2);
-    _produces(RES_FARMING, 10);
+    _produces(RES_FARMING, 1);
 
   _build(BUILD_HUNTING_CAMP);
     _name("hunting camp");
