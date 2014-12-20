@@ -252,7 +252,7 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
     } else {
 // Multiply by our race's farming skill, and res_farming from above.
       if (free_peasants < num_workers) {
-        free_peasants = num_workers;
+        num_workers = free_peasants;
       }
       best_food = best_food * farm_skill * res_farming * num_workers;
       food_req -= best_food;
@@ -296,7 +296,7 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
 // Also multiply by 10,000 since food_req is multiplied by 10,000!  But also
 // divide by 10 since we multiply by (5 + hunting_skill).
       if (free_peasants < num_workers) {
-        free_peasants = num_workers;
+        num_workers = free_peasants;
       }
       best_food = (1000 * best_food * (5 + hunting_skill) * res_hunting *
                    num_workers);
