@@ -114,6 +114,25 @@ void init_races()
     _city_size(CITY_TYPE_DUCHY,    800, 4000);
     _city_size(CITY_TYPE_CAPITAL, 2000, 8000);
 
+    _city_name_start("al", "am", "an", "bir", "birm", "cam", "can", "car",
+                     "chel", "dan", "dar", "dun", "ed", "el", "ex", "fel",
+                     "hil", "hut", "lan", "lat", "nor", "port", "quart", "ruth",
+                     "south", "tel", "wan", "wil", "wilm", "yor", "york");
+
+    _city_name_middle("", "", "a", "*a", "al", "*al", "*an", "*as", "ca",
+                      "cing", "*er", "*ers", "e", "e", "es", "es", "*es",
+                      "*ial", "*iam", "*iams", "*ing", "ing", "*is", "*is",
+                      "*or", "*ow", "*os", "ser", "sing", "ter", "*um", "us");
+
+    _city_name_end("", "", "", "", "", "borough", "burg", "burg", "burg",
+                   "bury", "bury", "by", "by", "cas", "caster", "don", "*ers",
+                   "*ex", "field", "field", "ford", "forth", "gale", "ham",
+                   "ham", "herst", "ia", "*ia", "in", "*in", "ire", "kirk",
+                   "mouth", "or", "over", "pool", "?s", "?s", "?s", "?s",
+                   "?ston", "ter", "tin", "ton", "ton", "ton", "vale", "ville",
+                   "ville");
+
+/*
     _city_name_start("al", "ba", "bir", "cam", "car", "chel", "co", "da", "der",
                      "ex", "glo", "her", "lam", "le", "li", "lo", "nor",
                      "ox", "pe", "pre", "sa", "so", "sum", "tru", "wa",
@@ -129,6 +148,7 @@ void init_races()
                    "field", "ford", "ford", "forth", "gale", "ham", "ham",
                    "ham", "ia", "kirk", "mouth", "neck", "over", "pool", "pool",
                    "sex", "ter", "tol", "ton", "ton", "vale", "ville");
+*/
 
     _base_combat(10);
     _hp(100);
