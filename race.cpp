@@ -102,7 +102,58 @@ std::string Race_datum::get_city_name()
     ret << city_name_end[i];
   }
 
-  return capitalize( ret.str() );
+/* Check for the characters '*' or '?'
+ * '*' means "repeat the previous consonant if it's not preceded by a
+ * consonant."  E.g. "Wil*iams" => "Williams" but "Wilm*iams" => "Wilmiams"
+ * '?' means "if the previous character and the following character are
+ * identical, remove one."  E.g. "Wis*ster" => "Wister"
+ */
+
+  std::string name = ret.str();
+
+  for (int i = 0; i < name.size(); i++) {
+
+    if (name[i] == '*') {
+      if (i == 0) { // Start of the name; just remove the *
+        name = name.substr(1);
+        i--;
+      } else if (i == 1) {  // Again, just remove the *
+        std::stringstream new_name;
+        new_name << name[0] << name.substr(2);
+        name = new_name.str();
+        i--;
+      } else if (is_vowel(name[i - 1]) || !is_vowel(name[i - 2])) {
+// Once again, just remove the *
+        std::stringstream new_name;
+        new_name << name.substr(0, i) << name.substr(i + 1);
+        name = new_name.str();
+        i--;
+      } else {  // Replace the *!
+        name[i] = name[i - 1];
+      }
+
+    } else if (name[i] == '?') {
+      if (i == 0) { // Just remove the ?
+        name = name.substr(1);
+        i--;
+      } else if (i == name.size() - 1) {  // Just remove the ? again
+        name = name.substr(0, name.size() - 1);
+        i--;
+      } else if (name[i - 1] != name[i + 1]) { // Just remove the ? !!!
+        std::stringstream new_name;
+        new_name << name.substr(0, i) << name.substr(i + 1);
+        name = new_name.str();
+        i--;
+      } else {  // Remove the ? AND the character before it.
+        std::stringstream new_name;
+        new_name << name.substr(0, i - 1) << name.substr(i + 1);
+        name = new_name.str();
+        i--;
+      }
+    } // if (name[i] == '?')
+  }
+
+  return capitalize( name );
 }
 
 Race_skill lookup_race_skill(std::string name)
