@@ -106,32 +106,36 @@ Animal search_for_animal(std::string name)
   return ANIMAL_NULL;
 }
 
-std::string animal_amount_ranking(Animal_amount amt)
+// range defaults to false.
+std::string animal_amount_ranking(int amt, bool range)
 {
-  if (amt.amount <= 5) {
-    return "a few";
+  if (amt == 0) {
+    return (range ? "0" : "no");
 
-  } else if (amt.amount <= 15) {
-    return "a pack of";
+  } else if (amt <= 5) {
+    return (range ? "1 - 5" : "a few");
 
-  } else if (amt.amount <= 50) {
-    return "a small colony of";
+  } else if (amt <= 15) {
+    return (range ? "6 - 15" : "a pack of");
 
-  } else if (amt.amount <= 300) {
-    return "a colony of";
+  } else if (amt <= 50) {
+    return (range ? "16 - 50" : "a small colony of");
 
-  } else if (amt.amount <= 750) {
-    return "a large colony of";
+  } else if (amt <= 300) {
+    return (range ? "51 - 300" : "a colony of");
 
-  } else if (amt.amount <= 1500) {
-    return "an abundance of";
+  } else if (amt <= 750) {
+    return (range ? "301 - 750" : "a large colony of");
 
-  } else if (amt.amount <= 3000) {
-    return "thousands of";
+  } else if (amt <= 1500) {
+    return (range ? "751 - 1500" : "an abundance of");
+
+  } else if (amt <= 3000) {
+    return (range ? "1501 - 3000" : "thousands of");
 
   }
 
-  return "uncountable";
+  return (range ? "Over 3000" : "uncountable");
 }
 
 std::string animal_danger_ranking(int danger)

@@ -31,6 +31,9 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _danger(n) \
   Animal_data[cur_id]->danger = (n)
 
+#define _difficulty(n) \
+  Animal_data[cur_id]->difficulty = (n)
+
 #define _hp(n) \
   Animal_data[cur_id]->hp = (n)
 
@@ -158,6 +161,7 @@ void init_animal_data()
     _pack_chance(45);
     _max_pack_size(3);
     _danger(6);
+    _difficulty(20);
     _hp(140);
     _reproduction(2000);
     _hardiness(4000);
@@ -176,6 +180,7 @@ void init_animal_data()
     _rainfall_range ( 10,  75);
     _percentage(90);
     _default_action(ANIMAL_ACT_KILL);
+    _difficulty(3);
     _hp(5);
     _pack_chance(25);
     _max_pack_size(3);
@@ -193,6 +198,7 @@ void init_animal_data()
     _rainfall_range (  5,  60);
     _percentage(70);
     _default_action(ANIMAL_ACT_KILL);
+    _difficulty(6);
     _hp(30);
     _pack_chance(5);
     _max_pack_size(2);
@@ -214,6 +220,7 @@ void init_animal_data()
     _pack_chance(35);
     _max_pack_size(5);
     _danger(10);
+    _difficulty(10);
     _hp(70);
     _flee_chance(98);
     _reproduction(1600);
@@ -229,6 +236,7 @@ void init_animal_data()
     _rainfall_range ( 10,  60);
     _percentage(80);
     _default_action(ANIMAL_ACT_KILL);
+    _difficulty(25);
     _hp(110);
     _pack_chance(30);
     _max_pack_size(3);
@@ -250,6 +258,7 @@ void init_animal_data()
     _percentage(70);
     _default_action(ANIMAL_ACT_FLEE);
     _danger(12);
+    _difficulty(20);
     _hp(110);
     _flee_chance(92);
     _reproduction(2400);
@@ -269,6 +278,7 @@ void init_animal_data()
     _pack_chance(55);
     _max_pack_size(5);
     _danger(16);
+    _difficulty(28);
     _hp(85);
     _flee_chance(90);
     _reproduction(2000);
@@ -287,6 +297,7 @@ void init_animal_data()
     _percentage(30);
     _default_action(ANIMAL_ACT_FLEE);
     _danger(15);
+    _difficulty(30);
     _hp(80);
     _flee_chance(92);
     _reproduction(2800);
@@ -307,6 +318,7 @@ void init_animal_data()
     _pack_chance(45);
     _max_pack_size(4);
     _danger(18);
+    _difficulty(20);
     _hp(110);
     _flee_chance(85);
     _reproduction(2600);
@@ -328,6 +340,7 @@ void init_animal_data()
     _pack_chance(60);
     _max_pack_size(4);
     _danger(20);
+    _difficulty(40);
     _hp(250);
     _flee_chance(96);
     _reproduction(5000);
@@ -350,6 +363,7 @@ void init_animal_data()
     _pack_chance(20);
     _max_pack_size(4);
     _danger(3);
+    _difficulty(5);
     _hp(50);
     _flee_chance(98);
     _reproduction(100);
@@ -368,6 +382,7 @@ void init_animal_data()
   _percentage(30);
   _default_action(ANIMAL_ACT_FLEE);
   _danger(20);
+  _difficulty(10);
   _hp(160);
   _flee_chance(100);
   _reproduction(5000);
@@ -388,6 +403,7 @@ void init_animal_data()
     _pack_chance(20);
     _max_pack_size(3);
     _danger(30);
+    _difficulty(35);
     _hp(110);
     _flee_chance(60);
     _reproduction(3500);
@@ -409,6 +425,7 @@ void init_animal_data()
     _pack_chance(15);
     _max_pack_size(2);
     _danger(40);
+    _difficulty(50);
     _hp(130);
     _flee_chance(40);
     _reproduction(3800);
@@ -428,6 +445,7 @@ void init_animal_data()
     _percentage(10);
     _default_action(ANIMAL_ACT_FLEE);
     _danger(42);
+    _difficulty(50);
     _hp(150);
     _flee_chance(25);
     _reproduction(3600);
@@ -445,6 +463,7 @@ void init_animal_data()
     _percentage(5);
     _default_action(ANIMAL_ACT_FLEE);
     _danger(32);
+    _difficulty(60);
     _hp(120);
     _flee_chance(70);
     _reproduction(6000);
@@ -464,6 +483,7 @@ void init_animal_data()
     _pack_chance(15);
     _max_pack_size(3);
     _danger(50);
+    _difficulty(45);
     _hp(70);
     _flee_chance(92);
     _reproduction(6000);
@@ -480,6 +500,7 @@ void init_animal_data()
     _percentage(3);
     _default_action(ANIMAL_ACT_FLEE);
     _danger(60);
+    _difficulty(50);
     _hp(300);
     _flee_chance(15);
     _reproduction(7000);

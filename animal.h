@@ -96,6 +96,7 @@ struct Animal_datum
 // Hunting/livestock data
   Animal_action default_action; // Default action taken when hunting
   int danger;             // Dangerous to hunt? 10 = unarmed man, 20 = hunter
+  int difficulty;         // Hunting uses this many hunt points
   int hp;                 // Health points - how hard it is to kill
   int flee_chance;        // Chance for hunters to flee, if they choose to.
   int pack_chance;        // Chance that we'll appear in a pack.
@@ -121,7 +122,8 @@ struct Animal_datum
 Animal search_for_animal(std::string name);
 // Returns a description of the amount of the animal there.
 // E.g. "A few", "A pack of", "A colony of", "A large colony of", etc
-std::string animal_amount_ranking(Animal_amount amt);
+// If range is true, return the range (e.g. "301 - 750") not the text.
+std::string animal_amount_ranking(int amt, bool range = false);
 
 // Resturns a COLOR-CODED description of an animal's danger level.
 // E.g. "Harmless", "Weak", "Mild", "Moderate", "High", "Deadly", "Nightmare"
