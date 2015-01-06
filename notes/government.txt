@@ -1,0 +1,72 @@
+At present, the government system is similar to communism; the government (i.e.
+the player) owns all businesses/industry and any workers work for the
+government, with the exception of "free citizens" who perform their own work and
+thus produce taxes.
+
+This is good simple gameplay but it'd be nice to have other options.
+
+For instance, we could let citizens (merchants or burghers) own businesses (i.e.
+areas or buildings).  This would mean:
+  -They employ citizens - they pay the wages.  We can tax the wages.
+  -They choose what the business produces.  Farms/mines choose their crops or
+   minerals, and productive buildings choose their output.
+  -They're responsible for buying any ingredients.  If they own a blacksmith,
+   they must buy iron (import it, buy it from the government, or buy it from a
+   privately-owned mine/forge).
+  -They own the output.  It can then be sold to the citizens (generating taxes)
+   or to the government (you must pay them) or exported (also taxable).
+  -The area/building can't be closed without either buying it from them (if they
+   are willing to sell!) or generating some serious discontentment.
+
+This would be a complex feature, both from a development point of view and a
+gameplay point of view.
+Development challenges:
+  -Choose when to create a new business and what business to start.  Maybe we
+   always create a business when the class has enough money (and it's permitted
+   by the government of course).  Do we randomly choose a business type?  Or try
+   to determine what's needed?  A simple solution would be to weight the
+   available options by the number that already exist; our city has 8 farms and
+   2 mines, so we're more likely to choose a mine than a farm.
+  -Choose what to produce.  We'll need some way of determining demand (not too
+   hard I guess, just track how many buyers and how much each one wants) and a
+   price (which we'll probably have to do anyway for intercity trade); then we
+   just produce whatever has the highest demand/price.
+  -Determine how much to produce?  Or should we always just hire as many workers
+   as possible and output as much as possible?
+  -Find a source for any materials we need to buy; this can probably share code
+   with AI intercity trade.
+  -Find a buyer for whatever we produce.  This can also probably share code with
+   AI intercity trade.
+  -Actually model cashflow.  All business need their own cash pool, and money
+   must flow:
+
+               +--<--Purchases--<--+
+               v         v         ^
+      +----------+       ~       +----------+
+   +-<| Business |>-->-Wages->-->| Citizens |
+   |  +----------+       v       +----------+
+   v       ^    ^--+     ~
+Imports~Exports>~~~~~~~~~>~~~~Taxes~~>~~
+   v       ^       |                   v
+   |  +----------+ ^             +------------+
+   +->| Neighbor | +-Purchases--<| Government |
+      |    or    |               +------------+
+      |  Other   |
+      | Business |
+      +----------+
+
+Design/Gameplay/Interface challenges:
+  -Once the player has "activated" capitalism, how do they "authorize" the
+   creation of private businesses?
+    -We can assume that all of the land (within our radius of control) is owned
+     by the city.  So maybe there's a pseudoarea we can place called "Lease
+     Land."  Once this is placed, if the burgher class has enough money (per
+     citizen?) they can put up a down payment and build a business.
+      -Alternatively, we could outright sell the land for a much larger fee - 
+       but once it's sold we have to buy it back (most likely for a larger
+       amount).
+    -For building-based businesses (forge, blacksmith, etc), we could have an
+     area that's "free trade zone" - will only be filled with citizen-owned
+     businesses.
+      -Alternatively, there could be a building called "Empty Building" or
+       similar that works like "Lease Land" above.
