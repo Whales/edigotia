@@ -1,31 +1,44 @@
 Jobs:
   Ruler:              Gain Influence points.  At certain numbers of influence
                       points, your city's radius increases by 1.
-    >Can have as many as you want, but those beyond the first have 50%
+    >Alternative:  At certain numbers of influence points, the number of *tiles*
+     you can support increases by 1.  You choose which tile to add.  If you drop
+     below the required Influence points, a random tile is chosen from those
+     furthest from your Keep, and you lose that tile.
+    >Can have as many Rulers as you want, but those beyond the first have 50%
      effectiveness
 
-  Keeper of the Coin: Increases your max gold and decreases lending overhead.
+  Keeper of the Coin: Increases your max gold and decreases lending/borrowing
+                      overhead.
 
-  Master Spy:         Increases the reliability and success rate of all spies.
+  Master of Spies:    Increases the reliability and success rate of all spies.
 
   High Barrister:     Decreases corruption and improves effectiveness of guards.
 
   Lord of Caravans:   Decreases trade overhead.
     >Effectiveness increased 50% if they travel with a caravan (only applies to
      the caravan they're with)
+      >Or remove the overhead altogether?  Sending a noble out with a caravan is
+       a fairly risky proposition.  It's also time-consuming, which means that
+       it's unlike that ALL a player's trades could be facilitated by this
+       noble.
 
-  Master of Crops:    
+  Master of Crops:    Increases output of all farms.  Unlocks research into new
+                      crops and farm improvements.
+
   Diplomat:           Assign to a given city, province, or race.  Slowly
                       improves relations with their assignment.
-    >Effectiveness increased by 50% if they're actually stationed in a city of
-     their target
+    >Must be stationed in the target city!  If targeting a province, the
+     diplomat must be in the duchy seat; if targeting the race, the diplomat
+     must be in the capital.
 
   High Priest:        Improves value of worship, and relationship with your god.
 
   Hero:               Acts like a military unit.  Can explore and battle.
+    >Certain world locations REQUIRE a hero to activate/explore them!
 
   Spy:                Acts as a spy unit, albeit one with greater success rates
-                      (and some unique missions?)
+                      (and some unique missions?).
 
   General:            Attaches to a military unit.  Acts as a force multiplier
                       and improves morale.
@@ -36,3 +49,5 @@ Artifacts:  Unique, (sometimes?-)randomly-generated items which a Noble may
   >Increase Ruler effectiveness as 10%
   >Generate gold slowly
   >Charm citizens in any city visited
+
+
