@@ -51,7 +51,7 @@ void init_terrain_data()
     _name("tundra");
     _symbol('*', c_white);
     _farm(12);
-    _hunting_difficulty(4000);
+    _hunting_difficulty(12000);
     _wood(0, 400);
     _crop(CROP_CABBAGE);
     _crop(CROP_AMANITAS);
@@ -78,7 +78,7 @@ void init_terrain_data()
     _name("icy hill");
     _symbol('=', c_ltgray);
     _farm(5);
-    _hunting_difficulty(6000);
+    _hunting_difficulty(18000);
     _wood(0, 350);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      2000);
@@ -105,7 +105,7 @@ void init_terrain_data()
     _name("icy mountain");
     _symbol('^', c_white);
     _farm(0);
-    _hunting_difficulty(5000);
+    _hunting_difficulty(15000);
     _wood(0, 100);
     _mineral(MINERAL_STONE, INFINITE_RESOURCE);
     _mineral(MINERAL_TIN,      5000);
@@ -126,7 +126,7 @@ void init_terrain_data()
     _name("glacier");
     _symbol('#', c_ltcyan);
     _farm(0);
-    _hunting_difficulty(5000);
+    _hunting_difficulty(15000);
     _animal(ANIMAL_AKHLUT,      150);
     _buildable(AREA_HUNTING_CAMP);
 // Glaciers are totally useless!  Except for Akhluts, which are very dangerous.
@@ -136,7 +136,7 @@ void init_terrain_data()
     _name("Field");
     _symbol('_', c_green);
     _farm(100);
-    _hunting_difficulty(1000);
+    _hunting_difficulty(5000);
     _wood(100, 1000);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -166,7 +166,7 @@ void init_terrain_data()
     _name("Rocky");
     _symbol(',', c_brown);
     _farm(65);
-    _hunting_difficulty(5000);
+    _hunting_difficulty(10000);
     _wood(0, 200);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -202,7 +202,7 @@ void init_terrain_data()
     _name("Hill");
     _symbol('=', c_brown);
     _farm(50);
-    _hunting_difficulty(4000);
+    _hunting_difficulty(8000);
     _wood(50, 300);
     _crop(CROP_WHEAT);
     _crop(CROP_CABBAGE);
@@ -242,7 +242,7 @@ void init_terrain_data()
     _name("Mountain");
     _symbol('^', c_ltgray);
     _farm(10);
-    _hunting_difficulty(6000);
+    _hunting_difficulty(12000);
     _wood(0, 200);
     _crop(CROP_WHEAT);
     _crop(CROP_MELON);
@@ -271,7 +271,7 @@ void init_terrain_data()
     _name("Forest");
     _symbol(';', c_ltgreen);
     _farm(25);
-    _hunting_difficulty(9000);
+    _hunting_difficulty(25000);
     _wood(20000, 80000);
     _wood_cleared(TER_BARREN);
     _crop(CROP_CABBAGE);
@@ -303,7 +303,7 @@ void init_terrain_data()
     _name("Barren");
     _symbol(':', c_brown);
     _farm(75);
-    _hunting_difficulty(4000);
+    _hunting_difficulty(12000);
     _crop(CROP_CABBAGE);
     _crop(CROP_MELON);
     _crop(CROP_AMANITAS);
@@ -355,7 +355,7 @@ void init_terrain_data()
     _name("Desert");
     _symbol('~', c_yellow);
     _farm(30);
-    _hunting_difficulty(1000);
+    _hunting_difficulty(5000);
     _crop(CROP_CACTUS);
     _crop(CROP_SPICEREED);
     _crop(CROP_SCORPICON);
@@ -384,7 +384,7 @@ void init_terrain_data()
     _name("Swamp");
     _symbol('~', c_cyan);
     _farm(80);
-    _hunting_difficulty(10000);
+    _hunting_difficulty(30000);
     _wood(5000, 40000);
     _crop(CROP_RICE);
     _crop(CROP_PEPPER);
@@ -414,7 +414,7 @@ void init_terrain_data()
     _name("Jungle");
     _symbol('J', c_ltcyan);
     _farm(15);
-    _hunting_difficulty(10000);
+    _hunting_difficulty(30000);
     _wood(30000, 100000);
     _wood_cleared(TER_FIELD);
     _crop(CROP_RICE);
