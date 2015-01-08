@@ -47,6 +47,9 @@ Player_city::Player_city()
   radius = 1;
   unread_messages = 0;
   show_hunting_messages = true;
+
+  hunt_record_days = -1;  // We set it to 0 when we build our first camp
+  hunt_record_food = 0;
 }
 
 Player_city::~Player_city()
@@ -666,6 +669,10 @@ void Player_city::do_turn()
 
   } // for (int i = 0; i < areas.size(); i++)
 
+  if (hunt_record_days >= 0) {
+    hunt_record_days++;
+  }
+
 // Pay wages.
   int wages = get_total_wages();
   if (!expend_resource(RES_GOLD, wages)) {
@@ -921,6 +928,10 @@ void Player_city::add_open_area(Area area)
     int level = Race_data[race]->base_combat / 2 +
                 3 * Race_data[race]->skill_level[SKILL_HUNTING];
     area.building.hunter_level = level;
+// Start recording hunting food if we haven't already
+    if (hunt_record_days == -1) {
+      hunt_record_days = 0;
+    }
   }
 
 // Automatically hire workers and set crops/minerals
@@ -1012,6 +1023,13 @@ bool Player_city::employ_citizens(Citizen_type type, int amount, Building* job_s
   if (population[type].get_unemployed() < amount) {
     return false;
   }
+/* TODO: If there's 3 slots available, and we try to hire 4, the function
+ *       returns false and doesn't employ any.  Is this good?  I think so;
+ *       sometimes we rely on this function to actually employ the exact number
+ *       of citizens specified, so we shouldn't subvert that assumption.  If
+ *       needed we can add a flag to this function, or write a seperate
+ *       function, which hires as many as possible (up to a specified limit).
+ */
   if (job_site->get_available_jobs(type) < amount) {
     return false;
   }
@@ -1035,6 +1053,7 @@ bool Player_city::fire_citizens(Citizen_type type, int amount,
   if (amount <= 0) {
     return false;
   }
+// Do we need this check?  It doesn't seem like it'd hurt...
   if (population[type].count < amount) {
     return false;
   }
@@ -1819,6 +1838,7 @@ void Player_city::do_hunt(Area* hunting_camp)
   }
 
   Map_tile* tile = map.get_tile(hunting_camp->pos);
+
   if (!tile) {
     debugmsg("BUG - Hunting on NULL ground!");
     return;
@@ -1827,310 +1847,183 @@ void Player_city::do_hunt(Area* hunting_camp)
   Building* camp_bldg = &(hunting_camp->building);
 
   int hunters = camp_bldg->workers;
-  int num_hunts = camp_bldg->amount_produced(RES_HUNTING) * hunters;
 
-  if (num_hunts <= 0) {
+  if (hunters <= 0) {
     return;
   }
 
-  int combat_points = camp_bldg->hunter_level;
-  int hunter_hp = Race_data[race]->hp;
-  int skill_level = Race_data[race]->skill_level[SKILL_HUNTING];
+  Animal_action action = camp_bldg->hunting_action;
+  int combat_points    = camp_bldg->hunter_level;
+  int hunting_points   = camp_bldg->hunter_level * hunters *
+                         camp_bldg->amount_produced(RES_HUNTING);
+
+  int hunter_hp        = Race_data[race]->hp;
+  int hunting_skill    = Race_data[race]->skill_level[SKILL_HUNTING];
+  int livestock_skill  = Race_data[race]->skill_level[SKILL_LIVESTOCK];
 
 // These are for adding a message at the bottom of the function.
 // animals_both are for when we caught an animal but didn't have space for it,
 // so we slaughtered it anyway.
-  std::vector<Animal_amount> animals_killed, animals_caught, animals_both;
+  std::map<Animal,int> animals_killed, animals_caught, animals_both;
 
-  for (int i = 0; camp_bldg->workers > 0 && i < num_hunts; i++) {
-    Animal prey = tile->choose_hunt_animal(skill_level);
-    Animal_datum* prey_dat = Animal_data[prey];
-    int pack_size = 1;
-    if (prey_dat->pack_chance > 0 && rng(1, 100) <= prey_dat->pack_chance) {
-      pack_size = rng(1, prey_dat->max_pack_size);
+  while (hunting_points > 0) {
+// Pick an animal; usually it'll be the one we've specified.
+    Animal target = camp_bldg->hunting_target;
+// 1 in 10 for skill 1, 1 in 32 for skill 3, 1 in 50 for skill 5.
+    if (one_in(5 + hunting_skill * 9)) {
+      target = tile->choose_hunt_animal(hunting_skill);
     }
+    Animal_datum* target_data = Animal_data[target];
+    int pack_size = 1;
 
-    if (prey != ANIMAL_NULL) {  // Ensure we actually caught something!
+    if (target != ANIMAL_NULL) {  // A randomized target MIGHT be null.
+      if (target_data->pack_chance > 0 &&
+          rng(1, 100) <= target_data->pack_chance) {
+        pack_size = rng(1, target_data->max_pack_size);
+      }
 
-      bool combat = true;  // If we flee, set this to false; if true, do combat
-
-// If we want to flee, try that first.
-      if (hunting_action[prey] == ANIMAL_ACT_FLEE) {
-// Affect chance of fleeing based on pack size.
-        int flee_chance = prey_dat->flee_chance;
-        flee_chance = (flee_chance * 20) / (19 + pack_size);
-        bool fled = (rng(1, 100) <= flee_chance);
-
-        if (skill_level < 3) {  // 1 or 2 extra chances to FAIL
-          for (int n = 0; fled && n < 3 - skill_level; n++) {
-            fled = rng(1, 100) <= flee_chance;
-          }
-
-        } else if (skill_level > 3) { // 1 or 2 extra chances to SUCCEED
-          for (int n = 0; !fled && n < skill_level - 3; n++) {
-            fled = rng(1, 100) <= flee_chance;
-          }
+// Use up some of our hunting points
+      int point_cost = target_data->difficulty;
+      if (pack_size > 1) {
+// Hunting a pack of N is faster than hunting N individuals.
+        for (int n = 1; n < pack_size; n++) {
+          point_cost += (n * target_data->difficulty) / (n + 2);
         }
-
-        if (fled) {  // Avoided combat!
-          combat = false;
+      }
+// Sanity check...
+      if (point_cost == 0) {
+        debugmsg("Hunting cost 0! (%s, pack of %d)",
+                 target_data->name.c_str(), pack_size);
+        point_cost = 1;
+      }
+// If we don't have enough points, we roll against the cost.  If our roll is
+// higher we get the animal; either way, we lose all our points.
+      if (point_cost > hunting_points) {
+        if (rng(0, point_cost) > rng(0, hunting_points)) {
+          target = ANIMAL_NULL;
         }
-      } // if (hunting_action[prey] == ANIMAL_ACT_FLEE)
+      }
+      hunting_points -= point_cost;
+    } // if (target != ANIMAL_NULL)
 
-      if (combat) {
-// "2" limits us to 2 hunters fighting at once
-        Battle_result result = quick_battle(hunters, combat_points, hunter_hp,
-                                            pack_size, prey_dat->danger,
-                                            prey_dat->hp);
-        
-        if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
+// Check for ANIMAL_NULL again, since it may have changed in the above block.
+    if (target != ANIMAL_NULL) {
+
+// Now.... FIGHT!
+      Battle_result result = quick_battle(hunters, combat_points, hunter_hp,
+                                          pack_size, target_data->danger,
+                                          target_data->hp);
+      
+      if (result.result == COMBAT_RES_ATTACKER_WON) { // We won!
 // If we want to, try to capture it.
-          bool caught = false;
-          bool caught_and_killed = false; // If we don't have livestock space
-          int num_caught = 0;
-          if (hunting_action[prey] == ANIMAL_ACT_CAPTURE) {
+        bool caught = false;
+        bool caught_and_killed = false; // If we don't have livestock space
+        int num_caught = 0;
+        if (action == ANIMAL_ACT_CAPTURE) {
+// We use 2/3 livestock skill & 1/3 hunting skill for capturing things
+          int capture_skill = (livestock_skill * 2 + hunting_skill) / 3;
 // Try to catch each one seperately.
-            for (int n = 0; n < pack_size; n++) {
-// We use a mix of livestock & hunting skills for capturing things
-              int livestock_skill =
-                Race_data[race]->skill_level[SKILL_LIVESTOCK];
-              int capture_skill = (livestock_skill * 2 + skill_level) / 3;
-              caught = (rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness);
-              if (capture_skill < 3) {  // 1 or 2 extra chances to FAIL
-                for (int n = 0; caught && n < 3 - capture_skill; n++) {
-                  caught = rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness;
-                }
-              } else if (capture_skill > 3) { // 1 or 2 extra chances to SUCCEED
-                for (int n = 0; !caught && n < capture_skill - 3; n++) {
-                  caught = rng(1, 100) + rng(0, 5 * n) <= prey_dat->tameness;
-                }
+          for (int n = 0; n < pack_size; n++) {
+// We add up to 5 points for each creature beyond the first; it's hard to corral
+// an entire pack of wild animals!
+            caught = (rng(1, 100) + rng(0, 5 * n) <= target_data->tameness);
+            if (capture_skill < 3) {  // 1 or 2 extra chances to FAIL
+              for (int m = 0; caught && m < 3 - capture_skill; m++) {
+                caught = rng(1, 100) + rng(0, 5 * n) <= target_data->tameness;
               }
+            } else if (capture_skill > 3) { // 1 or 2 extra chances to SUCCEED
+              for (int m = 0; !caught && m < capture_skill - 3; m++) {
+                caught = rng(1, 100) + rng(0, 5 * n) <= target_data->tameness;
+              }
+            }
 
-              if (caught) {
-                num_caught++;
+            if (caught) {
 // Add them to our livestock, if we can...
-                if (get_livestock_total() < get_livestock_capacity()) {
-                  if (livestock.count(prey)) {
-                    livestock[prey]++;
-                  } else {
-                    livestock[prey] = 1;
-                  }
-                } else {
-                  caught_and_killed = true;
-                  kill_animals(prey, 1, hunting_camp->pos);
-                }
+              if (get_livestock_total() < get_livestock_capacity()) {
+                num_caught++;
+                livestock[target]++;
+              } else { // We can't hold any more livestock! Kill them instead :(
+                caught_and_killed = true;
+                kill_animals(target, 1, hunting_camp->pos);
               }
             }
           }
-          if (caught_and_killed) {
-// Add us to the list of slaughtered animals, AND the list of killed animals.
-            bool found = false;
-            for (int n = 0; !found && n < animals_both.size(); n++) {
-              if (animals_both[n].type == prey) {
-                found = true;
-                animals_both[n].amount++;
-              }
-            }
-            if (!found) {
-              animals_both.push_back( Animal_amount(prey, 1) );
-            }
-            found = false;
-            for (int n = 0; !found && n < animals_killed.size(); n++) {
-              if (animals_killed[n].type == prey) {
-                found = true;
-                animals_killed[n].amount++;
-              }
-            }
-            if (!found) {
-              animals_killed.push_back( Animal_amount(prey, 1) );
-            }
-          } else if (caught) {
-// Add us to the list of capture animals
-            bool found = false;
-            for (int n = 0; !found && n < animals_caught.size(); n++) {
-              if (animals_caught[n].type == prey) {
-                found = true;
-                animals_caught[n].amount++;
-              }
-            }
-            if (!found) {
-              animals_caught.push_back( Animal_amount(prey, 1) );
-            }
-          } else {  // Not caught-and-killed, not caught - just killed
-            bool found = false;
-            for (int n = 0; !found && n < animals_killed.size(); n++) {
-              if (animals_killed[n].type == prey) {
-                found = true;
-                animals_killed[n].amount++;
-              }
-            }
-            if (!found) {
-              animals_killed.push_back( Animal_amount(prey, 1) );
-            }
-
-            kill_animals(prey, pack_size, hunting_camp->pos);
-          }
-        } // if (result.result == COMBAT_RES_ATTACKER_WON)
+        }
+// Add us to the appropriate list & kill if necessary
+        if (caught_and_killed) {
+          animals_both[target]++;
+        } else if (caught) {
+          animals_caught[target] += num_caught;
+        } else {  // Not caught-and-killed, not caught - just killed
+          animals_killed[target]++;
+          kill_animals(target, pack_size, hunting_camp->pos);
+        }
+      } // if (result.result == COMBAT_RES_ATTACKER_WON)
 
 // Even if we won, some hunters may have died.
-        if (result.attackers_dead > 0) {
+      if (result.attackers_dead > 0) {
 // Remove them from this building.
-          fire_citizens(CIT_PEASANT, result.attackers_dead, camp_bldg);
-          std::stringstream death_reason;
-          if (result.attackers_dead > 1) {
-            death_reason << "were ";
-          } else {
-            death_reason << "was ";
-          }
-          death_reason << "killed by ";
-          if (pack_size > 1) {
-            death_reason << "a pack of " << prey_dat->name_plural;
-          } else {
-            death_reason << "a " << prey_dat->name;
-          }
-          kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING,
-                        death_reason.str());
-        } // if (result.attackers_dead > 0)
-      } // if (combat)
-    } // if (prey != ANIMAL_NULL)
-  } // for (int i = 0; i < num_hunts; i++)
-
-// Now, add a message about what we killed/caught.
-  std::stringstream ss_message;
-  if (!animals_killed.empty() || !animals_caught.empty()) {
-    ss_message << "Hunt result: ";
-  }
-  if (animals_killed.empty() && animals_caught.empty() &&
-      animals_both.empty()) {
-    ss_message << "No animals killed or caught.";
-  }
-
-  if (!animals_killed.empty()) {
-
-    for (int i = 0; i < animals_killed.size(); i++) {
-// Conjunction (or comma)
-      Animal_datum* animal_dat = Animal_data[ animals_killed[i].type ];
-      if (i > 0) {
-        if (i == animals_killed.size() - 1) {
-          ss_message << " and ";
+        fire_citizens(CIT_PEASANT, result.attackers_dead, camp_bldg);
+        std::stringstream death_reason;
+        if (result.attackers_dead > 1) {
+          death_reason << "were ";
         } else {
-          ss_message << ", ";
+          death_reason << "was ";
         }
-      }
-
-// Article (or number)
-      if (animals_killed[i].amount == 1) {
-        ss_message << "a";
-      } else {
-        ss_message << animals_killed[i].amount;
-      }
-
-      ss_message << " ";
-      if (animals_killed[i].amount == 1) {
-        ss_message << animal_dat->name;
-      } else {
-        ss_message << animal_dat->name_plural;
-      }
-    }
-// Verb
-    if (animals_killed.size() > 1 || animals_killed[0].amount > 1) {
-      ss_message << " were ";
-    } else {
-      ss_message << " was ";
-    }
-    ss_message << "killed";
-// Do we need to link to animals_caught?
-    if (animals_caught.empty()) { // Just end the sentence.
-      ss_message << ".";
-    } else {  // Continue the sentence with a description of the animals caught.
-      ss_message << ", and ";
-    }
-  }
-
-  if (!animals_caught.empty()) {
-
-    for (int i = 0; i < animals_caught.size(); i++) {
-// Conjunction (or comma)
-      Animal_datum* animal_dat = Animal_data[ animals_caught[i].type ];
-      if (i > 0) {
-        if (i == animals_caught.size() - 1) {
-          ss_message << " and ";
+        death_reason << "killed by ";
+        if (pack_size > 1) {
+          death_reason << "a pack of " << target_data->name_plural;
         } else {
-          ss_message << ", ";
+          death_reason << "a " << target_data->name;
         }
-      }
+        death_reason << " while hunting";
+        kill_citizens(CIT_PEASANT, result.attackers_dead, DEATH_HUNTING,
+                      death_reason.str());
+      } // if (result.attackers_dead > 0)
+    } // if (target != ANIMAL_NULL)
+  } // while (hunting_points > 0)
 
-// Article (or number)
-      if (animals_caught[i].amount == 1) {
-        ss_message << "a";
-      } else {
-        ss_message << animals_caught[i].amount;
-      }
-
-      ss_message << " ";
-      if (animals_caught[i].amount == 1) {
-        ss_message << animal_dat->name;
-      } else {
-        ss_message << animal_dat->name_plural;
-      }
-    }
-// Verb
-    if (animals_caught.size() > 1 || animals_caught[0].amount > 1) {
-      ss_message << " were ";
-    } else {
-      ss_message << " was ";
-    }
-    ss_message << "captured.";
-  }
-
-// Special sentence for animals we caught but couldn't keep.
+// We get a warning about a lack of livestock space even if hunting messages are
+// off.
   if (!animals_both.empty()) {
-    std::stringstream ss_out_of_space;
-    ss_out_of_space << "We are out of space for livestock!  ";
-    for (int i = 0; i < animals_both.size(); i++) {
-// Conjunction (or comma)
-      Animal_datum* animal_dat = Animal_data[ animals_both[i].type ];
-      if (i > 0) {
-        if (i == animals_both.size() - 1) {
-          ss_out_of_space << " and ";
-        } else {
-          ss_out_of_space << ", ";
-        }
-      }
-
-// Article (or number)
-      if (animals_both[i].amount == 1) {
-        if (i == 0) {
-          ss_out_of_space << "A";
-        } else {
-          ss_out_of_space << "a";
-        }
-      } else {
-        ss_out_of_space << animals_both[i].amount;
-      }
-
-      ss_out_of_space << " ";
-      if (animals_both[i].amount == 1) {
-        ss_out_of_space << animal_dat->name;
-      } else {
-        ss_out_of_space << animal_dat->name_plural;
-      }
-    } // for (int i = 0; i < animals_both.size(); i++)
-    if (animals_both.size() > 1 || animals_both[0].amount > 1) {
-      ss_out_of_space << " were ";
-    } else {
-      ss_out_of_space << " was ";
-    }
-    ss_out_of_space << "captured, but had to be slaughtered.";
-
-    add_message(MESSAGE_MAJOR, ss_out_of_space.str());
+    add_message(MESSAGE_MAJOR, "We are out of space for livestock!");
   }
-
-  std::string message = capitalize( ss_message.str() );
-
+// Now, add a message about what we killed/caught.
   if (show_hunting_messages) {
+    std::stringstream ss_message;
+
+    if (animals_killed.empty() && animals_caught.empty() &&
+        animals_both.empty()) {
+      ss_message << "No animals killed or caught.";
+    } else {
+      ss_message << "Hunt result: ";
+    }
+
+    if (!animals_killed.empty()) {
+      ss_message << capitalize( list_animals(animals_killed, "killed.") );
+    }
+
+    if (!animals_caught.empty()) {
+      if (!animals_killed.empty()) {
+        ss_message << "  ";
+      }
+      ss_message << capitalize( list_animals(animals_caught, "captured."));
+    }
+
+    if (!animals_both.empty()) {
+      add_message(MESSAGE_MAJOR, "We are out of space for livestock!");
+      if (!animals_killed.empty() || !animals_caught.empty()) {
+        ss_message << "  ";
+      }
+      ss_message << capitalize( list_animals(animals_both,
+                                             "captured, but had to be killed.")
+                              );
+    }
+
+    std::string message = capitalize( trim( ss_message.str() ) );
     add_message(MESSAGE_MINOR, message);
-  }
+
+  } // if (show_hunting_messages)
 
 }
 
@@ -2150,6 +2043,10 @@ void Player_city::kill_animals(Animal animal, int amount, Point pos)
 // Otherwise, the animal came from the map, while hunting.
   Map_tile* tile = map.get_tile(pos);
   if (tile) {
+// Add the food gained to hunt_record_food, if we're tracking
+    if (hunt_record_days >= 0) {
+      hunt_record_food += amount * animal_dat->food_killed;
+    }
 // If we have a tile, this was a hunt kill; so add the animals to our records.
     if (hunt_kills.count(animal)) {
       hunt_kills[animal] += amount;
