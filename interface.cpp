@@ -6,6 +6,7 @@
 #include "stringfunc.h"
 #include "keys.h"
 #include "building.h"
+#include "animal.h"
 #include <sstream>
 #include <cstdarg> // For the variadic function below
 #include <map>
@@ -313,7 +314,7 @@ void Interface::handle_key(long ch)
 // costs back).
             if (area_selected->under_construction()) {
               if (query_yn("Cancel %s construction? You will lose all \
-resources spent to build it.")) {
+resources spent to build it.", area_selected->get_name().c_str())) {
                 city->destroy_area_at(sel);
               }
 
@@ -1449,7 +1450,7 @@ void Interface::minister_food()
 // To decrease farming, we have to be able to fire an appropriate number of
 // peasants from this farm... so make sure we can!
               if (farm_build->crops_grown[crop_index].amount >= crop_change &&
-                city->fire_citizens(CIT_PEASANT, crop_change, farm_build)) {
+                  city->fire_citizens(CIT_PEASANT, crop_change, farm_build)) {
                 farm_build->crops_grown[crop_index].amount -= crop_change;
                 did_it = true;
               }
@@ -1535,51 +1536,75 @@ void Interface::minister_hunt()
   Window w_hunt(0, 0, 80, 24);
 
 // Set up static data (left side)
-  std::vector<std::string> names, actions, killed, livestock;
+  std::vector<std::string> locations, hunters, targets, actions, daily_food;
+// List of hunting camps
+  std::vector<Area*> camps;
 
-// Start at 1 to skip ANIMAL_NULL
-  for (int i = 1; i < ANIMAL_MAX; i++) {
-    Animal animal = Animal(i);
-    names.push_back( capitalize( Animal_data[i]->name ) );
+// Go through all our city's hunting camps...
+  for (int i = 0; i < city->areas.size(); i++) {
+    Area* cur_area = &(city->areas[i]);
 
-    std::stringstream action_text;
-    Animal_action act = city->get_hunting_action(animal);
-    nc_color act_col = animal_action_color(act);
-// If we're not using the default action, brighten the color.
-    if (act != Animal_data[i]->default_action) {
-      act_col = brighten(act_col);
-    }
-    action_text << "<c=" << color_tag(act_col) << ">" <<
-                   capitalize( animal_action_name( act ) ) << "<c=/>";
-    actions.push_back( action_text.str() );
+    if (cur_area->produces_resource(RES_HUNTING)) {
+      camps.push_back( cur_area );
+// All relevant data for this hunting camp
+      Map_tile* grounds = city->map.get_tile( cur_area->pos );
+      Building* bldg = &(cur_area->building);
+      Animal animal_hunted = bldg->hunting_target;
+      int hunter_level = bldg->hunter_level * bldg->workers;
+      Animal animal_best = grounds->get_best_hunt_animal(hunter_level);
+      Animal_datum* ani_dat = Animal_data[ animal_hunted ];
+      Animal_action act = bldg->hunting_action;
 
-    if (city->hunt_kills.count(animal)) {
-      killed.push_back( itos( city->hunt_kills[animal] ) );
-    } else {
-      killed.push_back("<c=dkgray>0<c=/>");
-    }
+      if (!grounds) {
+        debugmsg("Couldn't fetch a hunting camp's Map_tile (%s)",
+                 cur_area->pos.str().c_str());
+        return;
+      }
 
-    if (city->livestock.count(animal) && city->livestock[animal] > 0) {
-      livestock.push_back( itos( city->livestock[animal] ) );
-    } else {
-      livestock.push_back("<c=dkgray>0<c=/>");
+      locations.push_back( grounds->get_terrain_name() );
+
+      std::stringstream ss_hunters;
+      if (bldg->workers == 0) {
+        hunters.push_back("<c=red>0<c=/>");
+      } else {
+        hunters.push_back( itos(bldg->workers) );
+      }
+
+      std::stringstream ss_target;
+      if (animal_hunted == animal_best) {
+        ss_target << "<c=ltgreen>";
+      }
+      if (animal_hunted != ANIMAL_NULL) {
+        ss_target << ani_dat->name;
+      } else {
+        ss_target << "<c=dkgray>None";
+      }
+      ss_target << "<c=/>";
+      targets.push_back( ss_target.str() );
+
+      std::stringstream ss_action;
+      ss_action << "<c=" << color_tag( animal_action_color(act) ) << ">" <<
+                   animal_action_name( bldg->hunting_action ) << "<c=/>";
+      actions.push_back(ss_action.str());
+
+      std::stringstream ss_food;
+      int food = bldg->get_max_hunt_food();
+      if (food <= 0) {
+        food = 0;
+        ss_food << "<c=red>";
+      } else if (animal_hunted == animal_best) {
+        ss_food << "<c=ltgreen>";
+      }
+      ss_food << food << "<c=/>";
+      daily_food.push_back( ss_food.str() );
     }
   }
 
-  i_hunt.set_data("list_animals", names);
-  i_hunt.ref_data("list_action", &actions); // ref_data cause they may change
-  i_hunt.set_data("list_killed", killed);
-  i_hunt.ref_data("list_livestock", &livestock);  // May change as well
-
-// Also, livestock numbers are semi-static.
-// total_livestock will change if we slaughter animals, so ref_data not set_data
-  int total_livestock = city->get_livestock_total();
-  i_hunt.ref_data("num_total_livestock", &total_livestock);
-  i_hunt.set_data("num_livestock_limit", city->get_livestock_capacity());
-  if (total_livestock == city->get_livestock_capacity()) {
-    i_hunt.set_data("num_total_livestock", c_red);
-    i_hunt.set_data("num_livestock_limit", c_red);
-  }
+  i_hunt.ref_data("list_location", &locations);
+  i_hunt.ref_data("list_hunters",  &hunters);
+  i_hunt.ref_data("list_target",   &targets);
+  i_hunt.ref_data("list_action",   &actions);
+  i_hunt.ref_data("list_food",     &daily_food);
 
 // Are hunting messages on?
   if (city->show_hunting_messages) {
@@ -1588,24 +1613,40 @@ void Interface::minister_hunt()
     i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
   }
 
-// Start with ANIMAL_NULL so that our "check if we picked a new animal" check at
-// the start of our loop will hit the first go-through.
-  Animal cur_animal = ANIMAL_NULL;
+// Start with cur_index = -1 so that we'll set up camp-specific data on the
+// first iteration of our loop below.
+  int cur_index = -1;
+  Area*     cur_camp = NULL;
+  Building* cur_bldg = NULL;
+  Map_tile* cur_tile = NULL;
   bool done = false;
-  i_hunt.select("list_animals");
+  i_hunt.select("list_location");
 
   while (!done) {
-// Check if we picked a new animal.
-// + 1 because it doesn't contain ANIMAL_NULL, so the 0th index item is actually
-// Animal(1).
-    Animal new_animal = Animal( i_hunt.get_int("list_animals") + 1 );
-    if (new_animal != cur_animal) { // We changed!
-      cur_animal = new_animal;
-      Animal_datum* animal_dat = Animal_data[cur_animal];
+// Check if we picked a new camp.
+    int new_index = i_hunt.get_int("list_location");
+//debugmsg("new_index %d [%d]", new_index, camps.size());
+// We changed our selection!
+    if (new_index != cur_index && new_index < camps.size()) {
+      cur_index = new_index;
+      cur_camp = camps[cur_index];
+      cur_bldg = &(cur_camp->building);
+      cur_tile = city->map.get_tile( cur_camp->pos );
+      Animal_datum* animal_dat = Animal_data[ cur_bldg->hunting_target ];
+
+      if (cur_bldg->hunting_target == ANIMAL_NULL) {
+        i_hunt.set_data("text_target_name", "<c=dkgray>None<c=/>");
+      } else {
+        i_hunt.set_data("text_target_name", animal_dat->name);
+      }
       i_hunt.set_data("text_danger", animal_danger_ranking(animal_dat->danger));
       i_hunt.set_data("num_pack_size", animal_dat->max_pack_size);
       i_hunt.set_data("num_flee_chance", animal_dat->flee_chance);
       i_hunt.set_data("num_capture_chance", animal_dat->tameness);
+      int pop = cur_tile->get_animal_population( cur_bldg->hunting_target );
+// The "true" means "use numbers not text description"
+      i_hunt.set_data("text_population", animal_amount_ranking(pop, true) );
+
       i_hunt.set_data("num_food_killed", animal_dat->food_killed);
 
       i_hunt.clear_data("text_resources_killed");
@@ -1626,13 +1667,8 @@ void Interface::minister_hunt()
 // by 100 and display decimals.
       std::stringstream ss_food_daily;
 
-      ss_food_daily << animal_dat->food_livestock / 100 << ".";
-      int food_decimal = animal_dat->food_livestock % 100;
-      if (food_decimal < 10) {
-        ss_food_daily << "0"; // So we get "1.07" not "1.7"
-      }
-      ss_food_daily << food_decimal;
-      i_hunt.set_data("text_food_livestock",       ss_food_daily.str());
+      std::string food_daily = move_decimal(animal_dat->food_livestock, 2);
+      i_hunt.set_data("text_food_livestock", food_daily);
 
       i_hunt.clear_data("text_resources_livestock");
       std::stringstream res_livestock;
@@ -1643,19 +1679,13 @@ void Interface::minister_hunt()
       } else {
         for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
           Resource_amount res = animal_dat->resources_livestock[i];
-          res_livestock << resource_name(res.type) << " x ";
-// Like food_livestock, these amounts are per 100 animals.  Same solution.
-          res_livestock << res.amount / 100;
-          int res_decimal = res.amount % 100;
-          if (res_decimal < 10) {
-            res_livestock << "0"; // So we get "1.07" not "1.7"
-          }
-          res_livestock << res_decimal;
+          res_livestock << resource_name(res.type) << " x " <<
+                           move_decimal(res.amount, 2);
           i_hunt.set_data("text_resources_livestock", res_livestock.str());
         }
       }
 
-    } // if (new_animal != cur_animal)
+    } // if (new_index != cur_index)
 
     i_hunt.draw(&w_hunt);
     w_hunt.refresh();
@@ -1671,77 +1701,137 @@ void Interface::minister_hunt()
         break;
 
       case 'a':
-      case 'A': {
-        Animal_action act = city->get_hunting_action(cur_animal);
-        act = Animal_action(act + 1);
-        if (act == ANIMAL_ACT_MAX) {
-          act = Animal_action(1);
-        }
-        nc_color act_col = animal_action_color(act);
+      case 'A':
+//debugmsg("Pressed A; index is %d.", cur_index);
+        if (cur_bldg) {
+          Animal_action act = cur_bldg->hunting_action;
+          act = Animal_action(act + 1);
+// Don't let us set "flee" as our action - it's pointless.
+          if (act == ANIMAL_ACT_FLEE) {
+            act = Animal_action(act + 1);
+          }
+          if (act == ANIMAL_ACT_MAX) {
+            act = Animal_action(1); // 0 is ANIMAL_ACT_NULL
+// In case flee is Action_action(1) (as of this writing, it is!)
+            if (act == ANIMAL_ACT_FLEE) {
+              act = Animal_action(act + 1);
+            }
+          }
+          nc_color act_col = animal_action_color(act);
 // If we're not using the default action, brighten the color.
-        if (act != Animal_data[cur_animal]->default_action) {
-          act_col = brighten(act_col);
-        }
-        std::stringstream action_text;
-        action_text << "<c=" << color_tag(act_col) << ">" <<
-                       capitalize( animal_action_name( act ) ) << "<c=/>";
+          std::stringstream action_text;
+          action_text << "<c=" << color_tag(act_col) << ">" <<
+                         capitalize( animal_action_name( act ) ) << "<c=/>";
 // Animal(1) is index 0, so subtract 1 from the animal to get index for actions
-        actions[cur_animal - 1] = action_text.str();
-        city->set_hunting_action(cur_animal, act);
-      } break;
-
-      case 's':
-      case 'S':
-        if (city->livestock[cur_animal] >= 1) {
-// If they were red before, set them back to ltgray.
-          if (total_livestock == city->get_livestock_capacity()) {
-            i_hunt.set_data("num_total_livestock", c_ltgray);
-            i_hunt.set_data("num_livestock_limit", c_ltgray);
-          }
-          city->livestock[cur_animal]--;
-          total_livestock--;
-          city->kill_animals(cur_animal, 1);
-// Animal(1) is index 0 so subtract 1 from the animal to get index for livestock
-          if (city->livestock[cur_animal] > 0) {
-            livestock[cur_animal - 1] = itos( city->livestock[cur_animal] );
-          } else {
-            livestock[cur_animal - 1] = "<c=dkgray>0<c=/>";
-          }
-        }
-        break;
-
-      case 'd':
-      case 'D':
-        if (city->livestock[cur_animal] >= 5) {
-// If they were red before, set them back to ltgray.
-          if (total_livestock == city->get_livestock_capacity()) {
-            i_hunt.set_data("num_total_livestock", c_ltgray);
-            i_hunt.set_data("num_livestock_limit", c_ltgray);
-          }
-          city->livestock[cur_animal] -= 5;
-          total_livestock -= 5;
-          city->kill_animals(cur_animal, 5);
-        } else {  // Just kill whatever we've got.
-// If they were red before, set them back to ltgray.
-          if (total_livestock == city->get_livestock_capacity()) {
-            i_hunt.set_data("num_total_livestock", c_ltgray);
-            i_hunt.set_data("num_livestock_limit", c_ltgray);
-          }
-          int num_killed = city->livestock[cur_animal];
-          city->livestock[cur_animal] = 0;
-          total_livestock -= num_killed;
-          city->kill_animals(cur_animal, num_killed);
-        }
-// Animal(1) is index 0 so subtract 1 from the animal to get index for livestock
-        if (city->livestock[cur_animal] > 0) {
-          livestock[cur_animal - 1] = itos( city->livestock[cur_animal] );
-        } else {
-          livestock[cur_animal - 1] = "<c=dkgray>0<c=/>";
+          actions[cur_index] = action_text.str();
+          cur_bldg->hunting_action = act;
         }
         break;
 
       case 't':
       case 'T':
+// Show a menu with available animals.
+        if (cur_tile) {
+          std::vector<std::string> options;
+          for (int i = 0; i < cur_tile->animals.size(); i++) {
+            Animal_datum* ani_dat = Animal_data[ cur_tile->animals[i].type ];
+            options.push_back( ani_dat->name );
+          }
+          int choice = menu_vec("Choose animal to hunt:", options);
+          int hunter_level = cur_bldg->hunter_level * cur_bldg->workers;
+          Animal animal_chosen = cur_tile->animals[choice].type;
+          cur_bldg->hunting_target = animal_chosen;
+          Animal animal_best = cur_tile->get_best_hunt_animal(hunter_level);
+          Animal_datum* ani_dat = Animal_data[ animal_chosen ];
+
+          std::stringstream ss_target;
+          if (animal_chosen == animal_best) {
+            ss_target << "<c=ltgreen>";
+          }
+          ss_target << ani_dat->name << "<c=/>";
+          targets[cur_index] = ss_target.str();
+
+          std::stringstream ss_food;
+          int food = cur_bldg->get_max_hunt_food();
+          if (food <= 0) {
+            food = 0;
+            ss_food << "<c=red>";
+          } else if (animal_chosen == animal_best) {
+            ss_food << "<c=ltgreen>";
+          }
+          ss_food << food << "<c=/>";
+          daily_food[cur_index] = ss_food.str();
+        }
+        break;
+
+      case 'b':
+      case 'B':
+        if (cur_tile && cur_bldg) {
+          int hunter_level = cur_bldg->hunter_level * cur_bldg->workers;
+          Animal best_animal = cur_tile->get_best_hunt_animal(hunter_level);
+          cur_bldg->hunting_target = best_animal;
+          Animal_datum* ani_dat = Animal_data[ best_animal ];
+// Repeat of the code above; TODO: Abstract this
+          std::stringstream ss_target;
+          ss_target << "<c=ltgreen>" << ani_dat->name << "<c=/>";
+          targets[cur_index] = ss_target.str();
+
+          std::stringstream ss_food;
+          int food = cur_bldg->get_max_hunt_food();
+          if (food <= 0) {
+            food = 0;
+            ss_food << "<c=red>";
+          } else {
+            ss_food << "<c=ltgreen>";
+          }
+          ss_food << food << "<c=/>";
+          daily_food[cur_index] = ss_food.str();
+        }
+        break;
+
+      case '+':
+        if (cur_bldg && city->employ_citizens(CIT_PEASANT, 1, cur_bldg)) {
+          hunters[cur_index] = itos(cur_bldg->workers);
+// Repeat of the code above; TODO: Abstract this
+          std::stringstream ss_food;
+          int food = cur_bldg->get_max_hunt_food();
+          if (food <= 0) {
+            food = 0;
+            ss_food << "<c=red>";
+          } else {
+            ss_food << "<c=ltgreen>";
+          }
+          ss_food << food << "<c=/>";
+          daily_food[cur_index] = ss_food.str();
+        }
+        break;
+
+      case '-':
+        if (cur_bldg && city->fire_citizens(CIT_PEASANT, 1, cur_bldg)) {
+          if (cur_bldg->workers == 0) {
+            cur_bldg->hunting_target = ANIMAL_NULL;
+            targets[cur_index] = "<c=dkgray>None<c=/>";
+            hunters[cur_index] = "<c=red>0<c=/>";
+            daily_food[cur_index] = "<c=red>0<c=/>";
+          } else {
+            hunters[cur_index] = itos(cur_bldg->workers);
+          }
+// Repeat of the code above; TODO: Abstract this
+          std::stringstream ss_food;
+          int food = cur_bldg->get_max_hunt_food();
+          if (food <= 0) {
+            food = 0;
+            ss_food << "<c=red>";
+          } else {
+            ss_food << "<c=ltgreen>";
+          }
+          ss_food << food << "<c=/>";
+          daily_food[cur_index] = ss_food.str();
+        } // if (cur_bldg && city->fire_citizens(...))
+        break;
+
+      case 'm':
+      case 'M':
         city->show_hunting_messages = !city->show_hunting_messages;
         if (city->show_hunting_messages) {
           i_hunt.set_data("text_hunting_messages", "<c=ltgreen>on<c=/>");
@@ -1755,6 +1845,7 @@ void Interface::minister_hunt()
         i_hunt.handle_keypress(ch);
 // Make sure all our lists line up together.
 // TODO: This is messy.  cuss::interface should handle this for us.
+/*
         cuss::ele_list* list_animals =
           static_cast<cuss::ele_list*>(i_hunt.find_by_name("list_animals"));
         cuss::ele_list* list_action =
@@ -1766,6 +1857,7 @@ void Interface::minister_hunt()
         list_action->offset    = list_animals->offset;
         list_killed->offset    = list_animals->offset;
         list_livestock->offset = list_animals->offset;
+*/
       } break;
     } // switch (ch)
 
