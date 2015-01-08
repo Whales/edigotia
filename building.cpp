@@ -150,7 +150,7 @@ int Building::get_max_hunt_food()
   }
   Animal_datum* ani_dat = Animal_data[hunting_target];
   int num_caught = get_max_hunt_prey();
-  int remainder = hunter_level % ani_dat->difficulty;
+  int remainder = (workers * hunter_level) % ani_dat->difficulty;
   return num_caught * ani_dat->food_killed +
          (remainder * ani_dat->food_killed) / ani_dat->difficulty;
 }
