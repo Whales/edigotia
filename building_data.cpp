@@ -147,7 +147,7 @@ void init_building_data()
     _build_time(1);
     _destroy_cost(100);
     _upkeep(5);
-    _jobs(CIT_PEASANT, 3);
+    _jobs(CIT_PEASANT, 10);
     _wages(3);
     _produces(RES_HUNTING, 1);
 
