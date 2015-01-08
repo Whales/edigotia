@@ -1,6 +1,7 @@
 #include "animal.h"
 #include "stringfunc.h" // search_for_animal() needs trim() and no_caps()
 #include "rng.h"
+#include <sstream>
 
 bool Animal_amount::is_infinite()
 {
@@ -161,4 +162,55 @@ std::string animal_danger_ranking(int danger)
   }
 
   return "<c=ltred>Nightmarish<c=/>";
+}
+
+// verb defaults to ""
+std::string list_animals(std::map<Animal,int> animals, std::string verb)
+{
+  std::stringstream ret;
+
+  int size = animals.size();
+  int cur = 0;
+
+  for (std::map<Animal,int>::iterator it = animals.begin();
+       it != animals.end();
+       it++) {
+    Animal type = it->first;
+    int amount  = it->second;
+    cur++;
+// Conjunction (or comma)
+    Animal_datum* animal_dat = Animal_data[ type ];
+    if (cur > 1) {
+      if (cur == size) {
+        ret << " and ";
+      } else {
+        ret << ", ";
+      }
+    }
+
+// Article (or number)
+    if (amount == 1) {
+      if (!animal_dat->name.empty() && is_vowel(animal_dat->name[0])) {
+        ret << "an ";
+      } else {
+        ret << "a ";
+      }
+      ret << animal_dat->name;
+    } else {
+      ret << amount << " " << animal_dat->name_plural;
+    }
+
+  } // iterate over animals
+
+// Verb
+  if (!verb.empty()) {
+    if (size > 1 || animals.begin()->second > 1) {
+      ret << " were ";
+    } else {
+      ret << " was ";
+    }
+    ret << verb;
+  }
+
+  return ret.str();
 }

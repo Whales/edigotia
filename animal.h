@@ -4,8 +4,9 @@
 #include "resource.h"
 #include <string>
 #include <vector>
+#include <map>
 
-/* NOTE:  This list should only include animals encountered as game (i.e. by
+/* NOTE:  This enum should only include animals encountered as game (i.e. by
  *        hunter camps) or as livestock.  It should NOT include animals which
  *        have a defined location in the world map or move in the world map,
  *        which attack cities, or do anything else except exist as a passive
@@ -128,6 +129,10 @@ std::string animal_amount_ranking(int amt, bool range = false);
 // Resturns a COLOR-CODED description of an animal's danger level.
 // E.g. "Harmless", "Weak", "Mild", "Moderate", "High", "Deadly", "Nightmare"
 std::string animal_danger_ranking(int danger);
+
+// List the contents of the map with counts, punctuation, etc.
+// E.g. "2 deer, a hare and 4 foxes"
+std::string list_animals(std::map<Animal,int> animals, std::string verb = "");
 
 // Defined in animal_data.cpp
 extern Animal_datum* Animal_data[ANIMAL_MAX];
