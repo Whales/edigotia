@@ -31,6 +31,10 @@ std::string itos(int num);
 // Digits in an int - in this file because it's mainly used for alignment
 // For negative numbers, it's digits_in(0 - num) + 1 (for the - character)
 int digits_in(int num);
+// move_decimal() moves the decimal place <moves> places to the left, and
+// returns the number as a string.  For instance, move_decimal(108, 2) would
+// return "1.08".
+std::string move_decimal(int num, int moves);
 
 std::string color_gradient(int value, std::vector<int> breakpoints,
                            std::vector<nc_color> colors);

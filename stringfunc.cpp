@@ -1,7 +1,7 @@
 #include "stringfunc.h"
 #include "window.h"
 #include <sstream>
-#include <math.h> // For digits_in(); it uses log10()
+#include <math.h> // digits_in() uses log10(); move_decimal() uses pow()
 
 std::vector<std::string> break_into_lines(std::string text, int linesize)
 {
@@ -245,7 +245,7 @@ std::string itos(int num)
 int digits_in(int num)
 {
   if (num == 0) {
-    return 1; // pow10() chokes on 0
+    return 1; // log10() chokes on 0
   }
   if (num < 0) {
     return 1 + digits_in(0 - num);  // 1 extra for the - character
@@ -253,6 +253,26 @@ int digits_in(int num)
 
   return 1 + log10(num);  // 1 extra since log10 is logarythmic
 }
+
+std::string move_decimal(int num, int moves)
+{
+  std::stringstream ret;
+  int divisor = int(pow(10, moves));
+  int decimal = num % divisor;
+  ret << num / divisor << ".";
+// We may need to add 0s so that "108" doesn't become "1.8"
+  for (int power = moves - 1; power >= 1; power--) {
+    int val = int(pow(10, power));
+    if (decimal < val) {
+      ret << "0";
+    } else {
+      power = 0;
+    }
+  }
+  ret << decimal;
+  return ret.str();
+}
+  
 
 std::string color_gradient(int value, std::vector<int> breakpoints,
                            std::vector<nc_color> colors)
