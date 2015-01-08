@@ -40,6 +40,9 @@ Building::Building()
   workers = 0;
   field_output = 0;
   shaft_output = 0;
+  hunter_level = 0;
+  hunting_target = ANIMAL_NULL;
+  hunting_action = ANIMAL_ACT_KILL;
 }
 
 Building::~Building()
@@ -125,6 +128,31 @@ int Building::get_empty_shafts()
     }
   }
   return (max_shafts - shafts_used);
+}
+
+int Building::get_max_hunt_prey()
+{
+  if (hunting_target == ANIMAL_NULL) {
+    return 0;
+  }
+  Animal_datum* ani_dat = Animal_data[hunting_target];
+  if (ani_dat->difficulty == 0) {
+    debugmsg("Animal '%s' has difficulty 0!", ani_dat->name.c_str());
+    return 0;
+  }
+  return (workers * hunter_level) / ani_dat->difficulty;
+}
+  
+int Building::get_max_hunt_food()
+{
+  if (hunting_target == ANIMAL_NULL) {
+    return 0;
+  }
+  Animal_datum* ani_dat = Animal_data[hunting_target];
+  int num_caught = get_max_hunt_prey();
+  int remainder = hunter_level % ani_dat->difficulty;
+  return num_caught * ani_dat->food_killed +
+         (remainder * ani_dat->food_killed) / ani_dat->difficulty;
 }
 
 Building_datum* Building::get_building_datum()

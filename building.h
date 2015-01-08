@@ -5,6 +5,7 @@
 #include "resource.h"
 #include "geometry.h"
 #include "city_achievement.h" // For unlockable buildings.
+#include "animal.h"
 #include <string>
 #include <vector>
 #include <map>
@@ -206,7 +207,11 @@ struct Building
   std::vector<Mineral_amount> minerals_mined;
 
 // HUNTING CAMPS ONLY
-  int hunter_level; // Combat level of hunter; compare to animals' danger value
+  int hunter_level; // Combat level of hunters; compare to animals' danger value
+  Animal hunting_target;  // The animal we're currently hunting
+  Animal_action hunting_action; // What we do with animals we hunt
+  int get_max_hunt_prey();  // The number of animals we can catch (total)
+  int get_max_hunt_food();  // get_max_hunt_prey() * hunting_target->food_killed
 
 /* build_queue is a list of things this building will produce; when the building
  * is not currently building anything, it looks at the first item in the queue
