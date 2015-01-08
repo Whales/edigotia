@@ -216,8 +216,8 @@ Animal Map_tile::get_best_hunt_animal(int hunter_level)
                  (ani_dat->food_killed * remainder) / ani_dat->difficulty;
 
 // On a tie, choose whichever has lower difficulty.
-      if ((food == best_food && ani_dat->difficulty < best_difficulty) ||
-          food > best_food) {
+      if (food > best_food ||
+          (food == best_food && ani_dat->difficulty < best_difficulty)) {
         best_food = food;
         best_difficulty = ani_dat->difficulty;
         best_index = i;
