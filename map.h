@@ -124,7 +124,11 @@ struct Map_tile
 
   int get_mineral_amount(Mineral mineral);
 
+// Randomly chooses an animal, weighted by population; may return ANIMAL_NULL
   Animal choose_hunt_animal(int skill_level);
+// Returns the animal that gives the most food (given a building's hunter_level)
+  Animal get_best_hunt_animal(int hunter_level);
+  int get_animal_population(Animal animal);
 
   void clear_wood();  // Become whatever we become when wood is cleared out.
 

@@ -76,7 +76,7 @@ std::string Map_tile::get_animals_info()
   }
   std::stringstream ret;
   for (int i = 0; i < animals.size(); i++) {
-    ret << capitalize( animal_amount_ranking(animals[i]) ) << " " <<
+    ret << capitalize( animal_amount_ranking( animals[i].amount ) ) << " " <<
            Animal_data[ animals[i].type ]->name_plural;
     if (i < animals.size() - 1) {
       ret << "," << std::endl;
@@ -200,6 +200,44 @@ Animal Map_tile::choose_hunt_animal(int skill_level)
 // At this point, if we haven't hit zero it's due to the terrain difficulty.
 // Which means we weren't able to catch anything!
   return ANIMAL_NULL;
+}
+
+Animal Map_tile::get_best_hunt_animal(int hunter_level)
+{
+  int best_food = 0, best_index = -1, best_difficulty = 999999;
+  for (int i = 0; i < animals.size(); i++) {
+    Animal_datum* ani_dat = Animal_data[ animals[i].type ];
+    if (ani_dat->difficulty == 0) {
+      debugmsg("%s has difficulty 0!", ani_dat->name.c_str());
+    } else {
+      int num_caught = hunter_level / ani_dat->difficulty;
+      int remainder  = hunter_level % ani_dat->difficulty;
+      int food = num_caught * ani_dat->food_killed +
+                 (ani_dat->food_killed * remainder) / ani_dat->difficulty;
+
+// On a tie, choose whichever has lower difficulty.
+      if ((food == best_food && ani_dat->difficulty < best_difficulty) ||
+          food > best_food) {
+        best_food = food;
+        best_difficulty = ani_dat->difficulty;
+        best_index = i;
+      }
+    }
+  }
+  if (best_index == -1) { // No food-producing animals here!
+    return ANIMAL_NULL;
+  }
+  return animals[best_index].type;
+}
+
+int Map_tile::get_animal_population(Animal animal)
+{
+  for (int i = 0; i < animals.size(); i++) {
+    if (animals[i].type == animal) {
+      return animals[i].amount;
+    }
+  }
+  return 0;
 }
 
 void Map_tile::clear_wood()
