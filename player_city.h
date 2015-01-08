@@ -218,6 +218,8 @@ public:
   std::vector<Area> area_queue;
 
   std::map<Animal,int> hunt_kills;
+  int hunt_record_days; // How many days since we started recording hunt food?
+  int hunt_record_food; // The amount of food gained from hunting in this time
 
   int unread_messages;
   std::vector<Message> messages;
