@@ -180,7 +180,7 @@ void init_building_data()
     _build_time(1);
     _destroy_cost(20);
     _upkeep(1);
-    _livestock(50);
+    _livestock(500);
 
   _build(BUILD_BARRACKS);
     _name("barracks");
