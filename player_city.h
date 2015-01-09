@@ -193,7 +193,6 @@ public:
   int get_livestock_total();  // Number of animals we have
   int get_livestock_capacity(); // Amount of RES_LIVESTOCK_SPACE from areas
 
-
 // Trade-related functions
   int get_import(Resource res);
   int get_export(Resource res);
