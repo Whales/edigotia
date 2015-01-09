@@ -106,6 +106,8 @@ struct Animal_datum
   int hardiness;          // Livestock has a one-in-THIS chance of dying daily
                           // Use 0 if the livestock will never die randomly
   int tameness;           // The chance that, when captured, becomes livestock
+  int size;               // The amount of pasture space it uses; note that a
+                          // pasture provides 500 space.
 
 // Resource-related data
   int food_killed;        // Food gained when killed (hunted or slaughtered)

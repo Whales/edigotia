@@ -51,6 +51,7 @@ Animal_datum::Animal_datum()
   carnivore       = false;
 
   tameness        = 0;
+  size            = 1;
 }
 
 Animal_datum::~Animal_datum()

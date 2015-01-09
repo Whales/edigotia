@@ -64,6 +64,9 @@ Animal_datum* Animal_data[ANIMAL_MAX];
 #define _tameness(n) \
   Animal_data[cur_id]->tameness = (n)
 
+#define _size(n) \
+  Animal_data[cur_id]->size = (n)
+
 #define _resource_killed(t, n) \
   Animal_data[cur_id]->resources_killed.push_back( Resource_amount((t), (n)) )
 
@@ -98,6 +101,7 @@ void init_animal_data()
     _food_killed(2);
     _food_livestock(80);
     _tameness(100);
+    _size(1);
 
   _animal(ANIMAL_PIG);
     _name("pig");
@@ -115,6 +119,7 @@ void init_animal_data()
     _hardiness(2800);
     _food_killed(60);
     _tameness(92);
+    _size(3);
 
   _animal(ANIMAL_SHEEP);
     _name("sheep");
@@ -134,6 +139,7 @@ void init_animal_data()
     _tameness(98);
     _resource_killed(RES_FIBER, 50);
     _resource_livestock(RES_FIBER, 15);
+    _size(3);
 
   _animal(ANIMAL_COW);
     _name("cow");
@@ -153,6 +159,7 @@ void init_animal_data()
     _food_livestock(75);
     _tameness(100);
     _resource_killed(RES_LEATHER, 10);
+    _size(6);
 
   _animal(ANIMAL_HORSE);
     _name("horse");
@@ -171,6 +178,7 @@ void init_animal_data()
     _hardiness(4000);
     _food_killed(200);
     _tameness(80);
+    _size(10);
     _resource_killed(RES_LEATHER, 8);
 
 
@@ -192,6 +200,7 @@ void init_animal_data()
     _hardiness(800);
     _food_killed(2);
     _tameness(75);
+    _size(1);
     _resource_killed(RES_FUR, 1);
 
   _animal(ANIMAL_FOX);
@@ -211,6 +220,7 @@ void init_animal_data()
     _food_killed(15);
     _carnivore();
     _tameness(35);
+    _size(4);
     _resource_killed(RES_FUR, 5);
 
   _animal(ANIMAL_BOAR);
@@ -231,6 +241,7 @@ void init_animal_data()
     _hardiness(3400);
     _food_killed(75);
     _tameness(25);
+    _size(5);
 
   _animal(ANIMAL_DEER);
     _name("deer");
@@ -248,6 +259,7 @@ void init_animal_data()
     _hardiness(3000);
     _food_killed(80);
     _tameness(30);
+    _size(10);
     _resource_killed(RES_LEATHER, 6);
 
 
@@ -269,6 +281,7 @@ void init_animal_data()
     _hardiness(3400);
     _food_killed(300);
     _tameness(15);
+    _size(14);
     _resource_killed(RES_FUR, 15);
 
   _animal(ANIMAL_WOLF);
@@ -291,6 +304,7 @@ void init_animal_data()
     _food_killed(80);
     _carnivore();
     _tameness(12);
+    _size(10);
     _resource_killed(RES_FUR, 10);
 
   _animal(ANIMAL_JAGUAR);
@@ -310,6 +324,7 @@ void init_animal_data()
     _food_killed(115);
     _carnivore();
     _tameness(8);
+    _size(8);
     _resource_killed(RES_LEATHER,  8);
 
   _animal(ANIMAL_LION);
@@ -331,6 +346,7 @@ void init_animal_data()
     _food_killed(250);
     _carnivore();
     _tameness(10);
+    _size(12);
     _resource_killed(RES_LEATHER, 12);
 
 // Legit question: could we drink elephant milk?
@@ -352,6 +368,7 @@ void init_animal_data()
     _hardiness(7000);
     _food_killed(1500);
     _tameness(4);
+    _size(100);
     _resource_killed(RES_LEATHER, 40);
 
 
@@ -375,6 +392,7 @@ void init_animal_data()
     _hardiness(600);
     _food_killed(0);
     _tameness(50);
+    _size(4);
 // TODO: Should jellies provide some kind of resource?  Right now they're
 //       worthless, just an annoyance.
 
@@ -395,6 +413,7 @@ void init_animal_data()
   _hardiness(15000);
   _food_killed(300);
   _tameness(0); // Can't be captured!
+  _size(25);
   _resource_killed(RES_FIBER, 25);
   
 
@@ -417,6 +436,7 @@ void init_animal_data()
     _food_killed(180);
     _carnivore();
     _tameness(3);
+    _size(20);
     _resource_killed(RES_FUR, 20);
 
 // Inuit legend - half orca, half wolf, amphibious
@@ -439,6 +459,7 @@ void init_animal_data()
     _food_killed(320);
     _carnivore();
     _tameness(2);
+    _size(50);
     _resource_killed(RES_FUR,     10);
     _resource_killed(RES_LEATHER, 10);
 
@@ -459,6 +480,7 @@ void init_animal_data()
     _food_killed(400);
     _carnivore();
     _tameness(5);
+    _size(100);
 
   _animal(ANIMAL_UNICORN);
     _name("unicorn");
@@ -477,6 +499,7 @@ void init_animal_data()
     _hardiness(9000);
     _food_killed(200);
     _tameness(10);
+    _size(25);
     _resource_killed(RES_UNICORN_HORN, 1);
 
   _animal(ANIMAL_BASILISK);
@@ -498,6 +521,7 @@ void init_animal_data()
     _hardiness(8000);
     _food_killed(100);
     _tameness(0);
+    _size(10);
 
   _animal(ANIMAL_WYVERN);
     _name("wyvern");
@@ -516,5 +540,6 @@ void init_animal_data()
     _food_killed(1600);
     _carnivore();
     _tameness(1);
+    _size(250);
 
 }
