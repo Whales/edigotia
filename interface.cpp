@@ -1613,6 +1613,17 @@ void Interface::minister_hunt()
     i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
   }
 
+// Display hunting records
+  i_hunt.set_data("num_record_food", city->hunt_record_food);
+  if (city->hunt_record_days <= 0) { // It's -1 until we build a camp
+    i_hunt.set_data("num_record_days",    0);
+    i_hunt.set_data("num_record_average", 0);
+  } else {
+    int avg_food = city->hunt_record_food / city->hunt_record_days;
+    i_hunt.set_data("num_record_days",    city->hunt_record_days);
+    i_hunt.set_data("num_record_average", avg_food);
+  }
+
 // Start with cur_index = -1 so that we'll set up camp-specific data on the
 // first iteration of our loop below.
   int cur_index = -1;
@@ -1840,6 +1851,14 @@ void Interface::minister_hunt()
         }
         break;
 
+      case 'r':
+      case 'R':
+        city->hunt_record_days = 0;
+        city->hunt_record_food = 0;
+        i_hunt.set_data("num_record_food",    0);
+        i_hunt.set_data("num_record_days",    0);
+        i_hunt.set_data("num_record_average", 0);
+        break;
 
       default: {
         i_hunt.handle_keypress(ch);
