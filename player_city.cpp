@@ -410,7 +410,8 @@ void Player_city::do_turn()
     }
 
     if (num_born > 0) {
-      int new_total = get_livestock_total() + num_born;
+      int size = animal_dat->size;
+      int new_total = get_livestock_total() + num_born * size;
       int capacity = get_livestock_capacity();
       int overflow = 0;
 // num_born is for the message, real_num_born is added to the population
@@ -418,7 +419,9 @@ void Player_city::do_turn()
       int real_num_born = num_born;
       if (new_total >= capacity) {
 // Oh no, we're over capacity!
-        overflow = new_total - capacity;
+// Subtracting 1 means that if new_total == capacity we round down to 0.
+// Then we add 1, so we're always rounding up.
+        overflow = 1 + (new_total - capacity - 1) / size;
 // Kill the overflow rather than just setting them loose.
         kill_animals(animal, overflow);
         real_num_born -= overflow;
@@ -1939,7 +1942,8 @@ void Player_city::do_hunt(Area* hunting_camp)
 
             if (caught) {
 // Add them to our livestock, if we can...
-              if (get_livestock_total() < get_livestock_capacity()) {
+              int size = target_data->size;
+              if (get_livestock_total() + size <= get_livestock_capacity()) {
                 num_caught++;
                 livestock[target]++;
               } else { // We can't hold any more livestock! Kill them instead :(
@@ -2074,7 +2078,8 @@ int Player_city::get_livestock_total()
   for (std::map<Animal,int>::iterator it = livestock.begin();
        it != livestock.end();
        it++) {
-    ret += it->second;
+    Animal_datum* ani_dat = Animal_data[it->first];
+    ret += it->second * ani_dat->size;
   }
   return ret;
 }
