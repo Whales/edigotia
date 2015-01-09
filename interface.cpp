@@ -75,7 +75,8 @@ bool Interface::init(Game* G, World_map* W, Player_city* C)
   add_menu(MENU_MINISTERS, "Ministers",
 "Finance",
 "Farms & Food",
-"Hunting & Livestock",
+"Hunting",
+"Livestock",
 "Mines & Minerals",
 "Morale",
 "Inventory",
@@ -785,10 +786,13 @@ void Interface::do_menu_action(Menu_id menu, int index)
         case 3: // Master of the Hunt
           minister_hunt();
           break;
-        case 4: // Mining minister
+        case 4: // Master of Livestock
+          minister_livestock();
+          break;
+        case 5: // Mining minister
           minister_mining();
           break;
-        case 5: // Morale minister
+        case 6: // Morale minister
           minister_morale();
           break;
       }
@@ -1882,6 +1886,160 @@ void Interface::minister_hunt()
 
   } // while (!done)
 
+}
+
+void Interface::minister_livestock()
+{
+  cuss::interface i_livestock;
+  if (!i_livestock.load_from_file("cuss/livestock.cuss")) {
+    return;
+  }
+  Window w_livestock(0, 0, 80, 24);
+
+// Set up (semi) static data
+  std::vector<Animal> livestock;
+  std::vector<std::string> livestock_name, livestock_count;
+
+  for (std::map<Animal,int>::iterator it = city->livestock.begin();
+       it != city->livestock.end();
+       it++) {
+    Animal ani = it->first;
+    livestock.push_back(ani);
+    livestock_name.push_back( Animal_data[ani]->name );
+    livestock_count.push_back( itos( it->second ) );
+  }
+
+  i_livestock.ref_data("list_animals", &livestock_name);
+  i_livestock.ref_data("list_count",   &livestock_count);
+
+  int total_livestock = city->get_livestock_total();
+
+  i_livestock.ref_data("num_total_livestock", &total_livestock);
+  i_livestock.set_data("num_livestock_limit", city->get_livestock_capacity());
+
+// Start with cur_index of -1 so that when we start our loop, we'll immediately
+// populate data fields with the first item (if any).
+  int cur_index = -1;
+  Animal cur_animal = ANIMAL_NULL;
+  bool done = false;
+  i_livestock.select("list_animals");
+
+  while (!done) {
+    int new_index = i_livestock.get_int("list_animals");
+    if (new_index >= 0 && new_index < livestock.size() &&
+        new_index != cur_index) {
+      cur_index = new_index;
+      cur_animal = livestock[cur_index];
+      Animal_datum* ani_dat = Animal_data[cur_animal];
+      int count = city->livestock[cur_animal];
+      i_livestock.set_data("text_animal_name", ani_dat->name);
+      i_livestock.set_data("num_space_used", ani_dat->size);
+      i_livestock.set_data("num_space_total", ani_dat->size * count);
+      i_livestock.set_data("num_food_killed", ani_dat->food_killed);
+
+      i_livestock.clear_data("text_resources_killed");
+      std::stringstream res_killed;
+
+      if (ani_dat->resources_killed.empty()) {
+        i_livestock.set_data("text_resources_killed", "<c=dkgray>None<c=/>");
+
+      } else {
+        for (int i = 0; i < ani_dat->resources_killed.size(); i++) {
+          std::stringstream ss_res;
+          Resource_amount res = ani_dat->resources_killed[i];
+          res_killed << resource_name(res.type) << " x " << res.amount;
+        }
+        i_livestock.set_data("text_resources_killed", res_killed.str());
+      }
+// food_livestock is measured in food per 100 animals.  So, we need to divide it
+// by 100 and display decimals.
+      std::stringstream ss_food_daily;
+
+      std::string food_daily = move_decimal(ani_dat->food_livestock, 2);
+      i_livestock.set_data("text_food_daily", food_daily);
+
+// Again, divide by 100 since this is actual food.
+      int total_food = (ani_dat->food_livestock * count) / 100;
+      i_livestock.set_data("text_food_total", itos(total_food));
+
+      i_livestock.clear_data("text_resources_daily");
+      std::stringstream res_livestock;
+
+      if (ani_dat->resources_livestock.empty()) {
+        i_livestock.set_data("text_resources_daily", "<c=dkgray>None<c=/>");
+
+      } else {
+        for (int i = 0; i < ani_dat->resources_livestock.size(); i++) {
+          Resource_amount res = ani_dat->resources_livestock[i];
+          res_livestock << resource_name(res.type) << " x " <<
+                           move_decimal(res.amount, 2);
+          i_livestock.set_data("text_resources_daily", res_livestock.str());
+        }
+      }
+    } // if (new_index != cur_index)
+
+    i_livestock.draw(&w_livestock);
+    w_livestock.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+      case KEY_ESC:
+      case 'q':
+      case 'Q':
+        done = true;
+        break;
+
+      case 's':
+      case 'S':
+        if (city->livestock[cur_animal] > 0) {
+          Animal ani = livestock[cur_index];
+          if (city->livestock[cur_animal] == 1) {
+            city->livestock.erase(ani);
+          } else {
+            city->livestock[ani]--;
+          }
+          city->kill_animals(ani, 1);
+          livestock_count[cur_index] = itos( city->livestock[cur_animal] );
+          total_livestock -= Animal_data[ani]->size;
+        }
+        break;
+
+      case 'd':
+      case 'D':
+        if (city->livestock[cur_animal] > 0) {
+          int num_killed = 5;
+          Animal ani = livestock[cur_index];
+          if (city->livestock[cur_animal] < 5) {
+            num_killed = city->livestock[cur_animal];
+            city->livestock.erase(ani);
+          } else {
+            city->livestock[ani] -= 5;
+          }
+          city->kill_animals(ani, num_killed);
+          livestock_count[cur_index] = itos( city->livestock[cur_animal] );
+          total_livestock -= Animal_data[ani]->size * num_killed;
+        }
+        break;
+
+      case 'f':
+      case 'F':
+        if (city->livestock[cur_animal] > 0) {
+          Animal ani = livestock[cur_index];
+          int num_killed = city->livestock[ani];
+          city->livestock.erase(ani);
+          city->kill_animals(ani, num_killed);
+          livestock_count[cur_index] = "0";
+          total_livestock -= Animal_data[ani]->size * num_killed;
+        }
+        break;
+
+      default:
+        i_livestock.handle_keypress(ch);
+        break;
+    } // switch (ch)
+
+  } // while (!done)
 }
 
 void Interface::minister_mining()
