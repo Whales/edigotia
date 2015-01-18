@@ -208,6 +208,7 @@ int rl_dist       (Tripoint origin, Tripoint target);
 // sqrt(dX^2 + dY^2)
 int trig_dist     (int x0, int y0, int x1, int y1);
 int trig_dist     (Point origin, Point target);
+// dX + dY
 int manhattan_dist(int x0, int y0, int x1, int y1);
 int manhattan_dist(Point origin, Point target);
 int manhattan_dist(int x0, int y0, int z0, int x1, int y1, int z1);
