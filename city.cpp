@@ -4,6 +4,7 @@
 
 City::City()
 {
+  uid = -1;
   type = CITY_TYPE_CITY;
   race = RACE_NULL;
   game = NULL;
@@ -94,6 +95,17 @@ void City::set_race(Race new_race)
 void City::set_city_type(City_type new_type)
 {
   type = new_type;
+}
+
+void City::add_road_connection(City* neighbor)
+{
+// Check if we already have a connection.
+  for (int i = 0; i < road_connections.size(); i++) {
+    if (road_connections[i] == neighbor) {
+      return; // Already done!
+    }
+  }
+  road_connections.push_back(neighbor);
 }
 
 int City::get_total_population(Citizen_type type)

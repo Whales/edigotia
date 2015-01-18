@@ -56,6 +56,8 @@ public:
   void set_race(Race new_race);
   void set_city_type(City_type new_type);
 
+  void add_road_connection(City* neighbor);
+
 // General-data accessors
   int get_total_population(Citizen_type type = CIT_NULL);
   std::string get_name();
@@ -95,6 +97,8 @@ public:
   void gain_resources(std::map<Resource,int>       res_used);
 
 // Public data
+  int uid;
+
   Point location;
 
   Citizens population[CIT_MAX];
@@ -110,6 +114,9 @@ protected:
   City_type type;
   Race race;
   Game* game;
+
+// Which cities are we *directly* connected to via road?
+  std::vector<City*> road_connections;
 };
 
 #endif
