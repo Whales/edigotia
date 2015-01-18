@@ -87,7 +87,7 @@ struct Map_type_datum
 {
   Map_type_datum()
   {
-    name = "NULL"; is_water = false; is_river = false;
+    name = "NULL"; is_water = false; is_river = false; road_cost = 0;
     symbol = glyph('x', c_red, c_ltgray);
   }
 
@@ -95,6 +95,7 @@ struct Map_type_datum
   bool is_water;
   bool is_river;
   glyph symbol;
+  int road_cost;
 
   std::vector<City_role> city_roles;
 
