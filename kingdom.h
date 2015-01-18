@@ -18,10 +18,13 @@ public:
   Kingdom();
   ~Kingdom();
 
+  void set_game(Game* g);
+
 // Building the kingdom
   bool place_capital (World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
   bool place_new_city(World_map* world, int& expansion_points);
   void place_minor_cities(World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
+  void build_road(World_map* world, City* start, City* end);
   void expand_boundaries(World_map* world);
 
 // Data
@@ -40,6 +43,9 @@ private:
                 int radius = KINGDOM_CLAIM_RADIUS);
   void claim_territory(World_map* world, Point p);
 
+// Data
+  Game* game;
+
   std::vector<Point> city_locations;
 
 // Kingdom boundaries
@@ -48,6 +54,6 @@ private:
 
 // See kingdom.cpp
 extern std::vector<Kingdom*> Kingdoms;
-void init_kingdoms(World_map* world);
+void init_kingdoms(Game* game, World_map* world);
 
 #endif
