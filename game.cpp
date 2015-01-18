@@ -4,6 +4,7 @@
 
 Game::Game()
 {
+  next_city_uid = 0;
 }
 
 Game::~Game()
@@ -45,5 +46,12 @@ std::string Game::get_date_str(int length)
     ret += 'x';
   }
   ret += "<c=/>";
+  return ret;
+}
+
+int Game::get_city_uid()
+{
+  int ret = next_city_uid;
+  next_city_uid++;
   return ret;
 }

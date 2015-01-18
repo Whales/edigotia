@@ -26,8 +26,11 @@ public:
   Date get_date();
   std::string get_date_str(int length = -1);
 
+  int get_city_uid(); // Returns next_city_uid and advances next_city_uid.
+
 private:
   Date date;
+  int next_city_uid;
 };
 
 #endif
