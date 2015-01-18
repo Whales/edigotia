@@ -13,6 +13,10 @@
 #include <math.h> // for pow() and sqrt()
 #include <fstream>
 
+// Macro for seeing if a point is out of bounds.
+#define OOB(x, y) \
+( (x) < 0 || (x) >= WORLD_MAP_SIZE || (y) < 0 || (y) >= WORLD_MAP_SIZE )
+
 World_map::World_map()
 {
 }
@@ -49,6 +53,7 @@ void World_map::generate()
       kingdom_id  [x][y] = -1;
       city        [x][y] = NULL;
       river       [x][y] = false;
+      road        [x][y] = false;
     }
   }
 
@@ -520,8 +525,7 @@ void World_map::add_continent(Point origin, int height, int step, int id)
 
 void World_map::add_river(Point origin)
 {
-  if (origin.x < 0 || origin.x >= WORLD_MAP_SIZE ||
-      origin.y < 0 || origin.y >= WORLD_MAP_SIZE) {
+  if (OOB(origin.x, origin.y)) {
     return;
   }
 
@@ -626,8 +630,7 @@ void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
     return;
   }
 
-  if (origin.x < 0               || origin.y < 0 ||
-      origin.x >= WORLD_MAP_SIZE || origin.y >= WORLD_MAP_SIZE) {
+  if (OOB(origin.x, origin.y)) {
     debugmsg("World_map::add_resource() called with origin %s.",
              origin.str().c_str());
     return;
@@ -740,8 +743,7 @@ Point World_map::draw(Point start)
   Window w_map(0, 0, xdim, ydim);
   Window w_legend(xdim, 0, 26, ydim);
 
-  if (start.x < 0 || start.x >= WORLD_MAP_SIZE ||
-      start.y < 0 || start.y >= WORLD_MAP_SIZE   ) {
+  if (OOB(start.x, start.y)) {
     start = continents[0];
   }
   int cur_cont = 0; // Which continent are we on?  So we can use >< to move
@@ -769,11 +771,16 @@ Point World_map::draw(Point start)
           if (!data) {
             debugmsg("No data for tile[%d][%d] (type %d)!", x, y, type);
           }
-          glyph gl = data->symbol;
 
+          glyph gl;
           City* city_here = city[x][y];
+
           if (city_here) {
             gl = city_here->get_glyph();
+          } else if (has_road(x, y)) {
+            gl = get_road_glyph(x, y);
+          } else {
+            gl = data->symbol;
           }
 
           int kingdom_id = get_kingdom_id(x, y);
@@ -1093,7 +1100,7 @@ Map_type World_map::get_map_type(Point p)
 
 Map_type World_map::get_map_type(int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return MAP_NULL;
   }
   return tiles[x][y];
@@ -1106,7 +1113,7 @@ void World_map::set_kingdom_id(Point p, int id)
 
 void World_map::set_kingdom_id(int x, int y, int id)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return;
   }
   kingdom_id[x][y] = id;
@@ -1119,7 +1126,7 @@ int World_map::get_kingdom_id(Point p)
 
 int World_map::get_kingdom_id(int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return -1;
   }
   return kingdom_id[x][y];
@@ -1132,7 +1139,7 @@ void World_map::set_city(Point p, City* new_city)
 
 void World_map::set_city(int x, int y, City* new_city)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return;
   }
   city[x][y] = new_city;
@@ -1145,10 +1152,114 @@ City* World_map::get_city(Point p)
 
 City* World_map::get_city(int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE || y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return NULL;
   }
   return city[x][y];
+}
+
+bool World_map::has_road(Point p)
+{
+  return has_road(p.x, p.y);
+}
+
+bool World_map::has_road(int x, int y)
+{
+  if (OOB(x, y)) {
+    return false;
+  }
+  return road[x][y];
+}
+
+int World_map::road_cost(Point p)
+{
+  return road_cost(p.x, p.y);
+}
+
+int World_map::road_cost(int x, int y)
+{
+  if (OOB(x, y)) {
+    return -1; // < 0 means "roads are forbidden"
+  }
+  if (has_road(x, y)) {
+    return 1; // TODO: Should this be 0?
+  }
+  return Map_type_data[ get_map_type(x, y) ]->road_cost;
+}
+
+glyph World_map::get_road_glyph(Point p)
+{
+  return get_road_glyph(p.x, p.y);
+}
+
+glyph World_map::get_road_glyph(int x, int y)
+{
+  if (!has_road(x, y)) {
+    return glyph();
+  }
+
+  glyph ret(LINE_XXXX, c_white, c_black);
+
+  if (has_road(x, y - 1)) {
+    if (has_road(x + 1, y)) {
+      if (has_road(x, y + 1)) {
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_XXXX; // Redundant given the declaration but oh well
+        } else {
+          ret.symbol = LINE_XXXO;
+        }
+      } else {  // No southbound
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_XXOX;
+        } else {
+          ret.symbol = LINE_XXOO;
+        }
+      }
+    } else {  // No eastbound
+      if (has_road(x, y + 1)) {
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_XOXX;
+        } else {
+          ret.symbol = LINE_XOXO;
+        }
+      } else {  // No southbound
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_XOOX;
+        } else {
+          ret.symbol = LINE_XOXO;
+        }
+      }
+    }
+  } else {  // No northbound
+    if (has_road(x + 1, y)) {
+      if (has_road(x, y + 1)) {
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_OXXX; // Redundant given the declaration but oh well
+        } else {
+          ret.symbol = LINE_OXXO;
+        }
+      } else {  // No southbound
+// Only East and West & East are both horizontal lines
+        ret.symbol = LINE_OXOX;
+      }
+    } else {  // No eastbound
+      if (has_road(x, y + 1)) {
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_OOXX;
+        } else {
+          ret.symbol = LINE_XOXO;
+        }
+      } else {  // No southbound
+        if (has_road(x - 1, y)) {
+          ret.symbol = LINE_OXOX;
+        } else {  // No neighbors at all!
+          ret.symbol = LINE_XXXX;
+        }
+      }
+    }
+  }
+
+  return ret;
 }
 
 bool World_map::is_river(Point p)
@@ -1180,7 +1291,7 @@ Direction World_map::coast_from(Point p)
 
 Direction World_map::coast_from(int x, int y)
 {
-  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return DIR_NULL;
   }
   std::vector<Direction> candidates;
@@ -1210,8 +1321,8 @@ Direction_full World_map::river_start_for(Point p)
 
 Direction_full World_map::river_start_for(int x, int y)
 {
-// Sanity check!
-  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+// Bounds check
+  if (OOB(x, y)) {
     return DIRFULL_NULL;
   }
 // Check in this order: northwest, west/north (random), southwest, northeast
@@ -1244,8 +1355,8 @@ Direction_full World_map::river_end_for(Point p)
 
 Direction_full World_map::river_end_for(int x, int y)
 {
-// Sanity check!
-  if (x < 0 || y < 0 || x >= WORLD_MAP_SIZE || y >= WORLD_MAP_SIZE) {
+// Bounds check
+  if (OOB(x, y)) {
     return DIRFULL_NULL;
   }
 // Check in this order: southeast, south/east (random), southwest, northeast
@@ -1271,6 +1382,154 @@ Direction_full World_map::river_end_for(int x, int y)
     return DIRFULL_NORTHEAST;
   }
   return DIRFULL_NULL;
+}
+
+std::vector<Point> World_map::get_path(int x0, int y0, int x1, int y1)
+{
+  return get_path( Point(x0, y0), Point(x1, y1) );
+}
+
+
+enum A_star_status
+{
+  A_STAR_NONE,
+  A_STAR_OPEN,
+  A_STAR_CLOSED
+};
+
+std::vector<Point> World_map::get_path(Point start, Point end)
+{
+  if (start == end) {
+    debugmsg("World_map::get_path( %s , %s ) called!",
+             start.str().c_str(), end.str().c_str());
+    return std::vector<Point>();
+  }
+
+  std::vector<Point> open_points;
+  A_star_status status[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int           gscore[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int           hscore[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  Point         parent[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+
+// Init everything to 0
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      status[x][y] = A_STAR_NONE;
+      gscore[x][y] = 0;
+      hscore[x][y] = 0;
+      parent[x][y] = Point(-1, -1);
+    }
+  }
+
+  status[start.x][start.y] = A_STAR_OPEN;
+  open_points.push_back(start);
+
+  bool done = false;
+
+  while (!done && !open_points.empty()) {
+// 1) Find the lowest cost in open_points, and set (current) to that point
+// (if multiple points are tied, randomly select one)
+    int lowest_cost = -1; // Used for finding lowest cost open point
+    std::vector<int> lowest_indices; // Used for finding lowest cost open point
+    for (int i = 0; i < open_points.size(); i++) {
+      Point p = open_points[i];
+      int score = gscore[p.x][p.y] + hscore[p.x][p.y];
+      if (i == 0 || score < lowest_cost) {
+        lowest_cost = score;
+        lowest_indices.clear();
+        lowest_indices.push_back(i);
+      } else if (score == lowest_cost) {
+        lowest_indices.push_back(i);
+      }
+    }
+
+    int point_index = -1; // The index, in open_points, of the chosen point
+    Point current;        // The chosen point (next in the path)
+    int current_g = 0;    // The g-score of the chosen point.
+
+    if (lowest_indices.empty()) { // Should never happen
+      point_index = 0;
+    } else {
+      point_index = lowest_indices[ rng(0, lowest_indices.size() - 1) ];
+    }
+    current = open_points[point_index];
+    current_g = gscore[current.x][current.y];
+
+// 2) Check if (current) is the endpoint
+    if (current == end) {
+      done = true;  // We made it!
+    } else {
+// 3) Set (current) to be closed
+      open_points.erase(open_points.begin() + point_index);
+      status[current.x][current.y] = A_STAR_CLOSED;
+// 4) Examine all adjacent points
+      for (int x = current.x - 1; x <= current.x + 1; x++) {
+        for (int y = current.y - 1; y <= current.y + 1; y++) {
+          if (x == current.x && y == current.y) {
+            y++; // Skip the current tile
+          }
+// If it's not diagonal, in-bounds and not blocked...
+          if ((x == current.x || y == current.y) && road_cost(x, y) >= 0) {
+            int g = current_g + road_cost(x, y);
+// If it's unexamined, make it open and set its values
+            if (status[x][y] == A_STAR_NONE) {
+              status[x][y] = A_STAR_OPEN;
+              gscore[x][y] = g;
+              hscore[x][y] = road_cost(x, y) *
+                             manhattan_dist(x, y, end.x, end.y);
+              parent[x][y] = current;
+              open_points.push_back( Point(x, y) );
+// Otherwise, if it's open and we're a better parent, make us the parent
+            } else if (status[x][y] == A_STAR_OPEN && g < gscore[x][y]) {
+              gscore[x][y] = g;
+              parent[x][y] = current;
+            }
+          } // Check for non-diagonal & road_cost() >= 0
+        } // for (int y = current.y - 1; y <= current.y + 1; y++)
+      } // for (int x = current.x - 1; x <= current.x + 1; x++)
+    } // if (current != end)
+  } // while (!done && !open_points.empty())
+
+  if (open_points.empty()) {
+// We were not able to find a path.
+    return std::vector<Point>();
+  }
+
+// Work backwards to build our path...
+  std::vector<Point> backwards_path;
+  Point cur = end;
+  backwards_path.push_back(cur);
+  while (parent[cur.x][cur.y] != start) {
+    cur = parent[cur.x][cur.y];
+    backwards_path.push_back(cur);
+  }
+// Reverse the path
+  std::vector<Point> path;
+  for (int i = backwards_path.size() - 1; i >= 0; i--) {
+    path.push_back( backwards_path[i] );
+  }
+
+  return path;
+}
+
+bool World_map::build_road(int x0, int y0, int x1, int y1)
+{
+  return build_road( Point(x0, y0), Point(x1, y1) );
+}
+
+bool World_map::build_road(Point start, Point end)
+{
+  std::vector<Point> route = get_path(start, end);
+  if (route.empty()) {  // Impossible to build the road!
+    return false;
+  }
+
+  for (int i = 0; i < route.size(); i++) {
+    if (!OOB(route[i].x, route[i].y)) {
+      road[ route[i].x ][ route[i].y ] = true;
+    }
+  }
+  return true;
 }
 
 std::vector<Crop> World_map::crops_at(Point p)
@@ -1338,8 +1597,7 @@ bool World_map::has_animal(Animal animal, Point p)
 
 bool World_map::has_crop(Crop crop, int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE ||
-      y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return false;
   }
   if (crop == CROP_NULL && crops[x][y] > 1) {
@@ -1350,8 +1608,7 @@ bool World_map::has_crop(Crop crop, int x, int y)
 
 bool World_map::has_mineral(Mineral mineral, int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE ||
-      y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return false;
   }
   if (mineral == MINERAL_NULL && minerals[x][y] > 1) {
@@ -1362,8 +1619,7 @@ bool World_map::has_mineral(Mineral mineral, int x, int y)
 
 bool World_map::has_animal(Animal animal, int x, int y)
 {
-  if (x < 0 || x >= WORLD_MAP_SIZE ||
-      y < 0 || y >= WORLD_MAP_SIZE) {
+  if (OOB(x, y)) {
     return false;
   }
   if (animal == ANIMAL_NULL && animals[x][y] > 1) {

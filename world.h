@@ -21,6 +21,8 @@ public:
   bool save_to_file  (std::string filename);
   bool load_from_file(std::string filename);
 
+// Interactive; returns the point the player hits "enter" on, or (-1, -1) if
+// they hit Esc or Q
   Point draw(Point start = Point(-1, -1));
 
   int land_count(); // Returns the number of tiles that are not ocean
@@ -45,6 +47,15 @@ public:
   City* get_city(Point p);
   City* get_city(int x, int y);
 
+// Just references road[][]
+  bool has_road(Point p);
+  bool has_road(int x, int y);
+// Returns Map_type_data[ get_map_type(p) ]->road_cost; for purposes of building
+  int road_cost(Point p);
+  int road_cost(int x, int y);
+// Looks at adjacent tiles to decide which line drawing glyph to use
+  glyph get_road_glyph(Point p);
+  glyph get_road_glyph(int x, int y);
 // true if the Map_datum has is_river == true
   bool is_river(Point p);
   bool is_river(int x, int y);
@@ -71,6 +82,14 @@ public:
   Direction_full river_start_for(int x, int y);
   Direction_full river_end_for  (Point p);
   Direction_full river_end_for  (int x, int y);
+
+// TODO:  These use road_cost() to check the cost of moving to each tile.
+//        This makes them unsuitable for some purposes!  So, change this?
+  std::vector<Point> get_path(int x0, int y0, int x1, int y1);
+  std::vector<Point> get_path(Point start, Point end);
+
+  bool build_road(int x0, int y0, int x1, int y1);
+  bool build_road(Point start, Point end);
 
   std::vector<Crop>    crops_at   (Point p);
   std::vector<Mineral> minerals_at(Point p);
@@ -111,6 +130,7 @@ private:
   int kingdom_id  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   City* city      [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   bool river      [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  bool road       [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 // crops and minerals are bitmaps that indicate what's here
   int crops       [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int minerals    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
