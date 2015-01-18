@@ -24,6 +24,10 @@ int main()
     return 1;
   }
 
+// Set up a game.
+  Game game;
+  game.init();
+
 // Generate a world...
   World_map world;
   if (!file_exists("world.sav") || query_yn("Generate new world?")) {
@@ -34,7 +38,7 @@ int main()
   }
 
 // Set up our kingdoms
-  init_kingdoms(&world);
+  init_kingdoms(&game, &world);
 
 // Tool for debugging / testing the amount of resources in the world.
   //check_world_resources(&world);
@@ -67,11 +71,8 @@ int main()
   city.pick_race();
   city.set_name();
   city.start_new_city();
-
-// Set up a game.
-  Game game;
-  game.init();
   city.set_game(&game);
+
 
 // Set up an interface bound to our city and game, and kick off its loop.
   Interface interface;
