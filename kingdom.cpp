@@ -218,11 +218,8 @@ bool Kingdom::place_duchy_seat(World_map* world, int& expansion_points)
 // Pay the cost.
   expansion_points -= lowest_cost;
 
-// Is this a duchy seat?
-  City_type type = CITY_TYPE_DUCHY;
-
 // Place the city.
-  add_city(world, loc, type, KINGDOM_CLAIM_RADIUS);
+  add_city(world, loc, CITY_TYPE_DUCHY, KINGDOM_CLAIM_RADIUS);
   return true;
 }
 
