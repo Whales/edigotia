@@ -7,7 +7,7 @@
 
 std::vector<Kingdom*> Kingdoms;
 
-void init_kingdoms(World_map* world)
+void init_kingdoms(Game* game, World_map* world)
 {
   if (!world) {
     debugmsg("init_kingdoms() called with NULL world!");
@@ -24,6 +24,7 @@ void init_kingdoms(World_map* world)
 
     Kingdom* kingdom = new Kingdom;
     kingdom->uid = i - 1;
+    kingdom->set_game(game);
     kingdom->race = Race(i);
     Race_datum* race_dat = Race_data[i];
 // Pick a color - try the official race color first
@@ -137,6 +138,11 @@ Kingdom::~Kingdom()
   for (int i = 0; i < cities.size(); i++) {
     delete (cities[i]);
   }
+}
+
+void Kingdom::set_game(Game* g)
+{
+  game = g;
 }
 
 // size defaults to KINGDOM_CLAIM_RADIUS (see kingdom.h)
@@ -339,6 +345,24 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
   //debugmsg( ss_debug.str().c_str() );
 }
 
+void Kingdom::build_road(World_map* world, City* start, City* end)
+{
+  if (!world) {
+    debugmsg("Kingdom::build_road() called with NULL World_map.");
+    return;
+  } else if (!start || !end) {
+    debugmsg("Kingdom::build_road() called with at least one NULL city.");
+    return;
+  }
+
+  if (!world->build_road(start->location, end->location)) {
+    return; // No possible road route!
+  }
+
+  start->add_road_connection(end);
+  end->add_road_connection(start);
+}
+
 Point Kingdom::pick_best_point(World_map* world,
                                std::vector<Point> points_to_try, int radius)
 {
@@ -432,6 +456,7 @@ void Kingdom::add_city(World_map* world, Point loc, City_type type, int radius)
 
 // Now actually add our city.
   AI_city* city = new AI_city;
+  city->uid = game->get_city_uid();
   city->set_city_type(type);
   city->set_race(race);
   city->set_random_name();
