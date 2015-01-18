@@ -21,8 +21,14 @@ public:
   void set_game(Game* g);
 
 // Building the kingdom
-  bool place_capital (World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
-  bool place_new_city(World_map* world, int& expansion_points);
+// called once for each kingdom; it places its capital, the epicenter of the
+// territory.
+  bool place_capital     (World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
+// Places a duchy city and claims territory around it.  Decreases
+// expansion_points.
+  bool place_duchy_seat  (World_map* world, int& expansion_points);
+// Places several minor cities around a duchy seat.  They appear within <radius>
+// tiles of the duchy seat.
   void place_minor_cities(World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
   void build_road(World_map* world, City* start, City* end);
   void expand_boundaries(World_map* world);

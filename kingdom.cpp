@@ -90,7 +90,7 @@ void init_kingdoms(Game* game, World_map* world)
     popup_nowait("Placing duchies... [%d%%%%%%%%]", percent);
     for (int i = 0; i < kingdom_index.size(); i++) {
       Kingdom* kingdom = Kingdoms[ kingdom_index[i] ];
-      if (!kingdom->place_new_city(world, points[i])) {
+      if (!kingdom->place_duchy_seat(world, points[i])) {
         kingdom_index.erase( kingdom_index.begin() + i );
         points.erase( points.begin() + i );
       }
@@ -169,10 +169,10 @@ bool Kingdom::place_capital(World_map* world, int radius)
   return true;
 }
 
-bool Kingdom::place_new_city(World_map* world, int& expansion_points)
+bool Kingdom::place_duchy_seat(World_map* world, int& expansion_points)
 {
   if (!world) {
-    debugmsg("Kingdom::place_new_city() called with NULL world!");
+    debugmsg("Kingdom::place_duchy_seat() called with NULL world!");
     return false;
   }
   if (expansion_points <= 0) {
@@ -235,6 +235,8 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
   //ss_debug << race_dat->cluster_min << "<=>" << race_dat->cluster_max <<
               //std::endl;
 // Copy city_locations since it'll change during this function.
+// city_locations stores the Points of all cities in this kingdom - at this
+// point, the capital and duchy seats.
   std::vector<Point> tmp_city_locations = city_locations;
 // tmp_city-locations contains the locations of all duchy seats; for each one,
 // place several "minor" (regular) cities.
