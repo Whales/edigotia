@@ -97,6 +97,7 @@ void City::set_city_type(City_type new_type)
   type = new_type;
 }
 
+/*
 void City::add_road_connection(City* neighbor)
 {
 // Check if we already have a connection.
@@ -107,6 +108,7 @@ void City::add_road_connection(City* neighbor)
   }
   road_connections.push_back(neighbor);
 }
+*/
 
 int City::get_total_population(Citizen_type type)
 {
