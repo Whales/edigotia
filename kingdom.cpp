@@ -104,6 +104,17 @@ void init_kingdoms(Game* game, World_map* world)
     Kingdoms[i]->place_minor_cities(world);
   }
 
+// Build roads from the capital to each duchy...
+  for (int i = 0; i < Kingdoms.size(); i++) {
+    int percent = (100 * (i + 1)) / Kingdoms.size();
+    popup_nowait("Connecting duchies via road... [%d%%%%%%%%]", percent);
+    for (int n = 0; n < Kingdoms[i]->dukes.size(); n++) {
+      City* capital = Kingdoms[i]->capital;
+      City* duke = Kingdoms[i]->dukes[n];
+      Kingdoms[i]->build_road( world, capital, duke );
+    }
+  }
+
 // Finally, swell the territory claimed by each kingdom.
   int expansions = 3;
   for (int n = 0; n < expansions; n++) {
@@ -240,7 +251,12 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
   for (int i = 0; i < tmp_city_locations.size(); i++) {
     int percent = (100 * (i + 1)) / tmp_city_locations.size();
     popup_nowait("Placing minor cities [%d%%%%%%%%]", percent);
-    Point parent_city = tmp_city_locations[i];
+    Point parent_pos = tmp_city_locations[i];
+    City* parent_city = world->get_city(parent_pos);
+    if (!parent_city) {
+      debugmsg("Couldn't find parent city!");
+      return;
+    }
 // Use our race to determine how many to place.
     std::vector<Point> new_city_locations;
     int num_cities = rng(race_dat->cluster_min, race_dat->cluster_max);
@@ -249,13 +265,13 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
     std::vector<Point> possible_locations;
     std::vector<int>   scores;
 
-    for (int x = parent_city.x - radius; x <= parent_city.x + radius; x++) {
-      for (int y = parent_city.y - radius; y <= parent_city.y + radius; y++) {
+    for (int x = parent_pos.x - radius; x <= parent_pos.x + radius; x++) {
+      for (int y = parent_pos.y - radius; y <= parent_pos.y + radius; y++) {
 // Only use this point if it's in our kingdom and not adjacent to the parent.
         int kingdom_id = world->get_kingdom_id(x, y);
         if (x >= 0 && x < WORLD_MAP_SIZE && y >= 0 && y < WORLD_MAP_SIZE &&
             (kingdom_id == uid || kingdom_id == -1) &&
-            rl_dist(parent_city, Point(x, y)) > 1) {
+            rl_dist(parent_pos, Point(x, y)) > 1) {
 // Figure out the score of the location, and insert it into our list in the
 // proper position to sort the list by score.
 // Randomize score a little bit so it's not always the same terrain.
@@ -337,6 +353,13 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
 
     for (int n = 0; n < new_city_locations.size(); n++) {
       add_city(world, new_city_locations[n], CITY_TYPE_CITY, radius / 2);
+      City* newest_city = cities.back();
+      int pop = newest_city->get_total_population();
+      int min = Race_data[race]->city_size_min[CITY_TYPE_CITY];
+      int max = 1.5 * Race_data[race]->city_size_max[CITY_TYPE_CITY];
+      if (rng(min, max) <= 2 * pop) {
+        build_road(world, parent_city, cities.back());
+      }
     }
 
   } // for (int i = 0; i < tmp_city_locations.size(); i++)
@@ -354,12 +377,12 @@ void Kingdom::build_road(World_map* world, City* start, City* end)
     return;
   }
 
-  if (!world->build_road(start->location, end->location)) {
-    return; // No possible road route!
-  }
+  world->build_road(start->location, end->location);
 
+/*
   start->add_road_connection(end);
   end->add_road_connection(start);
+*/
 }
 
 Point Kingdom::pick_best_point(World_map* world,
