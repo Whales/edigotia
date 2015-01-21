@@ -31,11 +31,11 @@ int main()
 // Generate a world...
   World_map *world = new World_map;
 
-  if (!file_exists("world->sav") || query_yn("Generate new world?")) {
+  if (!file_exists("world.sav") || query_yn("Generate new world?")) {
     world->generate();
-    world->save_to_file("world->sav");
+    world->save_to_file("world.sav");
   } else {
-    world->load_from_file("world->sav");
+    world->load_from_file("world.sav");
   }
 
 // Set up our kingdoms
