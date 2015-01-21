@@ -29,21 +29,22 @@ int main()
   game.init();
 
 // Generate a world...
-  World_map world;
-  if (!file_exists("world.sav") || query_yn("Generate new world?")) {
-    world.generate();
-    world.save_to_file("world.sav");
+  World_map *world = new World_map;
+
+  if (!file_exists("world->sav") || query_yn("Generate new world?")) {
+    world->generate();
+    world->save_to_file("world->sav");
   } else {
-    world.load_from_file("world.sav");
+    world->load_from_file("world->sav");
   }
 
 // Set up our kingdoms
-  init_kingdoms(&game, &world);
+  init_kingdoms(&game, world);
 
-// Tool for debugging / testing the amount of resources in the world.
+// Tool for debugging / testing the amount of resources in the world->
   //check_world_resources(&world);
 // ... for now, we always start by picking a location for a new city.
-  Point p = world.draw();
+  Point p = world->draw();
 
   if (p.x == -1) {  // We hit ESC
     endwin();
@@ -54,19 +55,19 @@ int main()
   Player_city city;
   bool placed = false;
   while (!placed) {
-    if (!world.get_city(p)) {
-      city.generate_map(&world, p);
+    if (!world->get_city(p)) {
+      city.generate_map(world, p);
       placed = city.place_keep();
     } else {
       popup("There is already a city there!");
     }
     if (!placed) {
-      p = world.draw(p);  // We decided against that spot, pick a new one
+      p = world->draw(p);  // We decided against that spot, pick a new one
     }
   }
 
   city.location = p;
-  world.set_city(p, &city);
+  world->set_city(p, &city);
 // Crude race picker; TODO: replace this.
   city.pick_race();
   city.set_name();
@@ -76,7 +77,7 @@ int main()
 
 // Set up an interface bound to our city and game, and kick off its loop.
   Interface interface;
-  interface.init(&game, &world, &city);
+  interface.init(&game, world, &city);
   interface.main_loop();
 
   endwin();
