@@ -10,6 +10,14 @@
 
 #define WORLD_MAP_SIZE 400
 
+// For A* pathfinding
+enum A_star_status
+{
+  A_STAR_NONE,
+  A_STAR_OPEN,
+  A_STAR_CLOSED
+};
+
 class World_map
 {
 public:

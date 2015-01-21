@@ -1168,7 +1168,7 @@ bool World_map::has_road(int x, int y)
   if (OOB(x, y)) {
     return false;
   }
-  return road[x][y];
+  return (road[x][y] || get_city(x, y));
 }
 
 int World_map::road_cost(Point p)
@@ -1182,7 +1182,7 @@ int World_map::road_cost(int x, int y)
     return -1; // < 0 means "roads are forbidden"
   }
   if (has_road(x, y)) {
-    return 1; // TODO: Should this be 0?
+    return 0; // TODO: Should this be 0?
   }
   return Map_type_data[ get_map_type(x, y) ]->road_cost;
 }
@@ -1389,20 +1389,30 @@ std::vector<Point> World_map::get_path(int x0, int y0, int x1, int y1)
   return get_path( Point(x0, y0), Point(x1, y1) );
 }
 
-
-enum A_star_status
-{
-  A_STAR_NONE,
-  A_STAR_OPEN,
-  A_STAR_CLOSED
-};
-
 std::vector<Point> World_map::get_path(Point start, Point end)
 {
   if (start == end) {
     debugmsg("World_map::get_path( %s , %s ) called!",
              start.str().c_str(), end.str().c_str());
     return std::vector<Point>();
+  }
+
+  int min_x = (start.x < end.x ? start.x - 20 : end.x - 20);
+  int max_x = (start.x > end.x ? start.x + 20 : end.x + 20);
+  int min_y = (start.y < end.y ? start.y - 20 : end.y - 20);
+  int max_y = (start.y > end.y ? start.y + 20 : end.y + 20);
+
+  if (min_x < 0) {
+    min_x = 0;
+  }
+  if (max_x >= WORLD_MAP_SIZE) {
+    max_x = WORLD_MAP_SIZE - 1;
+  }
+  if (min_y < 0) {
+    min_y = 0;
+  }
+  if (max_y >= WORLD_MAP_SIZE) {
+    max_y = WORLD_MAP_SIZE - 1;
   }
 
   std::vector<Point> open_points;
@@ -1469,14 +1479,16 @@ std::vector<Point> World_map::get_path(Point start, Point end)
             y++; // Skip the current tile
           }
 // If it's not diagonal, in-bounds and not blocked...
-          if ((x == current.x || y == current.y) && road_cost(x, y) >= 0) {
+          if ((x == current.x || y == current.y) &&
+              x >= min_x && y >= min_y && x <= max_x && y <= max_y &&
+              road_cost(x, y) >= 0) {
             int g = current_g + road_cost(x, y);
 // If it's unexamined, make it open and set its values
             if (status[x][y] == A_STAR_NONE) {
               status[x][y] = A_STAR_OPEN;
               gscore[x][y] = g;
               hscore[x][y] = road_cost(x, y) *
-                             manhattan_dist(x, y, end.x, end.y);
+                             rl_dist(x, y, end.x, end.y);
               parent[x][y] = current;
               open_points.push_back( Point(x, y) );
 // Otherwise, if it's open and we're a better parent, make us the parent
