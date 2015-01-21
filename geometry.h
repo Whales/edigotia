@@ -49,7 +49,7 @@ struct Point
   Point(const Point &p) : x (p.x), y (p.y) {}
   ~Point(){}
 
-  std::string str();
+  std::string str() const;
 
   bool operator==(const Point &other) const
   {

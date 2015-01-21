@@ -6,7 +6,7 @@
 
 #define SGN(a) (((a)<0) ? -1 : 1)
 
-std::string Point::str()
+std::string Point::str() const
 {
   std::stringstream ret;
   ret << "[" << x << ":" << y << "]";
