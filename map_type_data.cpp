@@ -32,7 +32,7 @@ void init_map_type_data()
 
   _ter(MAP_NULL);
     _name("Out of bounds");
-    _road_cost(0);  // Roads are forbidden
+    _road_cost(-1);  // Roads are forbidden
     _symbol('x', c_red);
 
   _ter(MAP_TUNDRA);
@@ -102,13 +102,13 @@ void init_map_type_data()
 
   _ter(MAP_MOUNTAINOUS);
     _name("mountain range");
-    _road_cost(0);
+    _road_cost(100);
     _symbol('M', c_ltgray);
     _role(CITY_ROLE_MINING);
 
   _ter(MAP_ICY_MOUNTAIN);
     _name("icy mountain");
-    _road_cost(0);
+    _road_cost(-1);
     _symbol('M', c_white);
     _role(CITY_ROLE_MINING);
 
@@ -147,7 +147,7 @@ void init_map_type_data()
 
   _ter(MAP_OCEAN);
     _name("ocean");
-    _road_cost(0);
+    _road_cost(-1);
     _water();
     _symbol('=', c_blue);
 
