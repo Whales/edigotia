@@ -155,7 +155,7 @@ Pathfinder::Pathfinder()
 
 Pathfinder::Pathfinder(Generic_map m)
 {
-  allow_diag = true;
+  allow_diag = false;
   set_map(m);
 }
 
@@ -316,7 +316,8 @@ Path Pathfinder::path_line(Point start, Point end)
         options[4] = Point(best_x_move,  worst_y_move );
       }
       for (int i = 0; i < 5 && !picked_next; i++) {
-        if (!map.blocked( options[i] ) && in_bounds( options[i] )) {
+        if (!map.blocked( options[i] ) && in_bounds( options[i] ) &&
+            (allow_diag || options[i].x == cur.x || options[i].y == cur.y)) {
           picked_next = true;
           cur = options[i];
         }
