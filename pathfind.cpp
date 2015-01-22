@@ -145,7 +145,7 @@ bool Generic_map::blocked(Point p)
 
 Pathfinder::Pathfinder()
 {
-  allow_diag = true;
+  allow_diag = false;
   x_min  = 0;
   x_max  = 0;
   y_min  = 0;
