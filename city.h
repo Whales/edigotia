@@ -9,6 +9,7 @@
 #include "game.h"
 #include "race.h"
 #include "city_type.h"
+#include "trade.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -55,6 +56,7 @@ public:
   void set_random_name();
   void set_race(Race new_race);
   void set_city_type(City_type new_type);
+  void setup_trade_routes(World_map* world);
 
   //void add_road_connection(City* neighbor);
 
@@ -108,6 +110,8 @@ public:
   std::map<Animal,int> livestock;
 
   City_map map;
+
+  std::map<City*,Trade_route> trade_routes;
 
 protected:
   std::string name;
