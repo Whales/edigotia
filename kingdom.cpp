@@ -104,7 +104,8 @@ void init_kingdoms(Game* game, World_map* world)
     Kingdoms[i]->place_minor_cities(world);
   }
 
-// Build roads from the capital to each duchy...
+// Build roads from the capital to each duchy.  Building roads from the duchy to
+// its minor cities is handled in place_minor_cities().
   for (int i = 0; i < Kingdoms.size(); i++) {
     int percent = (100 * (i + 1)) / Kingdoms.size();
     popup_nowait("Connecting duchies via road... [%d%%%%%%%%]", percent);
