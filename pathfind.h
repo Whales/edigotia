@@ -42,6 +42,7 @@ public:
   Generic_map(int x = 0, int y = 0);
   ~Generic_map();
 
+// set_size() also clears the map fully.
   void set_size(int x, int y);
   void set_offset(int x, int y);
   void set_cost(int x, int y, int c);
@@ -84,6 +85,8 @@ public:
   Path get_path(Path_type type, int x0, int y0, int x1, int y1);
   Path get_path(Path_type type, Point start, Point end);
 
+// Just returns the first step in the path; useful when the path is likely to
+// change often (e.g. for monster pathfinding)
   Point get_step(Path_type type, int x0, int y0, int x1, int y1);
   Point get_step(Path_type type, Point start, Point end);
 
