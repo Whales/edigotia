@@ -1139,10 +1139,20 @@ void World_map::set_city(Point p, City* new_city)
 
 void World_map::set_city(int x, int y, City* new_city)
 {
-  if (OOB(x, y)) {
+  if (!new_city || OOB(x, y)) {
     return;
   }
+// TODO: Is this necessary?  It shouldn't take THAT long but it's basically just
+//       a check for mistakes in the code.
+  for (int i = 0; i < city_list.size(); i++) {
+    if (city_list[i] == new_city) {
+      debugmsg("Adding a city to %d:%d but that city already exists at %d:%d!",
+               x, y, new_city->location.x, new_city->location.y);
+      return;
+    }
+  }
   city[x][y] = new_city;
+  city_list.push_back(new_city);
 }
 
 City* World_map::get_city(Point p)
@@ -1522,6 +1532,16 @@ std::vector<Point> World_map::get_path(Point start, Point end)
   }
 
   return path;
+}
+
+int World_map::get_trade_distance(int x0, int y0, int x1, int y1)
+{
+  return get_trade_distance( Point(x0, y0), Point(x1, y1) );
+}
+
+int World_map::get_trade_distance(Point start, Point end)
+{
+  return 10;
 }
 
 bool World_map::build_road(int x0, int y0, int x1, int y1)

@@ -91,10 +91,14 @@ public:
   Direction_full river_end_for  (Point p);
   Direction_full river_end_for  (int x, int y);
 
-// TODO:  These use road_cost() to check the cost of moving to each tile.
-//        This makes them unsuitable for some purposes!  So, change this?
   std::vector<Point> get_path(int x0, int y0, int x1, int y1);
   std::vector<Point> get_path(Point start, Point end);
+
+  std::vector<Point> get_trade_route(int x0, int y0, int x1, int y1);
+  std::vector<Point> get_trade_route(Point start, Point end);
+
+  int get_trade_distance(int x0, int y0, int x1, int y1);
+  int get_trade_distance(Point start, Point end);
 
   bool build_road(int x0, int y0, int x1, int y1);
   bool build_road(Point start, Point end);
@@ -112,6 +116,8 @@ public:
   bool has_crop   (Crop crop,       int x, int y);
   bool has_mineral(Mineral mineral, int x, int y);
   bool has_animal (Animal animal,   int x, int y);
+
+  std::vector<City*> city_list;
 
 private:
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
