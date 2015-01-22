@@ -24,6 +24,9 @@ Race_datum* Race_data[RACE_MAX];
 #define _map_type(m, i) \
   Race_data[cur_id]->map_type_value[(m)] = (i)
 
+#define _travel_cost(m, i) \
+  Race_data[cur_id]->map_type_travel_cost[(m)] = (i)
+
 #define _cluster_size(a, b) \
   Race_data[cur_id]->cluster_min = (a); Race_data[cur_id]->cluster_max = (b)
 
@@ -203,6 +206,10 @@ void init_races()
     _map_type(MAP_DESERT,      -40);
     _map_type(MAP_MOUNTAINOUS, -30);
 
+    _travel_cost(MAP_FOREST,      25);
+    _travel_cost(MAP_SWAMP,      100);
+    _travel_cost(MAP_JUNGLE,     100);
+
     _cluster_size(2, 4);
     _city_size(CITY_TYPE_CITY,      80,  900);
     _city_size(CITY_TYPE_DUCHY,    600, 3500);
@@ -276,6 +283,24 @@ void init_races()
     _map_type(MAP_DESERT,      -40);
     _map_type(MAP_JUNGLE,      -25);
     _map_type(MAP_PLAINS,      -20);
+
+// Dwarves are squat... and thus travel slower on almost all terrain!
+// However they're great at navigating rocks, hills, mountains etc.
+    _travel_cost(MAP_TUNDRA,        75);
+    _travel_cost(MAP_DESERT,        66);
+    _travel_cost(MAP_WASTELAND,     33);
+    _travel_cost(MAP_PLAINS,        33);
+    _travel_cost(MAP_FOREST,       100);
+    _travel_cost(MAP_SWAMP,        175);
+    _travel_cost(MAP_JUNGLE,       250);
+    _travel_cost(MAP_FOOTHILLS,     33);
+    _travel_cost(MAP_ICY_FOOTHILLS, 75);
+    _travel_cost(MAP_MOUNTAINOUS,  150);
+    _travel_cost(MAP_ICY_MOUNTAIN, 300);
+    _travel_cost(MAP_BASIN,         33);
+    _travel_cost(MAP_GLACIER,      100);
+    _travel_cost(MAP_COASTAL,       33);
+    _travel_cost(MAP_ICECAP,       150);
 
     _cluster_size(2, 5);
     _city_size(CITY_TYPE_CITY,      90, 1000);
@@ -363,6 +388,14 @@ void init_races()
 
     _map_type(MAP_DESERT,     -10);
 
+// Orcs' strength and affinity for hills make them better at traversing rocky
+    _travel_cost(MAP_WASTELAND,      33);
+    _travel_cost(MAP_FOOTHILLS,      40);
+    _travel_cost(MAP_ICY_FOOTHILLS,  80);
+    _travel_cost(MAP_MOUNTAINOUS,   200);
+    _travel_cost(MAP_ICY_MOUNTAIN,  350);
+    _travel_cost(MAP_CANYON,         33);
+
     _cluster_size(4, 6);
     _city_size(CITY_TYPE_CITY,     100, 1800);
     _city_size(CITY_TYPE_DUCHY,    800, 4500);
@@ -439,6 +472,17 @@ void init_races()
     _map_type(MAP_MOUNTAINOUS,  20);
 
     _map_type(MAP_DESERT,      -10);
+
+// Gobbos are good in forests & mountains, bad in ice
+    _travel_cost(MAP_TUNDRA,         75);
+    _travel_cost(MAP_FOREST,         50);
+    _travel_cost(MAP_JUNGLE,        150);
+    _travel_cost(MAP_FOOTHILLS,      40);
+    _travel_cost(MAP_ICY_FOOTHILLS, 150);
+    _travel_cost(MAP_MOUNTAINOUS,   200);
+    _travel_cost(MAP_ICY_MOUNTAIN,  500);
+    _travel_cost(MAP_CANYON,         33);
+    _travel_cost(MAP_ICECAP,        150);
 
     _cluster_size(5, 8);
     _city_size(CITY_TYPE_CITY,     150,  2000);
@@ -518,6 +562,18 @@ void init_races()
     _map_type(MAP_JUNGLE,      -30);
     _map_type(MAP_SWAMP,       -20);
     _map_type(MAP_MOUNTAINOUS, -10);
+
+// Ogres' size make them bad at navigating tight quarters, like forests.  But
+// they can traverse rocky areas more easily.
+    _travel_cost(MAP_WASTELAND,      33);
+    _travel_cost(MAP_FOREST,        150);
+    _travel_cost(MAP_SWAMP,         175);
+    _travel_cost(MAP_JUNGLE,        300);
+    _travel_cost(MAP_FOOTHILLS,      33);
+    _travel_cost(MAP_ICY_FOOTHILLS,  66);
+    _travel_cost(MAP_MOUNTAINOUS,   200);
+    _travel_cost(MAP_ICY_MOUNTAIN,  350);
+    _travel_cost(MAP_CANYON,         33);
 
     _cluster_size(1, 3);
     _city_size(CITY_TYPE_CITY,      50,  800);
@@ -611,6 +667,10 @@ void init_races()
     _map_type(MAP_SWAMP,       -40);
     _map_type(MAP_PLAINS,      -20);
 
+    _travel_cost(MAP_WASTELAND,      25);
+    _travel_cost(MAP_MOUNTAINOUS,   150);
+    _travel_cost(MAP_ICY_MOUNTAIN,  250);
+
     _cluster_size(1, 2);
     _city_size(CITY_TYPE_CITY,      25,  300);
     _city_size(CITY_TYPE_DUCHY,    200,  800);
@@ -678,6 +738,23 @@ void init_races()
 
     _map_type(MAP_DESERT,      -90);
     _map_type(MAP_JUNGLE,      -70);
+
+// Halflings are small, and just plain poor travelers, and as a result travel
+// slowly almost everywhere.  However, their small size makes it easier to
+// traverse forests and the like, and they travel normally there.
+    _travel_cost(MAP_TUNDRA,         75);
+    _travel_cost(MAP_DESERT,         60);
+    _travel_cost(MAP_WASTELAND,      60);
+    _travel_cost(MAP_PLAINS,         33);
+    _travel_cost(MAP_FOOTHILLS,      75);
+    _travel_cost(MAP_ICY_FOOTHILLS, 150);
+    _travel_cost(MAP_MOUNTAINOUS,   375);
+    _travel_cost(MAP_ICY_MOUNTAIN,  600);
+    _travel_cost(MAP_BASIN,          33);
+    _travel_cost(MAP_CANYON,         60);
+    _travel_cost(MAP_GLACIER,       100);
+    _travel_cost(MAP_COASTAL,        33);
+    _travel_cost(MAP_ICECAP,        150);
 
     _cluster_size(3, 4);
     _city_size(CITY_TYPE_CITY,     100, 1200);

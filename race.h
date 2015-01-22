@@ -90,6 +90,9 @@ struct Race_datum
 
 // Used for placement; how much we want to live near various map types.
   std::map<Map_type,int> map_type_value;
+// Used for travel; the travel cost of entering various terrains.
+// Only use when we want to override the default (see map_type_data.cpp).
+  std::map<Map_type,int> map_type_travel_cost;
 // To name a city of this race, we string together a start, middle, and end.
   std::vector<std::string> city_name_start, city_name_middle, city_name_end;
 // How many cities will be clustered around a duchy seat?
