@@ -5,6 +5,7 @@
 #include "geometry.h"
 #include "window.h"
 #include "resource.h"
+#include "pathfind.h" // We store several Generic_maps for different kinds of A*
 #include <vector>
 #include <map>
 
@@ -61,6 +62,10 @@ public:
 // Returns Map_type_data[ get_map_type(p) ]->road_cost; for purposes of building
   int road_cost(Point p);
   int road_cost(int x, int y);
+// Returns Map_type_data[ cur_map_type(p) ]->travel_cost; if traveler is NOT
+// RACE_NULL, we check its Race_datum to see if it overrides the travel_cost.
+  int travel_cost(Point p, Race traveler = RACE_NULL);
+  int travel_cost(int x, int y, Race traveler = RACE_NULL);
 // Looks at adjacent tiles to decide which line drawing glyph to use
   glyph get_road_glyph(Point p);
   glyph get_road_glyph(int x, int y);
@@ -133,6 +138,12 @@ private:
  */
   void add_resource (Point origin, Crop crop, Mineral mineral, Animal animal,
                      int radius);
+
+  void update_road_map();
+// If RACE_NULL is used (or no race is passed), then we update the maps for ALL
+// races.  Can be time consuming!
+  void update_travel_map(Race traveler = RACE_NULL);
+
   bool tile_okay_for_animal(Point p, Animal animal);
   bool tile_okay_for_animal(int x, int y, Animal animal);
 
@@ -149,6 +160,19 @@ private:
   int crops       [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int minerals    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int animals     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+
+// road_map is a map of the road_costs of various terrain.  We will need to
+// update it whenever new roads are built or terrain changes.
+  Generic_map road_map;
+
+/* travel_map is a map of the travel_cost of various terrain, modified for the
+ * presence of roads, rivers, etc.  It will need to be updated whenever new
+ * roads are built or terrain changes.
+ * We store one for each race, because each race travels on terrain differently;
+ * for instance, elves can travel quite easily through forests, whereas humans
+ * cannot.
+ */
+  std::map<Race,Generic_map> travel_map;
 
   std::vector<Point> continents;
   std::map<int, std::vector<int> > joined_continents;

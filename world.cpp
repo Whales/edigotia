@@ -8,6 +8,7 @@
 #include "stringfunc.h" // For capitalize()
 #include "animal.h"
 #include "ai_city.h"
+#include "pathfind.h" // For road building, trade route finding, and more!
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow() and sqrt()
@@ -375,6 +376,10 @@ Placing %d blobs [%d%%%%%%%%]",
     tiles[swamps[i].x][swamps[i].y] = MAP_SWAMP;
   }
 */
+
+// Finally, generate our road map and travel maps.
+  update_road_map();
+  update_travel_map();  // By not passing a parameter, we update ALL races' maps
 }
 
 bool World_map::save_to_file(std::string filename)
@@ -708,6 +713,45 @@ void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
           animals[x][y]  |= int(pow(2, animal));
         }
       }
+    }
+  }
+}
+
+void World_map::update_road_map()
+{
+  road_map.set_size(WORLD_MAP_SIZE, WORLD_MAP_SIZE);
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      if (has_road(x, y)) {
+        road_map.set_cost(x, y, 0);
+      } else {
+        road_map.set_cost(x, y, road_cost(x, y));
+      }
+    }
+  }
+}
+
+// traveler defaults to RACE_NULL
+void World_map::update_travel_map(Race traveler)
+{
+  if (traveler == RACE_NULL) {  // Do all the maps!
+// Start at 1 to skip RACE_NULL.
+    for (int i = 1; i < RACE_MAX; i++) {
+      Race cur_race = Race(i);
+      update_travel_map(cur_race);
+    }
+    return;
+  }
+
+  if (travel_map.count(traveler)) {
+    travel_map[traveler].set_size(WORLD_MAP_SIZE, WORLD_MAP_SIZE);
+  } else {
+    travel_map[traveler] = Generic_map(WORLD_MAP_SIZE, WORLD_MAP_SIZE);
+  }
+
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      travel_map[traveler].set_cost(x, y, travel_cost(x, y, traveler));
     }
   }
 }
@@ -1197,6 +1241,28 @@ int World_map::road_cost(int x, int y)
   return Map_type_data[ get_map_type(x, y) ]->road_cost;
 }
 
+// traveler defaults to RACE_NULL
+int World_map::travel_cost(Point p, Race traveler)
+{
+  return travel_cost(p.x, p.y, traveler);
+}
+
+// traveler defaults to RACE_NULL
+int World_map::travel_cost(int x, int y, Race traveler)
+{
+  if (OOB(x, y)) {
+    return -1;
+  }
+  Map_type terrain = get_map_type(x, y);
+  if (traveler != RACE_NULL) {
+    Race_datum* race_dat = Race_data[traveler];
+    if (race_dat->map_type_travel_cost.count(terrain)) {
+      return race_dat->map_type_travel_cost[terrain];
+    }
+  }
+  return Map_type_data[terrain]->travel_cost;
+}
+
 glyph World_map::get_road_glyph(Point p)
 {
   return get_road_glyph(p.x, p.y);
@@ -1394,146 +1460,6 @@ Direction_full World_map::river_end_for(int x, int y)
   return DIRFULL_NULL;
 }
 
-std::vector<Point> World_map::get_path(int x0, int y0, int x1, int y1)
-{
-  return get_path( Point(x0, y0), Point(x1, y1) );
-}
-
-std::vector<Point> World_map::get_path(Point start, Point end)
-{
-  if (start == end) {
-    debugmsg("World_map::get_path( %s , %s ) called!",
-             start.str().c_str(), end.str().c_str());
-    return std::vector<Point>();
-  }
-
-  int min_x = (start.x < end.x ? start.x - 20 : end.x - 20);
-  int max_x = (start.x > end.x ? start.x + 20 : end.x + 20);
-  int min_y = (start.y < end.y ? start.y - 20 : end.y - 20);
-  int max_y = (start.y > end.y ? start.y + 20 : end.y + 20);
-
-  if (min_x < 0) {
-    min_x = 0;
-  }
-  if (max_x >= WORLD_MAP_SIZE) {
-    max_x = WORLD_MAP_SIZE - 1;
-  }
-  if (min_y < 0) {
-    min_y = 0;
-  }
-  if (max_y >= WORLD_MAP_SIZE) {
-    max_y = WORLD_MAP_SIZE - 1;
-  }
-
-  std::vector<Point> open_points;
-  A_star_status status[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int           gscore[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int           hscore[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  Point         parent[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-
-// Init everything to 0
-  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
-    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-      status[x][y] = A_STAR_NONE;
-      gscore[x][y] = 0;
-      hscore[x][y] = 0;
-      parent[x][y] = Point(-1, -1);
-    }
-  }
-
-  status[start.x][start.y] = A_STAR_OPEN;
-  open_points.push_back(start);
-
-  bool done = false;
-
-  while (!done && !open_points.empty()) {
-// 1) Find the lowest cost in open_points, and set (current) to that point
-// (if multiple points are tied, randomly select one)
-    int lowest_cost = -1; // Used for finding lowest cost open point
-    std::vector<int> lowest_indices; // Used for finding lowest cost open point
-    for (int i = 0; i < open_points.size(); i++) {
-      Point p = open_points[i];
-      int score = gscore[p.x][p.y] + hscore[p.x][p.y];
-      if (i == 0 || score < lowest_cost) {
-        lowest_cost = score;
-        lowest_indices.clear();
-        lowest_indices.push_back(i);
-      } else if (score == lowest_cost) {
-        lowest_indices.push_back(i);
-      }
-    }
-
-    int point_index = -1; // The index, in open_points, of the chosen point
-    Point current;        // The chosen point (next in the path)
-    int current_g = 0;    // The g-score of the chosen point.
-
-    if (lowest_indices.empty()) { // Should never happen
-      point_index = 0;
-    } else {
-      point_index = lowest_indices[ rng(0, lowest_indices.size() - 1) ];
-    }
-    current = open_points[point_index];
-    current_g = gscore[current.x][current.y];
-
-// 2) Check if (current) is the endpoint
-    if (current == end) {
-      done = true;  // We made it!
-    } else {
-// 3) Set (current) to be closed
-      open_points.erase(open_points.begin() + point_index);
-      status[current.x][current.y] = A_STAR_CLOSED;
-// 4) Examine all adjacent points
-      for (int x = current.x - 1; x <= current.x + 1; x++) {
-        for (int y = current.y - 1; y <= current.y + 1; y++) {
-          if (x == current.x && y == current.y) {
-            y++; // Skip the current tile
-          }
-// If it's not diagonal, in-bounds and not blocked...
-          if ((x == current.x || y == current.y) &&
-              x >= min_x && y >= min_y && x <= max_x && y <= max_y &&
-              road_cost(x, y) >= 0) {
-            int g = current_g + road_cost(x, y);
-// If it's unexamined, make it open and set its values
-            if (status[x][y] == A_STAR_NONE) {
-              status[x][y] = A_STAR_OPEN;
-              gscore[x][y] = g;
-              hscore[x][y] = road_cost(x, y) *
-                             rl_dist(x, y, end.x, end.y);
-              parent[x][y] = current;
-              open_points.push_back( Point(x, y) );
-// Otherwise, if it's open and we're a better parent, make us the parent
-            } else if (status[x][y] == A_STAR_OPEN && g < gscore[x][y]) {
-              gscore[x][y] = g;
-              parent[x][y] = current;
-            }
-          } // Check for non-diagonal & road_cost() >= 0
-        } // for (int y = current.y - 1; y <= current.y + 1; y++)
-      } // for (int x = current.x - 1; x <= current.x + 1; x++)
-    } // if (current != end)
-  } // while (!done && !open_points.empty())
-
-  if (open_points.empty()) {
-// We were not able to find a path.
-    return std::vector<Point>();
-  }
-
-// Work backwards to build our path...
-  std::vector<Point> backwards_path;
-  Point cur = end;
-  backwards_path.push_back(cur);
-  while (parent[cur.x][cur.y] != start) {
-    cur = parent[cur.x][cur.y];
-    backwards_path.push_back(cur);
-  }
-// Reverse the path
-  std::vector<Point> path;
-  for (int i = backwards_path.size() - 1; i >= 0; i--) {
-    path.push_back( backwards_path[i] );
-  }
-
-  return path;
-}
-
 int World_map::get_trade_distance(int x0, int y0, int x1, int y1)
 {
   return get_trade_distance( Point(x0, y0), Point(x1, y1) );
@@ -1551,14 +1477,17 @@ bool World_map::build_road(int x0, int y0, int x1, int y1)
 
 bool World_map::build_road(Point start, Point end)
 {
-  std::vector<Point> route = get_path(start, end);
-  if (route.empty()) {  // Impossible to build the road!
+  Pathfinder pf(road_map);
+  Path route = pf.get_path(PATH_A_STAR, start, end);
+  if (route.empty()) { // Impossible to build the road!
     return false;
   }
 
   for (int i = 0; i < route.size(); i++) {
     if (!OOB(route[i].x, route[i].y)) {
       road[ route[i].x ][ route[i].y ] = true;
+// Update our road map.
+      road_map.set_cost(route[i].x, route[i].y, 0);
     }
   }
   return true;
