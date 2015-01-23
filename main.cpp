@@ -73,6 +73,7 @@ int main()
   city.set_name();
   city.start_new_city();
   city.set_game(&game);
+  city.setup_trade_routes(world);
 
 
 // Set up an interface bound to our city and game, and kick off its loop.
