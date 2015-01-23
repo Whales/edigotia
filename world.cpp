@@ -751,7 +751,11 @@ void World_map::update_travel_map(Race traveler)
 
   for (int x = 0; x < WORLD_MAP_SIZE; x++) {
     for (int y = 0; y < WORLD_MAP_SIZE; y++) {
-      travel_map[traveler].set_cost(x, y, travel_cost(x, y, traveler));
+      if (has_road(x, y)) {
+        travel_map[traveler].set_cost(x, y, 12);
+      } else {
+        travel_map[traveler].set_cost(x, y, travel_cost(x, y, traveler));
+      }
     }
   }
 }
@@ -1263,6 +1267,36 @@ int World_map::travel_cost(int x, int y, Race traveler)
   return Map_type_data[terrain]->travel_cost;
 }
 
+int World_map::route_cost(Race traveler, int x0, int y0, int x1, int y1)
+{
+  return route_cost(traveler, Point(x0, y0), Point(x1, y1));
+}
+
+int World_map::route_cost(Race traveler, Point start, Point end)
+{
+  if (traveler == RACE_NULL) {  // Sanity check
+    debugmsg("World_map::route_cost(RACE_NULL, ...) called!");
+    return -1;
+  }
+  if (start == end) {
+    return -1;
+  }
+// We should ALWAYS have a map for each race, but check just in case.
+  if (travel_map.count(traveler) == 0) {
+    debugmsg("For some reason World_map doesn't have a travel_map for %s!",
+             Race_data[traveler]->name.c_str());
+    return -1;
+  }
+
+  Pathfinder pf(travel_map[traveler]);
+  Path route = pf.get_path(PATH_A_STAR, start, end);
+
+  if (route.empty()) {
+    return -1;
+  }
+  return route.get_cost();
+}
+
 glyph World_map::get_road_glyph(Point p)
 {
   return get_road_glyph(p.x, p.y);
@@ -1460,14 +1494,18 @@ Direction_full World_map::river_end_for(int x, int y)
   return DIRFULL_NULL;
 }
 
-int World_map::get_trade_distance(int x0, int y0, int x1, int y1)
+int World_map::get_trade_distance(Race trader, int x0, int y0, int x1, int y1)
 {
-  return get_trade_distance( Point(x0, y0), Point(x1, y1) );
+  return get_trade_distance( trader, Point(x0, y0), Point(x1, y1) );
 }
 
-int World_map::get_trade_distance(Point start, Point end)
+int World_map::get_trade_distance(Race trader, Point start, Point end)
 {
-  return 10;
+/* TODO:  Would anything increase the trade distance?
+          Enemy races we have to avoid
+          Areas with bandits/monsters
+ */
+  return route_cost(trader, start, end);
 }
 
 bool World_map::build_road(int x0, int y0, int x1, int y1)

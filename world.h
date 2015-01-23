@@ -66,6 +66,10 @@ public:
 // RACE_NULL, we check its Race_datum to see if it overrides the travel_cost.
   int travel_cost(Point p, Race traveler = RACE_NULL);
   int travel_cost(int x, int y, Race traveler = RACE_NULL);
+// Returns the travel_cost() for the shortest route from start to end for the
+// specified race.
+  int route_cost(Race traveler, Point start, Point end);
+  int route_cost(Race traveler, int x0, int y0, int x1, int y1);
 // Looks at adjacent tiles to decide which line drawing glyph to use
   glyph get_road_glyph(Point p);
   glyph get_road_glyph(int x, int y);
@@ -99,11 +103,8 @@ public:
   std::vector<Point> get_path(int x0, int y0, int x1, int y1);
   std::vector<Point> get_path(Point start, Point end);
 
-  std::vector<Point> get_trade_route(int x0, int y0, int x1, int y1);
-  std::vector<Point> get_trade_route(Point start, Point end);
-
-  int get_trade_distance(int x0, int y0, int x1, int y1);
-  int get_trade_distance(Point start, Point end);
+  int get_trade_distance(Race trader, int x0, int y0, int x1, int y1);
+  int get_trade_distance(Race trader, Point start, Point end);
 
   bool build_road(int x0, int y0, int x1, int y1);
   bool build_road(Point start, Point end);
