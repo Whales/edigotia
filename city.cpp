@@ -106,9 +106,19 @@ void City::setup_trade_routes(World_map* world)
   }
 
   for (int i = 0; i < world->city_list.size(); i++) {
+    int percent = (100 * i) / world->city_list.size();
+    popup_nowait("Establishing trade routes... [%d%%%%%%%%]", percent);
     City* target = world->city_list[i];
-    int distance = world->get_trade_distance(location, target->location);
-    trade_routes[target] = Trade_route(distance);
+// Don't consider cities that are more than 100 tiles away.
+    if (manhattan_dist(location, target->location) <= 100) {
+      int dist = world->get_trade_distance(race, location, target->location);
+      if (target->race != race) {
+        dist = dist * 1.2;  // Penalty for trading outside our race
+      }
+      if (dist >= 0 && dist <= 5000) { // 50 days' travel
+        trade_routes[target] = Trade_route(dist);
+      }
+    }
   }
 }
 
