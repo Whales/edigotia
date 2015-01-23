@@ -129,8 +129,8 @@ void init_map_type_data()
 
   _ter(MAP_BASIN);
     _name("river basin");
-    _road_cost(12);
-    _travel_cost(25);
+    _road_cost(25);
+    _travel_cost(20);
     _river();
     _water();
     _symbol('S', c_blue);
