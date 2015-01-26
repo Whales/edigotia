@@ -1,4 +1,5 @@
 #include "trade.h"
+#include <sstream>
 
 Trade_route::Trade_route()
 {
@@ -20,3 +21,17 @@ Trade_route::~Trade_route()
 {
 }
 
+std::string Trade_route::save_data()
+{
+  std::stringstream ret;
+  ret << distance;
+
+  return ret.str();
+}
+
+bool Trade_route::load_data(std::istream& data)
+{
+  data >> distance;
+
+  return true;
+}

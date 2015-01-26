@@ -20,6 +20,99 @@ AI_city::~AI_city()
 {
 }
 
+std::string AI_city::save_data()
+{
+  std::stringstream ret;
+  ret << City::save_data() << std::endl;
+  ret << int(role) << " ";
+  ret << radius << " ";
+  ret << free_peasants << " ";
+
+  ret << areas_built.size() << " ";
+  for (std::map<Area_type,int>::iterator it = areas_built.begin();
+       it != areas_built.end();
+       it++) {
+    ret << int(it->first) << " " << it->second << " ";
+  }
+  ret << std::endl;
+
+  ret << resource_production.size() << " ";
+  for (std::map<Resource,int>::iterator it = resource_production.begin();
+       it != resource_production.end();
+       it++) {
+    ret << int(it->first) << " " << it->second << " ";
+  }
+  ret << std::endl;
+
+  ret << mineral_production.size() << " ";
+  for (std::map<Mineral,int>::iterator it = mineral_production.begin();
+       it != mineral_production.end();
+       it++) {
+    ret << int(it->first) << " " << it->second << " ";
+  }
+
+  return ret.str();
+}
+
+bool AI_city::load_data(std::istream& data)
+{
+  if (!City::load_data(data)) {
+    debugmsg("AI_city::load_data() failed when calling City::load_data().");
+    return false;
+  }
+
+  int tmprole;
+  data >> tmprole;
+  if (tmprole <= 0 || tmprole >= CITY_ROLE_MAX) {
+    debugmsg("AI_city loaded City_role %d (range is 1 to %d).",
+             tmprole, CITY_ROLE_MAX - 1);
+    return false;
+  }
+
+  data >> radius >> free_peasants;
+
+  int num_areas;
+  data >> num_areas;
+  for (int i = 0; i < num_areas; i++) {
+    int tmparea, tmpnum;
+    data >> tmparea >> tmpnum;
+    if (tmparea <= 0 || tmparea >= AREA_MAX) {
+      debugmsg("AI_city loaded Area %d (range is 1 to %d).",
+               tmparea, AREA_MAX - 1);
+      return false;
+    }
+    areas_built[ Area_type(tmparea) ] = tmpnum;
+  }
+
+  int num_resources;
+  data >> num_resources;
+  for (int i = 0; i < num_resources; i++) {
+    int tmpres, tmpnum;
+    data >> tmpres >> tmpnum;
+    if (tmpres <= 0 || tmpres >= RES_MAX) {
+      debugmsg("AI_city loaded resource %d (range is 1 to %d).",
+               tmpres, RES_MAX - 1);
+      return false;
+    }
+    resource_production[ Resource(tmpres) ] = tmpnum;
+  }
+
+  int num_minerals;
+  data >> num_minerals;
+  for (int i = 0; i < num_minerals; i++) {
+    int tmpmin, tmpnum;
+    data >> tmpmin >> tmpnum;
+    if (tmpmin <= 0 || tmpmin >= MINERAL_MAX) {
+      debugmsg("AI_city loaded mineral %d (range is 1 to %d).",
+               tmpmin, MINERAL_MAX - 1);
+      return false;
+    }
+    mineral_production[ Mineral(tmpmin) ] = tmpnum;
+  }
+
+  return true;
+}
+
 void AI_city::randomize_properties(World_map* world)
 {
   if (!world) {

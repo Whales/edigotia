@@ -5,6 +5,8 @@
 #include "city.h"
 #include "glyph.h"  // For AI_city::get_glyph()
 #include "ai.h"     // For City_role
+#include <string>
+#include <istream>
 
 class World_map;
 
@@ -15,6 +17,9 @@ public:
   virtual ~AI_city();
 
   virtual bool is_ai_city() { return true; }
+
+  virtual std::string save_data();
+  virtual bool load_data(std::istream& data);
 
 // Randomize population, role, and more
   void randomize_properties(World_map* world);

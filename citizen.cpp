@@ -1,6 +1,7 @@
 #include "citizen.h"
 #include "stringfunc.h"
 #include "rng.h"
+#include "window.h"     // For debugmsg()
 #include <sstream>
 
 Citizens::Citizens()
@@ -16,6 +17,73 @@ Citizens::Citizens()
 Citizens::~Citizens()
 {
 }
+
+std::string Citizens::save_data()
+{
+  std::stringstream ret;
+
+  ret << type << " ";
+  ret << count << " ";
+  ret << employed << " ";
+  ret << wealth << " ";
+  ret << tax_morale << " ";
+  ret << morale_points << " ";
+  ret << starvation << std::endl;
+  ret << possessions.size() << " ";
+  for (std::map<Resource,int>::iterator it = possessions.begin();
+       it != possessions.end();
+       it++) {
+    ret << int(it->first) << " " << it->second << " ";
+  }
+  ret << std::endl;
+  ret << morale_modifiers.size() << " ";
+  for (int i = 0; i < morale_modifiers.size(); i++) {
+    ret << morale_modifiers[i].save_data() << " ";
+  }
+
+  return ret.str();
+}
+
+bool Citizens::load_data(std::istream& data)
+{
+  int tmptype;
+  data >> tmptype;
+  if (tmptype <= 0 || tmptype >= CIT_MAX) {
+    debugmsg("Citizens loaded type of %d (Range is 1 to %d)",
+             tmptype, CIT_MAX - 1);
+    return false;
+  }
+  type = Citizen_type(tmptype);
+  data >> count >> employed >> wealth >> tax_morale >> morale_points >>
+          starvation;
+
+  int num_possessions;
+  data >> num_possessions;
+  for (int i = 0; i < num_possessions; i++) {
+    int tmpres, tmpnum;
+    data >> tmpres >> tmpnum;
+    if (tmpres <= 0 || tmpres >= RES_MAX) {
+      debugmsg("Citizens loaded possession of resource %d (range is 1 to %d)",
+               tmpres, RES_MAX - 1);
+      return false;
+    }
+    possessions[Resource(tmpres)] = tmpnum;
+  }
+
+  int num_moralemod;
+  data >> num_moralemod;
+  for (int i = 0; i < num_moralemod; i++) {
+    Morale_modifier tmpmod;
+    if (!tmpmod.load_data(data)) {
+      debugmsg("Citizens failed to load Morale_modifier.");
+      return false;
+    }
+    morale_modifiers.push_back(tmpmod);
+  }
+
+  return true;
+}
+
 
 void Citizens::reset()
 {
@@ -254,6 +322,32 @@ std::string morale_mod_type_name(Morale_mod_type type)
 std::string Morale_modifier::get_name()
 {
   return morale_mod_type_name(type);
+}
+
+std::string Morale_modifier::save_data()
+{
+  std::stringstream ret;
+
+  ret << int(type) << " ";
+  ret << amount << " ";
+
+  return ret.str();
+}
+
+bool Morale_modifier::load_data(std::istream& data)
+{
+  int tmptype;
+  data >> tmptype >> amount;
+
+  if (tmptype <= 0 || tmptype >= MORALE_MOD_MAX) {
+    debugmsg("Morale_modifier loaded type %d (range is 1 to %d).",
+             tmptype, MORALE_MOD_MAX - 1);
+    return false;
+  }
+
+  type = Morale_mod_type(tmptype);
+
+  return true;
 }
 
 // This is per 100 citizens!

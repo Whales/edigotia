@@ -15,6 +15,7 @@
 #include "cuss.h"
 #include "glyph.h"    // For City::get_glyph()
 #include <map>
+#include <istream>    // For City::load_data()
 
 // For determining City::get_glyph() - above this uses O, below uses o
 #define CITY_POPULATION_LARGE 1000
@@ -48,15 +49,20 @@ public:
   virtual bool is_player_city() { return false; }
   virtual bool is_ai_city()     { return true;  }
 
+  void clear_data();
+  virtual std::string save_data();
+  virtual bool load_data(std::istream& data);
+
 // General-data mutators
-  virtual void start_new_city();  // Sets up our population and more!
-  void generate_map(World_map* world, Point loc = Point(-1, -1));
+  void set_world_map(World_map* W);
+  virtual void start_new_city(World_map* W); // Sets up our population and more!
+  void generate_map(Point loc = Point(-1, -1));
   void set_game(Game* G);
   virtual void do_turn();
   void set_random_name();
   void set_race(Race new_race);
   void set_city_type(City_type new_type);
-  void setup_trade_routes(World_map* world);
+  void setup_trade_routes();
 
   //void add_road_connection(City* neighbor);
 
@@ -111,13 +117,15 @@ public:
 
   City_map map;
 
-  std::map<City*,Trade_route> trade_routes;
+// Maps city UIDs to Trade_routes.
+  std::map<int,Trade_route> trade_routes;
 
 protected:
   std::string name;
   City_type type;
   Race race;
   Game* game;
+  World_map* world;
 
 // Which cities are we *directly* connected to via road?
   //std::vector<City*> road_connections;

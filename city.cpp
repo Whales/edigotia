@@ -1,6 +1,7 @@
 #include "city.h"
 #include "rng.h"
 #include "world.h"
+#include <sstream>
 
 City::City()
 {
@@ -8,6 +9,7 @@ City::City()
   type = CITY_TYPE_CITY;
   race = RACE_NULL;
   game = NULL;
+  world = NULL;
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
   }
@@ -17,10 +19,162 @@ City::~City()
 {
 }
 
-void City::start_new_city()
+void City::clear_data()
+{
+  uid = -1;
+  name = "";
+  type = CITY_TYPE_CITY;
+  race = RACE_NULL;
+  location = Point(-1, -1);
+  for (int i = 0; i < CIT_MAX; i++) {
+    population[i].type = Citizen_type(i);
+  }
+  for (int i = 0; i < RES_MAX; i++) {
+    resources[i] = 0;
+  }
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    minerals[i] = 0;
+  }
+  livestock.clear();
+  trade_routes.clear();
+// TODO: Clear the map?
+}
+
+std::string City::save_data()
+{
+  std::stringstream ret;
+  ret << uid << " ";
+// Since some names are multiple words, we need the ! to mark the end.
+  ret << name << " ! ";
+  ret << int(type) << " " << int(race) << std::endl;
+  ret << location.x << " " << location.y << " ";
+  for (int i = 0; i < CIT_MAX; i++) {
+    ret << population[i].save_data() << std::endl;
+  }
+  for (int i = 0; i < RES_MAX; i++) {
+    ret << resources[i] << " ";
+  }
+  ret << std::endl;
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    ret << minerals[i] << " ";
+  }
+  ret << std::endl;
+  ret << livestock.size() << " ";
+  for (std::map<Animal,int>::iterator it = livestock.begin();
+       it != livestock.end();
+       it++) {
+    ret << int(it->first) << " " << it->second << " ";
+  }
+  ret << std::endl;
+  ret << map.save_data() << std::endl;
+  ret << trade_routes.size() << std::endl;
+  for (std::map<int,Trade_route>::iterator it = trade_routes.begin();
+       it != trade_routes.end();
+       it++) {
+    ret << it->first << " " << it->second.save_data() << std::endl;
+  }
+
+  return ret.str();
+}
+
+bool City::load_data(std::istream& data)
+{
+  clear_data();
+  if (!world) {
+    debugmsg("City::load_data() called without world set.  Call \
+City::set_world_map() first!");
+    return false;
+  }
+
+  data >> uid;
+  std::string tmpstr;
+  while (tmpstr != "!") {
+    data >> tmpstr;
+    if (tmpstr != "!") {
+      if (!name.empty()) {
+        name = name + " ";
+      }
+      name = name + tmpstr;
+    }
+  }
+  int tmptype, tmprace;
+  data >> tmptype >> tmprace;
+  if (tmptype >= CITY_TYPE_MAX || tmptype <= 0) {
+    debugmsg("City '%s' has type value of %d (range is 1 - %d)!",
+             name.c_str(), tmptype, CITY_TYPE_MAX - 1);
+    return false;
+  }
+  if (tmprace >= RACE_MAX || tmptype <= 0) {
+    debugmsg("City '%s' has race value of %d (range is 1 - %d)!",
+             name.c_str(), tmprace, RACE_MAX - 1);
+    return false;
+  }
+  type = City_type(tmptype);
+  race = Race(tmprace);
+
+  data >> location.x >> location.y;
+
+  for (int i = 0; i < CIT_MAX; i++) {
+    if (!population[i].load_data(data)) {
+      debugmsg("City '%s' failed to load %s data.",
+               name.c_str(), citizen_type_name(Citizen_type(i), true).c_str());
+      return false;
+    }
+  }
+
+  for (int i = 0; i < RES_MAX; i++) {
+    data >> resources[i];
+  }
+
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    data >> minerals[i];
+  }
+
+  int num_animals;
+  data >> num_animals;
+  for (int i = 0; i < num_animals; i++) {
+    int tmpanimal, tmpnum;
+    data >> tmpanimal >> tmpnum;
+    if (tmpanimal <= 0 || tmpanimal >= ANIMAL_MAX) {
+      debugmsg("City '%s' had animal of index %d (Range is 1 to %d)",
+               name.c_str(), tmpanimal, ANIMAL_MAX - 1);
+      return false;
+    }
+    livestock[ Animal(tmpanimal) ] = tmpnum;
+  }
+
+  if (!map.load_data(data)) {
+    debugmsg("City '%s' failed to load map.", name.c_str());
+    return false;
+  }
+
+  int num_routes;
+  data >> num_routes;
+  for (int i = 0; i < num_routes; i++) {
+    int tmpuid;
+    Trade_route tmproute;
+    data >> tmpuid;
+    if (!tmproute.load_data(data)) {
+      debugmsg("City '%s' failed to load trade route to City %d.",
+               name.c_str(), tmpuid);
+      return false;
+    }
+    trade_routes[tmpuid] = tmproute;
+  }
+
+  return true;
+}
+
+void City::set_world_map(World_map* W)
+{
+  world = W;
+}
+
+void City::start_new_city(World_map* W)
 {
   Race_datum* race_dat = Race_data[race];
   type = CITY_TYPE_CITY;
+  set_world_map(W);
 
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
@@ -40,10 +194,10 @@ void City::start_new_city()
 }
 
 // loc defaults to (-1, -1)
-void City::generate_map(World_map* world, Point loc)
+void City::generate_map(Point loc)
 {
   if (!world) {
-    debugmsg("City::generate_map(NULL) called!");
+    debugmsg("City::generate_map() called but world is NULL!");
     return;
   }
   if (loc.x >= 0 && loc.x < WORLD_MAP_SIZE &&
@@ -97,11 +251,12 @@ void City::set_city_type(City_type new_type)
   type = new_type;
 }
 
-void City::setup_trade_routes(World_map* world)
+void City::setup_trade_routes()
 {
   trade_routes.clear();
 
   if (!world) { // Safety check
+    debugmsg("City::setup_trade_routes() called but world is NULL!");
     return;
   }
 
@@ -110,13 +265,13 @@ void City::setup_trade_routes(World_map* world)
     popup_nowait("Establishing trade routes... [%d%%%%%%%%]", percent);
     City* target = world->city_list[i];
 // Don't consider cities that are more than 100 tiles away.
-    if (manhattan_dist(location, target->location) <= 100) {
+    if (target != this && manhattan_dist(location, target->location) <= 100) {
       int dist = world->get_trade_distance(race, location, target->location);
       if (target->race != race) {
         dist = dist * 1.2;  // Penalty for trading outside our race
       }
       if (dist >= 0 && dist <= 5000) { // 50 days' travel
-        trade_routes[target] = Trade_route(dist);
+        trade_routes[target->uid] = Trade_route(dist);
       }
     }
   }

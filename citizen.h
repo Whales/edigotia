@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <istream>
 
 enum Citizen_type
 {
@@ -56,6 +57,9 @@ struct Morale_modifier
 
   std::string get_name(); // returns morale_mod_type_name(type)
 
+  std::string save_data();
+  bool load_data(std::istream& data);
+
   Morale_mod_type type;
   int amount; // Mesaured in 1/10th of a morale percentage.
 };
@@ -64,6 +68,9 @@ struct Citizens
 {
   Citizens();
   ~Citizens();
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
   Citizen_type type;
 

@@ -483,7 +483,8 @@ void Kingdom::add_city(World_map* world, Point loc, City_type type, int radius)
   city->set_city_type(type);
   city->set_race(race);
   city->set_random_name();
-  city->generate_map(world, loc);  // This sets city->location too
+  city->set_world_map(world);
+  city->generate_map(loc);  // This sets city->location too
   city->randomize_properties(world);
 
   switch (type) {

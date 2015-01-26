@@ -57,7 +57,7 @@ public:
   bool place_keep();
   void pick_race();
   void set_name();
-  virtual void start_new_city();
+  virtual void start_new_city(World_map* world);
 
 // Display output
   glyph get_glyph();

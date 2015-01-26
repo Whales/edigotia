@@ -10,6 +10,7 @@
 #include "ai.h"       // For City_role
 #include <vector>
 #include <string>
+#include <istream>    // For data loading
 
 // How big the city map is to a side.
 #define CITY_MAP_SIZE 9
@@ -112,6 +113,9 @@ struct Map_tile
   Map_tile();
   ~Map_tile();
 
+  std::string save_data();
+  bool load_data(std::istream& data);
+
   Terrain_datum* get_terrain_datum();
   std::string    get_terrain_name();
   glyph          get_glyph();
@@ -160,6 +164,9 @@ public:
                 Direction coast = DIR_NULL,
                 Direction_full river_start = DIRFULL_NULL,
                 Direction_full river_end   = DIRFULL_NULL);
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
   Map_tile* get_tile(Point p);
   Map_tile* get_tile(int x, int y);

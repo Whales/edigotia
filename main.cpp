@@ -56,7 +56,8 @@ int main()
   bool placed = false;
   while (!placed) {
     if (!world->get_city(p)) {
-      city.generate_map(world, p);
+      city.set_world_map(world);
+      city.generate_map(p);
       placed = city.place_keep();
     } else {
       popup("There is already a city there!");
@@ -71,9 +72,9 @@ int main()
 // Crude race picker; TODO: replace this.
   city.pick_race();
   city.set_name();
-  city.start_new_city();
+  city.start_new_city(world);
   city.set_game(&game);
-  city.setup_trade_routes(world);
+  city.setup_trade_routes();
 
 
 // Set up an interface bound to our city and game, and kick off its loop.

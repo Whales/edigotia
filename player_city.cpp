@@ -127,9 +127,9 @@ void Player_city::set_name()
   }
 }
 
-void Player_city::start_new_city()
+void Player_city::start_new_city(World_map* world)
 {
-  City::start_new_city();
+  City::start_new_city(world);
 
   Race_datum* race_dat = Race_data[race];
 

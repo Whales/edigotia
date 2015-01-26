@@ -14,6 +14,85 @@ Map_tile::~Map_tile()
 {
 }
 
+std::string Map_tile::save_data()
+{
+  std::stringstream ret;
+  ret << ter << " ";
+  ret << wood << " ";
+
+  ret << crops.size() << " ";
+  for (int i = 0; i < crops.size(); i++) {
+    ret << int(crops[i]) << " ";
+  }
+
+  ret << minerals.size() << " ";
+  for (int i = 0; i < minerals.size(); i++) {
+    ret << int(minerals[i].type) << " " << minerals[i].amount << " ";
+  }
+
+  ret << animals.size() << " ";
+  for (int i = 0; i < animals.size(); i++) {
+    ret << int(animals[i].type) << " " << animals[i].amount << " ";
+  }
+
+  return ret.str();
+}
+
+bool Map_tile::load_data(std::istream& data)
+{
+  int tmpter;
+  data >> tmpter;
+  if (tmpter <= 0 || tmpter >= TER_MAX) {
+    debugmsg("Map_tile loaded Terrain_type %d (range is 1 to %d).",
+             tmpter, TER_MAX - 1);
+    return false;
+  }
+  ter = Terrain_type(ter);
+
+  data >> wood;
+
+  int num_crops;
+  data >> num_crops;
+  for (int i = 0; i < num_crops; i++) {
+    int tmpcrop;
+    data >> tmpcrop;
+    if (tmpcrop <= 0 || tmpcrop >= CROP_MAX) {
+      debugmsg("Map_tile loaded crop %d (range is 1 to %d).",
+               tmpcrop, CROP_MAX - 1);
+      return false;
+    }
+    crops.push_back( Crop(tmpcrop) );
+  }
+
+  int num_minerals;
+  data >> num_minerals;
+  for (int i = 0; i < num_minerals; i++) {
+    int tmpmineral, tmpnum;
+    data >> tmpmineral >> tmpnum;
+    if (tmpmineral <= 0 || tmpmineral >= MINERAL_MAX) {
+      debugmsg("Map_tile loaded mineral %d (range is 1 to %d).",
+               tmpmineral, MINERAL_MAX - 1);
+      return false;
+    }
+    minerals.push_back( Mineral_amount( Mineral(tmpmineral), tmpnum ) );
+  }
+
+  int num_animals;
+  data >> num_animals;
+  for (int i = 0; i < num_animals; i++) {
+    int tmpanimal, tmpnum;
+    data >> tmpanimal >> tmpnum;
+    if (tmpanimal <= 0 || tmpanimal >= ANIMAL_MAX) {
+      debugmsg("Map_tile loaded animal %d (range is 1 to %d).",
+               tmpanimal, ANIMAL_MAX - 1);
+      return false;
+    }
+    animals.push_back( Animal_amount( Animal(tmpanimal), tmpnum ) );
+  }
+
+  return true;
+}
+
 Terrain_datum* Map_tile::get_terrain_datum()
 {
   return Terrain_data[ter];
@@ -743,6 +822,72 @@ void City_map::generate(Map_type type,
 
     }
   }
+}
+
+std::string City_map::save_data()
+{
+  std::stringstream ret;
+
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      ret << tiles[x][y].save_data() << " ";
+    }
+  }
+  ret << std::endl;
+
+  ret << bonus_crops.size() << " ";
+  for (int i = 0; i < bonus_crops.size(); i++) {
+    ret << int(bonus_crops[i]) << " ";
+  }
+  ret << std::endl;
+
+  ret << bonus_minerals.size() << " ";
+  for (int i = 0; i < bonus_minerals.size(); i++) {
+    ret << int(bonus_minerals[i]) << " ";
+  }
+  ret << std::endl;
+
+  return ret.str();
+}
+
+bool City_map::load_data(std::istream& data)
+{
+  for (int x = 0; x < CITY_MAP_SIZE; x++) {
+    for (int y = 0; y < CITY_MAP_SIZE; y++) {
+      if (!tiles[x][y].load_data(data)) {
+        debugmsg("City_map failed to load tile [%d:%d].", x, y);
+        return false;
+      }
+    }
+  }
+
+  int num_crops;
+  data >> num_crops;
+  for (int i = 0; i < num_crops; i++) {
+    int tmpcrop;
+    data >> tmpcrop;
+    if (tmpcrop <= 0 || tmpcrop >= CROP_MAX) {
+      debugmsg("City_map loaded crop %d (range is 1 to %d.",
+               tmpcrop, CROP_MAX - 1);
+      return false;
+    }
+    bonus_crops.push_back( Crop(tmpcrop) );
+  }
+
+  int num_minerals;
+  data >> num_minerals;
+  for (int i = 0; i < num_minerals; i++) {
+    int tmpmineral;
+    data >> tmpmineral;
+    if (tmpmineral <= 0 || tmpmineral >= MINERAL_MAX) {
+      debugmsg("City_map loaded mineral %d (range is 1 to %d.",
+               tmpmineral, MINERAL_MAX - 1);
+      return false;
+    }
+    bonus_minerals.push_back( Mineral(tmpmineral) );
+  }
+
+  return true;
 }
 
 Map_tile* City_map::get_tile(Point p)
