@@ -1894,7 +1894,7 @@ void Player_city::do_hunt(Area* hunting_camp)
         }
       }
 // Sanity check...
-      if (point_cost == 0) {
+      if (point_cost <= 0) {
         debugmsg("Hunting cost 0! (%s, pack of %d)",
                  target_data->name.c_str(), pack_size);
         point_cost = 1;
@@ -1907,7 +1907,9 @@ void Player_city::do_hunt(Area* hunting_camp)
         }
       }
       hunting_points -= point_cost;
-    } // if (target != ANIMAL_NULL)
+    } else { // if (target != ANIMAL_NULL)
+      hunting_points -= 100;  // Time wasted
+    }
 
 // Check for ANIMAL_NULL again, since it may have changed in the above block.
     if (target != ANIMAL_NULL) {

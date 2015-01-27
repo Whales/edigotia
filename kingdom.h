@@ -59,7 +59,6 @@ private:
 };
 
 // See kingdom.cpp
-extern std::vector<Kingdom*> Kingdoms;
 void init_kingdoms(Game* game, World_map* world);
 
 #endif

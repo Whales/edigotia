@@ -36,8 +36,14 @@ int digits_in(int num);
 // return "1.08".
 std::string move_decimal(int num, int moves);
 
+// Finds the breakpoints that value falls between, and returns a color tag
+// from the colors provided.
 std::string color_gradient(int value, std::vector<int> breakpoints,
                            std::vector<nc_color> colors);
+
+// Returns a list of letters that may follow ch; if vowel_before is true, then
+// there should be a vowel before ch.
+std::string letter_after(long ch, bool vowel_before = false);
 
 bool is_vowel(char ch);
 

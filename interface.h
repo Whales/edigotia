@@ -72,7 +72,10 @@ public:
   Interface();
   ~Interface();
 
-  bool init(Game* G, World_map* W, Player_city* C);
+  bool init();
+
+// returns false if we quit - this should exit the program
+  bool starting_screen();
 
   void main_loop();
 
@@ -200,11 +203,6 @@ private:
   Data_mode cur_data_mode;
   int message_offset;  // We can scroll messages; the first message to start w/
   Menu_id cur_menu;
-
-// Pointers to game data.
-  Game* game;
-  World_map* world;
-  Player_city* city;
 
 // Varius values used in user interaction.
   Point sel;  // Point in map currently highlighted

@@ -3,8 +3,12 @@
 
 #include "date.h"
 #include <string>
+#include <vector>
 
 class City;
+class Player_city;
+class World_map;
+class Kingdom;
 
 class Game
 {
@@ -13,7 +17,8 @@ public:
   ~Game();
 
 // Initialization
-  void init();
+// returns false if we cancel when picking a city site
+  bool start_new_game();
 
 // Mutators
   void advance_time(int days = 1, City* city = NULL);
@@ -28,7 +33,13 @@ public:
 
   int get_city_uid(); // Returns next_city_uid and advances next_city_uid.
 
+  World_map* world;
+  std::vector<Kingdom*> kingdoms;
+  Player_city* city;
+
 private:
+  void generate_kingdoms();
+
   Date date;
   int next_city_uid;
 };

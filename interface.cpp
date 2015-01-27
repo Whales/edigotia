@@ -7,7 +7,10 @@
 #include "keys.h"
 #include "building.h"
 #include "animal.h"
+#include "rng.h"
+#include "globals.h"
 #include <sstream>
+#include <fstream>
 #include <cstdarg> // For the variadic function below
 #include <map>
 
@@ -23,39 +26,21 @@ Interface::Interface()
   show_terrain = false;
   current_area = AREA_NULL;
   temp_text = false;
-  game = NULL;
-  city = NULL;
 }
 
 Interface::~Interface()
 {
 }
 
-bool Interface::init(Game* G, World_map* W, Player_city* C)
+bool Interface::init()
 {
   bool errors = false;
   std::stringstream ss_errors;
   ss_errors << "Interface initialized with ";
-  if (!G) {
-    errors = true;
-    ss_errors << "NULL Game ";
-  }
-  if (!W) {
-    errors = true;
-    ss_errors << "NULL World_map ";
-  }
-  if (!C) {
-    errors = true;
-    ss_errors << "NULL Player_city";
-  }
 
   if (errors) {
     return false;
   }
-
-  game  = G;
-  world = W;
-  city  = C;
 
   if (!i_main.load_from_file("cuss/interface.cuss")) {
     debugmsg("Failed to load critical interface file cuss/interface.cuss!");
@@ -108,6 +93,96 @@ bool Interface::init(Game* G, World_map* W, Player_city* C)
   return true;
 }
 
+bool Interface::starting_screen()
+{
+  Window w_start(0, 0, 80, 24);
+  cuss::interface i_start;
+  if (!i_start.load_from_file("cuss/start.cuss")) {
+    return false;
+  }
+
+  std::ifstream fin;
+  std::string motd;
+  std::vector<std::string> art;
+
+  fin.open("motd.txt");
+  if (fin.is_open()) {
+    std::string tmp;
+    while (!fin.eof()) {
+      getline(fin, tmp);
+      if (tmp.empty()) {
+        motd += "\n";
+      } else {
+        motd += tmp;
+      }
+    }
+    fin.close();
+  }
+  i_start.set_data("text_motd", motd);
+
+  fin.open("art.txt");
+  if (fin.is_open()) {
+    std::string tmpart, tmpline;
+    while (!fin.eof()) {
+      getline(fin, tmpline);
+      if (!tmpline.empty() && tmpline[0] == '#' &&
+          (tmpline.length() == 1 || tmpline[1] == ' ')) {
+        continue; // It's a comment
+      } else if (tmpline.length() == 1 && tmpline[0] == '%') {
+        art.push_back(tmpart);
+        tmpart = "";
+      } else {
+        tmpart += tmpline;
+        tmpart += "\n";
+        tmpline = "";
+      }
+    }
+    if (!tmpart.empty()) {
+      tmpart = tmpart.substr( 0, tmpart.length() - 1 ); // Strip off \n
+      art.push_back(tmpart);
+    }
+    fin.close();
+  }
+
+  if (!art.empty()) {
+    i_start.set_data("text_art", art[ rng(0, art.size() - 1) ]);
+  }
+
+  i_start.draw(&w_start);
+  w_start.refresh();
+
+  long ch;
+  do {
+    ch = input();
+  } while (ch != 'c' && ch != 'C' && ch != 'l' && ch != 'L' &&
+           ch != 'n' && ch != 'N' && ch != 'q' && ch != 'Q'   );
+
+  switch (ch) {
+
+    case 'l':
+    case 'L':
+// Load city
+      break;
+
+    case 'n':
+    case 'N':
+// New city
+      return GAME->start_new_game();
+      break;
+
+    case 'g':
+    case 'G':
+// Generate new world
+      break;
+
+    case 'q':
+    case 'Q':
+      return false;
+  }
+
+  return true;
+}
+
 void Interface::main_loop()
 {
   sel = Point(4, 4);
@@ -117,8 +192,8 @@ void Interface::main_loop()
   i_main.set_data("text_menu_bar", menu_str);
 
   std::stringstream ss_city_race;
-  Race_datum* race_dat = Race_data[city->get_race()];
-  ss_city_race << "<c=white>" << city->get_name() << " - <c=" <<
+  Race_datum* race_dat = Race_data[GAME->city->get_race()];
+  ss_city_race << "<c=white>" << GAME->city->get_name() << " - <c=" <<
                   color_tag(race_dat->color) << ">" <<
                   capitalize(race_dat->plural_name) << "<c=/>";
   i_main.set_data("text_city_race", ss_city_race.str());
@@ -129,27 +204,27 @@ void Interface::main_loop()
 
   bool done = false;
   while (!done) {
-    i_main.set_data("text_date", game->get_date_str(date_size));
+    i_main.set_data("text_date", GAME->get_date_str(date_size));
 
-    city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
-                   show_terrain);
+    GAME->city->draw_map(i_main.find_by_name("draw_map"), sel, city_radius,
+                         show_terrain);
 
     if (cur_mode != IMODE_MENU) {
       print_message_alert();
       print_data();
     }
 
-    i_main.set_data("num_population",   city->get_total_population());
-    i_main.set_data("num_gold",         city->get_resource_amount(RES_GOLD) );
-    i_main.set_data("num_food",         city->get_resource_amount(RES_FOOD) );
-    i_main.set_data("num_wood",         city->get_resource_amount(RES_WOOD) );
-    i_main.set_data("num_stone",        city->get_resource_amount(RES_STONE));
+    i_main.set_data("num_population", GAME->city->get_total_population());
+    i_main.set_data("num_gold", GAME->city->get_resource_amount(RES_GOLD) );
+    i_main.set_data("num_food", GAME->city->get_resource_amount(RES_FOOD) );
+    i_main.set_data("num_wood", GAME->city->get_resource_amount(RES_WOOD) );
+    i_main.set_data("num_stone", GAME->city->get_resource_amount(RES_STONE));
 
     if (!temp_text) {
       if (cur_mode == IMODE_VIEW_MAP && current_area != AREA_NULL) {
         display_area_stats(current_area);
       } else {
-        i_main.set_data("text_map_info", city->get_map_info(sel));
+        i_main.set_data("text_map_info", GAME->city->get_map_info(sel));
       }
     }
 
@@ -158,8 +233,9 @@ void Interface::main_loop()
     long ch = input();
 
 // Mark all but 10 most recent messages as read if we're on the message tab
-    if (cur_data_mode == DATA_MODE_MESSAGES && city->unread_messages >= 10) {
-      city->unread_messages = 10;
+    if (cur_data_mode == DATA_MODE_MESSAGES &&
+        GAME->city->unread_messages >= 10) {
+      GAME->city->unread_messages = 10;
     }
 
     restore_info_text();  // Undo temporary change to text_map_info
@@ -236,13 +312,13 @@ void Interface::handle_key(long ch)
 // Get info on currently-selected tile
         } else if (ch == '\n') {
           if (current_area != AREA_NULL) {
-            if (city->area_at(sel)) {
+            if (GAME->city->area_at(sel)) {
               set_temp_info("There is already an area there!");
             } else {
               enqueue_area();
             }
           } else {
-            popup( city->get_map_info(sel).c_str() );
+            popup( GAME->city->get_map_info(sel).c_str() );
           }
 
 // Revert to normal mode (not building an area, VIEW_MAP mode)
@@ -271,52 +347,52 @@ void Interface::handle_key(long ch)
 
 // Close an area
         } else if (ch == 'c' || ch == 'C') {
-          Area* area_selected = city->area_at(sel);
+          Area* area_selected = GAME->city->area_at(sel);
           if (!area_selected) {
             set_temp_info("No area there.");
           } else if (!area_selected->is_open()) {
             set_temp_info("That area is already closed.");
           } else if (query_yn("Really close your %s?",
                               area_selected->get_name().c_str())) {
-            area_selected->close(city);
+            area_selected->close(GAME->city);
           }
 
 // Open a closed area
         } else if (ch == 'o' || ch == 'O') {
-          Area* area_selected = city->area_at(sel);
+          Area* area_selected = GAME->city->area_at(sel);
           if (!area_selected) {
             set_temp_info("No area there.");
           } else if (area_selected->is_open()) {
             set_temp_info("That area is already open.");
           } else {
             int cost = area_selected->get_reopen_cost();
-            if (city->get_resource_amount(RES_GOLD) < cost) {
+            if (GAME->city->get_resource_amount(RES_GOLD) < cost) {
               std::stringstream ss_mes;
               ss_mes << "You do not have enough gold to re-open your " <<
                         area_selected->get_name() << ". (Cost: " << cost <<
-                        "  You: " << city->get_resource_amount(RES_GOLD);
+                        "  You: " << GAME->city->get_resource_amount(RES_GOLD);
               set_temp_info(ss_mes.str());
             } else if (query_yn("Open your %s at a cost of %d gold?",
                                 area_selected->get_name().c_str(), cost)) {
-              city->expend_resource(RES_GOLD, cost);
-              area_selected->auto_hire(city);
+              GAME->city->expend_resource(RES_GOLD, cost);
+              area_selected->auto_hire(GAME->city);
               area_selected->building.open = true;
             }
           }
 
 // Destroy an area
         } else if (ch == 'd' || ch == 'D') {
-          Area* area_selected = city->area_at(sel);
+          Area* area_selected = GAME->city->area_at(sel);
           if (area_selected) {
             int cost = area_selected->get_destroy_cost();
-            int gold = city->get_resource_amount(RES_GOLD);
+            int gold = GAME->city->get_resource_amount(RES_GOLD);
 
 // Areas under construction are free to "destroy" (but we won't get the build
 // costs back).
             if (area_selected->under_construction()) {
               if (query_yn("Cancel %s construction? You will lose all \
 resources spent to build it.", area_selected->get_name().c_str())) {
-                city->destroy_area_at(sel);
+                GAME->city->destroy_area_at(sel);
               }
 
             } else if (gold < cost) {
@@ -325,7 +401,7 @@ resources spent to build it.", area_selected->get_name().c_str())) {
 
             } else if (query_yn("Destroy the %s?\nCost: %d gold\nYou:  %d gold",
                                area_selected->get_name().c_str(), cost, gold)) {
-              city->destroy_area_at(sel);
+              GAME->city->destroy_area_at(sel);
             }
           }
 
@@ -337,17 +413,17 @@ resources spent to build it.", area_selected->get_name().c_str())) {
 
 // Move time forward by 1 day
         } else if (ch == '.') {
-          game->advance_time(1, city);
+          GAME->advance_time(1, GAME->city);
 
 // Move time forward by 1 week
         } else if (ch == '>') {
-          game->advance_time(7, city);
+          GAME->advance_time(7, GAME->city);
         }
 
         if (cur_data_mode == DATA_MODE_MESSAGES) {  // It has a few special keys
 
           if (ch == '\'' && cur_data_mode == DATA_MODE_MESSAGES) {
-            city->unread_messages = 0;
+            GAME->city->unread_messages = 0;
             message_offset = 0;
 
           } else if (ch == '+' || ch == '=') {
@@ -450,7 +526,7 @@ void Interface::print_message_alert()
 {
   i_main.clear_data("text_messages");
 
-  std::vector<int> msg_count = city->get_unread_message_count();
+  std::vector<int> msg_count = GAME->city->get_unread_message_count();
 
 // Get a total message count
   int total_messages = 0;
@@ -502,7 +578,8 @@ void Interface::print_data()
       ss_data << "              Population   Unemployed" << std::endl;
       for (int i = CIT_PEASANT; i < CIT_MAX; i++) {
         Citizen_type cit_type = Citizen_type(i);
-        if (true || city->population[i].count > 0) {
+// TODO: huh?
+        if (true || GAME->city->population[i].count > 0) {
 // We use "true" in citizen_type_name() to indicate pluralization
           std::string cit_name = capitalize(citizen_type_name(cit_type, true));
           ss_data << "<c=yellow>" << cit_name << "<c=/>";
@@ -511,20 +588,20 @@ void Interface::print_data()
             ss_data << " ";
           }
 // Add spaces for alignment
-          int spaces = 6 - digits_in(city->population[i].count);
+          int spaces = 6 - digits_in(GAME->city->population[i].count);
           for (int n = 0; n < spaces; n++) {
             ss_data << " ";
           }
-          ss_data << city->population[i].count;
+          ss_data << GAME->city->population[i].count;
           ss_data << "       "; // Align under "Unemployed"
 
-          int unemployed = city->population[i].get_unemployed();
+          int unemployed = GAME->city->population[i].get_unemployed();
           spaces = 6 - digits_in(unemployed);
           for (int n = 0; n < spaces; n++) {
             ss_data << " ";
           }
           ss_data << unemployed << std::endl;
-        } // if (city->population[i].count > 0)
+        } // if (GAME->city->population[i].count > 0)
       } // for (int i = 0; i < CIT_MAX; i++)
 
       ss_data << std::endl;
@@ -538,14 +615,14 @@ void Interface::print_data()
           ss_data << " ";
         }
         ss_data << "housing available:";
-        int housing = city->get_total_housing(cit_type);
+        int housing = GAME->city->get_total_housing(cit_type);
         int spaces = 6 - digits_in(housing);
         for (int n = 0; n < spaces; n++) {
           ss_data << " ";
         }
-        if (housing <= city->get_total_population(cit_type)) {
+        if (housing <= GAME->city->get_total_population(cit_type)) {
           ss_data << "<c=red>";
-        } else if (housing * 0.8 <= city->get_total_population(cit_type)) {
+        } else if (housing * 0.8 <= GAME->city->get_total_population(cit_type)){
           ss_data << "<c=yellow>";
         }
         ss_data << housing << "<c=/>" << std::endl;
@@ -562,7 +639,7 @@ void Interface::print_data()
         for (int n = 0; n < 9 - cit_name.length(); n++) {
           ss_data << " ";
         }
-        int cap = city->get_population_cap(cit_type);
+        int cap = GAME->city->get_population_cap(cit_type);
         if (cap == -1) {  // No cap.
           ss_data << " <c=blue>N/A<c=/>" << std::endl;
         } else {
@@ -586,13 +663,14 @@ void Interface::print_data()
       for (int i = 0; i < RES_MAX || i < MINERAL_MAX; i++) {
         if (i < RES_MAX) {
           Resource res = Resource(i);
-          if (!resource_is_meta(res) && city->get_resource_amount(res) > 0) {
+          if (!resource_is_meta(res) &&
+              GAME->city->get_resource_amount(res) > 0) {
             resource_list.push_back(res);
           }
         }
         if (i < MINERAL_MAX) {
           Mineral min = Mineral(i);
-          if (city->get_mineral_amount(min) > 0) {
+          if (GAME->city->get_mineral_amount(min) > 0) {
             mineral_list.push_back(min);
           }
         }
@@ -602,7 +680,7 @@ void Interface::print_data()
         if (i < resource_list.size()) {
           Resource res = resource_list[i];
           std::string res_name = capitalize( resource_name(res) );
-          int amount = city->get_resource_amount(res);
+          int amount = GAME->city->get_resource_amount(res);
 // Colorize it
           ss_data << "<c=" << color_tag( resource_color(res) ) << ">";
           ss_data << res_name << "<c=/>:";
@@ -630,7 +708,7 @@ void Interface::print_data()
           ss_data << "  <c=white>|<c=/>  ";
           Mineral min = mineral_list[i];
           std::string min_name = capitalize( Mineral_data[min]->name );
-          int amount = city->get_mineral_amount(min);
+          int amount = GAME->city->get_mineral_amount(min);
           ss_data << min_name << ":";
 // Insert spaces for alignment.  length() + 1 because of the :
           for (int n = 0; n < 10 - (min_name.length() + 1); n++) {
@@ -653,30 +731,30 @@ void Interface::print_data()
 "<c=ltblue>Messages<c=/> (<c=pink>'<c=/>: Clear  \
 <c=pink>-<c=/>/<c=pink>+<c=/>: Scroll)");
 // If there's no new messages, let us know that.
-      if (city->unread_messages == 0 || city->messages.empty()) {
+      if (GAME->city->unread_messages == 0 || GAME->city->messages.empty()) {
         ss_data << "<c=dkgray>No new messages.<c=/>";
       }
-// We show the last N messages, where N = city->unread_messages.
+// We show the last N messages, where N = GAME->city->unread_messages.
 // Ensure that unread_messages is safe.
-      if (city->unread_messages > city->messages.size()) {
-        city->unread_messages = city->messages.size();
+      if (GAME->city->unread_messages > GAME->city->messages.size()) {
+        GAME->city->unread_messages = GAME->city->messages.size();
       }
 // Ensure that message_offset is safe.
-      int mess_size = city->messages.size();
-      if (mess_size - city->unread_messages + message_offset < 0) {
-        message_offset = city->unread_messages - mess_size;
+      int mess_size = GAME->city->messages.size();
+      if (mess_size - GAME->city->unread_messages + message_offset < 0) {
+        message_offset = GAME->city->unread_messages - mess_size;
       }
-      if (city->unread_messages + message_offset > mess_size) {
-        message_offset = mess_size - city->unread_messages;
+      if (GAME->city->unread_messages + message_offset > mess_size) {
+        message_offset = mess_size - GAME->city->unread_messages;
       }
 
       Date last_date(1, 1, 1); // Make sure the date check fails
 
-      for (int i = city->messages.size() - city->unread_messages +
+      for (int i = GAME->city->messages.size() - GAME->city->unread_messages +
                    message_offset;
-           i < city->messages.size();
+           i < GAME->city->messages.size();
            i++) {
-        Message* mes = &(city->messages[i]);
+        Message* mes = &(GAME->city->messages[i]);
         if (mes->date != last_date) { // Print the date
           last_date = mes->date;
           ss_data << "<c=ltblue>" << last_date.get_text() << ":<c=/>" <<
@@ -812,7 +890,7 @@ void Interface::do_menu_action(Menu_id menu, int index)
     case MENU_WORLD:
       switch (index) {
         case 1: // View map
-          world->draw( city->location );
+          GAME->world->draw( GAME->city->location );
           break;
       }
       break;
@@ -847,8 +925,8 @@ void Interface::display_area_stats(Area_type type)
   Building_datum* build_dat = Area_data[type]->get_building_datum();
   std::string area_name = Area_data[type]->name;
 
-  Map_tile* tile = city->map.get_tile(sel);
-  Terrain_datum* ter_dat = city->map.get_terrain_datum(sel);
+  Map_tile* tile = GAME->city->map.get_tile(sel);
+  Terrain_datum* ter_dat = GAME->city->map.get_terrain_datum(sel);
 
   switch (type) {
 
@@ -861,8 +939,8 @@ void Interface::display_area_stats(Area_type type)
         std::string cit_name = citizen_type_name(cit_type);
         cit_name = capitalize(cit_name);
         std::string plural_name = citizen_type_name(cit_type, true);
-        int pop     = city->get_total_population(cit_type);
-        int housing = city->get_total_housing(cit_type);
+        int pop     = GAME->city->get_total_population(cit_type);
+        int housing = GAME->city->get_total_housing(cit_type);
   
         stats << "<c=white>" << cit_name << " population: " << pop << "<c=/>" <<
                  std::endl;
@@ -888,9 +966,9 @@ void Interface::display_area_stats(Area_type type)
                tile->get_farmability() << "%%%%" << std::endl;
       stats << std::endl;
       stats << "Crops here: " << tile->get_crop_info() << std::endl;
-      stats << "Food consumed each day: " << city->get_food_consumption() <<
-               std::endl;
-      stats << "Food produced each day: " << city->get_food_production();
+      stats << "Food consumed each day: " <<
+               GAME->city->get_food_consumption() << std::endl;
+      stats << "Food produced each day: " << GAME->city->get_food_production();
       break;
 
     case AREA_HUNTING_CAMP:
@@ -921,9 +999,9 @@ void Interface::display_area_stats(Area_type type)
       break;
 
     case AREA_BARRACKS:
-      stats << "Number of soldiers: " << city->get_military_count() <<
+      stats << "Number of soldiers: " << GAME->city->get_military_count() <<
                std::endl;
-      stats << "Soldiers supported: " << city->get_military_supported();
+      stats << "Soldiers supported: " << GAME->city->get_military_supported();
       break;
   }
 
@@ -938,10 +1016,10 @@ void Interface::enqueue_area()
 
   Building_datum* build = get_building_for(current_area);
 
-  if (city->has_resources(build->build_costs)) {
-    Area_queue_status stat = city->add_area_to_queue(current_area, sel);
+  if (GAME->city->has_resources(build->build_costs)) {
+    Area_queue_status stat = GAME->city->add_area_to_queue(current_area, sel);
     if (stat == AREA_QUEUE_OK) {
-      city->expend_resources(build->build_costs);
+      GAME->city->expend_resources(build->build_costs);
     } else {
       std::stringstream fail;
       fail << "<c=ltred>";
@@ -976,7 +1054,7 @@ void Interface::minister_finance()
 
   bool done = false;
 
-  int current_gold = city->get_resource_amount(RES_GOLD);
+  int current_gold = GAME->city->get_resource_amount(RES_GOLD);
   i_finance.ref_data("num_gold", &current_gold);
 
   int income_taxes = 0, income_trade = 0, income_mint = 0, income_total = 0;
@@ -1003,7 +1081,7 @@ void Interface::minister_finance()
   int citizen_taxes   [CIT_MAX];
   for (int i = 1; i < CIT_MAX; i++) {
     Citizen_type cit_type = Citizen_type(i);
-    Citizens* citizens = &(city->population[cit_type]);
+    Citizens* citizens = &(GAME->city->population[cit_type]);
     std::stringstream wealth_name, income_name, tax_rate_name, taxes_name;
 
     wealth_name   << "num_wealth_"   << citizen_type_name(cit_type);
@@ -1013,8 +1091,8 @@ void Interface::minister_finance()
 
     citizen_wealth  [i] = citizens->wealth;
     citizen_income  [i] = citizens->get_income();
-    citizen_tax_rate[i] = city->tax_rate[cit_type];
-    citizen_taxes   [i] = city->get_taxes(cit_type);
+    citizen_tax_rate[i] = GAME->city->tax_rate[cit_type];
+    citizen_taxes   [i] = GAME->city->get_taxes(cit_type);
 
     i_finance.ref_data(wealth_name.str(),   &(citizen_wealth  [i]));
     if (citizen_wealth[i] == 0) {
@@ -1038,22 +1116,22 @@ void Interface::minister_finance()
 
 // TODO: Calculate trade income & expenses
 
-  income_mint = city->get_resource_production(RES_GOLD);
+  income_mint = GAME->city->get_resource_production(RES_GOLD);
 
 // We now know enough to calculate the total gross income...
   income_total = income_taxes + income_trade + income_mint;
 // ... which lets us calculate the total lost to corruption.
-  expense_corruption = income_total * city->get_corruption_percentage();
+  expense_corruption = income_total * GAME->city->get_corruption_percentage();
   expense_corruption /= 100;
 
 // Calculate maintenace
-  expense_maintenance = city->get_total_maintenance();
+  expense_maintenance = GAME->city->get_total_maintenance();
 
 // Calculate wages
-  expense_wages = city->get_total_wages();
+  expense_wages = GAME->city->get_total_wages();
 
 // Military expenditure
-  expense_military = city->get_military_expense();
+  expense_military = GAME->city->get_military_expense();
 
 // Now we have total gross expenses...
   expense_total = expense_wages + expense_trade + expense_maintenance +
@@ -1157,17 +1235,17 @@ void Interface::minister_finance()
 // Our list starts at index 0, which is peasants.  So we want to map 0 to
 // peasants, 1 to peasants+1, etc.
         Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
-        if (city->tax_rate[tax_type] < 100) {
+        if (GAME->city->tax_rate[tax_type] < 100) {
           citizen_tax_rate[tax_type] += 5;
 // Round down to nearest multiple of 5.
           citizen_tax_rate[tax_type] -= citizen_tax_rate[tax_type] % 5;
-          city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
+          GAME->city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
 // Remove the old money from taxes...
           income_taxes -= citizen_taxes[tax_type];
           income_total -= citizen_taxes[tax_type];
           net_income   -= citizen_taxes[tax_type];
 // Fix the amount we get from taxes for this citizen type...
-          citizen_taxes   [tax_type] = city->get_taxes(tax_type);
+          citizen_taxes   [tax_type] = GAME->city->get_taxes(tax_type);
 // ... and add in the new money from taxes.
           income_taxes += citizen_taxes[tax_type];
           income_total += citizen_taxes[tax_type];
@@ -1175,10 +1253,11 @@ void Interface::minister_finance()
 // Set a warning if the rate is too high / too low
           std::stringstream field_name;
           field_name << "num_tax_rate_" << citizen_type_name(tax_type);
-          if (citizen_tax_rate[tax_type] >= city->get_high_tax_rate(tax_type)) {
+          if (citizen_tax_rate[tax_type] >=
+              GAME->city->get_high_tax_rate(tax_type)) {
             i_finance.set_data(field_name.str(), c_ltred);
           } else if (citizen_tax_rate[tax_type] <=
-                     city->get_low_tax_rate(tax_type)) {
+                     GAME->city->get_low_tax_rate(tax_type)) {
             i_finance.set_data(field_name.str(), c_ltgreen);
           } else {
             i_finance.set_data(field_name.str(), c_ltgray);
@@ -1191,18 +1270,18 @@ void Interface::minister_finance()
 // Our list starts at index 0, which is peasants.  So we want to map 0 to
 // peasants, 1 to peasants+1, etc.
         Citizen_type tax_type = Citizen_type( CIT_PEASANT + index );
-        if (city->tax_rate[tax_type] > 0) {
+        if (GAME->city->tax_rate[tax_type] > 0) {
 // Alter the rate...
           citizen_tax_rate[tax_type] -= 5;
 // Round down to nearest multiple of 5.
           citizen_tax_rate[tax_type] -= citizen_tax_rate[tax_type] % 5;
-          city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
+          GAME->city->set_tax_rate(tax_type, citizen_tax_rate[tax_type]);
 // Remove the old money from taxes...
           income_taxes -= citizen_taxes[tax_type];
           income_total -= citizen_taxes[tax_type];
           net_income   -= citizen_taxes[tax_type];
 // Fix the amount we get from taxes for this citizen type...
-          citizen_taxes   [tax_type] = city->get_taxes(tax_type);
+          citizen_taxes   [tax_type] = GAME->city->get_taxes(tax_type);
 // ... and add in the new money from taxes.
           income_taxes += citizen_taxes[tax_type];
           income_total += citizen_taxes[tax_type];
@@ -1210,10 +1289,11 @@ void Interface::minister_finance()
 // Set a warning if the rate is too high / too low
           std::stringstream field_name;
           field_name << "num_tax_rate_" << citizen_type_name(tax_type);
-          if (citizen_tax_rate[tax_type] >= city->get_high_tax_rate(tax_type)) {
+          if (citizen_tax_rate[tax_type] >=
+              GAME->city->get_high_tax_rate(tax_type)) {
             i_finance.set_data(field_name.str(), c_ltred);
           } else if (citizen_tax_rate[tax_type] <=
-                     city->get_low_tax_rate(tax_type)) {
+                     GAME->city->get_low_tax_rate(tax_type)) {
             i_finance.set_data(field_name.str(), c_ltgreen);
           } else {
             i_finance.set_data(field_name.str(), c_ltgray);
@@ -1237,12 +1317,12 @@ void Interface::minister_food()
   Window w_food(0, 0, 80, 24);
 
 // These values and fields are static during the life of this interface.
-  int num_farms     = city->get_number_of_buildings(BUILD_FARM);
-  int food_stored   = city->get_resource_amount(RES_FOOD);
-  int food_cap      = city->get_food_cap();
-  int food_imported = city->get_import(RES_FOOD);
-  int food_consumed = city->get_food_consumption();
-  int food_exported = city->get_export(RES_FOOD);
+  int num_farms     = GAME->city->get_number_of_buildings(BUILD_FARM);
+  int food_stored   = GAME->city->get_resource_amount(RES_FOOD);
+  int food_cap      = GAME->city->get_food_cap();
+  int food_imported = GAME->city->get_import(RES_FOOD);
+  int food_consumed = GAME->city->get_food_consumption();
+  int food_exported = GAME->city->get_export(RES_FOOD);
 
   i_food.set_data("num_farms",         num_farms);
   if (num_farms == 0) {
@@ -1286,10 +1366,10 @@ void Interface::minister_food()
 // Set up a list of farms.
   std::vector<std::string> farm_terrain, farm_output, farm_fields;
   std::vector<Area*> farms;
-  for (int i = 0; i < city->areas.size(); i++) {
-    if (city->areas[i].produces_resource(RES_FARMING)) {
-      Point area_loc = city->areas[i].pos;
-      Building* build = &(city->areas[i].building);
+  for (int i = 0; i < GAME->city->areas.size(); i++) {
+    if (GAME->city->areas[i].produces_resource(RES_FARMING)) {
+      Point area_loc = GAME->city->areas[i].pos;
+      Building* build = &(GAME->city->areas[i].building);
       std::stringstream output_ss;
       std::stringstream empty_fields_ss;
       int empty_fields = build->get_empty_fields();
@@ -1300,8 +1380,8 @@ void Interface::minister_food()
       } else {
         empty_fields_ss << empty_fields;
       }
-      farms.push_back( &(city->areas[i]) );
-      farm_terrain.push_back( city->map.get_terrain_name(area_loc) );
+      farms.push_back( &(GAME->city->areas[i]) );
+      farm_terrain.push_back( GAME->city->map.get_terrain_name(area_loc) );
       farm_output.push_back( output_ss.str() );
       farm_fields.push_back( empty_fields_ss.str() );
     }
@@ -1331,9 +1411,9 @@ void Interface::minister_food()
   while (!done) {
 // These values and fields may change before we exit this interface.
 // So we set them inside the loop.
-    int fields_worked = city->get_fields_worked();
-    int fields_empty  = city->get_empty_fields();
-    int food_grown    = city->get_food_production();
+    int fields_worked = GAME->city->get_fields_worked();
+    int fields_empty  = GAME->city->get_empty_fields();
+    int food_grown    = GAME->city->get_food_production();
 
     int net_food = food_grown + food_imported - food_exported - food_consumed;
 
@@ -1376,7 +1456,7 @@ void Interface::minister_food()
       i_food.set_data("num_net_food", c_ltblue);
     }
 
-    int free_peasants = city->get_unemployed_citizens(CIT_PEASANT);
+    int free_peasants = GAME->city->get_unemployed_citizens(CIT_PEASANT);
     i_food.set_data("num_free_peasants", free_peasants);
     if (fields_empty == 0) {  // We don't care since all fields are used
       i_food.set_data("num_free_peasants", c_dkgray);
@@ -1454,7 +1534,8 @@ void Interface::minister_food()
 // To decrease farming, we have to be able to fire an appropriate number of
 // peasants from this farm... so make sure we can!
               if (farm_build->crops_grown[crop_index].amount >= crop_change &&
-                  city->fire_citizens(CIT_PEASANT, crop_change, farm_build)) {
+                  GAME->city->fire_citizens(CIT_PEASANT, crop_change,
+                                            farm_build)) {
                 farm_build->crops_grown[crop_index].amount -= crop_change;
                 did_it = true;
               }
@@ -1463,7 +1544,7 @@ void Interface::minister_food()
 // peasants to work at this farm... so make sure we can!
             } else if (crop_change > 0 &&
                        farm_build->get_empty_fields() >= crop_change &&
-                       city->employ_citizens(CIT_PEASANT, crop_change,
+                       GAME->city->employ_citizens(CIT_PEASANT, crop_change,
                                              farm_build)) {
               farm_build->crops_grown[crop_index].amount += crop_change;
               did_it = true;
@@ -1545,13 +1626,13 @@ void Interface::minister_hunt()
   std::vector<Area*> camps;
 
 // Go through all our city's hunting camps...
-  for (int i = 0; i < city->areas.size(); i++) {
-    Area* cur_area = &(city->areas[i]);
+  for (int i = 0; i < GAME->city->areas.size(); i++) {
+    Area* cur_area = &(GAME->city->areas[i]);
 
     if (cur_area->produces_resource(RES_HUNTING)) {
       camps.push_back( cur_area );
 // All relevant data for this hunting camp
-      Map_tile* grounds = city->map.get_tile( cur_area->pos );
+      Map_tile* grounds = GAME->city->map.get_tile( cur_area->pos );
       Building* bldg = &(cur_area->building);
       Animal animal_hunted = bldg->hunting_target;
       int hunter_level = bldg->hunter_level * bldg->workers;
@@ -1611,20 +1692,20 @@ void Interface::minister_hunt()
   i_hunt.ref_data("list_food",     &daily_food);
 
 // Are hunting messages on?
-  if (city->show_hunting_messages) {
+  if (GAME->city->show_hunting_messages) {
     i_hunt.set_data("text_hunting_messages", "<c=ltgreen>on<c=/>");
   } else {
     i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
   }
 
 // Display hunting records
-  i_hunt.set_data("num_record_food", city->hunt_record_food);
-  if (city->hunt_record_days <= 0) { // It's -1 until we build a camp
+  i_hunt.set_data("num_record_food", GAME->city->hunt_record_food);
+  if (GAME->city->hunt_record_days <= 0) { // It's -1 until we build a camp
     i_hunt.set_data("num_record_days",    0);
     i_hunt.set_data("num_record_average", 0);
   } else {
-    int avg_food = city->hunt_record_food / city->hunt_record_days;
-    i_hunt.set_data("num_record_days",    city->hunt_record_days);
+    int avg_food = GAME->city->hunt_record_food / GAME->city->hunt_record_days;
+    i_hunt.set_data("num_record_days",    GAME->city->hunt_record_days);
     i_hunt.set_data("num_record_average", avg_food);
   }
 
@@ -1646,7 +1727,7 @@ void Interface::minister_hunt()
       cur_index = new_index;
       cur_camp = camps[cur_index];
       cur_bldg = &(cur_camp->building);
-      cur_tile = city->map.get_tile( cur_camp->pos );
+      cur_tile = GAME->city->map.get_tile( cur_camp->pos );
       Animal_datum* animal_dat = Animal_data[ cur_bldg->hunting_target ];
 
       if (cur_bldg->hunting_target == ANIMAL_NULL) {
@@ -1805,7 +1886,7 @@ void Interface::minister_hunt()
         break;
 
       case '+':
-        if (cur_bldg && city->employ_citizens(CIT_PEASANT, 1, cur_bldg)) {
+        if (cur_bldg && GAME->city->employ_citizens(CIT_PEASANT, 1, cur_bldg)) {
           hunters[cur_index] = itos(cur_bldg->workers);
 // Repeat of the code above; TODO: Abstract this
           std::stringstream ss_food;
@@ -1822,7 +1903,7 @@ void Interface::minister_hunt()
         break;
 
       case '-':
-        if (cur_bldg && city->fire_citizens(CIT_PEASANT, 1, cur_bldg)) {
+        if (cur_bldg && GAME->city->fire_citizens(CIT_PEASANT, 1, cur_bldg)) {
           if (cur_bldg->workers == 0) {
             cur_bldg->hunting_target = ANIMAL_NULL;
             targets[cur_index] = "<c=dkgray>None<c=/>";
@@ -1842,13 +1923,13 @@ void Interface::minister_hunt()
           }
           ss_food << food << "<c=/>";
           daily_food[cur_index] = ss_food.str();
-        } // if (cur_bldg && city->fire_citizens(...))
+        } // if (cur_bldg && GAME->city->fire_citizens(...))
         break;
 
       case 'm':
       case 'M':
-        city->show_hunting_messages = !city->show_hunting_messages;
-        if (city->show_hunting_messages) {
+        GAME->city->show_hunting_messages = !GAME->city->show_hunting_messages;
+        if (GAME->city->show_hunting_messages) {
           i_hunt.set_data("text_hunting_messages", "<c=ltgreen>on<c=/>");
         } else {
           i_hunt.set_data("text_hunting_messages", "<c=ltblue>off<c=/>");
@@ -1857,8 +1938,8 @@ void Interface::minister_hunt()
 
       case 'r':
       case 'R':
-        city->hunt_record_days = 0;
-        city->hunt_record_food = 0;
+        GAME->city->hunt_record_days = 0;
+        GAME->city->hunt_record_food = 0;
         i_hunt.set_data("num_record_food",    0);
         i_hunt.set_data("num_record_days",    0);
         i_hunt.set_data("num_record_average", 0);
@@ -1900,8 +1981,8 @@ void Interface::minister_livestock()
   std::vector<Animal> livestock;
   std::vector<std::string> livestock_name, livestock_count;
 
-  for (std::map<Animal,int>::iterator it = city->livestock.begin();
-       it != city->livestock.end();
+  for (std::map<Animal,int>::iterator it = GAME->city->livestock.begin();
+       it != GAME->city->livestock.end();
        it++) {
     Animal ani = it->first;
     livestock.push_back(ani);
@@ -1912,10 +1993,11 @@ void Interface::minister_livestock()
   i_livestock.ref_data("list_animals", &livestock_name);
   i_livestock.ref_data("list_count",   &livestock_count);
 
-  int total_livestock = city->get_livestock_total();
+  int total_livestock = GAME->city->get_livestock_total();
 
   i_livestock.ref_data("num_total_livestock", &total_livestock);
-  i_livestock.set_data("num_livestock_limit", city->get_livestock_capacity());
+  i_livestock.set_data("num_livestock_limit",
+                       GAME->city->get_livestock_capacity());
 
 // Start with cur_index of -1 so that when we start our loop, we'll immediately
 // populate data fields with the first item (if any).
@@ -1931,7 +2013,7 @@ void Interface::minister_livestock()
       cur_index = new_index;
       cur_animal = livestock[cur_index];
       Animal_datum* ani_dat = Animal_data[cur_animal];
-      int count = city->livestock[cur_animal];
+      int count = GAME->city->livestock[cur_animal];
       i_livestock.set_data("text_animal_name", ani_dat->name);
       i_livestock.set_data("num_space_used", ani_dat->size);
       i_livestock.set_data("num_space_total", ani_dat->size * count);
@@ -1992,43 +2074,43 @@ void Interface::minister_livestock()
 
       case 's':
       case 'S':
-        if (city->livestock[cur_animal] > 0) {
+        if (GAME->city->livestock[cur_animal] > 0) {
           Animal ani = livestock[cur_index];
-          if (city->livestock[cur_animal] == 1) {
-            city->livestock.erase(ani);
+          if (GAME->city->livestock[cur_animal] == 1) {
+            GAME->city->livestock.erase(ani);
           } else {
-            city->livestock[ani]--;
+            GAME->city->livestock[ani]--;
           }
-          city->kill_animals(ani, 1);
-          livestock_count[cur_index] = itos( city->livestock[cur_animal] );
+          GAME->city->kill_animals(ani, 1);
+          livestock_count[cur_index] = itos(GAME->city->livestock[cur_animal]);
           total_livestock -= Animal_data[ani]->size;
         }
         break;
 
       case 'd':
       case 'D':
-        if (city->livestock[cur_animal] > 0) {
+        if (GAME->city->livestock[cur_animal] > 0) {
           int num_killed = 5;
           Animal ani = livestock[cur_index];
-          if (city->livestock[cur_animal] < 5) {
-            num_killed = city->livestock[cur_animal];
-            city->livestock.erase(ani);
+          if (GAME->city->livestock[cur_animal] < 5) {
+            num_killed = GAME->city->livestock[cur_animal];
+            GAME->city->livestock.erase(ani);
           } else {
-            city->livestock[ani] -= 5;
+            GAME->city->livestock[ani] -= 5;
           }
-          city->kill_animals(ani, num_killed);
-          livestock_count[cur_index] = itos( city->livestock[cur_animal] );
+          GAME->city->kill_animals(ani, num_killed);
+          livestock_count[cur_index] = itos(GAME->city->livestock[cur_animal]);
           total_livestock -= Animal_data[ani]->size * num_killed;
         }
         break;
 
       case 'f':
       case 'F':
-        if (city->livestock[cur_animal] > 0) {
+        if (GAME->city->livestock[cur_animal] > 0) {
           Animal ani = livestock[cur_index];
-          int num_killed = city->livestock[ani];
-          city->livestock.erase(ani);
-          city->kill_animals(ani, num_killed);
+          int num_killed = GAME->city->livestock[ani];
+          GAME->city->livestock.erase(ani);
+          GAME->city->kill_animals(ani, num_killed);
           livestock_count[cur_index] = "0";
           total_livestock -= Animal_data[ani]->size * num_killed;
         }
@@ -2050,7 +2132,7 @@ void Interface::minister_mining()
   }
   Window w_mining(0, 0, 80, 24);
 
-  int num_mines = city->get_number_of_buildings(BUILD_MINE);
+  int num_mines = GAME->city->get_number_of_buildings(BUILD_MINE);
   i_mining.set_data("num_mines", num_mines);
   if (num_mines == 0) {
     i_mining.set_data("num_mines", c_red);
@@ -2059,10 +2141,10 @@ void Interface::minister_mining()
 // Set up a list of mines.
   std::vector<std::string> mine_terrain, mine_shafts;
   std::vector<Area*> mines;
-  for (int i = 0; i < city->areas.size(); i++) {
-    if (city->areas[i].produces_resource(RES_MINING)) {
-      Point area_loc = city->areas[i].pos;
-      Building* build = &(city->areas[i].building);
+  for (int i = 0; i < GAME->city->areas.size(); i++) {
+    if (GAME->city->areas[i].produces_resource(RES_MINING)) {
+      Point area_loc = GAME->city->areas[i].pos;
+      Building* build = &(GAME->city->areas[i].building);
 
       std::stringstream empty_shafts_ss;
       int empty_shafts = build->get_empty_shafts();
@@ -2073,9 +2155,9 @@ void Interface::minister_mining()
       }
 
       std::stringstream mine_terrain_ss;
-      std::string terrain_name = city->map.get_terrain_name(area_loc);
+      std::string terrain_name = GAME->city->map.get_terrain_name(area_loc);
 
-      mines.push_back( &(city->areas[i]) );
+      mines.push_back( &(GAME->city->areas[i]) );
       mine_terrain.push_back( terrain_name );
       mine_shafts.push_back( empty_shafts_ss.str() );
     }
@@ -2108,7 +2190,7 @@ void Interface::minister_mining()
     list_mine_minerals(cur_mine, mineral_indices, i_mining);
   }
 
-  std::map<Mineral,int> minerals_used = city->get_minerals_used();
+  std::map<Mineral,int> minerals_used = GAME->city->get_minerals_used();
 
 // Minerals used shouldn't change during this function, so we can set it here.
   for (int i = 1; i < MINERAL_MAX; i++) {
@@ -2127,7 +2209,7 @@ void Interface::minister_mining()
     }
     used_ss << amount << "<c=/>";
 
-    int amount_stored = city->get_mineral_amount(mineral);
+    int amount_stored = GAME->city->get_mineral_amount(mineral);
     if (amount_stored == 0) {
       stored_ss << "<c=dkgray>";
     }
@@ -2142,9 +2224,9 @@ void Interface::minister_mining()
   bool done = false;
 
   while (!done) {
-    int shafts_worked = city->get_shafts_worked();
-    int free_shafts   = city->get_free_shafts();
-    int free_peasants = city->get_unemployed_citizens(CIT_PEASANT);
+    int shafts_worked = GAME->city->get_shafts_worked();
+    int free_shafts   = GAME->city->get_free_shafts();
+    int free_peasants = GAME->city->get_unemployed_citizens(CIT_PEASANT);
 
     i_mining.set_data("num_shafts_worked", shafts_worked);
     if (shafts_worked == 0 && num_mines > 0) {
@@ -2188,7 +2270,7 @@ void Interface::minister_mining()
     i_mining.clear_data("list_total_mined");
     for (int i = 1; i < MINERAL_MAX; i++) {
       Mineral min = Mineral(i);
-      int amount = city->get_amount_mined(min);
+      int amount = GAME->city->get_amount_mined(min);
       std::stringstream amount_ss;
       if (amount == 0) {
         amount_ss << "<c=dkgray>";
@@ -2243,7 +2325,8 @@ void Interface::minister_mining()
 // To decrease mining, we have to be able to fire an appropriate number of
 // peasants from this mine... so make sure we can!
               if (mining_changed->amount >= mineral_change &&
-                city->fire_citizens(CIT_PEASANT, mineral_change, mine_build)) {
+                GAME->city->fire_citizens(CIT_PEASANT, mineral_change,
+                                          mine_build)) {
                 mining_changed->amount -= mineral_change;
                 did_it = true;
               }
@@ -2252,7 +2335,7 @@ void Interface::minister_mining()
 // peasants to work at this mine... so make sure we can!
             } else if (mineral_change > 0 &&
                        mine_build->get_empty_shafts() >= mineral_change &&
-                       city->employ_citizens(CIT_PEASANT, mineral_change,
+                       GAME->city->employ_citizens(CIT_PEASANT, mineral_change,
                                              mine_build)) {
               mining_changed->amount += mineral_change;
               did_it = true;
@@ -2336,7 +2419,7 @@ void Interface::minister_morale()
     list_amount_name << "list_morale_mod_amount_" << type_name;
     required_name << "num_morale_required_" << type_name;
 
-    if (city->population[i].count <= 0) { // No citizens, don't fill out
+    if (GAME->city->population[i].count <= 0) { // No citizens, don't fill out
       i_morale.set_data( morale_name.str(), 0 );
       i_morale.set_data( morale_name.str(), c_dkgray );
       std::stringstream ss_nope;
@@ -2347,7 +2430,7 @@ void Interface::minister_morale()
     } else {
 
 // Set the end result, total morale.
-      int morale = city->population[i].get_morale_percentage();
+      int morale = GAME->city->population[i].get_morale_percentage();
       i_morale.set_data( morale_name.str(), morale );
 // Colorize it, too.
       if (morale < -50) {
@@ -2365,20 +2448,22 @@ void Interface::minister_morale()
       }
 
       i_morale.set_data( required_name.str(),
-                         city->get_required_morale(cit_type) );
+                         GAME->city->get_required_morale(cit_type) );
 
 // Start the modifiers list with our tax-based morale
       std::stringstream tax_morale;
-      tax_morale << "<c=ltblue>" << city->population[i].tax_morale << "<c=/>";
+      tax_morale << "<c=ltblue>" << GAME->city->population[i].tax_morale <<
+                    "<c=/>";
       i_morale.add_data( list_name.str(), "<c=ltblue>Base (from taxes)<c=/>" );
       i_morale.add_data( list_amount_name.str(), tax_morale.str() );
 
 // Now add the rest of the modifier names (the "true" means "colorize text")
       i_morale.add_data( list_name.str(),
-                         city->population[i].get_morale_mods(true) );
+                         GAME->city->population[i].get_morale_mods(true) );
 
 // And the modifier amounts.
-      std::vector<int> mod_amts = city->population[i].get_morale_mod_amounts();
+      std::vector<int> mod_amts =
+        GAME->city->population[i].get_morale_mod_amounts();
       for (int n = 0; n < mod_amts.size(); n++) {
         int amt = mod_amts[n];
         std::stringstream mod_amt;
@@ -2434,7 +2519,7 @@ void Interface::building_status()
   }
   Window w_buildings(0, 0, 80, 24);
 
-  std::vector<Building*> buildings = city->get_all_buildings();
+  std::vector<Building*> buildings = GAME->city->get_all_buildings();
 
   std::vector<std::string> building_names, workers, max_workers, worker_class;
 
@@ -2447,7 +2532,7 @@ void Interface::building_status()
     if (!bldg->open) {
       name_ss << " <c=red>(Closed)<c=/>";
     } else if (bldg->pos.x != -1) { // It belongs to an area (and isn't closed)
-      name_ss << " (" << city->map.get_terrain_name(bldg->pos) << ")";
+      name_ss << " (" << GAME->city->map.get_terrain_name(bldg->pos) << ")";
     }
 
 // Gray out worker-related lines if the building doesn't employ workers
@@ -2487,9 +2572,9 @@ void Interface::building_status()
   i_buildings.set_data("list_worker_class",   worker_class   );
 
 // Set the fields that indicate our number of unemployed citizens of each class
-  int free_peasants  = city->get_unemployed_citizens(CIT_PEASANT );
-  int free_merchants = city->get_unemployed_citizens(CIT_MERCHANT);
-  int free_burghers  = city->get_unemployed_citizens(CIT_BURGHER );
+  int free_peasants  = GAME->city->get_unemployed_citizens(CIT_PEASANT );
+  int free_merchants = GAME->city->get_unemployed_citizens(CIT_MERCHANT);
+  int free_burghers  = GAME->city->get_unemployed_citizens(CIT_BURGHER );
   i_buildings.ref_data("num_free_peasants",  &free_peasants );
   i_buildings.ref_data("num_free_merchants", &free_merchants);
   i_buildings.ref_data("num_free_burghers",  &free_burghers );
@@ -2698,7 +2783,7 @@ void Interface::building_status()
 
           } else {
             Citizen_type cit_type = cur_bldg->get_job_citizen_type();
-            if (city->employ_citizens(cit_type, 1, cur_bldg)) {
+            if (GAME->city->employ_citizens(cit_type, 1, cur_bldg)) {
               std::stringstream workers_ss;
               if (cur_bldg->get_total_jobs() == 0) {
                 workers_ss << "<c=dkgray>";
@@ -2713,7 +2798,7 @@ void Interface::building_status()
                 case CIT_MERCHANT:  free_merchants--; break;
                 case CIT_BURGHER:   free_burghers--;  break;
               }
-            } // if (city->employ_citizens(cit_type, 1, cur_bldg))
+            } // if (GAME->city->employ_citizens(cit_type, 1, cur_bldg))
           }
         } // if (cur_bldg)
         break;
@@ -2733,7 +2818,7 @@ void Interface::building_status()
 
           } else {
             Citizen_type cit_type = cur_bldg->get_job_citizen_type();
-            if (city->fire_citizens(cit_type, 1, cur_bldg)) {
+            if (GAME->city->fire_citizens(cit_type, 1, cur_bldg)) {
               std::stringstream workers_ss;
               if (cur_bldg->get_total_jobs() == 0) {
                 workers_ss << "<c=dkgray>";
@@ -2747,7 +2832,7 @@ void Interface::building_status()
                 case CIT_MERCHANT:  free_merchants++; break;
                 case CIT_BURGHER:   free_burghers++;  break;
               }
-            } // if (city->fire_citizens(cit_type, 1, cur_bldg))
+            } // if (GAME->city->fire_citizens(cit_type, 1, cur_bldg))
           }
         } // if (cur_bldg)
         break;
@@ -2765,15 +2850,15 @@ void Interface::building_status()
           workers[index] = "<c=red>0<c=/>";
 
           if (cur_bldg->pos.x != -1) {  // It's an area
-            Area* area = city->area_at(cur_bldg->pos);
+            Area* area = GAME->city->area_at(cur_bldg->pos);
             if (!area) {
               debugmsg("Building has position %s, but no area there!",
                        cur_bldg->pos.str().c_str());
             } else {
-              area->close(city);
+              area->close(GAME->city);
             }
           } else {  // It's not an area
-            cur_bldg->close(city);
+            cur_bldg->close(GAME->city);
           }
           move_index = -1;  // This will force our building data to update.
         }
@@ -2784,17 +2869,17 @@ void Interface::building_status()
         if (cur_bldg && !cur_bldg->open && !adjusting_production) {
           int cost = cur_bldg->get_reopen_cost();
 
-          if (city->get_resource_amount(RES_GOLD) < cost) {
+          if (GAME->city->get_resource_amount(RES_GOLD) < cost) {
             std::stringstream ss_mes;
             ss_mes << "You do not have enough gold to re-open your " <<
                       cur_bldg->get_name() << ". (Cost: " << cost <<
-                      "  You: " << city->get_resource_amount(RES_GOLD);
+                      "  You: " << GAME->city->get_resource_amount(RES_GOLD);
             popup(ss_mes.str().c_str());
 
           } else if (query_yn("Open your %s at a cost of %d gold?",
                               cur_bldg->get_name().c_str(), cost)) {
 
-            city->expend_resource(RES_GOLD, cost);
+            GAME->city->expend_resource(RES_GOLD, cost);
             cur_bldg->open = true;
 
 // Update our names list
@@ -2802,14 +2887,14 @@ void Interface::building_status()
             name_ss << capitalize( cur_bldg->get_name() );
 // Check if there's an area, and if so, autohire
             if (cur_bldg->pos.x != -1) {
-              Area* area = city->area_at(cur_bldg->pos);
-              name_ss << " (" << city->map.get_terrain_name(cur_bldg->pos) <<
-                         ")";
+              Area* area = GAME->city->area_at(cur_bldg->pos);
+              name_ss << " (" <<
+                         GAME->city->map.get_terrain_name(cur_bldg->pos) << ")";
               if (!area) {
                 debugmsg("Building has position %s, but no area there!",
                          cur_bldg->pos.str().c_str());
               } else {
-                area->auto_hire(city);
+                area->auto_hire(GAME->city);
 // Since we auto-hired, we might have some workers - so update the list
                 std::stringstream workers_ss;
                 if (cur_bldg->get_total_jobs() == 0) {
@@ -2961,9 +3046,9 @@ void Interface::build_building()
   std::vector<Building_type> bldg_types;
 
 // First, let's set up our building queue.
-  for (int i = 0; i < city->building_queue.size(); i++) {
-    building_queue.push_back( city->building_queue[i].get_name() );
-    queue_days.push_back( itos( city->building_queue[i].construction_left ) );
+  for (int i = 0; i < GAME->city->building_queue.size(); i++) {
+    building_queue.push_back( GAME->city->building_queue[i].get_name() );
+    queue_days.push_back(itos(GAME->city->building_queue[i].construction_left));
   }
 
 // Set up our list and headers to have the building categories
@@ -2995,7 +3080,8 @@ void Interface::build_building()
         int index = ch - 1; // Since the list starts at 1 and vector starts at 0
         Building_type btype = bldg_types[index];
         if (index >= 0 && index < bldg_types.size()) {
-          Building_queue_status status = city->add_building_to_queue(btype);
+          Building_queue_status status =
+            GAME->city->add_building_to_queue(btype);
   
           switch (status) {
             case BUILDING_QUEUE_OK: // We did it!  Update interface.
@@ -3013,7 +3099,7 @@ void Interface::build_building()
                 ss_popup << std::endl;
                 Resource res = bldg_dat->build_costs[i].type;
                 int amount   = bldg_dat->build_costs[i].amount;
-                int city_amount = city->get_resource_amount(res);
+                int city_amount = GAME->city->get_resource_amount(res);
                 ss_popup << capitalize( resource_name( res ) ) << ": " <<
                             amount << " (You: ";
                 if (city_amount < amount) {
@@ -3065,10 +3151,13 @@ void Interface::build_building()
           if (editing_queue) {
             int index = i_build.get_int("list_building_queue");
 // > 0 (not >= 0) since we can't move the first item up.
-            if (index > 0 && index < city->building_queue.size()) {
-              Building tmp = city->building_queue[index - 1];
-              city->building_queue[index - 1] = city->building_queue[index];
-              city->building_queue[index] = tmp;
+            if (index > 0 && index < GAME->city->building_queue.size()) {
+              Building tmp = GAME->city->building_queue[index - 1];
+
+              GAME->city->building_queue[index - 1] =
+                GAME->city->building_queue[index];
+
+              GAME->city->building_queue[index] = tmp;
 // Update the list
               set_building_queue(i_build);
 // Move our cursor along with the building!
@@ -3081,10 +3170,13 @@ void Interface::build_building()
           if (editing_queue) {
             int index = i_build.get_int("list_building_queue");
 // < size() - 1 (not < size()) since we can't move the last item down.
-            if (index >= 0 && index < city->building_queue.size() - 1) {
-              Building tmp = city->building_queue[index + 1];
-              city->building_queue[index + 1] = city->building_queue[index];
-              city->building_queue[index] = tmp;
+            if (index >= 0 && index < GAME->city->building_queue.size() - 1) {
+              Building tmp = GAME->city->building_queue[index + 1];
+
+              GAME->city->building_queue[index + 1] =
+                GAME->city->building_queue[index];
+
+              GAME->city->building_queue[index] = tmp;
 // Update the list
               set_building_queue(i_build);
 // Move our cursor along with the building!
@@ -3099,9 +3191,9 @@ void Interface::build_building()
         case 'D': // Delete building from queue.
           if (editing_queue) {
             int index = i_build.get_int("list_building_queue");
-            if (index >= 0 && index < city->building_queue.size()) {
+            if (index >= 0 && index < GAME->city->building_queue.size()) {
 // Warn the player if this will waste effort
-              Building* bldg = &(city->building_queue[index]);
+              Building* bldg = &(GAME->city->building_queue[index]);
               Building_datum* bldg_dat = bldg->get_building_datum();
 
               bool do_it = true;
@@ -3115,9 +3207,9 @@ void Interface::build_building()
 
               if (do_it) {
 
-                if (!city->cancel_queued_building(index)) { // BAD ERROR
-                  debugmsg("city->cancel_queued_building(%d) returned false",
-                           index);
+                if (!GAME->city->cancel_queued_building(index)) { // BAD ERROR
+                  debugmsg("GAME->city->cancel_queued_building(%d) returned \
+false", index);
                 } else {
                   set_building_queue(i_build);
 // Attempt to keep the cursor where it was
@@ -3126,7 +3218,7 @@ void Interface::build_building()
 
               } // if (do_it)
 
-            } // if (index >= 0 && index < city->building_queue.size())
+            } // if (index >= 0 && index < GAME->city->building_queue.size())
           } // if (editing_queue)
           break;
 
@@ -3200,7 +3292,7 @@ void Interface::set_building_list(cuss::interface& i_build,
     for (int i = 0; i < BUILD_MAX; i++) {
       Building_datum* bldg_dat = Building_data[i];
 // It's a match!
-      if (city->building_unlocked[i] && bldg_dat->category == category) {
+      if (GAME->city->building_unlocked[i] && bldg_dat->category == category) {
         types.push_back( Building_type(i) );
       }
     }
@@ -3214,7 +3306,7 @@ void Interface::set_building_list(cuss::interface& i_build,
       for (int n = 0; n < bldg_dat->build_costs.size(); n++) {
         Resource res = bldg_dat->build_costs[n].type;
         int amount   = bldg_dat->build_costs[n].amount;
-        if (city->get_resource_amount(res) < amount) {
+        if (GAME->city->get_resource_amount(res) < amount) {
           can_build = false;
         }
       }
@@ -3255,7 +3347,7 @@ void Interface::set_building_list(cuss::interface& i_build,
             break;
         }
         if (ss_resource) {
-          if (city->get_resource_amount(res) < amount) {
+          if (GAME->city->get_resource_amount(res) < amount) {
 // Flag it red so the player knows this is why we can't have this nice thing
             (*ss_resource) << "<c=red>";
           } else if (!can_build) {
@@ -3297,21 +3389,21 @@ void Interface::set_building_list(cuss::interface& i_build,
     i_build.add_data("list_cost_gold",  "");
     i_build.add_data("list_cost_gold",  "");
     std::stringstream city_gold;
-    city_gold << "<c=white>" << city->get_resource_amount(RES_GOLD) <<
+    city_gold << "<c=white>" << GAME->city->get_resource_amount(RES_GOLD) <<
                  "<c=/>";
     i_build.add_data("list_cost_gold", city_gold.str());
 
     i_build.add_data("list_cost_wood",  "");
     i_build.add_data("list_cost_wood",  "");
     std::stringstream city_wood;
-    city_wood << "<c=white>" << city->get_resource_amount(RES_WOOD) <<
+    city_wood << "<c=white>" << GAME->city->get_resource_amount(RES_WOOD) <<
                  "<c=/>";
     i_build.add_data("list_cost_wood", city_wood.str());
 
     i_build.add_data("list_cost_stone", "");
     i_build.add_data("list_cost_stone", "");
     std::stringstream city_stone;
-    city_stone << "<c=white>" << city->get_resource_amount(RES_STONE) <<
+    city_stone << "<c=white>" << GAME->city->get_resource_amount(RES_STONE) <<
                  "<c=/>";
     i_build.add_data("list_cost_stone", city_stone.str());
 
@@ -3331,7 +3423,7 @@ void Interface::set_building_queue(cuss::interface& i_build)
   i_build.clear_data("list_total_days"    );
 
 // Special case if no buildings enqueued
-  if (city->building_queue.empty()) {
+  if (GAME->city->building_queue.empty()) {
     i_build.add_data("list_building_queue", "<c=dkgray>Nothing queued<c=/>");
     i_build.add_data("list_queue_days", "<c=dkgray>--<c=/>");
     i_build.add_data("list_total_days", "<c=dkgray>--<c=/>");
@@ -3340,8 +3432,8 @@ void Interface::set_building_queue(cuss::interface& i_build)
 
 // Now set them up.
   int running_total = 0;
-  for (int i = 0; i < city->building_queue.size(); i++) {
-    Building* bldg = &(city->building_queue[i]);
+  for (int i = 0; i < GAME->city->building_queue.size(); i++) {
+    Building* bldg = &(GAME->city->building_queue[i]);
     running_total += bldg->construction_left;
     i_build.add_data("list_building_queue", bldg->get_name());
     i_build.add_data("list_queue_days", itos( bldg->construction_left ) );
@@ -3422,7 +3514,7 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
       ss_units << "<c=red>0<c=/>";
     }
 // Fetch the units stored
-    int stored = city->get_resource_amount( rec.result.type );
+    int stored = GAME->city->get_resource_amount( rec.result.type );
     if (stored == 0) {
       ss_stored << "<c=dkgray>";
     }
@@ -3597,7 +3689,8 @@ void Interface::set_area_list(Area_category category,
 // First, find all areas that belong to our chosen category.
     for (int i = 0; i < AREA_MAX; i++) {
       Area_datum* area_dat = Area_data[i];
-      if (city->area_unlocked[i] && area_dat->category == category) {
+      if (GAME->city->area_unlocked[i] &&
+          area_dat->category == category) {
         types.push_back( Area_type(i) );
       }
     }

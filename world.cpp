@@ -9,6 +9,7 @@
 #include "animal.h"
 #include "ai_city.h"
 #include "pathfind.h" // For road building, trade route finding, and more!
+#include "globals.h"
 #include <sstream>
 #include <vector>
 #include <math.h> // for pow() and sqrt()
@@ -380,6 +381,36 @@ Placing %d blobs [%d%%%%%%%%]",
 // Finally, generate our road map and travel maps.
   update_road_map();
   update_travel_map();  // By not passing a parameter, we update ALL races' maps
+
+// Set the name.
+  Window w_name(24, 9, 32, 6);
+  cuss::interface i_name;
+  if (!i_name.load_from_file("cuss/set_world_name.cuss")) {
+    set_random_name();
+    debugmsg("Name set to '%s'.", name.c_str());
+    return;
+  }
+
+  i_name.select("entry_name");
+  i_name.ref_data("entry_name", &name);
+  bool done = false;
+
+  while (!done) {
+    i_name.draw(&w_name);
+    w_name.refresh();
+
+    long ch = input();
+
+    if (ch == '!') {
+      set_random_name();
+
+    } else if (ch == '\n') {
+      done = true;
+
+    } else {
+      i_name.handle_keypress(ch);
+    }
+  }
 }
 
 bool World_map::save_to_file(std::string filename)
@@ -408,6 +439,7 @@ bool World_map::save_to_file(std::string filename)
     }
     fout << std::endl;
   }
+
   fout.close();
   return true;
 }
@@ -443,6 +475,152 @@ bool World_map::load_from_file(std::string filename)
   }
   fin.close();
   return true;
+}
+
+void World_map::set_random_name()
+{
+  std::stringstream ss_name;
+
+  char ch = 'A' + rng(0, 25);
+  ss_name << ch;
+
+//abcdefghijklmnopqrstuvwxyz
+  bool skip_vowel = (ch == 'Q' || is_vowel(ch));
+  bool used_q = (ch == 'Q');
+  int target_length = rng(3, 8);
+  while (ss_name.str().length() < target_length) {
+    if (skip_vowel) {
+      skip_vowel = false;
+    } else {  // Add a vowel
+      int min = 1;
+      if (used_q) {
+        used_q = false;
+        min = 19;
+      }
+      switch (rng(min, 22)) {
+        case  1:  ss_name << "a";   break;
+        case  2:  ss_name << "ai";  break;
+        case  3:  ss_name << "au";  break;
+        case  4:  ss_name << "e";   break;
+        case  5:  ss_name << "ea";  break;
+        case  6:  ss_name << "ee";  break;
+        case  7:  ss_name << "ei";  break;
+        case  8:  ss_name << "eu";  break;
+        case  9:  ss_name << "i";   break;
+        case 10:  ss_name << "ia";  break;
+        case 11:  ss_name << "ie";  break;
+        case 12:  ss_name << "io";  break;
+        case 13:  ss_name << "o";   break;
+        case 14:  ss_name << "oa";  break;
+        case 15:  ss_name << "oe";  break;
+        case 16:  ss_name << "oi";  break;
+        case 17:  ss_name << "oo";  break;
+        case 18:  ss_name << "ou";  break;
+        case 19:  ss_name << "u";   break;
+        case 20:  ss_name << "ua";  break;
+        case 21:  ss_name << "ue";  break;
+        case 22:  ss_name << "ui";  break;
+      }
+    } // Add a vowel
+    switch (rng(1, 77)) {
+      case  1:  ss_name << "b";    break;
+      case  2:  ss_name << "c";    break;
+      case  3:  ss_name << "ch";   break;
+      case  4:  ss_name << "ck";   break;
+      case  5:  ss_name << "cl";   break;
+      case  6:  ss_name << "cq";   used_q = true; break;
+      case  7:  ss_name << "cr";   break;
+      case  8:  ss_name << "ct";   break;
+      case  9:  ss_name << "d";    break;
+      case 10:  ss_name << "dj";   break;
+      case 11:  ss_name << "dr";   break;
+      case 12:  ss_name << "f";    break;
+      case 13:  ss_name << "fl";   break;
+      case 14:  ss_name << "fr";   break;
+      case 15:  ss_name << "ft";   break;
+      case 16:  ss_name << "g";    break;
+      case 17:  ss_name << "gl";   break;
+      case 18:  ss_name << "gr";   break;
+      case 19:  ss_name << "h";    break;
+      case 20:  ss_name << "lb";   break;
+      case 21:  ss_name << "ld";   break;
+      case 22:  ss_name << "lf";   break;
+      case 23:  ss_name << "lg";   break;
+      case 24:  ss_name << "lk";   break;
+      case 25:  ss_name << "ll";   break;
+      case 26:  ss_name << "lm";   break;
+      case 27:  ss_name << "ln";   break;
+      case 28:  ss_name << "lp";   break;
+      case 29:  ss_name << "lq";   used_q = true; break;
+      case 30:  ss_name << "lt";   break;
+      case 31:  ss_name << "lv";   break;
+      case 32:  ss_name << "lz";   break;
+      case 33:  ss_name << "m";    break;
+      case 34:  ss_name << "mm";   break;
+      case 35:  ss_name << "mn";   break;
+      case 36:  ss_name << "n";    break;
+      case 37:  ss_name << "nn";   break;
+      case 38:  ss_name << "p";    break;
+      case 39:  ss_name << "ph";   break;
+      case 40:  ss_name << "pl";   break;
+      case 41:  ss_name << "pr";   break;
+      case 42:  ss_name << "ps";   break;
+      case 43:  ss_name << "pt";   break;
+      case 44:  ss_name << "r";    break;
+      case 45:  ss_name << "rb";   break;
+      case 46:  ss_name << "rc";   break;
+      case 47:  ss_name << "rch";  break;
+      case 48:  ss_name << "rd";   break;
+      case 49:  ss_name << "rg";   break;
+      case 50:  ss_name << "rk";   break;
+      case 51:  ss_name << "rm";   break;
+      case 52:  ss_name << "rn";   break;
+      case 53:  ss_name << "rp";   break;
+      case 54:  ss_name << "rq";   used_q = true; break;
+      case 55:  ss_name << "rr";   break;
+      case 56:  ss_name << "rs";   break;
+      case 57:  ss_name << "rst";  break;
+      case 58:  ss_name << "rt";   break;
+      case 59:  ss_name << "rv";   break;
+      case 60:  ss_name << "s";    break;
+      case 61:  ss_name << "sc";   break;
+      case 62:  ss_name << "sch";  break;
+      case 63:  ss_name << "sg";   break;
+      case 64:  ss_name << "sh";   break;
+      case 65:  ss_name << "sk";   break;
+      case 66:  ss_name << "sn";   break;
+      case 67:  ss_name << "sp";   break;
+      case 68:  ss_name << "ss";   break;
+      case 69:  ss_name << "st";   break;
+      case 70:  ss_name << "sw";   break;
+      case 71:  ss_name << "t";    break;
+      case 72:  ss_name << "th";   break;
+      case 73:  ss_name << "tr";   break;
+      case 74:  ss_name << "tt";   break;
+      case 75:  ss_name << "v";    break;
+      case 76:  ss_name << "x";    break;
+      case 77:  ss_name << "z";    break;
+    }
+  }
+
+// Add an ending
+  switch (rng(1, 13)) {
+    case  1:  ss_name << "a";   break;
+    case  2:  ss_name << "ale"; break;
+    case  3:  ss_name << "and"; break;
+    case  4:  ss_name << "ath"; break;
+    case  5:  ss_name << "e";   break;
+    case  6:  ss_name << "elo"; break;
+    case  7:  ss_name << "eth"; break;
+    case  8:  ss_name << "ia";  break;
+    case  9:  ss_name << "ind"; break;
+    case 10:  ss_name << "oa";  break;
+    case 11:  ss_name << "or";  break;
+    case 12:  ss_name << "ua";  break;
+    case 13:  ss_name << "urn"; break;
+  }
+
+  name = ss_name.str();
 }
 
 void World_map::add_continent(Point origin, int height, int step, int id)
@@ -832,9 +1010,10 @@ Point World_map::draw(Point start)
           }
 
           int kingdom_id = get_kingdom_id(x, y);
-          if (!city_here && kingdom_id >= 0 && kingdom_id < Kingdoms.size() &&
+          if (!city_here && kingdom_id >= 0 &&
+              kingdom_id < GAME->kingdoms.size() &&
               !hilite_crops && !hilite_minerals && !hilite_animals) {
-            Kingdom* kingdom = Kingdoms[kingdom_id];
+            Kingdom* kingdom = GAME->kingdoms[kingdom_id];
 // Skip adding the kingdom background if it would interfere with our cursor.
             gl = gl.hilite(kingdom->color);
           }
@@ -925,8 +1104,8 @@ Point World_map::draw(Point start)
 // Kingdom info
     int kingdom_id = get_kingdom_id(center);
     i_legend.set_data("num_kingdom_id", kingdom_id);
-    if (kingdom_id >= 0 && kingdom_id < Kingdoms.size()) {
-      Kingdom* kingdom = Kingdoms[kingdom_id];
+    if (kingdom_id >= 0 && kingdom_id < GAME->kingdoms.size()) {
+      Kingdom* kingdom = GAME->kingdoms[kingdom_id];
       Race_datum* race_dat = Race_data[ kingdom->race ];
       std::stringstream ss_race;
       ss_race << "<c=" << color_tag(race_dat->color) << ">" <<

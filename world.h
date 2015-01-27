@@ -34,6 +34,8 @@ public:
 // they hit Esc or Q
   Point draw(Point start = Point(-1, -1));
 
+  std::string get_name();
+
   int land_count(); // Returns the number of tiles that are not ocean
 /* crop_count() and mineral_count() return the number of tiles with the
  * specified crop/mineral.  If it's omitted (or {CROP,MINERAL}_NULL is passed)
@@ -126,6 +128,8 @@ public:
   std::vector<City*> city_list;
 
 private:
+  void set_random_name();
+
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river    (Point origin);
   void add_crop     (Point origin, Crop crop,       int radius);
@@ -147,6 +151,10 @@ private:
 
   bool tile_okay_for_animal(Point p, Animal animal);
   bool tile_okay_for_animal(int x, int y, Animal animal);
+
+// DATA
+
+  std::string name;
 
   Map_type tiles  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
   int altitude    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];

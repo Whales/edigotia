@@ -300,8 +300,43 @@ std::string color_gradient(int value, std::vector<int> breakpoints,
   return ret.str();
 }
 
+std::string letters_after(long letter, bool vowel_before)
+{
+// Force lowercase.
+  if (letter >= 'A' && letter <= 'Z') {
+    letter = letter + 'a' - 'A';
+  }
+
+//abcdefghijklmnopqrstuvwxyz
+  if (vowel_before) {
+    if (is_vowel(letter)) {
+      return "bcdfghklmnpqrstvwxyz";
+    } else if (letter == 'y') {
+      return "abcdefgiklmnoprstuz";
+    } else {
+      return "abcdefghijklmnopqrstuvwyz";
+    }
+  } else {
+    switch (letter) {
+      case 'a': return "bcdefghiklmnpqrstuvwxyz";
+      case 'b': return "aeiloruy";
+      case 'c': return "aehiloru";
+      case 'd': return "aeioruy";
+      case 'e': return "abcdefghilmnpqrstuvwyz";
+      case 'f': return "aeiloruy";
+      case 'g': return "aeiloru";
+      case 'h': return "aeiou";
+      case 'i': return "abcdefglmnopqrstuvz";
+      case 'j': return "aeiou";
+    }
+  }
+  return "a";
+}
+  
+
 bool is_vowel(char ch)
 {
+// TODO: And sometimes y?
   return (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u' ||
           ch == 'A' || ch == 'E' || ch == 'I' || ch == 'O' || ch == 'U');
 }
