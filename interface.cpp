@@ -148,37 +148,54 @@ bool Interface::starting_screen()
     i_start.set_data("text_art", art[ rng(0, art.size() - 1) ]);
   }
 
+  if (GAME->load_world()) {
+    i_start.set_data("text_world_name", GAME->world->get_name());
+    i_start.set_data("text_world_name", c_yellow);
+  } else {
+    i_start.set_data("text_world_name", "<c=ltred>No world exists!  Press \
+<c=pink>G<c=ltred> to generate one.<c=/>");
+  }
+
   i_start.draw(&w_start);
   w_start.refresh();
 
   long ch;
-  do {
+  while (true) {  // Loop until we exit the function via L N or Q
     ch = input();
-  } while (ch != 'c' && ch != 'C' && ch != 'l' && ch != 'L' &&
-           ch != 'n' && ch != 'N' && ch != 'q' && ch != 'Q'   );
 
-  switch (ch) {
+    switch (ch) {
 
-    case 'l':
-    case 'L':
+      case 'l':
+      case 'L':
 // Load city
-      break;
+        break;
 
-    case 'n':
-    case 'N':
+      case 'n':
+      case 'N':
 // New city
-      return GAME->start_new_game();
-      break;
+        return GAME->start_new_game();
+        break;
 
-    case 'g':
-    case 'G':
+      case 'g':
+      case 'G':
 // Generate new world
-      break;
+        if (!GAME->is_world_ready() ||
+            query_yn("Overwrite %s with a new world?",
+                     GAME->world->get_name().c_str())) {
+          GAME->generate_world();
+          i_start.set_data("text_world_name", GAME->world->get_name());
+          i_start.set_data("text_world_name", c_yellow);
+          i_start.draw(&w_start);
+          w_start.refresh();
+        }
+        break;
 
-    case 'q':
-    case 'Q':
-      return false;
-  }
+      case 'q':
+      case 'Q':
+        return false;
+    }
+
+  } // while (true)
 
   return true;
 }
