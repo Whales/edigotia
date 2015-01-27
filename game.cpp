@@ -1,17 +1,19 @@
 #include "game.h"
 #include "city.h"
-#include "city.h"
 #include "player_city.h"
 #include "stringfunc.h"
 #include "world.h"
 #include "kingdom.h"
 #include "rng.h"
+#include "globals.h"
+#include "files.h"
 
 Game::Game()
 {
   next_city_uid = 0;
   world = new World_map;
   city = new Player_city;
+  world_ready = false;
 }
 
 Game::~Game()
@@ -22,9 +24,16 @@ bool Game::start_new_game()
 {
   date = Date(1400, 5, 1);
 
-  world->generate();
-  world->save_to_file("world.sav");
-  generate_kingdoms();
+  if (!world_ready) {
+    if (file_exists(SAVE_DIR + "world.sav")) {
+      world->load_from_file(SAVE_DIR + "world.sav");
+    } else {
+      if (!generate_world()) {
+        return false;
+      }
+      world->save_to_file("world.sav");
+    }
+  }
 
 // Let the city pick a location in the world
   Point p = world->draw();
@@ -57,6 +66,31 @@ bool Game::start_new_game()
   city->set_game(this);
   city->setup_trade_routes();
 
+  return true;
+}
+
+bool Game::is_world_ready()
+{
+  return world_ready;
+}
+
+bool Game::load_world()
+{
+  if (!file_exists(SAVE_DIR + "world.sav")) {
+    return false;
+  }
+
+  world->load_from_file(SAVE_DIR + "world.sav");
+  world_ready = true;
+  return true;
+}
+
+bool Game::generate_world()
+{
+  world->generate();
+  generate_kingdoms();
+  world->save_to_file(SAVE_DIR + "world.sav");
+  world_ready = true;
   return true;
 }
 

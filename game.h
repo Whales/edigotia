@@ -19,6 +19,12 @@ public:
 // Initialization
 // returns false if we cancel when picking a city site
   bool start_new_game();
+// returns true if we've generated or loaded our world
+  bool is_world_ready();
+// returns false if no saved world exists
+  bool load_world();
+// returns false on failure
+  bool generate_world();
 
 // Mutators
   void advance_time(int days = 1, City* city = NULL);
@@ -42,6 +48,7 @@ private:
 
   Date date;
   int next_city_uid;
+  bool world_ready;
 };
 
 #endif
