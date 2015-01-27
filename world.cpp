@@ -518,6 +518,7 @@ void World_map::set_random_name()
         case 19:  ss_name << "Y"; break;
       }
       if (ss_name.str()[0] == 'Q') { // Only use u
+        switch (rng(1, 3)) {
           case 1: ss_name << "u";  break;
           case 2: ss_name << "ua"; break;
           case 3: ss_name << "uo"; break;
