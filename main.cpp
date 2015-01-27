@@ -25,6 +25,10 @@ int main()
     return 1;
   }
 
+  if (!set_directories()) {
+    return 1;
+  }
+
 // Set up a game.
   GAME = new Game;
 
