@@ -481,146 +481,246 @@ void World_map::set_random_name()
 {
   std::stringstream ss_name;
 
-  char ch = 'A' + rng(0, 25);
-  ss_name << ch;
+  switch (rng(1, 5)) {
+    case 1: // Start with a vowel
+      switch (rng(1, 5)) {
+        case 1: ss_name << "A"; break;
+        case 2: ss_name << "E"; break;
+        case 3: ss_name << "I"; break;
+        case 4: ss_name << "O"; break;
+        case 5: ss_name << "U"; break;
+      }
+      break;
 
-//abcdefghijklmnopqrstuvwxyz
-  bool skip_vowel = (ch == 'Q' || is_vowel(ch));
-  bool used_q = (ch == 'Q');
-  int target_length = rng(3, 8);
-  while (ss_name.str().length() < target_length) {
-    if (skip_vowel) {
-      skip_vowel = false;
-    } else {  // Add a vowel
-      int min = 1;
-      if (used_q) {
-        used_q = false;
-        min = 19;
+    case 2:
+    case 3:
+    case 4:
+    case 5: // Start with a consonant
+      switch (rng(1, 19)) {
+        case  1:  ss_name << "B"; break;
+        case  2:  ss_name << "C"; break;
+        case  3:  ss_name << "D"; break;
+        case  4:  ss_name << "F"; break;
+        case  5:  ss_name << "G"; break;
+        case  6:  ss_name << "H"; break;
+        case  7:  ss_name << "J"; break;
+        case  8:  ss_name << "K"; break;
+        case  9:  ss_name << "L"; break;
+        case 10:  ss_name << "M"; break;
+        case 11:  ss_name << "N"; break;
+        case 12:  ss_name << "P"; break;
+        case 13:  ss_name << "Q"; break;
+        case 14:  ss_name << "R"; break;
+        case 15:  ss_name << "S"; break;
+        case 16:  ss_name << "T"; break;
+        case 17:  ss_name << "V"; break;
+        case 18:  ss_name << "W"; break;
+        case 19:  ss_name << "Y"; break;
       }
-      switch (rng(min, 22)) {
-        case  1:  ss_name << "a";   break;
-        case  2:  ss_name << "ai";  break;
-        case  3:  ss_name << "au";  break;
-        case  4:  ss_name << "e";   break;
-        case  5:  ss_name << "ea";  break;
-        case  6:  ss_name << "ee";  break;
-        case  7:  ss_name << "ei";  break;
-        case  8:  ss_name << "eu";  break;
-        case  9:  ss_name << "i";   break;
-        case 10:  ss_name << "ia";  break;
-        case 11:  ss_name << "ie";  break;
-        case 12:  ss_name << "io";  break;
-        case 13:  ss_name << "o";   break;
-        case 14:  ss_name << "oa";  break;
-        case 15:  ss_name << "oe";  break;
-        case 16:  ss_name << "oi";  break;
-        case 17:  ss_name << "oo";  break;
-        case 18:  ss_name << "ou";  break;
-        case 19:  ss_name << "u";   break;
-        case 20:  ss_name << "ua";  break;
-        case 21:  ss_name << "ue";  break;
-        case 22:  ss_name << "ui";  break;
+      if (ss_name.str()[0] == 'Q') { // Only use u
+          case 1: ss_name << "u";  break;
+          case 2: ss_name << "ua"; break;
+          case 3: ss_name << "uo"; break;
+        }
+      } else {  // Any vowel will do
+        switch (rng(1, 13)) {
+          case  1: ss_name << "a"; break;
+          case  2: ss_name << "ae"; break;
+          case  3: ss_name << "ai"; break;
+          case  4: ss_name << "au"; break;
+          case  5: ss_name << "e"; break;
+          case  6: ss_name << "ea"; break;
+          case  7: ss_name << "ee"; break;
+          case  8: ss_name << "i"; break;
+          case  9: ss_name << "o"; break;
+          case 10: ss_name << "oi"; break;
+          case 11: ss_name << "oo"; break;
+          case 12: ss_name << "ou"; break;
+          case 13: ss_name << "u"; break;
+        }
       }
-    } // Add a vowel
-    switch (rng(1, 77)) {
-      case  1:  ss_name << "b";    break;
-      case  2:  ss_name << "c";    break;
-      case  3:  ss_name << "ch";   break;
-      case  4:  ss_name << "ck";   break;
-      case  5:  ss_name << "cl";   break;
-      case  6:  ss_name << "cq";   used_q = true; break;
-      case  7:  ss_name << "cr";   break;
-      case  8:  ss_name << "ct";   break;
-      case  9:  ss_name << "d";    break;
-      case 10:  ss_name << "dj";   break;
-      case 11:  ss_name << "dr";   break;
-      case 12:  ss_name << "f";    break;
-      case 13:  ss_name << "fl";   break;
-      case 14:  ss_name << "fr";   break;
-      case 15:  ss_name << "ft";   break;
-      case 16:  ss_name << "g";    break;
-      case 17:  ss_name << "gl";   break;
-      case 18:  ss_name << "gr";   break;
-      case 19:  ss_name << "h";    break;
-      case 20:  ss_name << "lb";   break;
-      case 21:  ss_name << "ld";   break;
-      case 22:  ss_name << "lf";   break;
-      case 23:  ss_name << "lg";   break;
-      case 24:  ss_name << "lk";   break;
-      case 25:  ss_name << "ll";   break;
-      case 26:  ss_name << "lm";   break;
-      case 27:  ss_name << "ln";   break;
-      case 28:  ss_name << "lp";   break;
-      case 29:  ss_name << "lq";   used_q = true; break;
-      case 30:  ss_name << "lt";   break;
-      case 31:  ss_name << "lv";   break;
-      case 32:  ss_name << "lz";   break;
-      case 33:  ss_name << "m";    break;
-      case 34:  ss_name << "mm";   break;
-      case 35:  ss_name << "mn";   break;
-      case 36:  ss_name << "n";    break;
-      case 37:  ss_name << "nn";   break;
-      case 38:  ss_name << "p";    break;
-      case 39:  ss_name << "ph";   break;
-      case 40:  ss_name << "pl";   break;
-      case 41:  ss_name << "pr";   break;
-      case 42:  ss_name << "ps";   break;
-      case 43:  ss_name << "pt";   break;
-      case 44:  ss_name << "r";    break;
-      case 45:  ss_name << "rb";   break;
-      case 46:  ss_name << "rc";   break;
-      case 47:  ss_name << "rch";  break;
-      case 48:  ss_name << "rd";   break;
-      case 49:  ss_name << "rg";   break;
-      case 50:  ss_name << "rk";   break;
-      case 51:  ss_name << "rm";   break;
-      case 52:  ss_name << "rn";   break;
-      case 53:  ss_name << "rp";   break;
-      case 54:  ss_name << "rq";   used_q = true; break;
-      case 55:  ss_name << "rr";   break;
-      case 56:  ss_name << "rs";   break;
-      case 57:  ss_name << "rst";  break;
-      case 58:  ss_name << "rt";   break;
-      case 59:  ss_name << "rv";   break;
-      case 60:  ss_name << "s";    break;
-      case 61:  ss_name << "sc";   break;
-      case 62:  ss_name << "sch";  break;
-      case 63:  ss_name << "sg";   break;
-      case 64:  ss_name << "sh";   break;
-      case 65:  ss_name << "sk";   break;
-      case 66:  ss_name << "sn";   break;
-      case 67:  ss_name << "sp";   break;
-      case 68:  ss_name << "ss";   break;
-      case 69:  ss_name << "st";   break;
-      case 70:  ss_name << "sw";   break;
-      case 71:  ss_name << "t";    break;
-      case 72:  ss_name << "th";   break;
-      case 73:  ss_name << "tr";   break;
-      case 74:  ss_name << "tt";   break;
-      case 75:  ss_name << "v";    break;
-      case 76:  ss_name << "x";    break;
-      case 77:  ss_name << "z";    break;
+      switch (rng(1, 13)) {
+        case  1: ss_name << "a"; break;
+        case  2: ss_name << "ae"; break;
+        case  3: ss_name << "ai"; break;
+        case  4: ss_name << "au"; break;
+        case  5: ss_name << "e"; break;
+        case  6: ss_name << "ea"; break;
+        case  7: ss_name << "ee"; break;
+        case  8: ss_name << "i"; break;
+        case  9: ss_name << "o"; break;
+        case 10: ss_name << "oi"; break;
+        case 11: ss_name << "oo"; break;
+        case 12: ss_name << "ou"; break;
+        case 13: ss_name << "u"; break;
+      }
+      break;
+  } // Vowel or consonant?
+
+// Now we have a first syllable that ends in a vowel; add a consonant
+  std::string cons;
+  switch (rng(1, 40)) {
+    case  1:  cons = "b";   break;
+    case  2:  cons = "bb";  break;
+    case  3:  cons = "c";   break;
+    case  4:  cons = "ch";  break;
+    case  5:  cons = "ck";  break;
+    case  6:  cons = "d";   break;
+    case  7:  cons = "dd";  break;
+    case  8:  cons = "dj";  break;
+    case  9:  cons = "f";   break;
+    case 10:  cons = "gg";  break;
+    case 11:  cons = "k";   break;
+    case 12:  cons = "l";   break;
+    case 13:  cons = "ll";  break;
+    case 14:  cons = "m";   break;
+    case 15:  cons = "mm";  break;
+    case 16:  cons = "n";   break;
+    case 17:  cons = "nd";  break;
+    case 18:  cons = "nn";  break;
+    case 19:  cons = "nq";  break;
+    case 20:  cons = "nt";  break;
+    case 21:  cons = "p";   break;
+    case 22:  cons = "ph";  break;
+    case 23:  cons = "pp";  break;
+    case 24:  cons = "r";   break;
+    case 25:  cons = "rq";  break;
+    case 26:  cons = "rr";  break;
+    case 27:  cons = "s";   break;
+    case 28:  cons = "sc";  break;
+    case 29:  cons = "sh";  break;
+    case 30:  cons = "sk";  break;
+    case 31:  cons = "sm";  break;
+    case 32:  cons = "sp";  break;
+    case 33:  cons = "ss";  break;
+    case 34:  cons = "st";  break;
+    case 35:  cons = "t";   break;
+    case 36:  cons = "th";  break;
+    case 37:  cons = "tt";  break;
+    case 38:  cons = "v";   break;
+    case 39:  cons = "w";   break;
+    case 40:  cons = "x";   break;
+  }
+  ss_name << cons;
+  if (one_in(3) && cons.size() == 1 &&
+      (cons[0] == 'b' || cons[0] == 'c' || cons[0] == 'd' || cons[0] == 'f' ||
+       cons[0] == 'g' || cons[0] == 'k' || cons[0] == 'p' || cons[0] == 't')) {
+    switch (rng(1, 2)) {
+      case 1: ss_name << "l"; break;
+      case 2: ss_name << "r"; break;
     }
   }
 
-// Add an ending
-  switch (rng(1, 13)) {
-    case  1:  ss_name << "a";   break;
-    case  2:  ss_name << "ale"; break;
-    case  3:  ss_name << "and"; break;
-    case  4:  ss_name << "ath"; break;
-    case  5:  ss_name << "e";   break;
-    case  6:  ss_name << "elo"; break;
-    case  7:  ss_name << "eth"; break;
-    case  8:  ss_name << "ia";  break;
-    case  9:  ss_name << "ind"; break;
-    case 10:  ss_name << "oa";  break;
-    case 11:  ss_name << "or";  break;
-    case 12:  ss_name << "ua";  break;
-    case 13:  ss_name << "urn"; break;
+// Now start syllable 2 with a vowel
+  if (cons[ cons.size() - 1 ] == 'q') { // Only use u
+    switch (rng(1, 3)) {
+      case 1: ss_name << "u";  break;
+      case 2: ss_name << "ua"; break;
+      case 3: ss_name << "uo"; break;
+    }
+  } else {  // Any vowel will do
+    switch (rng(1, 13)) {
+      case  1: ss_name << "a"; break;
+      case  2: ss_name << "ae"; break;
+      case  3: ss_name << "ai"; break;
+      case  4: ss_name << "au"; break;
+      case  5: ss_name << "e"; break;
+      case  6: ss_name << "ea"; break;
+      case  7: ss_name << "ee"; break;
+      case  8: ss_name << "i"; break;
+      case  9: ss_name << "o"; break;
+      case 10: ss_name << "oi"; break;
+      case 11: ss_name << "oo"; break;
+      case 12: ss_name << "ou"; break;
+      case 13: ss_name << "u"; break;
+    }
+  }
+
+// Final random consonant
+  switch (rng(1, 40)) {
+    case  1:  ss_name << "b";  break;
+    case  2:  ss_name << "ch";  break;
+    case  3:  ss_name << "ck";  break;
+    case  4:  ss_name << "cr";  break;
+    case  5:  ss_name << "d";  break;
+    case  6:  ss_name << "dr";  break;
+    case  7:  ss_name << "fr";  break;
+    case  8:  ss_name << "ft";  break;
+    case  9:  ss_name << "g";  break;
+    case 10:  ss_name << "gr";  break;
+    case 11:  ss_name << "k";  break;
+    case 12:  ss_name << "kl";  break;
+    case 13:  ss_name << "kr";  break;
+    case 14:  ss_name << "l";  break;
+    case 15:  ss_name << "m";  break;
+    case 16:  ss_name << "n";  break;
+    case 17:  ss_name << "p";  break;
+    case 18:  ss_name << "pr";  break;
+    case 19:  ss_name << "r";  break;
+    case 20:  ss_name << "rd";  break;
+    case 21:  ss_name << "rg";  break;
+    case 22:  ss_name << "rk";  break;
+    case 23:  ss_name << "rm";  break;
+    case 24:  ss_name << "rn";  break;
+    case 25:  ss_name << "rp";  break;
+    case 26:  ss_name << "rr";  break;
+    case 27:  ss_name << "rt";  break;
+    case 28:  ss_name << "rth";  break;
+    case 29:  ss_name << "s";  break;
+    case 30:  ss_name << "sh";  break;
+    case 31:  ss_name << "sk";  break;
+    case 32:  ss_name << "sp";  break;
+    case 33:  ss_name << "ss";  break;
+    case 34:  ss_name << "st";  break;
+    case 35:  ss_name << "t";  break;
+    case 36:  ss_name << "th";  break;
+    case 37:  ss_name << "tr";  break;
+    case 38:  ss_name << "tt";  break;
+    case 39:  ss_name << "v";  break;
+    case 40:  ss_name << "z";  break;
+  }
+
+// And then an ending
+  switch (rng(1, 35)) {
+    case  1:  ss_name << "a";  break;
+    case  2:  ss_name << "ace";  break;
+    case  3:  ss_name << "ade";  break;
+    case  4:  ss_name << "age";  break;
+    case  5:  ss_name << "am";  break;
+    case  6:  ss_name << "ane";  break;
+    case  7:  ss_name << "ate";  break;
+    case  8:  ss_name << "ea";  break;
+    case  9:  ss_name << "ede";  break;
+    case 10:  ss_name << "el";  break;
+    case 11:  ss_name << "em";  break;
+    case 12:  ss_name << "ers";  break;
+    case 13:  ss_name << "ey";  break;
+    case 14:  ss_name << "ia";  break;
+    case 15:  ss_name << "ike";  break;
+    case 16:  ss_name << "ila";  break;
+    case 17:  ss_name << "ine";  break;
+    case 18:  ss_name << "ire";  break;
+    case 19:  ss_name << "ite";  break;
+    case 20:  ss_name << "oa";  break;
+    case 21:  ss_name << "oda";  break;
+    case 22:  ss_name << "odu";  break;
+    case 23:  ss_name << "oga";  break;
+    case 24:  ss_name << "ogi";  break;
+    case 25:  ss_name << "one";  break;
+    case 26:  ss_name << "or";  break;
+    case 27:  ss_name << "ors";  break;
+    case 28:  ss_name << "os";  break;
+    case 29:  ss_name << "ota";  break;
+    case 30:  ss_name << "ua";  break;
+    case 31:  ss_name << "uce";  break;
+    case 32:  ss_name << "uke";  break;
+    case 33:  ss_name << "une";  break;
+    case 34:  ss_name << "uru";  break;
+    case 35:  ss_name << "uze";  break;
   }
 
   name = ss_name.str();
+
 }
 
 void World_map::add_continent(Point origin, int height, int step, int id)
