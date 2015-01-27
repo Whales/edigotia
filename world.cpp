@@ -519,8 +519,8 @@ void World_map::set_random_name()
       }
       if (ss_name.str()[0] == 'Q') { // Only use u
         switch (rng(1, 3)) {
-          case 1: ss_name << "u";  break;
-          case 2: ss_name << "ua"; break;
+          case 1: ss_name << "ua";  break;
+          case 2: ss_name << "ui"; break;
           case 3: ss_name << "uo"; break;
         }
       } else {  // Any vowel will do
@@ -539,21 +539,6 @@ void World_map::set_random_name()
           case 12: ss_name << "ou"; break;
           case 13: ss_name << "u"; break;
         }
-      }
-      switch (rng(1, 13)) {
-        case  1: ss_name << "a"; break;
-        case  2: ss_name << "ae"; break;
-        case  3: ss_name << "ai"; break;
-        case  4: ss_name << "au"; break;
-        case  5: ss_name << "e"; break;
-        case  6: ss_name << "ea"; break;
-        case  7: ss_name << "ee"; break;
-        case  8: ss_name << "i"; break;
-        case  9: ss_name << "o"; break;
-        case 10: ss_name << "oi"; break;
-        case 11: ss_name << "oo"; break;
-        case 12: ss_name << "ou"; break;
-        case 13: ss_name << "u"; break;
       }
       break;
   } // Vowel or consonant?
@@ -615,8 +600,8 @@ void World_map::set_random_name()
 // Now start syllable 2 with a vowel
   if (cons[ cons.size() - 1 ] == 'q') { // Only use u
     switch (rng(1, 3)) {
-      case 1: ss_name << "u";  break;
-      case 2: ss_name << "ua"; break;
+      case 1: ss_name << "ua";  break;
+      case 2: ss_name << "ui"; break;
       case 3: ss_name << "uo"; break;
     }
   } else {  // Any vowel will do
@@ -1245,6 +1230,8 @@ Point World_map::draw(Point start)
       switch (ch) {
         case '0':
           pos = start;
+          pos.x -= (xdim / 2); // Pos is in the upper-left corner of our screen
+          pos.y -= (ydim / 2); // So we need to move it from the center to there
           break;
 
         case '>':
@@ -1365,6 +1352,11 @@ Point World_map::draw(Point start)
       }
     }
   }
+}
+
+std::string World_map::get_name()
+{
+  return name;
 }
 
 int World_map::land_count()
