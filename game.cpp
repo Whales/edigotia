@@ -7,6 +7,7 @@
 #include "rng.h"
 #include "globals.h"
 #include "files.h"
+#include <fstream>
 
 Game::Game()
 {
@@ -32,39 +33,61 @@ bool Game::start_new_game()
         return false;
       }
       world->save_to_file("world.sav");
+      save_kingdoms();
     }
   }
 
-// Let the city pick a location in the world
-  Point p = world->draw();
+// Pick our race first, so we know where to start placement.
+  city->pick_race();
 
-  if (p.x == -1) {  // We hit ESC
+// Let the city pick a location in the world
+// Start from the center of the appropriate kingdom.
+  Point start;
+  Kingdom* city_kingdom = get_kingdom_for_race(city->get_race());
+  if (city_kingdom) {
+    start.x = (city_kingdom->most_west  + city_kingdom->most_east ) / 2;
+    start.y = (city_kingdom->most_north + city_kingdom->most_south) / 2;
+  } else {
+    debugmsg("Kingdom not found for player city.");
+    start = Point(WORLD_MAP_SIZE / 2, WORLD_MAP_SIZE / 2);
+  }
+
+  city->set_starting_tiles_seen();
+
+  Point p = world->draw(start, &(city->world_seen));
+
+  if (p.x == -1) {  // We canceled
     return false;
   }
 
 // Put our city there.
   bool placed = false;
   while (!placed) {
-    if (!world->get_city(p)) {
-      city->set_world_map(world);
+    if (!city->world_seen.is_seen(p)) {
+      popup("That's unexplored territory!");
+    } else if (!world->get_city(p)) {
       city->generate_map(p);
       placed = city->place_keep();
     } else {
       popup("There is already a city there!");
     }
     if (!placed) {
-      p = world->draw(p);  // We decided against that spot, pick a new one
+      p = world->draw(p, &(city->world_seen)); // Try again
+      if (p.x == -1) {  // We canceled
+        return false;
+      }
     }
   }
 
   city->location = p;
+// Let us see a little more.
+  city->mark_nearby_tiles_seen(4);
   world->set_city(p, city);
 // Crude race picker; TODO: replace this.
-  city->pick_race();
   city->set_name();
-  city->start_new_city(world);
-  city->set_game(this);
+  city->start_new_city();
   city->setup_trade_routes();
+  city->set_starting_tiles_seen();
 
   return true;
 }
@@ -82,14 +105,20 @@ bool Game::load_world()
 
   world->load_from_file(SAVE_DIR + "world.sav");
   world_ready = true;
+  load_kingdoms();
   return true;
 }
 
 bool Game::generate_world()
 {
+  if (world) {
+    delete world;
+    world = new World_map;
+  }
   world->generate();
   generate_kingdoms();
   world->save_to_file(SAVE_DIR + "world.sav");
+  save_kingdoms();
   world_ready = true;
   return true;
 }
@@ -127,6 +156,17 @@ std::string Game::get_date_str(int length)
   return ret;
 }
 
+Kingdom* Game::get_kingdom_for_race(Race race)
+{
+  for (int i = 0; i < kingdoms.size(); i++) {
+    if (kingdoms[i]->race == race) {
+//debugmsg("Got kingdom %d/%d (uid %d) %s", i, kingdoms.size(), kingdoms[i]->uid, Point(kingdoms[i]->most_west, kingdoms[i]->most_north).str().c_str());
+      return kingdoms[i];
+    }
+  }
+  return NULL;
+}
+
 int Game::get_city_uid()
 {
   int ret = next_city_uid;
@@ -140,6 +180,13 @@ void Game::generate_kingdoms()
     debugmsg("Game::generate_kingdoms() called with NULL world!");
     return;
   }
+
+  if (!kingdoms.empty()) {
+    for (int i = 0; i < kingdoms.size(); i++) {
+      delete (kingdoms[i]);
+    }
+  }
+  kingdoms.clear();
 
   bool color_free[c_null];  // c_null is the last color
   for (int i = 0; i < c_null; i++) {
@@ -252,4 +299,60 @@ void Game::generate_kingdoms()
       kingdoms[i]->expand_boundaries(world);
     }
   }
+}
+
+bool Game::save_kingdoms()
+{
+  std::ofstream fout;
+  std::string filename = SAVE_DIR + "kingdoms.txt";
+  fout.open(filename.c_str());
+  if (!fout.is_open()) {
+    debugmsg("Couldn't open %s/kingdoms.txt for saving.", SAVE_DIR.c_str());
+    return false;
+  }
+
+  fout << kingdoms.size() << std::endl;
+  for (int i = 0; i < kingdoms.size(); i++) {
+    fout << kingdoms[i]->save_data() << std::endl;
+  }
+
+  fout.close();
+  return true;
+}
+
+bool Game::load_kingdoms()
+{
+  if (!world_ready) {
+    debugmsg("Loading kingdoms before world - not okay!");
+    return false;
+  }
+
+  std::ifstream fin;
+  std::string filename = SAVE_DIR + "kingdoms.txt";
+  fin.open(filename.c_str());
+  if (!fin.is_open()) {
+    return false;
+  }
+
+  int num_kingdoms;
+  fin >> num_kingdoms;
+  for (int i = 0; i < num_kingdoms; i++) {
+    Kingdom* tmp_kingdom = new Kingdom;
+    if (!tmp_kingdom->load_data(fin)) {
+      return false;
+    }
+    kingdoms.push_back(tmp_kingdom);
+// Add the kingdom's cities to our world map
+    world->set_city(tmp_kingdom->capital->location, tmp_kingdom->capital);
+    for (int i = 0; i < tmp_kingdom->dukes.size(); i++) {
+      City* duke = tmp_kingdom->dukes[i];
+      world->set_city(duke->location, duke);
+    }
+    for (int i = 0; i < tmp_kingdom->cities.size(); i++) {
+      City* city = tmp_kingdom->cities[i];
+      world->set_city(city->location, city);
+    }
+  }
+
+  return true;
 }

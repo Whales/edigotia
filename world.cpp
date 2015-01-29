@@ -19,6 +19,66 @@
 #define OOB(x, y) \
 ( (x) < 0 || (x) >= WORLD_MAP_SIZE || (y) < 0 || (y) >= WORLD_MAP_SIZE )
 
+Map_seen::Map_seen()
+{
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      seen[x][y] = false;
+    }
+  }
+}
+
+Map_seen::~Map_seen()
+{
+}
+
+std::string Map_seen::save_data()
+{
+  std::stringstream ret;
+
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      ret << seen[x][y] << " ";
+    }
+  }
+  return ret.str();
+}
+
+bool Map_seen::load_data(std::istream& data)
+{
+  for (int x = 0; x < WORLD_MAP_SIZE; x++) {
+    for (int y = 0; y < WORLD_MAP_SIZE; y++) {
+      data >> seen[x][y];
+    }
+  }
+  return true;
+}
+
+bool Map_seen::is_seen(Point p)
+{
+  return is_seen(p.x, p.y);
+}
+
+bool Map_seen::is_seen(int x, int y)
+{
+  if (OOB(x, y)) {
+    return false;
+  }
+  return seen[x][y];
+}
+
+void Map_seen::mark_seen(Point p)
+{
+  mark_seen(p.x, p.y);
+}
+
+void Map_seen::mark_seen(int x, int y)
+{
+  if (!OOB(x, y)) {
+    seen[x][y] = true;
+  }
+}
+
 World_map::World_map()
 {
 }
@@ -423,6 +483,7 @@ bool World_map::save_to_file(std::string filename)
   if (!fout.is_open()) {
     return false;
   }
+  fout << name << std::endl;
   fout << continents.size() << " ";
   for (int i = 0; i < continents.size(); i++) {
     fout << continents[i].x << " " << continents[i].y << " ";
@@ -433,6 +494,7 @@ bool World_map::save_to_file(std::string filename)
       fout << tiles       [x][y] << " " <<
               continent_id[x][y] << " " << // Not sure if we really need this
               kingdom_id  [x][y] << " " <<
+              road        [x][y] << " " <<
               crops       [x][y] << " " <<
               minerals    [x][y] << " " <<
               animals     [x][y] << " ";
@@ -454,6 +516,7 @@ bool World_map::load_from_file(std::string filename)
   if (!fin.is_open()) {
     return false;
   }
+  std::getline(fin, name);
   int num_continents;
   fin >> num_continents;
   for (int i = 0; i < num_continents; i++) {
@@ -467,6 +530,7 @@ bool World_map::load_from_file(std::string filename)
       fin >> tmp_map_type >>
              continent_id[x][y] >>
              kingdom_id  [x][y] >>
+             road        [x][y] >>
              crops       [x][y] >>
              minerals    [x][y] >>
              animals     [x][y];
@@ -480,6 +544,8 @@ bool World_map::load_from_file(std::string filename)
 void World_map::set_random_name()
 {
   std::stringstream ss_name;
+
+  bool double_vowel = false;
 
   switch (rng(1, 5)) {
     case 1: // Start with a vowel
@@ -518,6 +584,7 @@ void World_map::set_random_name()
         case 19:  ss_name << "Y"; break;
       }
       if (ss_name.str()[0] == 'Q') { // Only use u
+        double_vowel = true;
         switch (rng(1, 3)) {
           case 1: ss_name << "ua";  break;
           case 2: ss_name << "ui"; break;
@@ -526,17 +593,17 @@ void World_map::set_random_name()
       } else {  // Any vowel will do
         switch (rng(1, 13)) {
           case  1: ss_name << "a"; break;
-          case  2: ss_name << "ae"; break;
-          case  3: ss_name << "ai"; break;
-          case  4: ss_name << "au"; break;
+          case  2: ss_name << "ae"; double_vowel = true; break;
+          case  3: ss_name << "ai"; double_vowel = true; break;
+          case  4: ss_name << "au"; double_vowel = true; break;
           case  5: ss_name << "e"; break;
-          case  6: ss_name << "ea"; break;
-          case  7: ss_name << "ee"; break;
+          case  6: ss_name << "ea"; double_vowel = true; break;
+          case  7: ss_name << "ee"; double_vowel = true; break;
           case  8: ss_name << "i"; break;
           case  9: ss_name << "o"; break;
-          case 10: ss_name << "oi"; break;
-          case 11: ss_name << "oo"; break;
-          case 12: ss_name << "ou"; break;
+          case 10: ss_name << "oi"; double_vowel = true; break;
+          case 11: ss_name << "oo"; double_vowel = true; break;
+          case 12: ss_name << "ou"; double_vowel = true; break;
           case 13: ss_name << "u"; break;
         }
       }
@@ -545,47 +612,49 @@ void World_map::set_random_name()
 
 // Now we have a first syllable that ends in a vowel; add a consonant
   std::string cons;
-  switch (rng(1, 40)) {
+// If we used a double vowel, don't use a double consonant.
+  int max = (double_vowel ? 32 : 40);
+  switch (rng(1, max)) {
     case  1:  cons = "b";   break;
-    case  2:  cons = "bb";  break;
-    case  3:  cons = "c";   break;
-    case  4:  cons = "ch";  break;
-    case  5:  cons = "ck";  break;
-    case  6:  cons = "d";   break;
-    case  7:  cons = "dd";  break;
-    case  8:  cons = "dj";  break;
-    case  9:  cons = "f";   break;
-    case 10:  cons = "gg";  break;
-    case 11:  cons = "k";   break;
-    case 12:  cons = "l";   break;
-    case 13:  cons = "ll";  break;
-    case 14:  cons = "m";   break;
-    case 15:  cons = "mm";  break;
-    case 16:  cons = "n";   break;
-    case 17:  cons = "nd";  break;
-    case 18:  cons = "nn";  break;
-    case 19:  cons = "nq";  break;
-    case 20:  cons = "nt";  break;
-    case 21:  cons = "p";   break;
-    case 22:  cons = "ph";  break;
-    case 23:  cons = "pp";  break;
-    case 24:  cons = "r";   break;
-    case 25:  cons = "rq";  break;
-    case 26:  cons = "rr";  break;
-    case 27:  cons = "s";   break;
-    case 28:  cons = "sc";  break;
-    case 29:  cons = "sh";  break;
-    case 30:  cons = "sk";  break;
-    case 31:  cons = "sm";  break;
-    case 32:  cons = "sp";  break;
-    case 33:  cons = "ss";  break;
-    case 34:  cons = "st";  break;
-    case 35:  cons = "t";   break;
-    case 36:  cons = "th";  break;
-    case 37:  cons = "tt";  break;
-    case 38:  cons = "v";   break;
-    case 39:  cons = "w";   break;
-    case 40:  cons = "x";   break;
+    case  2:  cons = "c";   break;
+    case  3:  cons = "ch";  break;
+    case  4:  cons = "ck";  break;
+    case  5:  cons = "d";   break;
+    case  6:  cons = "dj";  break;
+    case  7:  cons = "f";   break;
+    case  8:  cons = "k";   break;
+    case  9:  cons = "l";   break;
+    case 10:  cons = "ll";  break;
+    case 11:  cons = "m";   break;
+    case 12:  cons = "n";   break;
+    case 13:  cons = "nd";  break;
+    case 14:  cons = "nq";  break;
+    case 15:  cons = "nt";  break;
+    case 16:  cons = "p";   break;
+    case 17:  cons = "ph";  break;
+    case 18:  cons = "r";   break;
+    case 19:  cons = "rq";  break;
+    case 20:  cons = "s";   break;
+    case 21:  cons = "sc";  break;
+    case 22:  cons = "sh";  break;
+    case 23:  cons = "sk";  break;
+    case 24:  cons = "sm";  break;
+    case 25:  cons = "sp";  break;
+    case 26:  cons = "ss";  break;
+    case 27:  cons = "st";  break;
+    case 28:  cons = "t";   break;
+    case 29:  cons = "th";  break;
+    case 30:  cons = "v";   break;
+    case 31:  cons = "w";   break;
+    case 32:  cons = "x";   break;
+    case 33:  cons = "bb";  break;
+    case 34:  cons = "dd";  break;
+    case 35:  cons = "gg";  break;
+    case 36:  cons = "mm";  break;
+    case 37:  cons = "nn";  break;
+    case 38:  cons = "pp";  break;
+    case 39:  cons = "rr";  break;
+    case 40:  cons = "tt";  break;
   }
   ss_name << cons;
   if (one_in(3) && cons.size() == 1 &&
@@ -605,20 +674,14 @@ void World_map::set_random_name()
       case 3: ss_name << "uo"; break;
     }
   } else {  // Any vowel will do
-    switch (rng(1, 13)) {
+    switch (rng(1, 7)) {
       case  1: ss_name << "a"; break;
-      case  2: ss_name << "ae"; break;
-      case  3: ss_name << "ai"; break;
-      case  4: ss_name << "au"; break;
-      case  5: ss_name << "e"; break;
-      case  6: ss_name << "ea"; break;
-      case  7: ss_name << "ee"; break;
-      case  8: ss_name << "i"; break;
-      case  9: ss_name << "o"; break;
-      case 10: ss_name << "oi"; break;
-      case 11: ss_name << "oo"; break;
-      case 12: ss_name << "ou"; break;
-      case 13: ss_name << "u"; break;
+      case  2: ss_name << "ai"; break;
+      case  3: ss_name << "e"; break;
+      case  4: ss_name << "ea"; break;
+      case  5: ss_name << "i"; break;
+      case  6: ss_name << "o"; break;
+      case  7: ss_name << "u"; break;
     }
   }
 
@@ -1040,7 +1103,8 @@ bool World_map::tile_okay_for_animal(int x, int y, Animal animal)
           rainfall[x][y]    <= animal_dat->max_rainfall);
 }
 
-Point World_map::draw(Point start)
+// start defaults to (-1, -1); seen defaults to NULL
+Point World_map::draw(Point start, Map_seen* seen)
 {
   cuss::interface i_legend;
   if (!i_legend.load_from_file("cuss/world_legend.cuss")) {
@@ -1077,6 +1141,8 @@ Point World_map::draw(Point start)
     for (int x = pos.x; x < pos.x + xdim; x++) {
       for (int y = pos.y; y < pos.y + ydim; y++) {
 
+        bool tile_seen = (!seen || seen->is_seen(x, y));
+
         if (x > 0 && x < WORLD_MAP_SIZE && y > 0 && y < WORLD_MAP_SIZE) {
           Map_type type = tiles[x][y];
           Map_type_datum* data = Map_type_data[type];
@@ -1087,7 +1153,9 @@ Point World_map::draw(Point start)
           glyph gl;
           City* city_here = city[x][y];
 
-          if (city_here) {
+          if (!tile_seen) {
+            gl = glyph('-', c_dkgray, c_black);
+          } else if (city_here) {
             gl = city_here->get_glyph();
           } else if (has_road(x, y)) {
             gl = get_road_glyph(x, y);
@@ -1096,7 +1164,7 @@ Point World_map::draw(Point start)
           }
 
           int kingdom_id = get_kingdom_id(x, y);
-          if (!city_here && kingdom_id >= 0 &&
+          if (!city_here && kingdom_id >= 0 && tile_seen &&
               kingdom_id < GAME->kingdoms.size() &&
               !hilite_crops && !hilite_minerals && !hilite_animals) {
             Kingdom* kingdom = GAME->kingdoms[kingdom_id];
@@ -1112,7 +1180,7 @@ Point World_map::draw(Point start)
                                     has_animal( animal_hilited,  x, y) );
 
 // See if we need to change the background color for any reason.
-          if (!city_here) { // No highlighting if there's a city
+          if (!city_here && tile_seen) { // No highlighting if there's a city
             if (do_crop_hilite && do_mineral_hilite && do_animal_hilite) {
               gl = gl.hilite(c_ltgray);
             } else if (do_crop_hilite && do_mineral_hilite) {
@@ -1137,7 +1205,7 @@ Point World_map::draw(Point start)
           w_map.putglyph(x - pos.x, y - pos.y, gl);
 
         } else {  // Out of bounds glyph
-          w_map.putglyph(x - pos.x, y - pos.y, glyph('x', c_white, c_black));
+          w_map.putglyph(x - pos.x, y - pos.y, glyph('-', c_dkgray, c_black));
         }
 
       } // for (int y = pos.y; y < pos.y + ydim; y++)
@@ -1148,66 +1216,81 @@ Point World_map::draw(Point start)
     Map_type_datum* data = Map_type_data[type];
     i_legend.set_data("text_position", center.str());
     i_legend.set_data("text_position", c_white);
-    i_legend.set_data("text_map_type", data->name);
-    i_legend.set_data("text_map_type", data->symbol.fg);
+    bool tile_seen = (!seen || seen->is_seen(center));
+    if (tile_seen) {
+      i_legend.set_data("text_map_type", data->name);
+      i_legend.set_data("text_map_type", data->symbol.fg);
+    } else {
+      i_legend.set_data("text_map_type", "<c=dkgray>Unknown<c=/>");
+    }
 /* We want two crops/minerals per line, so I split the text fields into two.
  * Each one has its own stringstream; so we put the first crop/mineral into the
  * left stringstream/field, the second into the right, etc.
  */
-    std::stringstream crops_left_ss,  minerals_left_ss,
-                      crops_right_ss, minerals_right_ss;
-    std::vector<Crop>    crops_here    = crops_at(center);
-    std::vector<Mineral> minerals_here = minerals_at(center);
-    for (int i = 0; i < crops_here.size(); i++) {
-      std::stringstream* crop_ss;
-      if (i % 2 == 0) {
-        crop_ss = &(crops_left_ss);
-      } else {
-        crop_ss = &(crops_right_ss);
+    if (tile_seen) {
+      std::stringstream crops_left_ss,  minerals_left_ss,
+                        crops_right_ss, minerals_right_ss;
+      std::vector<Crop>    crops_here    = crops_at(center);
+      std::vector<Mineral> minerals_here = minerals_at(center);
+      for (int i = 0; i < crops_here.size(); i++) {
+        std::stringstream* crop_ss;
+        if (i % 2 == 0) {
+          crop_ss = &(crops_left_ss);
+        } else {
+          crop_ss = &(crops_right_ss);
+        }
+        Crop_datum* crop_dat = Crop_data[crops_here[i]];
+        nc_color crop_color = crop_type_color(crop_dat->type);
+        (*crop_ss) << "<c=" << color_tag(crop_color) << ">" << crop_dat->name <<
+                      "<c=/>" << std::endl;
       }
-      Crop_datum* crop_dat = Crop_data[crops_here[i]];
-      nc_color crop_color = crop_type_color(crop_dat->type);
-      (*crop_ss) << "<c=" << color_tag(crop_color) << ">" << crop_dat->name <<
-                    "<c=/>" << std::endl;
-    }
-    for (int i = 0; i < minerals_here.size(); i++) {
-      std::stringstream* mineral_ss;
-      if (i % 2 == 0) {
-        mineral_ss = &(minerals_left_ss);
-      } else {
-        mineral_ss = &(minerals_right_ss);
+      for (int i = 0; i < minerals_here.size(); i++) {
+        std::stringstream* mineral_ss;
+        if (i % 2 == 0) {
+          mineral_ss = &(minerals_left_ss);
+        } else {
+          mineral_ss = &(minerals_right_ss);
+        }
+        Mineral_datum* mineral_dat = Mineral_data[minerals_here[i]];
+        nc_color mineral_color = mineral_dat->color;
+        (*mineral_ss) << "<c=" << color_tag(mineral_color) << ">" <<
+                         mineral_dat->name << "<c=/>" << std::endl;
       }
-      Mineral_datum* mineral_dat = Mineral_data[minerals_here[i]];
-      nc_color mineral_color = mineral_dat->color;
-      (*mineral_ss) << "<c=" << color_tag(mineral_color) << ">" <<
-                       mineral_dat->name << "<c=/>" << std::endl;
-    }
-    i_legend.set_data("text_crops_here_left",     crops_left_ss.str());
-    i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
-    i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
-    i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
+      i_legend.set_data("text_crops_here_left",     crops_left_ss.str());
+      i_legend.set_data("text_crops_here_right",    crops_right_ss.str());
+      i_legend.set_data("text_minerals_here_left",  minerals_left_ss.str());
+      i_legend.set_data("text_minerals_here_right", minerals_right_ss.str());
 
 // Kingdom info
-    int kingdom_id = get_kingdom_id(center);
-    i_legend.set_data("num_kingdom_id", kingdom_id);
-    if (kingdom_id >= 0 && kingdom_id < GAME->kingdoms.size()) {
-      Kingdom* kingdom = GAME->kingdoms[kingdom_id];
-      Race_datum* race_dat = Race_data[ kingdom->race ];
-      std::stringstream ss_race;
-      ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
-                 capitalize(race_dat->plural_name) << "<c=/>";
-      i_legend.set_data("text_kingdom_race", ss_race.str());
-    } else {
-      i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
-    }
+      int kingdom_id = get_kingdom_id(center);
+      i_legend.set_data("num_kingdom_id", kingdom_id);
+      if (kingdom_id >= 0 && kingdom_id < GAME->kingdoms.size()) {
+        Kingdom* kingdom = GAME->kingdoms[kingdom_id];
+        Race_datum* race_dat = Race_data[ kingdom->race ];
+        std::stringstream ss_race;
+        ss_race << "<c=" << color_tag(race_dat->color) << ">" <<
+                   capitalize(race_dat->plural_name) << "<c=/>";
+        i_legend.set_data("text_kingdom_race", ss_race.str());
+      } else {
+        i_legend.set_data("text_kingdom_race", "<c=dkgray>None<c=/>");
+      }
 
 // City info
-    City* city_here = get_city(center);
-    if (city_here) {
-      i_legend.set_data("text_city_name", city_here->get_name());
-      i_legend.set_data("text_city_name", c_yellow);
-    } else {
-      i_legend.clear_data("text_city_name");
+      City* city_here = get_city(center);
+      if (city_here) {
+        i_legend.set_data("text_city_name", city_here->get_name());
+        i_legend.set_data("text_city_name", c_yellow);
+      } else {
+        i_legend.clear_data("text_city_name");
+      }
+    } else {  // Tile is not seen
+      i_legend.clear_data("text_crops_here_left" );
+      i_legend.clear_data("text_crops_here_right");
+      i_legend.clear_data("text_minerals_here_left" );
+      i_legend.clear_data("text_minerals_here_right");
+      i_legend.clear_data("num_kingdom_id");
+      i_legend.clear_data("text_kingdom_race");
+      i_legend.clear_data("text_city-name");
     }
 
     i_legend.draw(&w_legend);

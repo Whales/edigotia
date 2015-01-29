@@ -6,6 +6,8 @@
 #include "race.h"
 #include "world.h"
 #include <vector>
+#include <string>
+#include <istream>
 
 // This is the radius around a city which we lay claim to.
 #define KINGDOM_CLAIM_RADIUS 8
@@ -19,6 +21,9 @@ public:
   ~Kingdom();
 
   void set_game(Game* g);
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
 // Building the kingdom
 // called once for each kingdom; it places its capital, the epicenter of the
@@ -42,6 +47,9 @@ public:
   std::vector<City*> dukes;
   std::vector<City*> cities;
 
+// Kingdom boundaries
+  int most_west, most_north, most_east, most_south;
+
 private:
   Point pick_best_point(World_map* world, std::vector<Point> points_to_try,
                         int radius = KINGDOM_CLAIM_RADIUS);
@@ -53,9 +61,6 @@ private:
   Game* game;
 
   std::vector<Point> city_locations;
-
-// Kingdom boundaries
-  int most_west, most_north, most_east, most_south;
 };
 
 // See kingdom.cpp

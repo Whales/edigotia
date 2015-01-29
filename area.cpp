@@ -4,6 +4,7 @@
 #include "player_city.h"  // For Area::close() and Area::reopen()
 #include "stringfunc.h"   // For no_caps() and trim()
 #include <map>
+#include <sstream>
 
 Area_datum::Area_datum()
 {
@@ -27,6 +28,38 @@ Area::Area(Area_type T, Point P)
   building.pos = P;
   building.open = true;
   building.construction_left = 0;
+}
+
+std::string Area::save_data()
+{
+  std::stringstream ret;
+
+  ret << type << " ";
+  ret << pos.x << " " << pos.y << " ";
+  ret << std::endl;
+  ret << building.save_data();
+  ret << std::endl;
+
+  return ret.str();
+}
+
+bool Area::load_data(std::istream& data)
+{
+  int tmptype;
+  data >> tmptype;
+  if (tmptype <= 0 || tmptype >= AREA_MAX) {
+    debugmsg("Area loaded type 5d (range is 1 to %d).", tmptype, AREA_MAX - 1);
+    return false;
+  }
+  type = Area_type(tmptype);
+
+  data >> pos.x >> pos.y;
+  if (!building.load_data(data)) {
+    debugmsg("Area (%s) failed to load building data.", get_name().c_str());
+    return false;
+  }
+
+  return true;
 }
 
 void Area::make_queued()

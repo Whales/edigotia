@@ -3,6 +3,7 @@
 #include "window.h" // For debugmsg()
 #include "geometry.h" // For rl_dist()
 #include "ai_city.h"
+#include "globals.h"
 #include <sstream>
 
 Kingdom::Kingdom()
@@ -33,6 +34,107 @@ Kingdom::~Kingdom()
 void Kingdom::set_game(Game* g)
 {
   game = g;
+}
+
+std::string Kingdom::save_data()
+{
+  std::stringstream ret;
+
+  ret << uid << " ";
+  ret << int(race) << " ";
+  ret << int(color) << " ";
+  ret << most_west << " ";
+  ret << most_north << " ";
+  ret << most_east << " ";
+  ret << most_south << " ";
+
+  ret << std::endl;
+  ret << dukes.size() << " " << cities.size() << std::endl;
+
+  ret << capital->save_data() << std::endl;
+
+  for (int i = 0; i < dukes.size(); i++) {
+    ret << dukes[i]->save_data() << std::endl;
+  }
+
+  for (int i = 0; i < cities.size(); i++) {
+    ret << cities[i]->save_data() << std::endl;
+  }
+
+  return ret.str();
+}
+
+bool Kingdom::load_data(std::istream& data)
+{
+  data >> uid;
+  int tmprace;
+  data >> tmprace;
+  if (tmprace <= 0 || tmprace >= RACE_MAX) {
+    debugmsg("Kingdom %d loaded race %d (range is 1 to %d).",
+             uid, tmprace, RACE_MAX - 1);
+    return false;
+  }
+  race = Race(tmprace);
+
+  int tmpcol;
+  data >> tmpcol;
+  if (tmpcol <= 0 || tmpcol >= c_null) {
+    debugmsg("Kingdom %d loaded color %d (range is 1 to %d).",
+             uid, tmpcol, c_null - 1);
+    return false;
+  }
+  color = nc_color(tmpcol);
+
+  data >> most_west >> most_north >> most_east >> most_south;
+
+  int num_dukes, num_cities;
+  data >> num_dukes >> num_cities;
+
+  if (capital) {
+    delete capital;
+  }
+  capital = new AI_city;
+
+  if (!capital->load_data(data)) {
+    debugmsg("Kingdom %d failed to load capital.", uid);
+    return false;
+  }
+
+  if (!dukes.empty()) {
+    for (int i = 0; i < dukes.size(); i++) {
+      delete (dukes[i]);
+    }
+    dukes.clear();
+  }
+
+  for (int i = 0; i < num_dukes; i++) {
+    City* tmpcity = new AI_city;
+    if (!tmpcity->load_data(data)) {
+      debugmsg("Kingdom %d failed to load duke %d/%d.", uid, i, num_dukes);
+      return false;
+    }
+    dukes.push_back(tmpcity);
+    city_locations.push_back(tmpcity->location);
+  }
+
+  if (!cities.empty()) {
+    for (int i = 0; i < cities.size(); i++) {
+      delete (cities[i]);
+    }
+    cities.clear();
+  }
+
+  for (int i = 0; i < num_cities; i++) {
+    City* tmpcity = new AI_city;
+    if (!tmpcity->load_data(data)) {
+      debugmsg("Kingdom %d failed to load city %d/%d.", uid, i, num_cities);
+      return false;
+    }
+    cities.push_back(tmpcity);
+    city_locations.push_back(tmpcity->location);
+  }
+
+  return true;
 }
 
 // size defaults to KINGDOM_CLAIM_RADIUS (see kingdom.h)
@@ -361,7 +463,6 @@ void Kingdom::add_city(World_map* world, Point loc, City_type type, int radius)
   city->set_city_type(type);
   city->set_race(race);
   city->set_random_name();
-  city->set_world_map(world);
   city->generate_map(loc);  // This sets city->location too
   city->randomize_properties(world);
 

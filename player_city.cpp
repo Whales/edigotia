@@ -6,9 +6,52 @@
 #include "geometry.h"
 #include "rng.h"
 #include "combat.h" // For hunting
+#include "globals.h"
+#include "kingdom.h"
 #include <sstream>
 #include <vector>
 #include <map>
+
+std::string Message::save_data()
+{
+  std::stringstream ret;
+  ret << int(type) << " ";
+  ret << date.save_data() << std::endl;
+// Since text is probably multi-word, we use ! as a terminator.
+  ret << text << " ! ";
+
+  return ret.str();
+}
+
+bool Message::load_data(std::istream& data)
+{
+  int tmptype;
+  data >> tmptype;
+  if (tmptype <= 0 || tmptype >= MESSAGE_MAX) {
+    debugmsg("Message loaded type %d (range is 1 to %d).",
+             tmptype, MESSAGE_MAX - 1);
+    return false;
+  }
+  type = Message_type(tmptype);
+
+  std::string word;
+  while (word != "!") {
+    data >> word;
+    if (word != "!") {
+      if (!text.empty()) {
+        text = text + " ";
+      }
+      text = text + word;
+    }
+  }
+
+  if (!date.load_data(data)) {
+    debugmsg("Message failed to load its date.");
+    return false;
+  }
+
+  return true;
+}
 
 Player_city::Player_city()
 {
@@ -47,6 +90,7 @@ Player_city::Player_city()
   radius = 1;
   unread_messages = 0;
   show_hunting_messages = true;
+  show_livestock_messages = true;
 
   hunt_record_days = -1;  // We set it to 0 when we build our first camp
   hunt_record_food = 0;
@@ -54,6 +98,212 @@ Player_city::Player_city()
 
 Player_city::~Player_city()
 {
+}
+
+std::string Player_city::save_data()
+{
+  std::stringstream ret;
+
+  ret << City::save_data() << std::endl;
+
+  for (int i = 0; i < CIT_MAX; i++) {
+    ret << tax_rate[i] << " ";
+  }
+  ret << std::endl;
+
+  ret << units_stationed.size() << " ";
+  for (int i = 0; i < units_stationed.size(); i++) {
+    ret << units_stationed[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << radius << std::endl;
+
+  for (int i = 0; i < AREA_MAX; i++) {
+    ret << area_unlocked[i] << " ";
+  }
+  ret << std::endl;
+
+  for (int i = 0; i < BUILD_MAX; i++) {
+    ret << building_unlocked[i] << " ";
+  }
+  ret << std::endl;
+
+  ret << buildings.size() << " ";
+  for (int i = 0; i < buildings.size(); i++) {
+    ret << buildings[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << building_queue.size() << " ";
+  for (int i = 0; i < building_queue.size(); i++) {
+    ret << building_queue[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << areas.size() << " ";
+  for (int i = 0; i < areas.size(); i++) {
+    ret << areas[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << area_queue.size() << " ";
+  for (int i = 0; i < area_queue.size(); i++) {
+    ret << area_queue[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << hunt_record_days << " ";
+  ret << hunt_record_food << " ";
+  ret << hunt_kills.size() << " ";
+  for (std::map<Animal,int>::iterator it = hunt_kills.begin();
+       it != hunt_kills.end();
+       it++) {
+    ret << it->first << " " << it->second << " ";
+  }
+  ret << std::endl;
+
+  ret << unread_messages << " ";
+  ret << show_hunting_messages << " ";
+  ret << show_livestock_messages << " ";
+  ret << messages.size() << " ";
+  for (int i = 0; i < messages.size(); i++) {
+    ret << messages[i].save_data() << " ";
+  }
+  ret << std::endl;
+
+  ret << world_seen.save_data() << std::endl;
+
+  ret << birth_points << std::endl;
+
+  for (int i = 0; i < ANIMAL_MAX; i++) {
+    ret << hunting_action[i] << " ";
+  }
+
+  return ret.str();
+}
+
+bool Player_city::load_data(std::istream& data)
+{
+  if (!City::load_data(data)) {
+    debugmsg("Player_city::load_data() failed when calling City::load_data().");
+    return false;
+  }
+
+  for (int i = 0; i < CIT_MAX; i++) {
+    data >> tax_rate[i];
+  }
+
+  int num_units;
+  data >> num_units;
+  for (int i = 0; i < num_units; i++) {
+    Military_unit tmp_unit;
+    if (!tmp_unit.load_data(data)) {
+      debugmsg("Player_city failed to load Military_unit %d/%d.",
+               i, num_units);
+      return false;
+    }
+    units_stationed.push_back(tmp_unit);
+  }
+
+  data >> radius;
+
+  for (int i = 0; i < AREA_MAX; i++) {
+    data >> area_unlocked[i];
+  }
+  for (int i = 0; i < BUILD_MAX; i++) {
+    data >> building_unlocked[i];
+  }
+
+  int num_buildings;
+  data >> num_buildings;
+  for (int i = 0; i < num_buildings; i++) {
+    Building tmp_build;
+    if (!tmp_build.load_data(data)) {
+      debugmsg("Player_city failed to load building %d/%d.", i, num_buildings);
+      return false;
+    }
+    buildings.push_back(tmp_build);
+  }
+
+  int num_bldg_queue;
+  data >> num_bldg_queue;
+  for (int i = 0; i < num_bldg_queue; i++) {
+    Building tmp_build;
+    if (!tmp_build.load_data(data)) {
+      debugmsg("Player_city failed to load queued building %d/%d.",
+               i, num_buildings);
+      return false;
+    }
+    building_queue.push_back(tmp_build);
+  }
+
+  int num_areas;
+  data >> num_areas;
+  for (int i = 0; i < num_areas; i++) {
+    Area tmp_area;
+    if (!tmp_area.load_data(data)) {
+      debugmsg("Player_city failed to load area %d/%d.", i, num_areas);
+      return false;
+    }
+    areas.push_back(tmp_area);
+  }
+
+  int num_area_queue;
+  data >> num_area_queue;
+  for (int i = 0; i < num_area_queue; i++) {
+    Area tmp_area;
+    if (!tmp_area.load_data(data)) {
+      debugmsg("Player_city failed to load area %d/%d.", i, num_areas);
+      return false;
+    }
+    areas.push_back(tmp_area);
+  }
+
+  int num_kills;
+  data >> hunt_record_days >> hunt_record_food >> num_kills;
+  for (int i = 0; i < num_kills; i++) {
+    int tmpani, tmpnum;
+    data >> tmpani >> tmpnum;
+    if (tmpani <= 0 || tmpani >= ANIMAL_MAX) {
+      debugmsg("Player_city loaded hunt_kills on animal %d (range is 1 to %d).",
+               tmpani, ANIMAL_MAX - 1);
+      return false;
+    }
+    hunt_kills[ Animal(tmpani) ] = tmpnum;
+  }
+
+  int num_messages;
+  data >> unread_messages >> show_hunting_messages >> show_livestock_messages >>
+          num_messages;
+  for (int i = 0; i < num_messages; i++) {
+    Message tmpmes;
+    if (!tmpmes.load_data(data)) {
+      debugmsg("Player_city failed to load message %d/%d.", i, num_messages);
+      return false;
+    }
+    messages.push_back(tmpmes);
+  }
+
+  if (!world_seen.load_data(data)) {
+    debugmsg("Player_city failed to load Map_seen.");
+    return false;
+  }
+
+  data >> birth_points;
+
+  for (int i = 0; i < ANIMAL_MAX; i++) {
+    int tmpact;
+    data >> tmpact;
+    if (tmpact <= 0 || tmpact >= ANIMAL_ACT_MAX) {
+      debugmsg("Player_city loaded hunting_act %d/%d; %d (range is 1 to %d).",
+               i, ANIMAL_MAX, tmpact, ANIMAL_ACT_MAX - 1);
+      return false;
+    }
+    hunting_action[i] = Animal_action(tmpact);
+  }
+
+  return true;
 }
 
 bool Player_city::place_keep()
@@ -127,9 +377,9 @@ void Player_city::set_name()
   }
 }
 
-void Player_city::start_new_city(World_map* world)
+void Player_city::start_new_city()
 {
-  City::start_new_city(world);
+  City::start_new_city();
 
   Race_datum* race_dat = Race_data[race];
 
@@ -144,6 +394,69 @@ void Player_city::start_new_city(World_map* world)
   birth_points = 0;
 
   radius = 1;
+}
+
+void Player_city::set_starting_tiles_seen()
+{
+  Kingdom* kingdom = GAME->get_kingdom_for_race(race);
+  if (!kingdom) {
+    debugmsg("No kingdom found for Player_city::set_starting_tiles_seen().");
+    return;
+  }
+// TODO: Make the bonus area vary by some property of our race?
+// TODO: Round the corners of the square this produces.
+  int bonus = 4;
+/*
+  for (int x = kingdom->most_west - bonus;
+           x <= kingdom->most_east + bonus;
+           x++) {
+    for (int y = kingdom->most_north - bonus;
+             y <= kingdom->most_south + bonus;
+             y++) {
+      world_seen.mark_seen(x, y);
+    }
+  }
+*/
+  for (int x = kingdom->most_west; x <= kingdom->most_east; x++) {
+    for (int y = kingdom->most_north; y <= kingdom->most_south; y++) {
+      int id = GAME->world->get_kingdom_id(x, y);
+      if (id == kingdom->uid) {
+        for (int mx = x - bonus; mx <= x + bonus; mx++) {
+          for (int my = y - bonus; my <= y + bonus; my++) {
+            world_seen.mark_seen(mx, my);
+          }
+        }
+      }
+    }
+  }
+
+// Go further afield, but only for oceans!
+  bonus = bonus * 10;
+  for (int x = kingdom->most_west - bonus;
+           x <= kingdom->most_east + bonus;
+           x++) {
+    for (int y = kingdom->most_north - bonus;
+             y <= kingdom->most_south + bonus;
+             y++) {
+      Map_type mt = GAME->world->get_map_type(x, y);
+      if (mt == MAP_OCEAN || mt == MAP_ICECAP) {
+        for (int mx = x - 1; mx <= x + 1; mx++) {
+          for (int my = y - 1; my <= y + 1; my++) {
+            world_seen.mark_seen(mx, my);
+          }
+        }
+      }
+    }
+  }
+}
+
+void Player_city::mark_nearby_tiles_seen(int range)
+{
+  for (int x = location.x - range; x <= location.x + range; x++) {
+    for (int y = location.y - range; y <= location.y + range; y++) {
+      world_seen.mark_seen(x, y);
+    }
+  }
 }
 
 glyph Player_city::get_glyph()
@@ -386,16 +699,18 @@ void Player_city::do_turn()
       int food_gain = num_died * animal_dat->food_killed;
       kill_animals(animal, num_died);
 // Add a message about it.
-      std::stringstream ss_mes;
-      ss_mes << num_died << " ";
-      if (num_died == 1) {
-        ss_mes << animal_dat->name << " has died naturally.  It was ";
-      } else {
-        ss_mes << animal_dat->name_plural << " have died naturally.  They " <<
-                  "were ";
+      if (show_livestock_messages) {
+        std::stringstream ss_mes;
+        ss_mes << num_died << " ";
+        if (num_died == 1) {
+          ss_mes << animal_dat->name << " has died naturally.  It was ";
+        } else {
+          ss_mes << animal_dat->name_plural << " have died naturally.  They " <<
+                    "were ";
+        }
+        ss_mes << "butchered for " << food_gain << " food.";
+        add_message(MESSAGE_MINOR, ss_mes.str());
       }
-      ss_mes << "butchered for " << food_gain << " food.";
-      add_message(MESSAGE_MINOR, ss_mes.str());
     }
 
 // Finally, check to see if any were born.
@@ -428,30 +743,32 @@ void Player_city::do_turn()
       }
 
 // Add a message.
-      std::stringstream ss_mes;
-      ss_mes << num_born << " ";
-      if (num_born == 1) {
-        ss_mes << animal_dat->name << " was born!";
-      } else {
-        ss_mes << animal_dat->name_plural << " were born!";
-      }
-      add_message(MESSAGE_MINOR, ss_mes.str());
-      if (overflow > 0) {
-        std::stringstream ss_overflow;
-        ss_overflow << overflow << " ";
-        if (overflow == 1) {
-          ss_overflow << animal_dat->name;
+      if (show_livestock_messages) {
+        std::stringstream ss_mes;
+        ss_mes << num_born << " ";
+        if (num_born == 1) {
+          ss_mes << animal_dat->name << " was born!";
         } else {
-          ss_overflow << animal_dat->name_plural;
+          ss_mes << animal_dat->name_plural << " were born!";
         }
-        ss_overflow << " had to be slaughtered to make room.",
-        add_message(MESSAGE_MAJOR, ss_overflow.str());
+        add_message(MESSAGE_MINOR, ss_mes.str());
+        if (overflow > 0) {
+          std::stringstream ss_overflow;
+          ss_overflow << overflow << " ";
+          if (overflow == 1) {
+            ss_overflow << animal_dat->name;
+          } else {
+            ss_overflow << animal_dat->name_plural;
+          }
+          ss_overflow << " had to be slaughtered to make room.",
+          add_message(MESSAGE_MAJOR, ss_overflow.str());
+        }
       }
       if (real_num_born > 0) {
         it->second += real_num_born;
       }
     } // if (num_born > 0)
-  } // Done with animals!
+  } // Done with livestock!
 
 // Produce non-food resources from our farms' crops.
   for (int i = 0; i < areas.size(); i++) {
@@ -1151,9 +1468,7 @@ void Player_city::add_message(Message_type type, std::string text, ...)
   std::string formatted_text = buff;
 
   Message new_message(type, formatted_text);
-  if (game) {
-    new_message.date = game->get_date();
-  }
+  new_message.date = GAME->get_date();
 
   unread_messages++;
   messages.push_back(new_message);

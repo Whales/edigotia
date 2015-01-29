@@ -14,6 +14,7 @@
 #include "date.h"
 #include "city_achievement.h"
 #include "city_type.h"
+#include "world.h"
 
 #include "window.h"
 #include "cuss.h"
@@ -21,6 +22,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <istream>
 
 enum Message_type
 {
@@ -40,6 +42,9 @@ struct Message
   Message(Message_type MT = MESSAGE_MINOR, std::string T = "") :
     type (MT), text (T) { }
 
+  std::string save_data();
+  bool load_data(std::istream& data);
+
   Message_type type;
   std::string text;
   Date date;
@@ -53,11 +58,17 @@ public:
 
   virtual bool is_player_city() { return true; }
 
+  virtual std::string save_data();
+  virtual bool load_data(std::istream& data);
+
 // Starting functions
   bool place_keep();
   void pick_race();
   void set_name();
-  virtual void start_new_city(World_map* world);
+  virtual void start_new_city();
+// Set our Map_seen to see all tiles in our kingdom, plus some outside.
+  void set_starting_tiles_seen();
+  void mark_nearby_tiles_seen(int range);
 
 // Display output
   glyph get_glyph();
@@ -201,7 +212,8 @@ public:
 // Misc functions
   bool meets_achievement(City_achievement achievement);
 
-// Data
+
+// *** DATA ***
   int tax_rate[CIT_MAX];
 
   std::vector<Military_unit> units_stationed;
@@ -223,12 +235,15 @@ public:
   int unread_messages;
   std::vector<Message> messages;
   bool show_hunting_messages;
+  bool show_livestock_messages;
+
+// Map_seen is defined in world.h; record of which world tiles we've seen
+  Map_seen world_seen;
 
 private:
   int birth_points; // We gain these each turn; at 100, a citizen is born.
 
   Animal_action hunting_action[ANIMAL_MAX];
-
 };
 
 

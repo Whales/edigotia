@@ -14,6 +14,7 @@
 #include "city_achievement.h" // For unlockable areas.
 #include <string>
 #include <map>
+#include <istream>
 
 class City;
 class Player_city;
@@ -81,6 +82,9 @@ struct Area_datum
 struct Area
 {
   Area(Area_type T = AREA_NULL, Point P = Point(-1, -1));
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
   void make_queued(); // Set our construction_left, etc.
   void close(City* city); // Fire all workers, set open to false, etc.

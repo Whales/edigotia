@@ -28,6 +28,21 @@ Date::Date(int _year, int _month, int _day)
   standardize();
 }
 
+std::string Date::save_data()
+{
+  std::stringstream ret;
+
+  ret << year << " " << month << " " << day;
+
+  return ret.str();
+}
+
+bool Date::load_data(std::istream& data)
+{
+  data >> year >> month >> day;
+  return true;
+}
+
 bool Date::operator==(const Date& other) const
 {
   Date left = *this;

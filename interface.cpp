@@ -185,9 +185,9 @@ bool Interface::starting_screen()
           GAME->generate_world();
           i_start.set_data("text_world_name", GAME->world->get_name());
           i_start.set_data("text_world_name", c_yellow);
-          i_start.draw(&w_start);
-          w_start.refresh();
         }
+        i_start.draw(&w_start);
+        w_start.refresh();
         break;
 
       case 'q':
@@ -907,7 +907,7 @@ void Interface::do_menu_action(Menu_id menu, int index)
     case MENU_WORLD:
       switch (index) {
         case 1: // View map
-          GAME->world->draw( GAME->city->location );
+          GAME->world->draw( GAME->city->location, &(GAME->city->world_seen) );
           break;
       }
       break;
@@ -2016,6 +2016,12 @@ void Interface::minister_livestock()
   i_livestock.set_data("num_livestock_limit",
                        GAME->city->get_livestock_capacity());
 
+  if (GAME->city->show_livestock_messages) {
+    i_livestock.set_data("text_livestock_messages", "<c=ltgreen>on<c=/>");
+  } else {
+    i_livestock.set_data("text_livestock_messages", "<c=ltblue>off<c=/>");
+  }
+
 // Start with cur_index of -1 so that when we start our loop, we'll immediately
 // populate data fields with the first item (if any).
   int cur_index = -1;
@@ -2130,6 +2136,17 @@ void Interface::minister_livestock()
           GAME->city->kill_animals(ani, num_killed);
           livestock_count[cur_index] = "0";
           total_livestock -= Animal_data[ani]->size * num_killed;
+        }
+        break;
+
+      case 'm':
+      case 'M':
+        GAME->city->show_livestock_messages =
+          !GAME->city->show_livestock_messages;
+        if (GAME->city->show_livestock_messages) {
+          i_livestock.set_data("text_livestock_messages", "<c=ltgreen>on<c=/>");
+        } else {
+          i_livestock.set_data("text_livestock_messages", "<c=ltblue>off<c=/>");
         }
         break;
 

@@ -8,6 +8,8 @@
 #include "pathfind.h" // We store several Generic_maps for different kinds of A*
 #include <vector>
 #include <map>
+#include <string>
+#include <istream>
 
 #define WORLD_MAP_SIZE 400
 
@@ -17,6 +19,26 @@ enum A_star_status
   A_STAR_NONE,
   A_STAR_OPEN,
   A_STAR_CLOSED
+};
+
+// A record of which tiles have been seen
+class Map_seen
+{
+public:
+  Map_seen();
+  ~Map_seen();
+
+  std::string save_data();
+  bool load_data(std::istream& data);
+
+  bool is_seen  (Point p);
+  bool is_seen  (int x, int y);
+
+  void mark_seen(Point p);
+  void mark_seen(int x, int y);
+
+private:
+  bool seen[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
 };
 
 class World_map
@@ -32,7 +54,7 @@ public:
 
 // Interactive; returns the point the player hits "enter" on, or (-1, -1) if
 // they hit Esc or Q
-  Point draw(Point start = Point(-1, -1));
+  Point draw(Point start = Point(-1, -1), Map_seen* seen = NULL);
 
   std::string get_name();
 

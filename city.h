@@ -20,7 +20,6 @@
 // For determining City::get_glyph() - above this uses O, below uses o
 #define CITY_POPULATION_LARGE 1000
 
-class World_map;
 
 // Return value when we attempt to enqueue an area
 enum Area_queue_status
@@ -54,10 +53,8 @@ public:
   virtual bool load_data(std::istream& data);
 
 // General-data mutators
-  void set_world_map(World_map* W);
-  virtual void start_new_city(World_map* W); // Sets up our population and more!
+  virtual void start_new_city(); // Sets up our population and more!
   void generate_map(Point loc = Point(-1, -1));
-  void set_game(Game* G);
   virtual void do_turn();
   void set_random_name();
   void set_race(Race new_race);
@@ -124,8 +121,6 @@ protected:
   std::string name;
   City_type type;
   Race race;
-  Game* game;
-  World_map* world;
 
 // Which cities are we *directly* connected to via road?
   //std::vector<City*> road_connections;

@@ -63,11 +63,13 @@ bool AI_city::load_data(std::istream& data)
 
   int tmprole;
   data >> tmprole;
-  if (tmprole <= 0 || tmprole >= CITY_ROLE_MAX) {
-    debugmsg("AI_city loaded City_role %d (range is 1 to %d).",
-             tmprole, CITY_ROLE_MAX - 1);
+  if (tmprole >= CITY_ROLE_MAX) {
+    debugmsg("AI_city %s loaded City_role %d (range is 0 to %d).",
+             name.c_str(), tmprole, CITY_ROLE_MAX - 1);
     return false;
   }
+
+  role = City_role(tmprole);
 
   data >> radius >> free_peasants;
 
@@ -77,8 +79,8 @@ bool AI_city::load_data(std::istream& data)
     int tmparea, tmpnum;
     data >> tmparea >> tmpnum;
     if (tmparea <= 0 || tmparea >= AREA_MAX) {
-      debugmsg("AI_city loaded Area %d (range is 1 to %d).",
-               tmparea, AREA_MAX - 1);
+      debugmsg("AI_city %s loaded Area %d (range is 1 to %d).",
+               name.c_str(), tmparea, AREA_MAX - 1);
       return false;
     }
     areas_built[ Area_type(tmparea) ] = tmpnum;
@@ -90,8 +92,8 @@ bool AI_city::load_data(std::istream& data)
     int tmpres, tmpnum;
     data >> tmpres >> tmpnum;
     if (tmpres <= 0 || tmpres >= RES_MAX) {
-      debugmsg("AI_city loaded resource %d (range is 1 to %d).",
-               tmpres, RES_MAX - 1);
+      debugmsg("AI_city %s loaded resource %d (range is 1 to %d).",
+               name.c_str(), tmpres, RES_MAX - 1);
       return false;
     }
     resource_production[ Resource(tmpres) ] = tmpnum;

@@ -48,7 +48,7 @@ bool Citizens::load_data(std::istream& data)
 {
   int tmptype;
   data >> tmptype;
-  if (tmptype <= 0 || tmptype >= CIT_MAX) {
+  if (tmptype >= CIT_MAX) {
     debugmsg("Citizens loaded type of %d (Range is 1 to %d)",
              tmptype, CIT_MAX - 1);
     return false;

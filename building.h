@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <istream>
 
 class City; // For use in Building::amount_built()
 
@@ -69,6 +70,9 @@ struct Recipe
 {
 // R and A combine to form a Resource_amount.
   Recipe(Resource R = RES_NULL, int A = 1);
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
   std::string get_name(); // Returns name, or the result name if name is empty
   Resource get_resource();  // Returns result.type()
@@ -160,6 +164,9 @@ struct Building
   Building();
   ~Building();
 
+  std::string save_data();
+  bool load_data(std::istream& data);
+
   void set_type(Building_type new_type);
   void make_queued(); // Prepare it for being in a building queue
   void close(City* city);
@@ -184,11 +191,11 @@ struct Building
   std::map<Resource,int> get_maintenance();
 
 // ALL-BUILDINGS DATA
+  Building_type type;
   bool open;  // If false, we can't hire workers, pay no maintenance, etc etc
   Point pos;  // Position of the area we belong to, if any.
   int construction_left;  // Days of construction remaining.
 
-  Building_type type;
   int workers;
 
 // HOUSING ONLY

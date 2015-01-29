@@ -2,6 +2,7 @@
 #define _GAME_H_
 
 #include "date.h"
+#include "race.h"
 #include <string>
 #include <vector>
 
@@ -37,6 +38,8 @@ public:
   Date get_date();
   std::string get_date_str(int length = -1);
 
+  Kingdom* get_kingdom_for_race(Race race);
+
   int get_city_uid(); // Returns next_city_uid and advances next_city_uid.
 
   World_map* world;
@@ -45,6 +48,8 @@ public:
 
 private:
   void generate_kingdoms();
+  bool save_kingdoms();
+  bool load_kingdoms();
 
   Date date;
   int next_city_uid;

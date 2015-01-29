@@ -14,6 +14,7 @@
  */
 
 #include <string>
+#include <istream>
 
 std::string month_name(int month);
 int days_in_month(int month);
@@ -26,6 +27,9 @@ public:
 
   Date(const Date& copy);
   Date(int _year, int _month, int _day);
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
   bool operator==(const Date& other) const;
   bool operator!=(const Date& other) const;

@@ -12,6 +12,89 @@ Recipe::Recipe(Resource R, int A)
   result = Resource_amount(R, A);
 }
 
+std::string Recipe::save_data()
+{
+  std::stringstream ret;
+
+// Since some names are multi-word, use ! as a terminator
+  ret << name << " ! ";
+  ret << result.type << " " << result.amount << " ";
+  ret << units_per_day << " ";
+  ret << days_per_unit << " ";
+  ret << std::endl;
+
+  ret << resource_ingredients.size() << " ";
+  for (int i = 0; i < resource_ingredients.size(); i++) {
+    ret << resource_ingredients[i].type << " " <<
+           resource_ingredients[i].amount << " ";
+  }
+  ret << std::endl;
+
+  ret << mineral_ingredients.size() << " ";
+  for (int i = 0; i < mineral_ingredients.size(); i++) {
+    ret << mineral_ingredients[i].type << " " <<
+           mineral_ingredients[i].amount << " ";
+  }
+  ret << std::endl;
+
+  return ret.str();
+}
+
+bool Recipe::load_data(std::istream& data)
+{
+  name = "";
+
+  std::string tmpstr;
+  while (tmpstr != "!") {
+    data >> tmpstr;
+    if (tmpstr != "!") {
+      if (!name.empty()) {
+        name = name + " ";
+      }
+      name = name + tmpstr;
+    }
+  }
+
+  int tmptype, tmpnum;
+  data >> tmptype >> tmpnum;
+  if (tmptype <= 0 || tmptype >= RES_MAX) {
+    debugmsg("Recipe loaded result of type %d (range is 1 to %d).",
+             tmptype, RES_MAX - 1);
+    return false;
+  }
+  result = Resource_amount( Resource(tmptype), tmpnum );
+
+  data >> units_per_day >> days_per_unit;
+
+  resource_ingredients.clear();
+  int num_res;
+  data >> num_res;
+  for (int i = 0; i < num_res; i++) {
+    data >> tmptype >> tmpnum;
+    if (tmptype <= 0 || tmptype >= RES_MAX) {
+      debugmsg("Recipe loaded res ingredient of type %d (range is 1 to %d).",
+               tmptype, RES_MAX - 1);
+      return false;
+    }
+    resource_ingredients.push_back(Resource_amount(Resource(tmptype), tmpnum));
+  }
+
+  mineral_ingredients.clear();
+  int num_min;
+  data >> num_min;
+  for (int i = 0; i < num_min; i++) {
+    data >> tmptype >> tmpnum;
+    if (tmptype <= 0 || tmptype >= MINERAL_MAX) {
+      debugmsg("Recipe loaded min ingredient of type %d (range is 1 to %d).",
+               tmptype, MINERAL_MAX - 1);
+      return false;
+    }
+    mineral_ingredients.push_back( Mineral_amount( Mineral(tmptype), tmpnum ) );
+  }
+
+  return true;
+}
+
 std::string Recipe::get_name()
 {
   if (!name.empty()) {
@@ -47,6 +130,119 @@ Building::Building()
 
 Building::~Building()
 {
+}
+
+std::string Building::save_data()
+{
+  std::stringstream ret;
+
+  ret << int(type) << " ";
+  ret << open << " ";
+  ret << pos.x << " " << pos.y << " ";
+  ret << construction_left << " ";
+  ret << workers << " ";
+
+  ret << field_output << " ";
+  ret << crops_grown.size() << " ";
+  for (int i = 0; i < crops_grown.size(); i++) {
+    ret << crops_grown[i].type << " " << crops_grown[i].amount << " ";
+  }
+  ret << std::endl;
+
+  ret << shaft_output << " ";
+  ret << minerals_mined.size() << " ";
+  for (int i = 0; i < minerals_mined.size(); i++) {
+    ret << minerals_mined[i].type << " " << minerals_mined[i].amount << " ";
+  }
+  ret << std::endl;
+
+  ret << hunter_level << " ";
+  ret << hunting_target << " ";
+  ret << hunting_action << std::endl;
+
+  ret << build_queue.size() << " ";
+  for (int i = 0; i < build_queue.size(); i++) {
+    ret << build_queue[i].recipe.save_data() << " " << build_queue[i].amount <<
+           " ";
+  }
+  ret << std::endl;
+
+  return ret.str();
+}
+
+bool Building::load_data(std::istream& data)
+{
+  int tmptype;
+  data >> tmptype;
+  if (tmptype <= 0 || tmptype >= BUILD_MAX) {
+    debugmsg("Building loaded type of %d (range is 1 to %d).",
+             tmptype, BUILD_MAX - 1);
+    return false;
+  }
+  type = Building_type(tmptype);
+
+  data >> open >> pos.x >> pos.y >> construction_left >> workers;
+
+  crops_grown.clear();
+  data >> field_output;
+  int num_crops;
+  data >> num_crops;
+  for (int i = 0; i < num_crops; i++) {
+    int tmpcrop, crop_amt;
+    data >> tmpcrop >> crop_amt;
+    if (tmpcrop <= 0 || tmpcrop >= CROP_MAX) {
+      debugmsg("Building loaded crop %d/%d; type %d (range is 1 to %d).",
+               i, num_crops, tmpcrop, CROP_MAX - 1);
+      return false;
+    }
+    crops_grown.push_back( Crop_amount( Crop(tmpcrop), crop_amt ) );
+  }
+
+  minerals_mined.clear();
+  data >> shaft_output;
+  int num_mins;
+  data >> num_mins;
+  for (int i = 0; i < num_mins; i++) {
+    int tmpmin, min_amt;
+    data >> tmpmin >> min_amt;
+    if (tmpmin <= 0 || tmpmin >= MINERAL_MAX) {
+      debugmsg("Building loaded mineral %d/%d; type %d (range is 1 to %d).",
+               i, num_mins, tmpmin, MINERAL_MAX - 1);
+      return false;
+    }
+    minerals_mined.push_back( Mineral_amount( Mineral(tmpmin), min_amt ) );
+  }
+
+  data >> hunter_level;
+  int tmptarget, tmpaction;
+  data >> tmptarget >> tmpaction;
+  if (tmptarget <= 0 || tmptarget >= ANIMAL_MAX) {
+    debugmsg("Building loaded hunting target %d (range is 1 to %d).",
+             tmptarget, ANIMAL_MAX - 1);
+    return false;
+  }
+  hunting_target = Animal(tmptarget);
+  if (tmpaction <= 0 || tmpaction >= ANIMAL_ACT_MAX) {
+    debugmsg("Building loaded hunting action %d (range is 1 to %d).",
+             tmpaction, ANIMAL_ACT_MAX - 1);
+    return false;
+  }
+  hunting_action = Animal_action(tmpaction);
+
+  int queue_size;
+  data >> queue_size;
+  for (int i = 0; i < queue_size; i++) {
+    Recipe tmp_recipe;
+    if (!tmp_recipe.load_data(data)) {
+      debugmsg("Building failed to load recipe %d/%d.", i, queue_size);
+      return false;
+    }
+    int recipe_amt;
+    data >> recipe_amt;
+    build_queue.push_back( Recipe_amount( tmp_recipe, recipe_amt ) );
+  }
+
+  return true;
 }
 
 void Building::set_type(Building_type new_type)
