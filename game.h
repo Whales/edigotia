@@ -22,10 +22,15 @@ public:
   bool start_new_game();
 // returns true if we've generated or loaded our world
   bool is_world_ready();
-// returns false if no saved world exists
+// Also loads kingdoms.  Returns false if no saved world exists
   bool load_world();
 // returns false on failure
   bool generate_world();
+
+// Saves the game data and the current city in SAVE_DIR/cities/<cityname>.sav
+  bool save_game();
+// Loads a game from the specified file
+  bool load_game(std::string filename);
 
 // Mutators
   void advance_time(int days = 1, City* city = NULL);

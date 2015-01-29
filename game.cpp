@@ -105,8 +105,7 @@ bool Game::load_world()
 
   world->load_from_file(SAVE_DIR + "world.sav");
   world_ready = true;
-  load_kingdoms();
-  return true;
+  return load_kingdoms();
 }
 
 bool Game::generate_world()
@@ -120,6 +119,55 @@ bool Game::generate_world()
   world->save_to_file(SAVE_DIR + "world.sav");
   save_kingdoms();
   world_ready = true;
+  return true;
+}
+
+bool Game::save_game()
+{
+  std::ofstream fout;
+  std::string filename = SAVE_DIR + "cities/" + city->get_name() + ".sav";
+  fout.open(filename.c_str());
+  if (!fout.is_open()) {
+    debugmsg("Couldn't open %s for writing.", filename.c_str());
+    return false;
+  }
+
+  fout << date.save_data() << " ";
+  fout << next_city_uid << " ";
+  fout << std::endl;
+  fout << city->save_data();
+
+  fout.close();
+
+  save_kingdoms();
+  world->save_to_file(SAVE_DIR + "world.txt");
+
+  return true;
+}
+
+bool Game::load_game(std::string filename)
+{
+  std::ifstream fin;
+  fin.open(filename.c_str());
+  if (!fin.is_open()) {
+    debugmsg("Couldn't open %s for reading.", filename.c_str());
+    return false;
+  }
+
+  if (!date.load_data(fin)) {
+    debugmsg("Game failed to load date.");
+    return false;
+  }
+
+  fin >> next_city_uid;
+
+  if (!city->load_data(fin)) {
+    debugmsg("Game failed to load city.");
+    return false;
+  }
+
+  load_world();
+
   return true;
 }
 
