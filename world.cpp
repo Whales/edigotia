@@ -502,6 +502,12 @@ bool World_map::save_to_file(std::string filename)
     fout << std::endl;
   }
 
+  fout << road_map.save_data() << std::endl;
+// Start at 1 cause we don't do RACE_NULL
+  for (int i = 1; i < RACE_MAX; i++) {
+    fout << travel_map[ Race(i) ].save_data() << std::endl;
+  }
+
   fout.close();
   return true;
 }
@@ -509,11 +515,13 @@ bool World_map::save_to_file(std::string filename)
 bool World_map::load_from_file(std::string filename)
 {
   if (filename.empty()) {
+    debugmsg("World_map attempted to load an empty filename.");
     return false;
   }
   std::ifstream fin;
   fin.open(filename.c_str());
   if (!fin.is_open()) {
+    debugmsg("World_map couldn't open '%s' for loading.", filename.c_str());
     return false;
   }
   std::getline(fin, name);
@@ -536,6 +544,22 @@ bool World_map::load_from_file(std::string filename)
              animals     [x][y];
       tiles[x][y] = Map_type(tmp_map_type);
     }
+  }
+
+  if (!road_map.load_data(fin)) {
+    debugmsg("World_map failed to load road_map.");
+    return false;
+  }
+
+// Start at 1 cause we don't do RACE_NULL
+  for (int i = 1; i < RACE_MAX; i++) {
+    Generic_map tmpmap;
+    if (!tmpmap.load_data(fin)) {
+      debugmsg("World_map failed to load travel_map for %s.",
+               Race_data[i]->name.c_str());
+      return false;
+    }
+    travel_map[Race(i)] = tmpmap;
   }
   fin.close();
   return true;
