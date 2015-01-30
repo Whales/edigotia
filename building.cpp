@@ -216,13 +216,13 @@ bool Building::load_data(std::istream& data)
   data >> hunter_level;
   int tmptarget, tmpaction;
   data >> tmptarget >> tmpaction;
-  if (tmptarget <= 0 || tmptarget >= ANIMAL_MAX) {
+  if (tmptarget >= ANIMAL_MAX) {
     debugmsg("Building loaded hunting target %d (range is 1 to %d).",
              tmptarget, ANIMAL_MAX - 1);
     return false;
   }
   hunting_target = Animal(tmptarget);
-  if (tmpaction <= 0 || tmpaction >= ANIMAL_ACT_MAX) {
+  if (tmpaction >= ANIMAL_ACT_MAX) {
     debugmsg("Building loaded hunting action %d (range is 1 to %d).",
              tmpaction, ANIMAL_ACT_MAX - 1);
     return false;
