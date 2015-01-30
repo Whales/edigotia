@@ -126,6 +126,9 @@ private:
 // Attempt to add current_area to the city's build queue
   void enqueue_area();
 
+// Lists all .sav files in SAVE_DIR/cities and allows the player to pick one;
+// GAME->load_game() is then called.  Returns false if we cancel.
+  bool load_game();
 
 // *** Special screens ***
 

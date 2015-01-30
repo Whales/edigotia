@@ -9,6 +9,7 @@
 #include "animal.h"
 #include "rng.h"
 #include "globals.h"
+#include "files.h"
 #include <sstream>
 #include <fstream>
 #include <cstdarg> // For the variadic function below
@@ -168,6 +169,11 @@ bool Interface::starting_screen()
       case 'l':
       case 'L':
 // Load city
+        if (load_game()) {
+          return true;
+        }
+        i_start.draw(&w_start);
+        w_start.refresh();
         break;
 
       case 'n':
@@ -857,7 +863,11 @@ void Interface::do_menu_action(Menu_id menu, int index)
     case MENU_GAME:
       switch (index) {
         case 1: // Save and quit
-          popup("Can't save yet!");
+          if (!GAME->save_game()) {
+            popup("Game could not be saved.");
+          } else {
+            game_state = GAME_QUIT;
+          }
           break;
         case 2: // Just quit
           if (query_yn("Really quit?")) {
@@ -1059,6 +1069,89 @@ void Interface::enqueue_area()
     set_mode(IMODE_VIEW_MAP);
     set_temp_info("<c=ltred>You do not have the resources to build that!<c=/>");
   }
+}
+
+bool Interface::load_game()
+{
+  cuss::interface i_load;
+  if (!i_load.load_from_file("cuss/load_game.cuss")) {
+    return false;
+  }
+
+  Window w_load(0, 0, 80, 24);
+  std::string dir = SAVE_DIR + "cities/";
+  std::vector<std::string> city_names = files_in(dir, "sav");
+
+  std::vector<Player_city*> cities;
+  for (int i = 0; i < city_names.size(); i++) {
+    std::string filename = dir + city_names[i];
+    std::ifstream fin;
+    bool failure = false;
+    fin.open(filename.c_str());
+    if (!fin.is_open()) {
+      debugmsg("Couldn't read '%s'.", filename.c_str());
+      cities.push_back(NULL);
+      failure = true;
+    } else {
+      Player_city* tmp_city = new Player_city;
+      if (!tmp_city->load_data(fin)) {
+        debugmsg("Error in %s.", filename.c_str());
+        cities.push_back(NULL);
+        failure = true;
+        delete tmp_city;
+      } else {
+        cities.push_back(tmp_city);
+      }
+    }
+    city_names[i] = city_names[i].substr(0, city_names[i].size() - 4);
+    if (failure) {
+      city_names[i] = std::string("<c=red>") + city_names[i] + " - FAIL<c=/>";
+    }
+  }
+
+  i_load.set_data("list_cities", city_names);
+
+  i_load.select("list_cities");
+  int cur_index = -1;
+  Player_city* cur_city = NULL;
+
+  while (true) {
+    int new_index = i_load.get_int("list_cities");
+    if (new_index != cur_index) {
+      cur_index = new_index;
+      cur_city = cities[cur_index];
+      i_load.set_data("text_race", Race_data[cur_city->get_race()]->name);
+      i_load.set_data("num_population", cur_city->get_total_population());
+      i_load.set_data("num_gold", cur_city->resources[RES_GOLD]);
+    }
+
+    i_load.draw(&w_load);
+    w_load.refresh();
+
+    long ch = input();
+
+    switch (ch) {
+
+      case '\n':
+        if (cur_city) {
+          GAME->city = cur_city;
+          return true;
+        }
+        break;
+
+      case KEY_ESC:
+      case 'Q':
+      case 'q':
+        return false;
+
+      default:
+        i_load.handle_keypress(ch);
+        break;
+
+    }
+  }
+// Should never reach this point
+  return false;
 }
 
 void Interface::minister_finance()
