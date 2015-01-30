@@ -16,8 +16,4 @@ std::string slurp_file(const std::string &filename);
 void chomp(std::istream& data);
 void clear_line(std::istream& data);
 
-void set_default_dirs();
-// set_dir() returns false if the directory named doesn't exist
-bool set_dir(std::string &dir, std::string name);
-
 #endif

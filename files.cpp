@@ -118,11 +118,3 @@ void clear_line(std::istream& data)
   std::getline(data, junk);
 }
 
-bool set_dir(std::string &dir, std::string name)
-{
-  if (!directory_exists(name)) {
-    return false;
-  }
-  dir = name;
-  return true;
-}
