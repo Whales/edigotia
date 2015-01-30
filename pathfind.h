@@ -3,6 +3,8 @@
 
 #include "geometry.h"
 #include <vector>
+#include <string> // For Generic_map::save_data()
+#include <istream> // For Generic_map::load_data()
 
 enum Path_type
 {
@@ -41,6 +43,9 @@ class Generic_map
 public:
   Generic_map(int x = 0, int y = 0);
   ~Generic_map();
+
+  std::string save_data();
+  bool load_data(std::istream& data);
 
 // set_size() also clears the map fully.
   void set_size(int x, int y);

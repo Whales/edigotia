@@ -3,6 +3,7 @@
 #include "window.h"
 #include <math.h>
 #include <algorithm>
+#include <sstream>    // For Generic_map::save_data()
 
 Path::Path()
 {
@@ -77,6 +78,43 @@ Generic_map::Generic_map(int x, int y)
 
 Generic_map::~Generic_map()
 {
+}
+
+std::string Generic_map::save_data()
+{
+  std::stringstream ret;
+
+  ret << get_size_x() << " ";
+  ret << get_size_y() << " ";
+  ret << x_offset << " " << y_offset << " ";
+  ret << std::endl;
+
+  for (int x = 0; x < get_size_x(); x++) {
+    for (int y = 0; y < get_size_y(); y++) {
+      ret << cost[x][y] << " ";
+    }
+  }
+
+  return ret.str();
+}
+
+bool Generic_map::load_data(std::istream& data)
+{
+  int size_x, size_y;
+  data >> size_x >> size_y;
+  data >> x_offset >> y_offset;
+
+  for (int x = 0; x < size_x; x++) {
+    std::vector<int> tmpvec;
+    for (int y = 0; y < size_y; y++) {
+      int tmpval;
+      data >> tmpval;
+      tmpvec.push_back(tmpval);
+    }
+    cost.push_back(tmpvec);
+  }
+
+  return true;
 }
 
 void Generic_map::set_size(int x, int y)
