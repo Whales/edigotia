@@ -1,0 +1,337 @@
+Overview
+  There's three levels of nobility; King, Duke, and Baron.  A King rules over a
+  realm for a specific species, and barring extenuating circumstances, there
+  will only be one King per race.  A Duke rules over a region, and owes
+  allegiance to the King.  Barons rule over their city and the surrounding lands
+  and owe allegience to their Duke.
+  Allegiance generally has costs and benefits:
+  Costs:
+    Yearly taxes.  This can either be a flat amount (500 gold per year) or a
+    percentage of the taxes you collect (10% of all taxes).
+    Military support.  This can be a quota of fit men (must send 20 men to the
+    capital each year), maintaining a regional army (you must maintain an army
+    of 500 men and assume responsibility for the area's defense), or unit-based
+    (send a battalion to the capital / to the front lines).  There is generally
+    a peactime rate (very low) and a wartime rate (very high).
+    Civics.  Your ruler may insist that you adopt certain laws or policies.
+    Diplomacy.  Your ruler may forbid you from trading with particular cities or
+    may other make other changes.
+    Specific demands.  Your ruler may make demands intermittantly depending on
+    their needs.  This can include a payment of money, a loan, a shipment of
+    food or other supplies, military support, etc.
+  Benefits:
+    Emergency aid.  If you are in severe need of food, money, or other resources
+    your ruler can generally be counted upon to give you what you need, or at
+    least loan it to you (or accept deferred payment).
+    Trading bonuses.  Trading has a lower overhead cost and you receive first
+    access to some resources.
+    Military aid.  If you are under attack or are at war with someone your ruler
+    dislikes, they will send military aid.  This may be in the form of men,
+    resources (weaponry, armor, siege weapons, etc), or outright military units.
+    Infrastructure.  Your ruler will help construct roads from your city to the
+    capital and may provide other assistance.
+
+  Your favor with your ruler is very important.  High favor means you can expect
+  more aid, your ruler will side with you in the case of disputes, your debts
+  will have lower interest or longer payment periods (or sometimes will be
+  forgiven outright), and infractions may be ignored.  Low favor will mean
+  increased tax rates, more stringent diplomatic/civic demands, stricter loan
+  payment schedules, and decreased aid.  If your favor is extremely low (usually
+  only achievable if you fail to pay taxes for several years, you do not repay
+  your loans, or you are extremely aggresive with your army), then your ruler
+  may excommunicate you from the kingdom and will generally declare war.
+
+Each race has particular variations or expectations:
+
+Humans
+  Taxes are moderate to high.  Payment may be demanded immediately, or may be
+  allowed to build up for several years, depending on the ruler.
+  Military demands vary with the area you're in.  Remote cities are usually
+  expected to guard their realm, and may be asked to send a token dispatch of a
+  few men each year.  those closer to the capital will be expected to equip and
+  donate a company each year.
+  Demands are infrequently and usually not large.  Loans are more common than
+  gifts.
+  In-fighting is discouraged, but generally a Duke or King will not get involved
+  unless the situation is drastic, or unless one of the combatants is out of
+  favor.  If the fighting goes on too long, the ruler may demand that both sides
+  stop; if one side is in poor favor with the ruler, the ruler may send armies
+  against them (particularly likely if the out-of-favor side is the aggresor).
+  Aid and loans are prevalent and generally payment is not expected quickly.
+  Civic demands may be strict.
+  Diplomacy demands are fairly lax.
+
+Elves
+  Taxes are moderately low, but payment is demanded immediately.
+  Military requests are moderate to high; Elves need to present a unified
+  kingdom and the military may be a big part of this.
+  Demands are moderate, and tend to be for food or other resources.  Gifts are
+  much more common than loans.
+  In-fighting is highly frowned upon.  Unless one side is greatly out of favor,
+  the ruler will generally demand an immediate end to hostilities, and may place
+  sanctions against the aggressor.
+  Aid is prevalent, particularly for food and other necessities.  Loans are not
+  common and are expected to be repaid quickly.
+  Military aid is swift and large-scale when the conflict is with another race.
+  Civic demands are usually strict.
+  Diplomacy demands are usually strict.
+
+Dwarves
+  Taxes are moderate.  Payment is usually expected on time or slightly late.
+  Military demands are moderate to low.
+  Demands are infrequently, and are usually for resources.  Loans are more
+  common than gifts.
+  In-fighting is accepted to a degree, and the ruler will not get involved
+  unless one side is greatly out of favor.
+  Aid is limited but loans are very common.  Repayment is moderately strict.
+  Military aid is great for defensive needs, and limited for offensive needs.
+  Civic demands are fairly lax.
+  Diplomacy demands are moderate.
+
+Orcs
+  Taxes are very low, and payment may be lax.
+  Military demands are usually nil.  Orcs see it as the supreme weakness to ask
+  another for military aid, so they will not ask you for any troops unless they
+  are in dire need (at which point their dynasty is probably on the way out, so
+  it's safe to refuse - probably better to attack them yourself).
+  Demands vary on power.  Weak leaders will be expected to give frequent gifts,
+  to prove their worth.  The powerful are also expected to give gifts or at
+  least loans, to demonstrate their devotion to their ruler.
+  In-fighting is expected; any city which does NOT at least periodically attack
+  a neighbor is perceived as weak and will lose favor with their ruler.  Rulers
+  completely ignore in-fighting, unless one side is getting strong enough to
+  challenge their ruler, in which case they will aid the weaker side.
+  Aid is almost non-existant.  Loans are generally small and repayment is lax.
+  Military aid is given when needed, but requiring aid is perceived as a sign of
+  weakness and will result in lost favor.
+  Civic demands are virtually non-existant.
+  Diplomacy demands are also almost non-existant, except that rulers may demand
+  their subjects declare war on an enemy quite frequently.
+
+Goblins
+  Taxes are low but payment is expected on time.
+  Military requests may be high; requests for spies are more common.
+  Gifts are asked for as need dictates; loans are more common than gifts.
+  In-fighting is expected and generally ignored by rulers.
+  Aid is low; loans are more common and repayment is somewhat lax.
+  Military aid is moderate.  Aid for an attack tends to be larger than aid for
+  defense.
+  Civic demands are almost non-existant.
+  Diplomacy demands are moderate.  Rulers may ask that a given city send spies
+  against a enighbor close to them.
+
+Kobolds
+  Taxes are low and payment may be lax.
+  Military requests are low.
+  Gifts are rarely asked for.
+  In-fighting is expected and generally ignored.
+  Aid is almost non-existant; loans are generally small.
+  Military aid is limited.  Kobolds are expected to avoid conflicts they can't
+  win on their own.
+  Civic demands are generally fairly low.
+  Diplomacy demands are moderate; kobolds are generally forbidden from declaring
+  war on stronger enemies.
+
+Ogres
+  Taxes are low to moderate, and payment may be late.
+  Military requests are low.
+  Gifts are asked for as demand dictates; gifts and loans are equally common.
+  In-fighting is frowned upon.  Rulers will frequently send troops to aid the
+  defending party, unless the attacker has much better favor.
+  Aid is given freely as needed, but is more frequently given as a loan than as
+  a gift.  Repayment is not expected immediately.
+  Military aid is given swiftly if needed for defense.  Military aid for
+  offivensive needs is less frequently given.
+  Civic demands are fairly low.
+  Diplomacy demands are moderate; frequently rulers will ask that their subjects
+  refrain from delcaring war.
+
+Trolls
+  Taxes are almost non-existent, and may be paid late; they are frequently
+  forgiven entirely.
+  Military requests are very low.
+  Gifts are asked for frequently, and tend to be for food.  Gifts are almost
+  never repaid.
+  In-fighting is generally ignored.  If one side is in very poor favor with the
+  ruler troops will be sent against them.
+  Aid is rarely given and is expected to be repaid.
+  Military aid is moderate, and given equally for defensive and offensive
+  purposes.
+  Civic demands are non-existent.
+  Diplomacy demands are rare; usually subjects are asked to declare war on an
+  enemy.
+
+Naga
+  Taxes are moderate to high.  Collection may be lenient but anything beyond two
+  years is rare.
+  Military requests are moderate.
+  Gifts are asked for frequently, as are loans.
+  In-fighting is accepted to a degree; if one side is in much worse favor than
+  the other, the ruler will send aid.
+  Aid is given frequently, more often in the form of a loan.
+  Military aid is swift and strong, particularly in the case of defensive needs.
+  Civic demands are moderate to high.
+  Diplomacy demands are moderate to high.
+
+Gnomes
+  Taxes are high.  Collection is fairly strict.
+  Military requests are very high in central areas or when needs are high; but
+  otherwise very low.
+  Gifts are rare, but requests for loans are very common.  Repayment is usually
+  prompt.
+  In-fighting is strongly frowned upon.  The aggressor is usually seen as in the
+  wrong (unless favor is strongly on their side) and will be told to stop once;
+  after that, troops will be sent against them.
+  Aid is given frequently, but is almost always in the form of a loan.  Timely
+  repayment is expected.
+  Military aid is limited, or moderate in the case of defensive needs.  Monetary
+  aid is more common.
+  Civic demands are moderate, but rulers are forgiving of transgressions.
+  Diplomacy demands are moderate to high, and tend to be in the form of trade
+  agreements or embargoes.
+
+Avians
+  Taxes are very low, though collection is expected to be prompt.
+  Military requests are high; usually you are expected to send equipped
+  companies on a regular basis.
+  Gifts are regularly requested, both free and in the form of loans.
+  In-fighting is expected to a degree, and rulers will generally not get
+  involved unless it goes on for too long or one side is strongly out of favor.
+  Aid is given freely when requested, usually in the form of a gift.
+  Military aid is swift, both of offensive and defensive needs.  Repayment of
+  some form is expected.
+  Civic demands are almost nil, but when they're made they are expected to be
+  followed.
+  Diplomacy demands are common, particularly for peace/war agreements.
+
+Minotaur
+  Taxes are low to moderate, and payment is expected on time.
+  Military requests are moderate; equipped or unequipped units are fine.
+  Gifts are regularly requested, both free and in the form of loans.
+  In-fighting is frowned upon but tolerated  The aggressor is usually asked to
+  stop, and face penalties like trade limitations or increased taxes.  If the
+  aggression continues, swift and severe military might will be used.
+  Aid is given frequently, usually in the form of a loan.
+  Military aid is strong, but almost always only for defensive needs; Minotaurs
+  generally frown upon aggression but treat incursions into their territory very
+  seriously.
+  Civic demands are moderate but not particularly expected to be followed.
+  Diplomacy demands are common, of all kinds.
+
+Halfling
+  Taxes are moderate to high, and payment may be slightly late but not very.
+  Military requests are practically non-existant, but will be requested in large
+  numbers if the kingdom is at war.
+  Gifts are requested when needed, and appreciately greatly; loans are requested
+  when needed as well.
+  In-fighting is strongly frowned upon.  Aggressors face penalties like trade
+  limitations or increased taxes; only when they're close to defeating another
+  city entirely will military force be used, and even then it is with
+  reluctance.
+  Aid is given frequently; gifts are very taxing on your favor level, but loans
+  are fine so long as they're repaid promptly.
+  Military aid is very limited, and only given in cases of defense.  Even then,
+  it will be very slight.
+  Civic demands are moderate to high, and tend to be for "moral" reasons.
+  Diplomacy demands are moderate to high.
+
+Apiads
+  Taxes are very high, almost to the point of depleting all excess resources.
+  Payment must be prompt.
+  Military requests are moderate during peacetime, and very high during wartime.
+  Gifts are rarely requested; the high tax rate is generally enough.  Loans are
+  almost unheard of.
+  In-fighting is not tolerated.  Any city that attacks another is considered an
+  enemy, regardless of favor, and will be dealt with swiftly.  However, it is
+  possible to ask your ruler for permission to attack a fellow city; if your
+  favor is sufficiently high (and theirs sufficiently low) it may be permitted.
+  Aid is given frequently, and cities are expected to ask for what they need.
+  Several gifts are "free," after that you'll start incurring favor penalties
+  which rack up quickly.  A city that requests too much is a drain on the empire
+  as a whole, and will lose favor.  Loans may be given in place of gifts after
+  the "free" gifts are exhausted.
+  Military aid is given freely, more so for defensive needs than offensive ones.
+  Civic demands are moderate to high; infractions are not tolerated and result
+  in severe loss of favor.
+  Diplomacy demands are moderate to high, and similarly infractions are not
+  tolerated.
+
+Formicants
+  Taxes are moderate/low; Formicants place greatly emphasis on self-reliance.
+  Payment is, however, expected on time.
+  Military requests are moderate to high; the Royal Army is generally well-
+  equipped.
+  Gifts are requested frequently, whether as outright gifts or as loans.
+  In-fighting is tolerated.  If a war goes on for too long, or is showing signs
+  of great detriment to both sides, the ruler may make a ruling declaring one
+  side or the other to be out of order, and place penalties on them.
+  Aid is given frequently, whether as gifts or as loans.
+  Military aid is given in high force when needed, whether for defensive or
+  offensive purposes.
+  Civic demands are moderate to high; infractions are not tolerated and result
+  in severe loss of favor.
+  Diplomacy demands are moderate to high, and similarly infractions are not
+  tolerated.
+
+Arachnids
+  Taxes are low.  Payment may be very late.
+  Military requests are fairly low; a few token unequipped individuals per year
+  will suffice.
+  Gifts are rarely requested, and usually as a loan.
+  In-fighting is generally ignored, except when one side has very poor favor, in
+  which case the other side may be given support (financial or military).
+  Aid is given rarely, more often as a loan than as a gift.
+  Military aid is given only when needed for defensive purposes.
+  Civic demands are almost non-existent, and infractions are tolerated.
+  Diplomacy demands are moderate, but infractions are tolerated.
+
+Golems
+  Taxes are moderate, and usually commiserate with a town's means (i.e., taxes
+  are a percentage, not a flat rate).  Payment is expected on time.
+  Military requests are moderate; generally a squad of golems each year will be
+  requested.
+  Gifts are almost never requested; in times of need, a loan will be.  Interest
+  is not paid; loans are given back exactly as they came.
+  In-fighting is not tolerated.  The ruler will generally send military aid to
+  whichever side is in better favor.  Starting a war, even if your opponent is
+  in poor favor, will cost you favor.
+  Aid is given rarely, and alays as a loan.  Interest is generally requested in
+  small amounts.
+  Military aid is given, usually in whatever amount is requested.  However, if
+  too large an amount is requested, favor will be lost.
+  Civic demands are almost non-existent.
+  Diplomacy demands are common and strongly enforced.
+
+Gargoyles
+  Taxes are moderate/low and payment may be late by a few years.
+  Military requests are fairly low; in wartime they will increase.
+  Gifts are requested infrequently, and turning them down will usually not hurt
+  your favor.  Loans are a little more common.
+  In-fighting is tolerated; if one side is greatly out of favor, defensive
+  troops will be provided to the other side.
+  Aid is given infrequently, and more often as a loan.
+  Military aid is given in moderate amounts if needed.
+  Civic demands are very low, and infractions are tolerated.
+  Diplomatic demands are rare, but expected to be followed.
+
+Rakshasa
+  Taxes are very high, and payment cannot be very late.  Social standing and
+  rank are very important to Rakshasa, and it's expected that those of a lower
+  standing will support those of a higher standing.
+  Military requests are usually nonexistent in peacetime; some troops may be
+  requested during war.
+  Gifts are requested frequently and to decline to give will hurt your favor
+  greatly.  Loans are rarely asked for.
+  In-fighting is frowned upon; the aggressor will usually be told to stop and
+  will lose favor in great amounts.
+  Aid is given infrequently.  It is not for the higher classes to support those
+  who are beneath them.  Loans are much more common, with high interest rates.
+  Military aid is given in strong numbers; Rakshasa consider cities in their
+  domain to be their property, and will defend them viciously.
+  Civic demands are moderate to high, depending on the ruler.
+  Diplomatic demands are moderate to high, and tend to be demands to enslave a
+  given city.  Failure to obey results in a great loss of favor.
+
+Lizardmen
+  Taxes are moderate, and may be late by a year or so before offense is taken.
+  Military requests are moderate to high.
