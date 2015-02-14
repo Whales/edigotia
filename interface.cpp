@@ -686,7 +686,7 @@ void Interface::print_data()
       for (int i = 0; i < RES_MAX || i < MINERAL_MAX; i++) {
         if (i < RES_MAX) {
           Resource res = Resource(i);
-          if (!resource_is_meta(res) &&
+          if (!Resource_data[res]->meta &&
               GAME->city->get_resource_amount(res) > 0) {
             resource_list.push_back(res);
           }
@@ -702,10 +702,10 @@ void Interface::print_data()
       for (int i = 0; i < resource_list.size() || i < mineral_list.size(); i++){
         if (i < resource_list.size()) {
           Resource res = resource_list[i];
-          std::string res_name = capitalize( resource_name(res) );
+          std::string res_name = capitalize( Resource_data[res]->name );
           int amount = GAME->city->get_resource_amount(res);
 // Colorize it
-          ss_data << "<c=" << color_tag( resource_color(res) ) << ">";
+          ss_data << "<c=" << color_tag( Resource_data[res]->color ) << ">";
           ss_data << res_name << "<c=/>:";
 // Insert spaces for alignment.  length() + 1 because of the :
           for (int n = 0; n < 15 - (res_name.length() + 1); n++) {
@@ -1865,7 +1865,7 @@ void Interface::minister_hunt()
         for (int i = 0; i < animal_dat->resources_killed.size(); i++) {
           std::stringstream ss_res;
           Resource_amount res = animal_dat->resources_killed[i];
-          res_killed << resource_name(res.type) << " x " << res.amount;
+          res_killed << Resource_data[res.type]->name << " x " << res.amount;
         }
         i_hunt.set_data("text_resources_killed", res_killed.str());
       }
@@ -1885,7 +1885,7 @@ void Interface::minister_hunt()
       } else {
         for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
           Resource_amount res = animal_dat->resources_livestock[i];
-          res_livestock << resource_name(res.type) << " x " <<
+          res_livestock << Resource_data[res.type]->name << " x " <<
                            move_decimal(res.amount, 2);
           i_hunt.set_data("text_resources_livestock", res_livestock.str());
         }
@@ -2145,7 +2145,7 @@ void Interface::minister_livestock()
         for (int i = 0; i < ani_dat->resources_killed.size(); i++) {
           std::stringstream ss_res;
           Resource_amount res = ani_dat->resources_killed[i];
-          res_killed << resource_name(res.type) << " x " << res.amount;
+          res_killed << Resource_data[res.type]->name << " x " << res.amount;
         }
         i_livestock.set_data("text_resources_killed", res_killed.str());
       }
@@ -2169,7 +2169,7 @@ void Interface::minister_livestock()
       } else {
         for (int i = 0; i < ani_dat->resources_livestock.size(); i++) {
           Resource_amount res = ani_dat->resources_livestock[i];
-          res_livestock << resource_name(res.type) << " x " <<
+          res_livestock << Resource_data[res.type]->name << " x " <<
                            move_decimal(res.amount, 2);
           i_livestock.set_data("text_resources_daily", res_livestock.str());
         }
@@ -2805,8 +2805,8 @@ void Interface::building_status()
           Resource_amount res_amt = bldg_dat->production[i];
           std::stringstream production_ss;
           production_ss << "<c=ltgray>" <<
-                           capitalize( resource_name(res_amt.type) ) << " x " <<
-                           res_amt.amount << "<c=/>";
+                           capitalize( Resource_data[res_amt.type]->name ) <<
+                           " x " << res_amt.amount << "<c=/>";
           production_list.push_back( production_ss.str() );
         }
         i_buildings.set_data("list_benefits", production_list);
@@ -3227,7 +3227,7 @@ void Interface::build_building()
                 Resource res = bldg_dat->build_costs[i].type;
                 int amount   = bldg_dat->build_costs[i].amount;
                 int city_amount = GAME->city->get_resource_amount(res);
-                ss_popup << capitalize( resource_name( res ) ) << ": " <<
+                ss_popup << capitalize( Resource_data[res]->name ) << ": " <<
                             amount << " (You: ";
                 if (city_amount < amount) {
                   ss_popup << "<c=red>";  // This is why we can't build this!
@@ -3655,7 +3655,7 @@ bool Interface::pick_recipe(Building* cur_bldg, Recipe_amount& new_recipe)
         Resource ing_type = rec.resource_ingredients[n].type;
         int ing_amount    = rec.resource_ingredients[n].amount;
         ss_components << ing_amount << " x " <<
-                         capitalize( resource_name( ing_type ) ) <<
+                         capitalize( Resource_data[ing_type]->name ) <<
                          std::endl;
       }
       for (int n = 0; n < rec.mineral_ingredients.size(); n++) {

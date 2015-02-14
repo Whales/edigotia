@@ -311,7 +311,7 @@ std::string AI_city::list_production()
        it++) {
     Resource res = it->first;
     int amount = it->second;
-    ret << resource_name(res) << ": " << amount << std::endl;
+    ret << Resource_data[res]->name << ": " << amount << std::endl;
   }
   for (std::map<Mineral,int>::iterator it = mineral_production.begin();
        it != mineral_production.end();

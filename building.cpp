@@ -102,7 +102,7 @@ std::string Recipe::get_name()
   }
 
   Resource res = get_resource();
-  return resource_name( res );
+  return Resource_data[ res ]->name;
 }
 
 Resource Recipe::get_resource()
@@ -541,7 +541,7 @@ std::string Building_datum::get_short_description()
   if (!build_costs.empty()) {
     ret << "<c=yellow>Build cost: ";
     for (int i = 0; i < build_costs.size(); i++) {
-      ret << resource_name( build_costs[i].type ) << " x " <<
+      ret << Resource_data[ build_costs[i].type ]->name << " x " <<
              build_costs[i].amount;
       if (i + 1 < build_costs.size()) {
         ret << ", ";
@@ -553,7 +553,7 @@ std::string Building_datum::get_short_description()
   if (!maintenance_cost.empty()) {
     ret << "<c=ltred>Maintenance cost: ";
     for (int i = 0; i < maintenance_cost.size(); i++) {
-      ret << resource_name( maintenance_cost[i].type ) << " x " <<
+      ret << Resource_data[ maintenance_cost[i].type ]->name << " x " <<
              maintenance_cost[i].amount;
       if (i + 1 < maintenance_cost.size()) {
         ret << ", ";
@@ -576,7 +576,7 @@ std::string Building_datum::get_short_description()
     if (!production.empty()) {
       ret << "<c=ltgreen>Each worker produces: ";
       for (int i = 0; i < production.size(); i++) {
-        ret << resource_name( production[i].type ) << " x " <<
+        ret << Resource_data[ production[i].type ]->name << " x " <<
                production[i].amount;
         if (i + 1 < production.size()) {
           ret << ", ";
@@ -589,7 +589,7 @@ std::string Building_datum::get_short_description()
   if (!recipes.empty()) {
     ret << "<c=ltblue>Constructs: ";
     for (int i = 0; i < recipes.size(); i++) {
-      ret << resource_name( recipes[i].get_resource() );
+      ret << Resource_data[ recipes[i].get_resource() ]->name;
       if (i + 1 < recipes.size()) {
         ret << ", ";
       }
@@ -666,15 +666,15 @@ bool Building_datum::add_production(Resource type, int amount)
 {
   if (amount == INFINITE_RESOURCE) {
     debugmsg("%s produces infinite %s - this is invalid.",
-             name.c_str(), resource_name(type).c_str());
+             name.c_str(), Resource_data[type]->name.c_str());
     return false;
   } else if (amount == 0) {
     debugmsg("%s produces zero %s - this is invalid.",
-             name.c_str(), resource_name(type).c_str());
+             name.c_str(), Resource_data[type]->name.c_str());
     return false;
   } else if (amount < 0) {
     debugmsg("%s produces negative %s - this is invalid.",
-             name.c_str(), resource_name(type).c_str());
+             name.c_str(), Resource_data[type]->name.c_str());
     return false;
   }
 

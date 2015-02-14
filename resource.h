@@ -47,9 +47,13 @@ enum Resource
 };
 
 Resource lookup_resource(std::string name);
-std::string resource_name(Resource res);
-nc_color resource_color(Resource res);
-bool resource_is_meta(Resource res);  // Returns true for farming, mining, etc
+
+struct Resource_datum
+{
+  std::string name;
+  nc_color color;
+  bool meta;  // True if it's not real; farming, mining, etc
+};
 
 struct Resource_amount
 {
@@ -203,8 +207,9 @@ std::string mineral_amount_ranking(Mineral_amount min_amt);
 std::string trees_amount_ranking(int wood);
 
 // Defined in resource_data.cpp
-extern Crop_datum*    Crop_data   [CROP_MAX];
-extern Mineral_datum* Mineral_data[MINERAL_MAX];
-void init_crop_and_mineral_data();
+extern Resource_datum*  Resource_data [RES_MAX];
+extern Crop_datum*      Crop_data     [CROP_MAX];
+extern Mineral_datum*   Mineral_data  [MINERAL_MAX];
+void init_resource_data();
 
 #endif

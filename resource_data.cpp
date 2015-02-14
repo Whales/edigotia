@@ -1,7 +1,17 @@
 #include "resource.h"
 
-Crop_datum*     Crop_data   [CROP_MAX];
-Mineral_datum*  Mineral_data[MINERAL_MAX];
+Resource_datum* Resource_data [RES_MAX];
+Crop_datum*     Crop_data     [CROP_MAX];
+Mineral_datum*  Mineral_data  [MINERAL_MAX];
+
+#define _resource(n) \
+  cur_id = (n)
+#define _rname(s) \
+  Resource_data[cur_id]->name = (s)
+#define _rcolor(c) \
+  Resource_data[cur_id]->color = (c)
+#define _meta() \
+  Resource_data[cur_id]->meta = true
 
 #define _crop(n) \
   cur_id = (n)
@@ -30,8 +40,11 @@ Mineral_datum*  Mineral_data[MINERAL_MAX];
   Mineral_data[cur_id]->hidden = true
 
 
-void init_crop_and_mineral_data()
+void init_resource_data()
 {
+  for (int i = 0; i < RES_MAX; i++) {
+    Resource_data[i] = new Resource_datum();
+  }
   for (int i = 0; i < CROP_MAX; i++) {
     Crop_data[i] = new Crop_datum();
   }
@@ -39,10 +52,66 @@ void init_crop_and_mineral_data()
     Mineral_data[i] = new Mineral_datum();
   }
 
-// _food() is per 100 units of the crop!
 
   int cur_id = 0;
 
+  _resource(RES_NULL);
+    _rname("any resource");
+    _rcolor(c_dkgray);
+
+  _resource(RES_GOLD);
+    _rname("gold");
+    _rcolor(c_yellow);
+
+  _resource(RES_FOOD);
+    _rname("food");
+    _rcolor(c_green);
+
+  _resource(RES_WOOD);
+    _rname("wood");
+    _rcolor(c_ltred);
+
+  _resource(RES_STONE);
+    _rname("stone");
+    _rcolor(c_ltgray);
+
+  _resource(RES_FIBER);
+    _rname("fiber");
+    _rcolor(c_ltgray);
+
+  _resource(RES_FUR);
+    _rname("fur");
+    _rcolor(c_brown);
+
+  _resource(RES_LEATHER);
+    _rname("leather");
+    _rcolor(c_brown);
+
+  _resource(RES_UNICORN_HORN);
+    _rname("unicorn horn");
+    _rcolor(c_pink);
+
+  _resource(RES_FARMING);
+    _rname("farming");
+    _rcolor(c_magenta);
+    _meta();
+
+  _resource(RES_MINING);
+    _rname("mining");
+    _rcolor(c_magenta);
+    _meta();
+
+  _resource(RES_HUNTING);
+    _rname("hunting");
+    _rcolor(c_magenta);
+    _meta();
+
+  _resource(RES_LOGGING);
+    _rname("logging");
+    _rcolor(c_magenta);
+    _meta();
+
+// _food() is per 100 units of the crop!
   _crop(CROP_NULL);
     _cname("any crop");
 
