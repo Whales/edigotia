@@ -1,4 +1,5 @@
 #include "citizen.h"
+#include "city.h"
 #include "stringfunc.h"
 #include "rng.h"
 #include "window.h"     // For debugmsg()
@@ -84,20 +85,6 @@ bool Citizens::load_data(std::istream& data)
   return true;
 }
 
-
-void Citizens::reset()
-{
-  count         = 0;
-  wealth        = 0;
-  employed      = 0;
-  tax_morale    = 0;
-  starvation    = 0;
-  morale_points = 0;
-
-  possessions.clear();
-  morale_modifiers.clear();
-}
-
 int Citizens::get_unemployed()
 {
   if (employed >= count) {
@@ -132,11 +119,18 @@ int Citizens::get_morale_percentage()
   for (int i = 0; i < RES_MAX; i++) {
     Resource res = Resource(i);
     Resource_datum* res_dat = Resource_data[res];
-    int demand = (res_dat->demand * count) / 100;
-    if (possessions.count(res) >= demand) {
-      ret += res_dat->morale;
+    int res_demand = (res_dat->demand * count) / 100;
+    int res_morale = res_dat->morale;
+// If this luxury is not the one we want, then it only gives 10% the morale!
+    Luxury_type lux_type = res_dat->luxury_type;
+    if (lux_type != LUX_NULL && luxury_demands[lux_type] != res) {
+      res_morale /= 10;
+    }
+    if (possessions.count(res) >= res_demand) {
+      ret += res_morale;
     } else if (possessions.count(res) > 0) {
-      ret += (res_dat->morale * possessions.count(res)) / (2 * demand);
+// If we don't meet demand, give up to 50% of the morale
+      ret += (res_morale * possessions.count(res)) / (2 * res_demand);
     }
   }
   return ret;
@@ -186,6 +180,71 @@ std::vector<int> Citizens::get_morale_mod_amounts()
     ret.push_back( morale_modifiers[i].amount / 10 );
   }
   return ret;
+}
+
+void Citizens::reset()
+{
+  count         = 0;
+  wealth        = 0;
+  employed      = 0;
+  tax_morale    = 0;
+  starvation    = 0;
+  morale_points = 0;
+
+  possessions.clear();
+  morale_modifiers.clear();
+}
+
+void Citizens::pick_luxuries(City* city)
+{
+  if (!city) {
+    debugmsg("Citizens::pick_luxuries(NULL) called!");
+    return;
+  }
+
+// Start at 1 to skip LUX_NULL
+  for (int i = 1; i < LUX_MAX; i++) {
+    Luxury_type lux_type = Luxury_type(i);
+    std::map<Resource,int> luxuries = city->get_luxuries(lux_type);
+
+    if (!luxuries.empty()) {
+// A list of chances to set our chosen luxury to each resource
+      int chance[RES_MAX];
+      int total_chance = 0;
+      for (int n = 0; n < RES_MAX; n++) {
+        Resource res = Resource(n);
+        chance[n] = luxuries[res];
+        total_chance += luxuries[res];
+      }
+      bool change = (total_chance > 0); // Only re-roll if chance == true
+// If luxury_demands is already set, there's a strong chance to set change to
+// false, unless the availability of other resources is much higher.
+      if (change && luxury_demands[lux_type] != RES_NULL) {
+        Resource current = luxury_demands[lux_type];
+/* So if the currently-demanded resource is half of the available resources,
+ * we only change 1 in 275 rolls; if it's only 1% of the available resources,
+ * we change 1 in 30 rolls.  We include "25 +" so that even if the currently-
+ * demanded resource is unavailable, we only change 1 in 25 rolls.
+ */
+        if (!one_in(25 + 500 * (chance[current] / total_chance))) {
+          change = false;
+        }
+      }
+
+      if (change) { // Pick a new luxury to demand!  Probably!
+        int roll = rng(1, total_chance);
+        for (int n = 0; roll > 0 && n < RES_MAX; n++) {
+          roll -= chance[n];
+          if (roll <= 0) {
+            luxury_demands[lux_type] = Resource(n);
+          }
+        }
+      }
+
+    } // if (!luxuries.empty())
+
+  } // for (int i = 1; i < LUX_MAX; i++)
+
 }
 
 void Citizens::decrease_morale_mods()
