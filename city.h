@@ -71,6 +71,10 @@ public:
   Race get_race();
 
 // Resource-related functions
+
+// Returns all resources we own with the given Luxury_type.
+  std::map<Resource,int> get_luxuries(Luxury_type type);
+
   int get_resource_amount(Resource res);
   int get_mineral_amount (Mineral  min);
   int get_food_cap();         // Returns get_food_consumption() * 10 (days)

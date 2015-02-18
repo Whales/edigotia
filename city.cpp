@@ -336,6 +336,19 @@ Race City::get_race()
   return race;
 }
 
+std::map<Resource,int> City::get_luxuries(Luxury_type type)
+{
+  std::map<Resource,int> ret;
+
+  for (int i = 0; i < RES_MAX; i++) {
+    if (resources[i] > 1 && Resource_data[i]->luxury_type == type) {
+      ret[ Resource(i) ] = resources[i];
+    }
+  }
+
+  return ret;
+}
+
 int City::get_resource_amount(Resource res)
 {
   return resources[res];
