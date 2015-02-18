@@ -1977,10 +1977,10 @@ void Player_city::set_tax_rate(Citizen_type type, int rate)
 // morale penalty.
   int low_rate = get_low_tax_rate(type), high_rate = get_high_tax_rate(type);
 // Set tax_morale of the relevant population;
-  if (rate < low_rate) {  // More than 20
-    population[type].tax_morale = 20 + low_rate - rate;
-  } else if (rate > high_rate) {  // Always -20, ouch!
-    population[type].tax_morale = -20;
+  if (rate < low_rate) {  // More than 25
+    population[type].tax_morale = 25 + low_rate - rate;
+  } else if (rate > high_rate) {  // Always -25, ouch!
+    population[type].tax_morale = -25;
   } else {  // Between 0 and 20
     population[type].tax_morale = 20 - (20 * (rate - low_rate)) / high_rate;
   }
