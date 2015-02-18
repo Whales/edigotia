@@ -37,6 +37,17 @@ enum Resource
 // Rare/monster resources
   RES_UNICORN_HORN,
 
+// Luxuries - these impart morale
+  RES_CLOTHING,
+  RES_FUR_COATS,
+  RES_LEATHER_COATS,
+  RES_FURNITURE,
+  RES_WOOD_HOUSEWARES,
+  RES_TIN_HOUSEWARES,
+  RES_COPPER_HOUSEWARES,
+  RES_IRON_HOUSEWARES,
+  RES_JEWELRY,
+
 // Meta-resources
   RES_FARMING,  // Can be any available crop
   RES_MINING,   // Available minerals, decided by the terrain
@@ -48,10 +59,27 @@ enum Resource
 
 Resource lookup_resource(std::string name);
 
+enum Luxury_type
+{
+  LUX_NULL = 0, // A valid option, if it's a unique luxury
+
+  LUX_COATS,
+  LUX_HOUSEWARES,
+
+  LUX_MAX
+};
+
 struct Resource_datum
 {
+  Resource_datum(std::string N = "", nc_color C = c_white, int D = 0, int M = 0,
+                 Luxury_type L = LUX_NULL, bool MT = false) :
+    name (N), color (C), demand (D), morale (M), luxury_type (L), meta (MT) { }
+
   std::string name;
   nc_color color;
+  int demand; // Standard demand each turn per 100 citizens
+  int morale; // Morale boost when the demand is met
+  Luxury_type luxury_type;
   bool meta;  // True if it's not real; farming, mining, etc
 };
 

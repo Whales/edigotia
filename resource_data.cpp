@@ -10,6 +10,12 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
   Resource_data[cur_id]->name = (s)
 #define _rcolor(c) \
   Resource_data[cur_id]->color = (c)
+#define _luxury(t) \
+  Resource_data[cur_id]->luxury_type = (t)
+#define _demand(n) \
+  Resource_data[cur_id]->demand = (n)
+#define _morale(n) \
+  Resource_data[cur_id]->morale = (n)
 #define _meta() \
   Resource_data[cur_id]->meta = true
 
@@ -90,6 +96,66 @@ void init_resource_data()
   _resource(RES_UNICORN_HORN);
     _rname("unicorn horn");
     _rcolor(c_pink);
+
+  _resource(RES_CLOTHING);
+    _rname("clothing");
+    _rcolor(c_white);
+    _demand(15);
+    _morale(10);
+
+  _resource(RES_FUR_COATS);
+    _rname("fur coats");
+    _rcolor(c_brown);
+    _luxury(LUX_COATS);
+    _demand(10);
+    _morale(15);
+
+  _resource(RES_LEATHER_COATS);
+    _rname("leather coats");
+    _rcolor(c_brown);
+    _luxury(LUX_COATS);
+    _demand(10);
+    _morale(15);
+
+  _resource(RES_FURNITURE);
+    _rname("furniture");
+    _rcolor(c_ltred);
+    _demand(8);
+    _morale(10);
+
+  _resource(RES_WOOD_HOUSEWARES);
+    _rname("wood housewares");
+    _rcolor(c_ltred);
+    _luxury(LUX_HOUSEWARES);
+    _demand(10);
+    _morale(5);
+
+  _resource(RES_TIN_HOUSEWARES);
+    _rname("tin housewares");
+    _rcolor(c_ltcyan);
+    _luxury(LUX_HOUSEWARES);
+    _demand(10);
+    _morale(6);
+
+  _resource(RES_COPPER_HOUSEWARES);
+    _rname("copper housewares");
+    _rcolor(c_ltred);
+    _luxury(LUX_HOUSEWARES);
+    _demand(10);
+    _morale(7);
+
+  _resource(RES_IRON_HOUSEWARES);
+    _rname("iron housewares");
+    _rcolor(c_cyan);
+    _luxury(LUX_HOUSEWARES);
+    _demand(10);
+    _morale(8);
+
+  _resource(RES_JEWELRY);
+    _rname("jewelry");
+    _rcolor(c_magenta);
+    _demand(5);
+    _morale(15);
 
   _resource(RES_FARMING);
     _rname("farming");
