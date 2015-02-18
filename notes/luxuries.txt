@@ -1,0 +1,14 @@
+Luxuries are resources that impart morale.
+
+Each citizen class demands a certain level of a selection of resources.  The
+"normal" level of demand is set in the resource's data; some items (like cigars)
+are consumed quickly and thus a large quantity are demanded each turn, while
+others (like furniture) are consumed slowly and only a small quantity are
+demanded each turn.
+
+If the demand is met, then that citizen class gets a morale boost (also set in
+the resource's data).  If we have some resources, but not enough to meet the
+demand, then we get a small portion of the morale; the equation is:
+(Resource.morale * 0.5 * resources_provided) / Resource.demand
+Thus, if we provide 50% of the demanded level, we get 25% of the morale.
+If we provide more than is demanded, there is no extra bonus.
