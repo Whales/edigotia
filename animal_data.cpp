@@ -201,7 +201,7 @@ void init_animal_data()
     _food_killed(2);
     _tameness(75);
     _size(1);
-    _resource_killed(RES_FUR, 1);
+    //_resource_killed(RES_FUR, 1);
 
   _animal(ANIMAL_FOX);
     _name("fox");
@@ -221,7 +221,7 @@ void init_animal_data()
     _carnivore();
     _tameness(35);
     _size(4);
-    _resource_killed(RES_FUR, 5);
+    //_resource_killed(RES_FUR, 1);
 
   _animal(ANIMAL_BOAR);
     _name("boar");
@@ -260,7 +260,7 @@ void init_animal_data()
     _food_killed(80);
     _tameness(30);
     _size(10);
-    _resource_killed(RES_LEATHER, 6);
+    //_resource_killed(RES_LEATHER, 6);
 
 
 // DANGEROUS GAME
@@ -282,7 +282,7 @@ void init_animal_data()
     _food_killed(300);
     _tameness(15);
     _size(14);
-    _resource_killed(RES_FUR, 15);
+    _resource_killed(RES_FUR, 5);
 
   _animal(ANIMAL_WOLF);
     _name("wolf");
@@ -305,7 +305,7 @@ void init_animal_data()
     _carnivore();
     _tameness(12);
     _size(10);
-    _resource_killed(RES_FUR, 10);
+    _resource_killed(RES_FUR, 3);
 
   _animal(ANIMAL_JAGUAR);
     _name("jaguar");
@@ -325,7 +325,7 @@ void init_animal_data()
     _carnivore();
     _tameness(8);
     _size(8);
-    _resource_killed(RES_LEATHER,  8);
+    //_resource_killed(RES_LEATHER,  8);
 
   _animal(ANIMAL_LION);
     _name("lion");
@@ -347,7 +347,7 @@ void init_animal_data()
     _carnivore();
     _tameness(10);
     _size(12);
-    _resource_killed(RES_LEATHER, 12);
+    //_resource_killed(RES_LEATHER, 12);
 
 // Legit question: could we drink elephant milk?
   _animal(ANIMAL_ELEPHANT);
@@ -437,7 +437,7 @@ void init_animal_data()
     _carnivore();
     _tameness(3);
     _size(20);
-    _resource_killed(RES_FUR, 20);
+    _resource_killed(RES_FUR, 10);
 
 // Inuit legend - half orca, half wolf, amphibious
   _animal(ANIMAL_AKHLUT);
