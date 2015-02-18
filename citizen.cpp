@@ -131,9 +131,12 @@ int Citizens::get_morale_percentage()
   }
   for (int i = 0; i < RES_MAX; i++) {
     Resource res = Resource(i);
-    if (possessions.count(res)) {
-// TODO: Make some resources more effective?  Right now, all give 10%
-      ret += (10 * possessions[res]) / count;
+    Resource_datum* res_dat = Resource_data[res];
+    int demand = (res_dat->demand * count) / 100;
+    if (possessions.count(res) >= demand) {
+      ret += res_dat->morale;
+    } else if (possessions.count(res) > 0) {
+      ret += (res_dat->morale * possessions.count(res)) / (2 * demand);
     }
   }
   return ret;
@@ -208,19 +211,17 @@ int Citizens::add_possession(Resource_amount res)
 int Citizens::add_possession(Resource res, int amount)
 {
   int had = 0;
+  Resource_datum* res_dat = Resource_data[res];
+  int limit = (count * res_dat->demand) / 100;
   if (possessions.count(res)) {
     had = possessions[res];
   }
-  if (had + amount > count) {
-    int left = amount - (count - had);
-    possessions[res] = amount;
+  if (had + amount > limit) {
+    int left = amount - (limit - had);
+    possessions[res] = limit;
     return left;
   }
-  if (possessions.count(res)) {
-    possessions[res] += amount;
-  } else {
-    possessions[res] = amount;
-  }
+  possessions[res] += amount;
   return 0;
 }
 
