@@ -64,6 +64,8 @@ struct Morale_modifier
   int amount; // Mesaured in 1/10th of a morale percentage.
 };
 
+class City;
+
 struct Citizens
 {
   Citizens();
@@ -71,6 +73,43 @@ struct Citizens
 
   std::string save_data();
   bool load_data(std::istream& data);
+
+// ACCESSORS
+
+  int get_unemployed();
+  int get_income();
+  int get_morale_percentage();
+  int get_starvation_chance();
+
+  std::vector<std::string> get_morale_mods(bool colorize = false);
+  std::vector<int>         get_morale_mod_amounts();
+
+
+// MUTATORS
+
+  void reset(); // Set all values to 0 (don't change type though!)
+
+/* pick_luxuries() attempts to set luxury_demands.  It looks at the resources
+ * owned by <city>.  For each Luxury_type, if luxury_demands is not set and
+ * city owns one or more resources that belongs to that type, we randomly pick
+ * one (weighted by the amount <city> owns).  If luxury_demands IS set, then we
+ * do the same random pick, but strongly weight things towards NOT changing.
+ */
+  void pick_luxuries(City* city);
+
+  void decrease_morale_mods();
+// add_possession() returns the number of items we did not take.  We will only
+// take items up to the limit (set by the Resource_datum)
+  int add_possession(Resource_amount res);
+  int add_possession(Resource res, int amount);
+
+  void add_morale_modifier(Morale_mod_type type, int amount);
+
+  void add_citizens   (int amount);
+  void remove_citizens(int amount);
+
+
+// DATA
 
   Citizen_type type;
 
@@ -85,27 +124,6 @@ struct Citizens
   std::map<Luxury_type,Resource> luxury_demands;  // Which luxury of each type?
   std::vector<Morale_modifier> morale_modifiers;
 
-  void reset(); // Set all values to 0 (don't change type though!)
-
-  int get_unemployed();
-  int get_income();
-  int get_morale_percentage();
-  int get_starvation_chance();
-
-  std::vector<std::string> get_morale_mods(bool colorize = false);
-  std::vector<int>         get_morale_mod_amounts();
-
-
-  void decrease_morale_mods();
-// add_possession() returns the number of items we did not take.  We will only
-// take items up to the limit (set by the Resource_datum)
-  int add_possession(Resource_amount res);
-  int add_possession(Resource res, int amount);
-
-  void add_morale_modifier(Morale_mod_type type, int amount);
-
-  void add_citizens   (int amount);
-  void remove_citizens(int amount);
 };
 
 int citizen_food_consumption(Citizen_type type);
