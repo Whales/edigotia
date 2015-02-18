@@ -26,15 +26,22 @@ bool Game::start_new_game()
   date = Date(1400, 5, 1);
 
   if (!world_ready) {
+
     if (file_exists(SAVE_DIR + "world.sav")) {
+      if (!query_yn("Load world from save file?")) {
+        return false;
+      }
       world->load_from_file(SAVE_DIR + "world.sav");
+
     } else {
-      if (!generate_world()) {
+      if (!query_yn("We need to generate a world first, is that okay?") ||
+          !generate_world()) {
         return false;
       }
       world->save_to_file("world.sav");
       save_kingdoms();
     }
+
   }
 
 // Pick our race first, so we know where to start placement.
@@ -48,7 +55,8 @@ bool Game::start_new_game()
     start.x = (city_kingdom->most_west  + city_kingdom->most_east ) / 2;
     start.y = (city_kingdom->most_north + city_kingdom->most_south) / 2;
   } else {
-    debugmsg("Kingdom not found for player city.");
+    debugmsg("Kingdom not found for %s.  %d kingdoms.",
+             Race_data[city->get_race()]->name.c_str(), kingdoms.size());
     start = Point(WORLD_MAP_SIZE / 2, WORLD_MAP_SIZE / 2);
   }
 
