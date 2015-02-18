@@ -82,6 +82,7 @@ struct Citizens
   int starvation;
 
   std::map<Resource,int>  possessions;  // These modify morale.
+  std::map<Luxury_type,Resource> luxury_demands;  // Which luxury of each type?
   std::vector<Morale_modifier> morale_modifiers;
 
   void reset(); // Set all values to 0 (don't change type though!)
@@ -97,7 +98,7 @@ struct Citizens
 
   void decrease_morale_mods();
 // add_possession() returns the number of items we did not take.  We will only
-// take 1 item per citizen.
+// take items up to the limit (set by the Resource_datum)
   int add_possession(Resource_amount res);
   int add_possession(Resource res, int amount);
 
