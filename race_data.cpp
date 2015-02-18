@@ -85,6 +85,9 @@ void init_races()
 
   int cur_id = 0;
 
+  _race(RACE_NULL);
+    _name("NULL");
+
   _race(RACE_HUMAN);
     _name("human");
     _plural_name("humans");
