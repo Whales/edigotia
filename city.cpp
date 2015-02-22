@@ -349,6 +349,27 @@ std::map<Resource,int> City::get_luxuries(Luxury_type type)
   return ret;
 }
 
+// Since generic City doesn't have any Areas or Buildings or imports, we don't
+// actually produce resources.  Overloaded for Player_city and AI_city.
+int City::get_gross_resource_production(Resource res)
+{
+  return 0;
+}
+
+int City::get_resource_consumption(Resource res)
+{
+  int ret = 0;
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    ret += population[i].consumption[res];
+  }
+  return ret;
+}
+
+int City::get_net_resource_production(Resource res)
+{
+  return get_gross_resource_production(res) - get_resource_consumption(res);
+}
+
 int City::get_resource_amount(Resource res)
 {
   return resources[res];
@@ -386,6 +407,7 @@ int City::get_food_consumption(Citizen_type type)
   return ret;
 }
 
+// amount defaults to 1
 bool City::has_resource(Resource res, int amount)
 {
   return (get_resource_amount(res) >= amount);
@@ -561,6 +583,32 @@ void City::gain_resources(std::map<Resource,int> res_used)
        it != res_used.end();
        it++) {
     gain_resource( it->first, it->second );
+  }
+}
+
+void City::gain_mineral(Mineral min, int amount)
+{
+  minerals[min] += amount;
+}
+
+void City::gain_mineral(Mineral_amount min)
+{
+  gain_mineral(min.type, min.amount);
+}
+
+void City::gain_minerals(std::vector<Mineral_amount> min_used)
+{
+  for (int i = 0; i < min_used.size(); i++) {
+    gain_mineral( min_used[i] );
+  }
+}
+
+void City::gain_minerals(std::map<Mineral,int> min_used)
+{
+  for (std::map<Mineral,int>::iterator it = min_used.begin();
+       it != min_used.end();
+       it++) {
+    gain_mineral( it->first, it->second );
   }
 }
 

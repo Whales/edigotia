@@ -75,12 +75,22 @@ public:
 // Returns all resources we own with the given Luxury_type.
   std::map<Resource,int> get_luxuries(Luxury_type type);
 
+// The following functions do NOT include slightly-random sources of resources,
+// such as the resources produced by livestock when they die
+
+// Total amount produced daily, including from buildings and imports
+  virtual int get_gross_resource_production (Resource res);
+// Total amount expended daily, including use by citizens and exports
+  virtual int get_resource_consumption(Resource res);
+// Gross production minus gross consumption
+  virtual int get_net_resource_production   (Resource res);
+
   int get_resource_amount(Resource res);
   int get_mineral_amount (Mineral  min);
   int get_food_cap();         // Returns get_food_consumption() * 10 (days)
   int get_food_consumption(Citizen_type type = CIT_NULL); // Per day
 
-  bool has_resource (Resource res, int amount);
+  bool has_resource (Resource res, int amount = 1);
   bool has_resource (Resource_amount res);
   bool has_resources(std::vector<Resource_amount> res_used);
   bool has_resources(std::map<Resource,int>       res_used);
@@ -105,6 +115,10 @@ public:
   void gain_resources(std::vector<Resource_amount> res_used);
   void gain_resources(std::map<Resource,int>       res_used);
 
+  void gain_mineral (Mineral res, int amount);
+  void gain_mineral (Mineral_amount res);
+  void gain_minerals(std::vector<Mineral_amount> res_used);
+  void gain_minerals(std::map<Mineral,int>       res_used);
 // Public data
   int uid;
 
@@ -119,6 +133,7 @@ public:
   City_map map;
 
 // Maps city UIDs to Trade_routes.
+// These aren't *active* trade routes, just potential ones!
   std::map<int,Trade_route> trade_routes;
 
 protected:
