@@ -2619,6 +2619,12 @@ void Interface::minister_morale()
     long ch = input();
 
     switch (ch) {
+
+      case 'l':
+      case 'L':
+        luxury_management();
+        break;
+
       case KEY_ESC:
       case 'q':
       case 'Q':
@@ -2626,6 +2632,172 @@ void Interface::minister_morale()
 
     } // switch (ch)
   } // while (true)
+}
+
+void Interface::luxury_management()
+{
+  cuss::interface i_luxuries;
+  if (!i_luxuries.load_from_file("cuss/luxuries.cuss")) {
+    return;
+  }
+
+  Window w_luxuries(0, 0, 80, 24);
+
+  std::vector<Resource>     luxuries;
+  std::vector<int>  luxury_production, luxury_available, luxury_morale,
+                    peasants_have, merchants_have, burghers_have, luxury_demand;
+  std::vector<std::string>  luxury_name, luxury_production_str,
+                            luxury_available_str, luxury_morale_str,
+                            peasants_have_str, merchants_have_str,
+                            burghers_have_str, luxury_demand_str;
+
+// Populate our vectors.  Start at 1 to skip RES_NULL.
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource res = Resource(i);
+    Resource_datum* res_dat = Resource_data[res];
+    if (res_dat->morale > 0 && GAME->city->has_resource(res)) {
+// It's a luxury, and we have it!
+      luxuries.push_back(res);
+      luxury_name.push_back( res_dat->name );
+      int lux_production  = GAME->city->get_gross_resource_production(res);
+      int lux_available   = GAME->city->get_net_resource_production(res);
+      int lux_morale      = res_dat->morale;
+      int lux_demand      = res_dat->demand;
+
+      int lux_peasants    =
+        GAME->city->population[CIT_PEASANT].consumption[res];
+      int lux_merchants   =
+        GAME->city->population[CIT_MERCHANT].consumption[res];
+      int lux_burghers    =
+        GAME->city->population[CIT_BURGHER].consumption[res];
+
+      luxury_production.push_back(lux_production);
+      luxury_production_str.push_back( itos(lux_production) );
+
+      luxury_available.push_back(lux_available);
+      luxury_available_str.push_back( itos(lux_available) );
+
+      luxury_morale.push_back(lux_morale);
+      luxury_morale_str.push_back( itos(lux_morale) );
+
+      luxury_demand.push_back(lux_demand);
+      luxury_demand_str.push_back( itos(lux_demand) );
+
+      peasants_have.push_back(lux_peasants);
+      peasants_have_str.push_back( itos(lux_peasants) );
+
+      merchants_have.push_back(lux_merchants);
+      merchants_have_str.push_back( itos(lux_merchants) );
+
+      burghers_have.push_back(lux_burghers);
+      burghers_have_str.push_back( itos(lux_burghers) );
+    } // if (res_dat->morale > 0 && GAME->city->has_resource(res))
+  } // for (int i = 1; i < RES_MAX; i++)
+
+// Link up our interface to our vectors.
+  i_luxuries.ref_data("list_luxury",         &luxury_name          );
+  i_luxuries.ref_data("list_production",     &luxury_production_str);
+  i_luxuries.ref_data("list_available",      &luxury_available_str );
+  i_luxuries.ref_data("list_morale",         &luxury_morale_str    );
+  i_luxuries.ref_data("list_peasants_have",  &peasants_have_str    );
+  i_luxuries.ref_data("list_merchants_have", &merchants_have_str   );
+  i_luxuries.ref_data("list_burghers_have",  &burghers_have_str    );
+  i_luxuries.ref_data("list_peasants_want",  &luxury_demand_str    );
+  i_luxuries.ref_data("list_merchants_want", &luxury_demand_str    );
+  i_luxuries.ref_data("list_burghers_want",  &luxury_demand_str    );
+
+  i_luxuries.select("list_luxuries");
+
+  while (true) {
+
+    int index = i_luxuries.get_int("list_luxuries");
+    Resource res = RES_NULL;
+    if (index >= 0 && index < luxuries.size()) {
+      res = luxuries[index];
+    }
+
+    i_luxuries.draw(&w_luxuries);
+    w_luxuries.refresh();
+
+    long ch = input();
+    switch (ch) {
+
+      case 'w':
+      case 'W':
+        if (res != RES_NULL && peasants_have[index] > 0) {
+          GAME->city->population[CIT_PEASANT].consumption[res]--;
+          peasants_have[index]--;
+          luxury_available[index]++;
+          peasants_have_str[index]    = itos(peasants_have[index]   );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 'e':
+      case 'E':
+        if (res != RES_NULL && luxury_available[index] > 0) {
+          GAME->city->population[CIT_PEASANT].consumption[res]++;
+          peasants_have[index]++;
+          luxury_available[index]--;
+          peasants_have_str[index]    = itos(peasants_have[index]   );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 's':
+      case 'S':
+        if (res != RES_NULL && merchants_have[index] > 0) {
+          GAME->city->population[CIT_MERCHANT].consumption[res]--;
+          merchants_have[index]--;
+          luxury_available[index]++;
+          merchants_have_str[index]   = itos(merchants_have[index]  );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 'd':
+      case 'D':
+        if (res != RES_NULL && luxury_available[index] > 0) {
+          GAME->city->population[CIT_MERCHANT].consumption[res]++;
+          merchants_have[index]++;
+          luxury_available[index]--;
+          merchants_have_str[index]   = itos(merchants_have[index]  );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 'x':
+      case 'X':
+        if (res != RES_NULL && burghers_have[index] > 0) {
+          GAME->city->population[CIT_BURGHER].consumption[res]--;
+          burghers_have[index]--;
+          luxury_available[index]++;
+          burghers_have_str[index]    = itos(burghers_have[index]   );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 'c':
+      case 'C':
+        if (res != RES_NULL && luxury_available[index] > 0) {
+          GAME->city->population[CIT_BURGHER].consumption[res]++;
+          burghers_have[index]++;
+          luxury_available[index]--;
+          burghers_have_str[index]    = itos(burghers_have[index]   );
+          luxury_available_str[index] = itos(luxury_available[index]);
+        }
+        break;
+
+      case 'q':
+      case 'Q':
+      case KEY_ESC:
+        return;
+
+      default:
+        i_luxuries.handle_keypress(ch); // Handles scrolling up/down
+    } // switch (ch)
+  } // while (true)
+
 }
 
 void Interface::minister_supplies()

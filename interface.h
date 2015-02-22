@@ -149,6 +149,8 @@ private:
                           cuss::interface& i_mining);
 // Happiness minister, view morale information and do things to alter it
   void minister_morale();
+// Related; control of luxuries going to various citizens
+  void luxury_management();
 // Information on your resources and minerals; allows the player to give fine
 // goods to citizens.
   void minister_supplies();
