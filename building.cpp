@@ -361,6 +361,330 @@ std::string Building::get_name()
   return get_building_datum()->name;
 }
 
+// real defaults to false
+std::map<Resource,int> Building::get_resource_production(City* city, bool real)
+{
+  if (!open) { // Closed buildings don't produce anything!
+    return std::map<Resource,int>();
+  }
+
+  if (!city) {
+    debugmsg("Building::get_resource_production(NULL) called!");
+    return std::map<Resource,int>();
+  }
+
+  Player_city* pl_city = NULL;
+  if (city->is_player_city()) {
+    pl_city = static_cast<Player_city*>(city);
+  }
+
+  Building_datum* datum = get_building_datum();
+
+  if (!datum) {
+    debugmsg("Encountered NULL datum in Building::do_production()!");
+    return std::map<Resource,int>();
+  }
+
+// Start with a std::map - we'll turn it into a std::vector at the end.
+  std::map<Resource,int> resource_gains;
+
+  if (workers > 0) {
+    Map_tile* tile = city->map.get_tile(pos);
+
+// First, look at the production vector of our type.
+    for (int i = 0; i < datum->production.size(); i++) {
+      Resource_amount res_amt = datum->production[i];
+
+      if (!Resource_data[res_amt.type]->meta) { // Gain non-meta resources
+        resource_gains[res_amt.type] += res_amt.amount * workers;
+
+      } else {  // Meta resources are more complicated!
+        int skill = 0;
+        switch (res_amt.type) {
+          case RES_FARMING: {
+            skill = Race_data[city->get_race()]->skill_level[SKILL_FARMING];
+            int total_food = 0;
+            for (int n = 0; n < crops_grown.size(); n++) {
+              int amount = crops_grown[n].amount;
+              if (amount > 0) {
+                Crop crop = crops_grown[n].type;
+                Crop_datum* crop_dat = Crop_data[crop];
+// Add food from the crop.
+                int food = crop_dat->food;
+                food *= amount;
+                food *= field_output;
+// Look for any non-food resources the crop produces.
+                for (int m = 0; m < crop_dat->bonus_resources.size(); m++) {
+                  Resource_amount res_amt = crop_dat->bonus_resources[m];
+                  res_amt.amount *= amount;
+                  res_amt.amount *= field_output;
+// The amount needs to be divided by 100 since field_output is the terrain's
+// farmability, which is a percentage (0 to 100, should be 0.0 to 1.0).
+                  res_amt.amount /= 100;
+                  resource_gains[res_amt.type] += res_amt.amount;
+                }
+              } // if (amount > 0)
+            } // for (int n = 0; n < crops_grown.size(); n++)
+/* Crop_datum::food is per 100 units of the crop, so naturally we must divide by
+ * 100.  Additionally, field_output is 100 times higher than it should be (since
+ * terrain farmability is a percentage, 0 to 100) so we must divide by 100
+ * again.  Combining both means dividing by 10,000.
+ */
+            total_food /= 10000;
+            resource_gains[RES_FOOD] += total_food;
+          } break;  // case RES_FARMING
+
+          case RES_HUNTING:
+// We need to let the city handle this, since it requires info on the Area.
+            break;
+
+          case RES_LOGGING: {
+            skill = Race_data[city->get_race()]->skill_level[SKILL_FORESTRY];
+            int wood_produced = workers * amount_produced(RES_LOGGING) * skill;
+// Divide by 5 since skill is 1 to 5, with 5 meaning "no reduction"
+            wood_produced /= 5;
+            if (tile->wood != INFINITE_RESOURCE && tile->wood < wood_produced) {
+// We've exhausted the tile's supply of wood!
+              resource_gains[RES_WOOD] += tile->wood;
+              if (real) {
+                tile->clear_wood();
+                close(city);
+                if (pl_city) {
+                  pl_city->add_message(MESSAGE_MAJOR,
+                    "Our %s has cleared the %s and is now closed.",
+                    get_name().c_str(),
+                    tile->get_terrain_name().c_str());
+                }
+              }
+
+            } else {  // We have NOT exhausted the supply of wood.
+              resource_gains[RES_WOOD] += wood_produced;
+              if (real && tile->wood != INFINITE_RESOURCE) {
+                tile->wood -= wood_produced;
+              }
+            }
+          } break; // case RES_LOGGING
+        } // switch (res_amt.type)
+      } // if (Resource_data[res_amt.type]->meta)
+    } // for (int i = 0; i < datum->production.size(); i++)
+
+// Next, if we have a build_queue attempt to build the first item in it
+    if (!build_queue.empty()) {
+      Recipe_amount* recipe_amt = &(build_queue[0]);
+      Recipe* recipe = &(recipe_amt->recipe);
+// Check if we can build the recipe today.
+      int num_built = 0;
+      if (recipe->days_per_unit <= 1) { // We can build it every day!
+        num_built = workers;
+        if (recipe->units_per_day > 0) {  // We can build multiples every day!
+          num_built *= recipe->units_per_day;
+        }
+      } else {  // It takes multiple days to build a unit.
+// Each worker reduces our counter by 1.
+// We copy the counter to another variable so that if $real is false, we don't
+// have to do any modifications; we can copy it back later
+        int days_left = recipe_amt->days_until_built - workers;
+        while (days_left <= 0) {
+          num_built++;
+          days_left += recipe->days_per_unit;
+        }
+        if (real) { // Copy the value back.
+          recipe_amt->days_until_built = days_left;
+        }
+      } // recipe->days_per_unit > 1
+// Make sure we won't build more than are enqueued.
+      if (recipe_amt->amount != INFINITE_RESOURCE &&
+          num_built > recipe_amt->amount) {
+        num_built = recipe_amt->amount;
+      }
+
+/* Next, check how many units of the resource manufactured we have the component
+ * resources/minerals for.
+ * We copy the city's resources and minerals to a new array since if $real is
+ * false, we don't want to actually deduct the city's resources.
+ */
+      int tmp_resources[RES_MAX];
+      int tmp_minerals[MINERAL_MAX];
+      for (int i = 0; i < RES_MAX; i++) {
+        tmp_resources[i] = city->resources[i];
+      }
+      for (int i = 0; i < MINERAL_MAX; i++) {
+        tmp_minerals[i] = city->minerals[i];
+      }
+
+/* We use a for loop since we might eventually run out of resources/minerals and
+ * will need to stop before we've built num_built units.  We could use math to
+ * determine the number of units we'll actually be able to build, but this seems
+ * more clear.
+ */
+      bool can_build_more = true;
+      for (int i = 0; can_build_more && i < num_built; i++) {
+// Check that we have the resources and minerals before expending them, so that
+// we don't expend one only to find that we lack the other.
+        bool has_resources = true, has_minerals = true;
+        for (int n = 0;
+             has_resources && n < recipe->resource_ingredients.size();
+             n++) {
+          Resource_amount res_amt = recipe->resource_ingredients[n];
+          if (tmp_resources[res_amt.type] < res_amt.amount) {
+            has_resources = false;
+          }
+        }
+        for (int n = 0;
+             has_minerals && n < recipe->mineral_ingredients.size();
+             n++) {
+          Mineral_amount min_amt = recipe->mineral_ingredients[n];
+          if (tmp_minerals[min_amt.type] < min_amt.amount) {
+            has_minerals = false;
+          }
+        }
+
+        if (has_resources && has_minerals &&
+            city->has_resources(recipe->resource_ingredients) &&
+            city->has_minerals (recipe->mineral_ingredients )) {
+
+          resource_gains[recipe->result.type] += recipe->result.amount;
+
+// Consume resources/minerals from our temp lists.
+          for (int n = 0; n < recipe->resource_ingredients.size(); n++) {
+            Resource_amount res_amt = recipe->resource_ingredients[n];
+            tmp_resources[res_amt.type] -= res_amt.amount;
+          }
+          for (int n = 0; n < recipe->mineral_ingredients.size(); n++) {
+            Mineral_amount min_amt = recipe->mineral_ingredients[n];
+            tmp_minerals[min_amt.type] -= min_amt.amount;
+          }
+
+          if (real) {
+// Actually consume resources/minerals.
+            city->expend_resources(recipe->resource_ingredients);
+            city->expend_minerals (recipe->mineral_ingredients );
+            if (recipe_amt->amount != INFINITE_RESOURCE) {
+              recipe_amt->amount--;
+            }
+          }
+
+        } else { // Ran out of resources
+          can_build_more = false;
+        }
+      } // for (int i = 0; can_build_more && i < num_built; i++)
+// Check if we've built all that were enqueued.
+      if (real &&
+          recipe_amt->amount != INFINITE_RESOURCE && recipe_amt->amount <= 0) {
+        build_queue.erase( build_queue.begin() );
+      }
+    } // if (!build_queue.empty())
+  } // if (workers > 0)
+
+  return resource_gains;
+}
+
+// real defaults to false
+std::map<Mineral,int> Building::get_mineral_production(City* city, bool real)
+{
+// Sinceonly mines can produce minerals, we only return anything if we produce
+// RES_MINING.
+// TODO: If there is another way buildings can produce minerals, we need to
+//       support that here!
+  if (!open) { // Closed buildings don't produce anything!
+    return std::map<Mineral,int>();
+  }
+
+  if (!city) {
+    debugmsg("Building::get_mineral_production(NULL) called!");
+    return std::map<Mineral,int>();
+  }
+
+  if (!produces_resource(RES_MINING)) {
+    return std::map<Mineral,int>();
+  }
+
+  Player_city* pl_city = NULL;
+  if (city->is_player_city()) {
+    pl_city = static_cast<Player_city*>(city);
+  }
+
+  Map_tile* tile = city->map.get_tile(pos);
+
+  std::map<Mineral,int> mineral_gains;
+
+  for (int n = 0; n < minerals_mined.size(); n++) {
+    Mineral_amount min_mined = minerals_mined[n];
+    Mineral_datum* min_dat = Mineral_data[min_mined.type];
+    if (min_mined.amount > 0) {
+// Track the number of workers assigned to this mineral.  If we exhaust the
+// map's supply of this mineral, we'll remove the mineral from minerals_mined
+// and will fire the workers.
+      int min_workers = min_mined.amount;
+      min_mined.amount *= shaft_output;
+      Mineral_amount* tile_min = tile->lookup_mineral(min_mined.type);
+      bool exhausted = false; // Did we use up all of the mineral?
+
+      if (!tile_min) {  // The mineral doesn't exist on the map tile!
+        exhausted = true;
+
+      } else {
+
+        if (tile_min->amount == INFINITE_RESOURCE) {
+          mineral_gains[min_mined.type] += min_mined.amount;
+
+        } else if (tile_min->amount < min_mined.amount) {
+// We exhausted the supply of the mineral!
+          exhausted = true;
+          mineral_gains[min_mined.type] += tile_min->amount;
+
+        } else {  // Mineral is neither infinite nor exhausted
+          mineral_gains[min_mined.type] += min_mined.amount;
+          if (real) {
+            tile_min->amount -= min_mined.amount;
+          }
+        }
+
+        if (real && exhausted) {  // We used up the map's supply of min_mined!
+          tile->remove_mineral(min_mined.type);
+          if (pl_city) {
+            pl_city->fire_citizens(CIT_PEASANT, min_workers, this);
+            pl_city->add_message(MESSAGE_MAJOR,
+                                 "Our mine has exhausted its supply of %s!",
+                                 min_dat->name.c_str());
+          }
+          minerals_mined.erase( minerals_mined.begin() + n );
+          n--;
+        }
+      } // if (tile_min)
+    } // if (min_mined.amount > 0)
+  } // for (int n = 0; n < minerals_mined.size(); n++)
+
+  return mineral_gains;
+}
+
+
+void Building::do_production(City* city)
+{
+  if (!open) {
+    return; // Closed buildings don't produce anything!
+  }
+
+  if (!city) {
+    debugmsg("Building::do_production(NULL) called!");
+    return;
+  }
+
+  Building_datum* datum = get_building_datum();
+
+  if (!datum) {
+    debugmsg("Encountered NULL datum in Building::do_production()!");
+    return;
+  }
+
+  std::map<Resource,int> resource_gains = get_resource_production(city, true);
+  std::map<Mineral, int> mineral_gains  = get_mineral_production (city, true);
+
+// Add the resources/minerals we've gathered to the city!
+  city->gain_resources(resource_gains);
+  city->gain_minerals (mineral_gains );
+}
+
 // res defaults to RES_NULL
 bool Building::produces_resource(Resource res)
 {

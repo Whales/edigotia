@@ -173,6 +173,24 @@ struct Building
 
   Building_datum* get_building_datum();
   std::string get_name();
+/* get_resource_production() includes all resources produced or built!  This
+ * includes food/resources produced by crops, if we are a farm.  Obviously it
+ * does not include minerals and crops produced by mines and farms.  It also
+ * does not include any resources we may get from hunting animals, since that's
+ * (semi) random.  It does not include any meta-resources, like RES_FARMING;
+ * only resources that the meta-resource will result in.
+ * If $real is set to true, then we'll deduct wood from the map, actually use up
+ * resources to build stuff, etc.
+ */
+  std::map<Resource,int> get_resource_production(City* city, bool real = false);
+// Same idea, but only works on mines obviously.
+  std::map<Mineral, int> get_mineral_production (City* city, bool real = false);
+
+/* do_production() calls get_resource_production() and get_mineral_production()
+ * with real = true and adds the return values to the city.
+ */
+  void do_production(City* city);
+
   bool produces_resource(Resource res = RES_NULL);
   bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
