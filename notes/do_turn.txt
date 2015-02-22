@@ -1,0 +1,213 @@
+Player_city::do_turn() is a big, complex function which does a lot of stuff;
+basically everything that a city needs to do each turn.  Here's a run-down of
+what it does:
+
+-Decrease the duration of citizens' morale modifiers (removing them if
+ necessary)
+  -Calls Citizens::decrease_morale_mods()
+
+-Gives us birth_points
+-Checks if birth_points >= 100; if so add a birth
+-Call birth_citizens() to actually add a new citizen for each birth
+
+-Adds resources that're imported
+  -Calls get_import() on each and every Resource
+
+-Receive taxes
+  -Calls get_taxes()
+
+-Starvation check.  For each citizen class:
+  -Get Citizens::get_starvation_chance().
+  -Modify that chance by squaring it and dividing by 3.
+  -Make N chance-in-100 checks, where N is the population of that class.  If the
+   check passes, add 1 to $dead
+  -Calculate a morale penalty, and call Citizens::add_morale_modifier() for the
+   class in question (not all of them!)
+  -Call kill_citizens() to actually remove the dead citizens.
+
+-Handle livestock.  Iterate over our std::map $livestock:
+  -Get our race's livestock skill
+  -Calculate how much daily food we get from the animal; round it randomly and
+   adjust based on skill.  Call gain_resource() to add the food.
+  -Iterate over the animal's resources_livestock and calculate how much of each
+   resource to give us.  Again, round randomly.  Call gain_resource to add the
+   resource.
+  -For each animal of this type, adjust its hardiness value based on our skill,
+   and randomly decide if it dies, adding 1 to $num_died.
+  -Decrease the animal population by $num_died.
+    -Calculate the food we get from butchering them.
+    -Call kill_animals();
+      -Calls gain_resource(RES_FOOD, ...)
+      -Iterates over the animal's resources_killed and calls gain_resource() for
+       each.
+    -Produce and add a message about the animals dying, including how much food
+     we got.
+  -For each animal of this type, adjust its reproduction rate based on our
+   skill, and randomly decide i it gives birth, adding 1 to $num_born.
+  -Increase the animal population by $num_born.
+    -If more are born than we have pasture space for, kill them, calling
+     kill_animals()
+    -Generate a message that reflects how many were born and how many had to be
+     slaughtered due to space constraints.
+
+-Produce non-food resources from our farms' crops.
+  -Iterate over all areas, looking for buildings with at least 1 worker that
+   produce RES_FARMING.
+    -Iterate over every crop grown.  Fetch the Crop_datum.
+      -Iterate over the Crop_datum's bonus_resources.
+        -Calculate the amount: $datum_amount * $crops_grown * $field_output
+          -Divide by 500(???)
+        -Call gain_resource()
+
+-Gain food produced [gain_resource( RES_FOOD, get_food_production() )]
+
+-Consume food:
+  -Set $food_consumed to get_food_consumption()
+  -If we have at least $food_consumed food:
+    -Iterate over all citizen classes; reduce their starvation.
+  -If we don't have enough food:
+    -Iterate over citizen classes, from higher to lower.
+      -Either they eat the food they need, or they eat as much as there is and
+       gain starvation to make up the deficit.
+
+-Handle building production:
+  -Iterate over all buildings in existence (NOT area buildings).  If it's open
+   and its build_queue is not empty:
+    -Figure out how many units of the recipe to build:
+      -Check the first Recipe's days_per_unit; if it's <= 1 then we build 1 unit
+       per worker, multiplied by the recipe's units_per_day.
+      -Otherwise, check the Recipe_amount's days_until_built; decrease it by the
+       number of workers, and if it's less than 0, build an extra one.
+      -The number built cannot exceed the Recipe_amount's amount.
+    -For each unit built:
+      -Check if we have the resources and minerals needed.
+      -Expend resources and minerals.
+      -Gain the result.
+      -Decrease the Recipe_amount's amount.
+      -If the amount is <= 0 (and isn't infinite), remove the Recipe_amount from
+       our build_queue.
+
+-Handle mines, sawmills, and hunting camps:
+  -Iterate over all areas.
+    -If it produces RES_MINING:
+      -Iterate over the building's minerals_mined.
+        -Set $workers to the Mineral_amount's amount.
+        -Multiply the Mineral_amount's amount by the shaft_output of the
+         building.
+        -Iterate over the Map_tile's minerals until we find one that matches our
+         Mineral_amount's type.
+          -If the Map_tile's Mineral_amount is not infinite, decrease its
+           amount; this may mean decreasing our Mineral_amount's amount.
+            -Add a message if it's exhausted.
+            -Fire $workers workers - these are the workers directly associated
+             with the mineral in question.
+            -Remove the mineral both from the Map_tile an from the mine
+             building's minerals_mined.
+          -Directly add the Mineral_amount's amount to the city's minerals[].
+    -If it produces RES_LOGGING:
+      -Calculate $wood_produced; $workers * RES_LOGGING amount * skill_level
+        -Divide by 5 (to compensate for skill_level)
+      -If the Map_tile doesn't have that much wood:
+        -Add a message
+        -Directly add the Map_tile's wood to resources[]
+        -Set Map_tile's wood to 0 and call Map_tile::clear_wood()
+        -Close the sawmill
+      -If the Map_tile has that much wood:
+        -Directly add the Map_tile's wood to resources[]
+        -If the Map_tile doesn't have infinite wood, reduce its wood amount
+    -If it produces RES_HUNTING:
+      -Call do_hunt()
+
+-Add 1 to hunt_record_days
+
+-Fetch get_total_wages().
+  -Try to expend_resources(RES_GOLD, wages)
+    -If this fails, set resources[RES_GOLD] to 0.
+
+-Fetch get_corruption_amount().
+  -Try to expend_resources(RES_GOLD, corruption)
+    -If this fails, set resources[RES_GOLD] to 0.
+
+-Pay building maintenance:
+  -Iterate over all areas, using only the open ones.
+    -Fetch the area's get_maintenance() and iterate over it.
+      -Add each maintenance resource to $total_maintenance.
+  -Iterate over all building, using only the open ones.
+    -Fetch the building's get_maintenance() and iterate over it.
+      -Add each maintenance resource to $total_maintenance.
+  -Divide the amount of RES_GOLD by 10.
+  -Expend the resources in $total_maintenance.  If we can't... well there's no
+   consequences yet.  TODO!
+
+-Export resources:
+  -Iterate over all Resources.
+  -Set $export_amt to get_export()
+  -Directly deduct $export_amt from resources[]
+    -If we don't have enough... there's no consequences yet.  TODO!
+
+-Check get_food_cap() and ensure resources[RES_FOOD] isn't above it.
+
+-Make mines discover new minerals:
+  -Iterate over all areas.
+    -Iterate over the area's building's minerals_mined.
+      -If the minerals_mined's amount is HIDDEN_RESOURCE (i.e. we haven't
+       actually found it yet), roll to randomly discover it.
+        -If we succeed, set the minerals_mined's amount to 0.
+
+-Build areas in our queue:
+  -If the queue is not empty, look at the first item in the queue.
+    -Decrease the days of construction remaining by 1.
+    -If it hits 0, add a message, remove it from the queue, and call
+     add_open_area().
+
+-Build buildings in our queue:
+  -If the queue is not empty, look at the first item in the queue.
+    -Decrease the days of construction remaining by 1.
+    -If it hits 0, add a message, remove it from the queue, and call
+     add_open_building().
+
+-Call check_unlockables().
+
+________________________________________________________________________________
+
+
+For loops:
+
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+
+Import resources:
+  for (int i = 1; i < RES_MAX; i++) {
+
+  for (int i = 1; i < CIT_MAX; i++) {
+  for (std::map<Animal,int>::iterator it = livestock.begin();
+
+Produce non-food resources from farms:
+  for (int i = 0; i < areas.size(); i++) {
+
+Handle building production queue:
+  for (int i = 0; i < buildings.size(); i++) {
+
+Handle mines, sawmills, and hunting caps:
+  for (int i = 0; i < areas.size(); i++) {
+
+Get maintenance costs from all areas:
+  for (int i = 0; i < areas.size(); i++) {
+
+Get maintenance costs from all buildings:
+  for (int i = 0; i < buildings.size(); i++) {
+
+Export resources:
+  for (int i = 1; i < RES_MAX; i++) {
+
+Allow mines to discover new materials:
+  for (int i = 0; i < areas.size(); i++) {
+
+
+    for (int i = 0; i < animal_dat->resources_livestock.size(); i++) {
+    for (int i = 0; i < animal_amount; i++) {
+    for (int i = 0; i < animal_amount; i++) {
+    for (int i = 0; i < CIT_MAX; i++) {
+    for (int i = CIT_MAX - 1; i > CIT_NULL; i--) {
+    for (int n = 0; n < area_build->minerals_mined.size(); n++) {
+    for (int i = 0; i < crops_here.size(); i++) {
+    for (int i = 0; i < mins_here.size(); i++) {
