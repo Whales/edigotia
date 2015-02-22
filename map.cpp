@@ -245,6 +245,16 @@ bool Map_tile::can_build(Area_type area)
   return false;
 }
 
+Mineral_amount* Map_tile::lookup_mineral(Mineral mineral)
+{
+  for (int i = 0; i < minerals.size(); i++) {
+    if (minerals[i].type == mineral) {
+      return &(minerals[i]);
+    }
+  }
+  return NULL;
+}
+
 int Map_tile::get_mineral_amount(Mineral mineral)
 {
   for (int i = 0; i < minerals.size(); i++) {
@@ -253,6 +263,17 @@ int Map_tile::get_mineral_amount(Mineral mineral)
     }
   }
   return 0;
+}
+
+bool Map_tile::remove_mineral(Mineral mineral)
+{
+  for (int i = 0; i < minerals.size(); i++) {
+    if (minerals[i].type == mineral) {
+      minerals.erase( minerals.begin() + i );
+      return true;
+    }
+  }
+  return false;
 }
 
 Animal Map_tile::choose_hunt_animal(int skill_level)

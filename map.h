@@ -129,7 +129,9 @@ struct Map_tile
 
   bool can_build(Area_type area);
 
+  Mineral_amount* lookup_mineral(Mineral mineral);
   int get_mineral_amount(Mineral mineral);
+  bool remove_mineral(Mineral mineral); // Returns false if we didn't have it
 
 // Randomly chooses an animal, weighted by population; may return ANIMAL_NULL
   Animal choose_hunt_animal(int skill_level);
