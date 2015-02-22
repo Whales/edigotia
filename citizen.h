@@ -120,7 +120,9 @@ struct Citizens
   int morale_points;
   int starvation;
 
-  std::map<Resource,int>  possessions;  // These modify morale.
+// consumption is how much of each resource we consume daily.  Generally these
+// will be luxuries.  This does NOT include food.
+  std::map<Resource,int> consumption;
   std::map<Luxury_type,Resource> luxury_demands;  // Which luxury of each type?
   std::vector<Morale_modifier> morale_modifiers;
 
