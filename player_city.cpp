@@ -845,9 +845,9 @@ void Player_city::do_turn()
         }
         add_message(MESSAGE_URGENT, "We have run out of food!");
         resources[RES_FOOD] = 0;
-      }
-    }
-  }
+      } // resources[RES_FOOD] < type_consumption
+    } // for (int i = CIT_MAX - 1; i > CIT_NULL; i--)
+  } // resources[RES_FOOD] < food_consumed
 
 // Handle building production.
   for (int i = 0; i < buildings.size(); i++) {
@@ -998,14 +998,12 @@ void Player_city::do_turn()
   if (!expend_resource(RES_GOLD, wages)) {
 // TODO: Consequences for failure to pay wages!
     resources[RES_GOLD] = 0;
-    minerals[MINERAL_GOLD] = 0;
   }
 
 // Lose gold to corruption.
   int corruption = get_corruption_amount();
   if (!expend_resource(RES_GOLD, corruption)) {
     resources[RES_GOLD] = 0;
-    minerals[MINERAL_GOLD] = 0;
 // TODO: Consequences for failure to pay corruption?
   }
 
@@ -1019,11 +1017,7 @@ void Player_city::do_turn()
       for (std::map<Resource,int>::iterator it = maintenance.begin();
            it != maintenance.end();
            it++) {
-        if (total_maintenance.count(it->first)) {
-          total_maintenance[it->first] += it->second;
-        } else {
-          total_maintenance[it->first] = it->second;
-        }
+        total_maintenance[it->first] += it->second;
       }
     }
   }
@@ -1034,11 +1028,7 @@ void Player_city::do_turn()
       for (std::map<Resource,int>::iterator it = maintenance.begin();
            it != maintenance.end();
            it++) {
-        if (total_maintenance.count(it->first)) {
-          total_maintenance[it->first] += it->second;
-        } else {
-          total_maintenance[it->first] = it->second;
-        }
+        total_maintenance[it->first] += it->second;
       }
     }
   }
@@ -1055,7 +1045,7 @@ void Player_city::do_turn()
     Resource res_export = Resource(i);
     int export_amt = get_export(res_export);
     if (resources[res_export] >= export_amt) {
-      resources[res_export] += export_amt;
+      resources[res_export] -= export_amt;
     } else {
 // TODO: consequences for failure to export
     }
