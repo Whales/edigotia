@@ -101,6 +101,13 @@ void init_resource_data()
     _rname("unicorn horn");
     _rcolor(c_pink);
 
+  _resource(RES_SALT);
+    _rname("salt");
+    _rcolor(c_white);
+    _luxury(LUX_NULL);  // Salt's technical a spice, but it's universally wanted
+    _demand(100);
+    _morale(6);
+
   _resource(RES_PEPPER);
     _rname("pepper");
     _rcolor(c_dkgray);
@@ -126,8 +133,8 @@ void init_resource_data()
     _rname("cannabis");
     _rcolor(c_green);
     _luxury(LUX_SMOKABLE);
-    _demand(50);
-    _morale(10);
+    _demand(40);
+    _morale(5);
 
   _resource(RES_AMANITAS);
     _rname("amanitas");
@@ -366,6 +373,13 @@ void init_resource_data()
     _mpercent(70);
     _mvalue(25);
     _mcolor(c_cyan);
+    _mhidden();
+
+  _mineral(MINERAL_SALT);
+    _mname("salt");
+    _mpercent(50);
+    _mvalue(18);
+    _mcolor(c_white);
     _mhidden();
 
   _mineral(MINERAL_GEMS);

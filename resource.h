@@ -39,6 +39,7 @@ enum Resource
 
 // Luxuries - these impart morale
   // Spices
+  RES_SALT,
   RES_PEPPER,
   RES_CINNAMON,
   // Smokeables
@@ -179,6 +180,7 @@ enum Mineral
   MINERAL_IRON,
 
 // Rare valuables
+  MINERAL_SALT,
   MINERAL_GEMS, // TODO: Should this be broken out into different TYPES of gems?
   MINERAL_GOLD,
 
