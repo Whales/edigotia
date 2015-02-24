@@ -38,6 +38,7 @@ enum Morale_mod_type
   MORALE_MOD_NULL = 0,
 
 // Good modifiers
+  MORALE_MOD_LUXURY,
   MORALE_MOD_FESTIVAL,
 
 // Bad modifiers
@@ -52,9 +53,12 @@ std::string morale_mod_type_name(Morale_mod_type type);
 
 struct Morale_modifier
 {
-  Morale_modifier( Morale_mod_type T = MORALE_MOD_NULL, int A = 0 ) :
-    type (T), amount (A) { }
+  Morale_modifier( Morale_mod_type T = MORALE_MOD_NULL, int A = 0,
+                   Resource L = RES_NULL ) :
+    type (T), amount (A), luxury (L) { }
 
+// get_name() returns morale_mod_type_name(type) unless it's MORALE_MOD_LUXURY,
+// in which case we refer to the resource name.
   std::string get_name(); // returns morale_mod_type_name(type)
 
   std::string save_data();
@@ -62,6 +66,7 @@ struct Morale_modifier
 
   Morale_mod_type type;
   int amount; // Mesaured in 1/10th of a morale percentage.
+  Resource luxury;  // for MORALE_MOD_LUXURY, we need the resource consumed
 };
 
 class City;
@@ -96,6 +101,10 @@ struct Citizens
  * do the same random pick, but strongly weight things towards NOT changing.
  */
   void pick_luxuries(City* city);
+// consume_luxuries() looks at consumption[] and attempts to deduct those
+// resources from city, gaining a Morale_modifier in return.  If city doesn't
+// have the resources, it's removed from consumption[].
+  void consume_luxuries(City* city);
 
   void decrease_morale_mods();
 // add_possession() returns the number of items we did not take.  We will only
@@ -103,7 +112,8 @@ struct Citizens
   int add_possession(Resource_amount res);
   int add_possession(Resource res, int amount);
 
-  void add_morale_modifier(Morale_mod_type type, int amount);
+  void add_morale_modifier(Morale_mod_type type, int amount,
+                           Resource luxury = RES_NULL);
 
   void add_citizens   (int amount);
   void remove_citizens(int amount);
