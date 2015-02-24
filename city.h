@@ -79,6 +79,8 @@ public:
 // such as the resources produced by livestock when they die
 
 // Total amount produced daily, including from buildings and imports
+// Note that this generic City version just returns 0, since we don't have
+// Areas and Buildings, even fake ones.
   virtual int get_gross_resource_production (Resource res);
 // Total amount expended daily, including use by citizens and exports
   virtual int get_resource_consumption(Resource res);
