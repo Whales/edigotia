@@ -361,6 +361,9 @@ int City::get_resource_consumption(Resource res)
   int ret = 0;
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
     ret += population[i].consumption[res];
+    if (res == RES_FOOD) {  // Special case
+      ret += get_food_consumption( Citizen_type(i) );
+    }
   }
   return ret;
 }
