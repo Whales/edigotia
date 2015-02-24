@@ -30,9 +30,9 @@ std::string Citizens::save_data()
   ret << tax_morale << " ";
   ret << morale_points << " ";
   ret << starvation << std::endl;
-  ret << possessions.size() << " ";
-  for (std::map<Resource,int>::iterator it = possessions.begin();
-       it != possessions.end();
+  ret << consumption.size() << " ";
+  for (std::map<Resource,int>::iterator it = consumption.begin();
+       it != consumption.end();
        it++) {
     ret << int(it->first) << " " << it->second << " ";
   }
@@ -58,9 +58,9 @@ bool Citizens::load_data(std::istream& data)
   data >> count >> employed >> wealth >> tax_morale >> morale_points >>
           starvation;
 
-  int num_possessions;
-  data >> num_possessions;
-  for (int i = 0; i < num_possessions; i++) {
+  int num_consumption;
+  data >> num_consumption;
+  for (int i = 0; i < num_consumption; i++) {
     int tmpres, tmpnum;
     data >> tmpres >> tmpnum;
     if (tmpres <= 0 || tmpres >= RES_MAX) {
@@ -68,7 +68,7 @@ bool Citizens::load_data(std::istream& data)
                tmpres, RES_MAX - 1);
       return false;
     }
-    possessions[Resource(tmpres)] = tmpnum;
+    consumption[Resource(tmpres)] = tmpnum;
   }
 
   int num_moralemod;
@@ -116,23 +116,7 @@ int Citizens::get_morale_percentage()
   for (int i = 0; i < morale_modifiers.size(); i++) {
     ret += morale_modifiers[i].amount / 10;
   }
-  for (int i = 0; i < RES_MAX; i++) {
-    Resource res = Resource(i);
-    Resource_datum* res_dat = Resource_data[res];
-    int res_demand = (res_dat->demand * count) / 100;
-    int res_morale = res_dat->morale;
-// If this luxury is not the one we want, then it only gives 10% the morale!
-    Luxury_type lux_type = res_dat->luxury_type;
-    if (lux_type != LUX_NULL && luxury_demands[lux_type] != res) {
-      res_morale /= 10;
-    }
-    if (possessions.count(res) >= res_demand) {
-      ret += res_morale;
-    } else if (possessions.count(res) > 0) {
-// If we don't meet demand, give up to 50% of the morale
-      ret += (res_morale * possessions.count(res)) / (2 * res_demand);
-    }
-  }
+
   return ret;
 }
 
@@ -141,12 +125,16 @@ int Citizens::get_starvation_chance()
   if (count == 0) {
     return 0;
   }
+/* Starvation / count gives us the average number of days that each citizen has
+ * been without food.  We then square that and divide by 3 to get the chance
+ * that EACH citizen much pass to survive.  Thus if we've been 5 days without
+ * food, we have an 8% chance to die; if it's been 10 days we have a 33% chance
+ * to die; and once it's been 18 days we have a 100% chance to die (meaning that
+ * our entire population will be wiped out).
+ * TODO: It would be nice to take our health into account here!
+ */
   int ret = starvation / count;
-// Round randomly.
-  int remainder = starvation % count;
-  if (rng(1, count) <= remainder) {
-    ret++;
-  }
+  ret = (ret * ret) / 3;
   return (ret > 100 ? 100 : ret);
 }
 
@@ -191,7 +179,7 @@ void Citizens::reset()
   starvation    = 0;
   morale_points = 0;
 
-  possessions.clear();
+  consumption.clear();
   morale_modifiers.clear();
 }
 
@@ -247,6 +235,49 @@ void Citizens::pick_luxuries(City* city)
 
 }
 
+void Citizens::consume_luxuries(City* city)
+{
+  if (!city) {
+    debugmsg("Citizens::consume_luxuries(NULL) called!");
+    return;
+  }
+
+  std::vector<Resource> to_erase;
+  for (std::map<Resource,int>::iterator it = consumption.begin();
+       it != consumption.end();
+       it++) {
+    Resource res = it->first;
+    int amount = it->second;
+    if (city->expend_resource(res, amount)) {
+      Resource_datum* res_dat = Resource_data[res];
+      int res_demand = (res_dat->demand * count) / 100;
+      int res_morale = res_dat->morale;
+      int morale_gain = 0;
+// If this luxury is not the one we want, then it only gives 40% the morale!
+      if (it->second >= res_demand) {
+        morale_gain = res_morale;
+      } else if (it->second > 0) {
+// If we don't meet demand, give partial morale.
+        morale_gain = (res_morale * consumption[res]) / (res_demand);
+      }
+      Luxury_type lux_type = res_dat->luxury_type;
+      if (lux_type != LUX_NULL && luxury_demands[lux_type] != RES_NULL &&
+          luxury_demands[lux_type] != res) {
+        morale_gain *= .4;
+      }
+      add_morale_modifier(MORALE_MOD_LUXURY, morale_gain * 10, res);
+
+    } else {  // city didn't have enough resources!
+      to_erase.push_back(it->first);
+    }
+  } // for (std::map<Resource,int>::iterator it = consumption.begin() ... )
+
+// Erase anything we've slated for erasure
+  for (int i = 0; i < to_erase.size(); i++) {
+    consumption.erase( to_erase[i] );
+  }
+}
+
 void Citizens::decrease_morale_mods()
 {
   for (int i = 0; i < morale_modifiers.size(); i++) {
@@ -255,7 +286,9 @@ void Citizens::decrease_morale_mods()
     } else if (morale_modifiers[i].amount < 0) {
       morale_modifiers[i].amount++;
     }
-    if (morale_modifiers[i].amount == 0) {
+// Luxuries are always a single-turn modifier!
+    if (morale_modifiers[i].type == MORALE_MOD_LUXURY ||
+        morale_modifiers[i].amount == 0) {
       morale_modifiers.erase( morale_modifiers.begin() + i);
       i--;
     }
@@ -272,19 +305,21 @@ int Citizens::add_possession(Resource res, int amount)
   int had = 0;
   Resource_datum* res_dat = Resource_data[res];
   int limit = (count * res_dat->demand) / 100;
-  if (possessions.count(res)) {
-    had = possessions[res];
+  if (consumption.count(res)) {
+    had = consumption[res];
   }
   if (had + amount > limit) {
     int left = amount - (limit - had);
-    possessions[res] = limit;
+    consumption[res] = limit;
     return left;
   }
-  possessions[res] += amount;
+  consumption[res] += amount;
   return 0;
 }
 
-void Citizens::add_morale_modifier(Morale_mod_type type, int amount)
+// luxury defaults to RES_NULL
+void Citizens::add_morale_modifier(Morale_mod_type type, int amount,
+                                   Resource luxury)
 {
   if (amount == 0 || type == MORALE_MOD_NULL || type == MORALE_MOD_MAX ||
       count == 0) {
@@ -292,12 +327,13 @@ void Citizens::add_morale_modifier(Morale_mod_type type, int amount)
   }
 // Check if we have a modifier of that type.
   for (int i = 0; i < morale_modifiers.size(); i++) {
-    if (morale_modifiers[i].type == type) {
+    if (morale_modifiers[i].type == type &&
+        morale_modifiers[i].luxury == luxury) {
       morale_modifiers[i].amount += amount;
       return;
     }
   }
-  Morale_modifier mod(type, amount);
+  Morale_modifier mod(type, amount, luxury);
   morale_modifiers.push_back(mod);
 }
 
@@ -371,6 +407,7 @@ std::string morale_mod_type_name(Morale_mod_type type)
   switch (type) {
     case MORALE_MOD_NULL:     return "NULL";
     case MORALE_MOD_FESTIVAL: return "festival";
+    case MORALE_MOD_LUXURY:   return "luxury";
     case MORALE_MOD_HUNGER:   return "hunger";
     case MORALE_MOD_DEATH:    return "death";
     case MORALE_MOD_MAX:      return "BUG - MORALE_MOD_MAX";
@@ -381,6 +418,11 @@ std::string morale_mod_type_name(Morale_mod_type type)
 
 std::string Morale_modifier::get_name()
 {
+  if (type == MORALE_MOD_LUXURY) {
+    std::stringstream ret;
+    ret << "Luxury: " << Resource_data[luxury]->name;
+    return ret.str();
+  }
   return morale_mod_type_name(type);
 }
 
