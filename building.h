@@ -227,6 +227,8 @@ struct Building
 
 // MINES ONLY
   int get_empty_shafts();
+// If we have any minerals with amount HIDDEN_RESOURCE attempt to discover them
+  void discover_minerals(City* city);
   int shaft_output; // How much of each mineral does a single shaft output?
 
   std::vector<Mineral_amount> minerals_mined;

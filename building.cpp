@@ -4,6 +4,7 @@
 #include "window.h" // For debugmsg
 #include "stringfunc.h" // Needed in lookup_building_category()
 #include "player_city.h"  // For close()
+#include "rng.h"
 #include <sstream>
 
 // R defaults to RES_NULL, A defaults to 1
@@ -326,6 +327,47 @@ int Building::get_empty_shafts()
   return (max_shafts - shafts_used);
 }
 
+void Building::discover_minerals(City* city)
+{
+  if (!city) {
+    debugmsg("Building::discover_minerals(NULL) called!");
+    return;
+  }
+
+  Map_tile* tile = city->map.get_tile(pos);
+  if (!tile) {
+    debugmsg("In Building::discover_minerals() our Map_tile is NULL!");
+    return;
+  }
+
+  Player_city* pl_city = NULL;
+  if (city->is_player_city()) {
+    pl_city = static_cast<Player_city*>(city);
+  }
+
+  int skill = Race_data[city->get_race()]->skill_level[SKILL_MINING];
+/* chance is our chance to TRY to find the mineral.  There's two rolls; a
+ * 1-in-chance roll, and a roll against the amount of the mineral buried.  The
+ * second roll is skipped if there's an infinite amount buried; and generally
+ * speaking it's pretty easy anyway.
+ */
+
+  int chance = 102 - 20 * skill;
+
+  for (int i = 0; i < minerals_mined.size(); i++) {
+    Mineral_amount* min_amt = &(minerals_mined[i]);
+    int amount_buried = tile->get_mineral_amount(min_amt->type);
+    if (min_amt->amount == HIDDEN_RESOURCE && one_in(chance) &&
+        (amount_buried == INFINITE_RESOURCE || rng(1, 20000) < amount_buried)) {
+      min_amt->amount = 0;
+      if (pl_city) {
+        pl_city->add_message(MESSAGE_MAJOR, "Our mine has discovered %s!",
+                             Mineral_data[min_amt->type]->name.c_str());
+      }
+    }
+  }
+}
+
 int Building::get_max_hunt_prey()
 {
   if (hunting_target == ANIMAL_NULL) {
@@ -381,7 +423,7 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
   Building_datum* datum = get_building_datum();
 
   if (!datum) {
-    debugmsg("Encountered NULL datum in Building::do_production()!");
+    debugmsg("Encountered NULL datum in Building::get_resource_production()!");
     return std::map<Resource,int>();
   }
 
@@ -403,6 +445,10 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
         switch (res_amt.type) {
           case RES_FARMING: {
             skill = Race_data[city->get_race()]->skill_level[SKILL_FARMING];
+// Bonus resources are listed in our data as per 100 crops.  Thus, we store them
+// in a seperate map, then divide by 100 after all crops are processed to avoid
+// rounding as much as possible.
+            std::map<Resource,int> bonus_resources;
             int total_food = 0;
             for (int n = 0; n < crops_grown.size(); n++) {
               int amount = crops_grown[n].amount;
@@ -413,6 +459,7 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
                 int food = crop_dat->food;
                 food *= amount;
                 food *= field_output;
+                total_food += food;
 // Look for any non-food resources the crop produces.
                 for (int m = 0; m < crop_dat->bonus_resources.size(); m++) {
                   Resource_amount res_amt = crop_dat->bonus_resources[m];
@@ -420,8 +467,9 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
                   res_amt.amount *= field_output;
 // The amount needs to be divided by 100 since field_output is the terrain's
 // farmability, which is a percentage (0 to 100, should be 0.0 to 1.0).
+// (We'll divide by 100 again before adding bonus_resources to resource_gains)
                   res_amt.amount /= 100;
-                  resource_gains[res_amt.type] += res_amt.amount;
+                  bonus_resources[res_amt.type] += res_amt.amount;
                 }
               } // if (amount > 0)
             } // for (int n = 0; n < crops_grown.size(); n++)
@@ -432,6 +480,11 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
  */
             total_food /= 10000;
             resource_gains[RES_FOOD] += total_food;
+            for (std::map<Resource,int>::iterator it = bonus_resources.begin();
+                 it != bonus_resources.end();
+                 it++) {
+              resource_gains[it->first] += it->second / 100;
+            }
           } break;  // case RES_FARMING
 
           case RES_HUNTING:
