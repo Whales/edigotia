@@ -2,21 +2,30 @@ Player_city::do_turn() is a big, complex function which does a lot of stuff;
 basically everything that a city needs to do each turn.  Here's a run-down of
 what it does:
 
--Decrease the duration of citizens' morale modifiers (removing them if
+>Decrease the duration of citizens' morale modifiers (removing them if
  necessary)
   -Calls Citizens::decrease_morale_mods()
 
--Gives us birth_points
--Checks if birth_points >= 100; if so add a birth
--Call birth_citizens() to actually add a new citizen for each birth
+< Decrease morale modifiers
 
--Adds resources that're imported
+>Birth citizens
+  -bith_points += get_daily_birth_points()
+  -Checks if birth_points >= 100; if so add a birth
+  -Call birth_citizens() to actually add a new citizen for each birth
+
+< Birth citizens
+
+>Adds resources that're imported
   -Calls get_import() on each and every Resource
 
--Receive taxes
+< Gain imports
+
+>Receive taxes
   -Calls get_taxes()
 
--Starvation check.  For each citizen class:
+< Receive taxes
+
+>Starvation check.  For each citizen class:
   -Get Citizens::get_starvation_chance().
   -Modify that chance by squaring it and dividing by 3.
   -Make N chance-in-100 checks, where N is the population of that class.  If the
@@ -25,7 +34,9 @@ what it does:
    class in question (not all of them!)
   -Call kill_citizens() to actually remove the dead citizens.
 
--Handle livestock.  Iterate over our std::map $livestock:
+< Starvation check
+
+>Handle livestock.  Iterate over our std::map $livestock:
   -Get our race's livestock skill
   -Calculate how much daily food we get from the animal; round it randomly and
    adjust based on skill.  Call gain_resource() to add the food.
@@ -50,7 +61,9 @@ what it does:
     -Generate a message that reflects how many were born and how many had to be
      slaughtered due to space constraints.
 
--Produce non-food resources from our farms' crops.
+< Handle livestock
+
+!Produce non-food resources from our farms' crops.
   -Iterate over all areas, looking for buildings with at least 1 worker that
    produce RES_FARMING.
     -Iterate over every crop grown.  Fetch the Crop_datum.
@@ -59,9 +72,13 @@ what it does:
           -Divide by 500(???)
         -Call gain_resource()
 
--Gain food produced [gain_resource( RES_FOOD, get_food_production() )]
+< Produce non-food resources
 
--Consume food:
+!Gain food produced [gain_resource( RES_FOOD, get_food_production() )]
+
+< Gain food produced
+
+>Consume food:
   -Set $food_consumed to get_food_consumption()
   -If we have at least $food_consumed food:
     -Iterate over all citizen classes; reduce their starvation.
@@ -70,7 +87,9 @@ what it does:
       -Either they eat the food they need, or they eat as much as there is and
        gain starvation to make up the deficit.
 
--Handle building production:
+< Consume food
+
+!Handle building production:
   -Iterate over all buildings in existence (NOT area buildings).  If it's open
    and its build_queue is not empty:
     -Figure out how many units of the recipe to build:
@@ -87,7 +106,9 @@ what it does:
       -If the amount is <= 0 (and isn't infinite), remove the Recipe_amount from
        our build_queue.
 
--Handle mines, sawmills, and hunting camps:
+< Handle building production
+
+!Handle mines, sawmills, and hunting camps:
   -Iterate over all areas.
     -If it produces RES_MINING:
       -Iterate over the building's minerals_mined.
@@ -118,17 +139,25 @@ what it does:
     -If it produces RES_HUNTING:
       -Call do_hunt()
 
--Add 1 to hunt_record_days
+< Handle mines, sawmills, hunting camps
 
--Fetch get_total_wages().
+>Add 1 to hunt_record_days
+
+>Pay wages
+  -wages = get_total_wages()
   -Try to expend_resources(RES_GOLD, wages)
     -If this fails, set resources[RES_GOLD] to 0.
 
--Fetch get_corruption_amount().
+< Pay wages
+
+>Pay corruption
+  -corruption = get_total_corruption()
   -Try to expend_resources(RES_GOLD, corruption)
     -If this fails, set resources[RES_GOLD] to 0.
 
--Pay building maintenance:
+< Pay corruption
+
+>Pay building maintenance:
   -Iterate over all areas, using only the open ones.
     -Fetch the area's get_maintenance() and iterate over it.
       -Add each maintenance resource to $total_maintenance.
@@ -139,34 +168,46 @@ what it does:
   -Expend the resources in $total_maintenance.  If we can't... well there's no
    consequences yet.  TODO!
 
--Export resources:
+< Pay building maintenance
+
+>Export resources:
   -Iterate over all Resources.
   -Set $export_amt to get_export()
   -Directly deduct $export_amt from resources[]
     -If we don't have enough... there's no consequences yet.  TODO!
 
--Check get_food_cap() and ensure resources[RES_FOOD] isn't above it.
+< Export resources
 
--Make mines discover new minerals:
+>Check get_food_cap() and ensure resources[RES_FOOD] isn't above it.
+
+< Food cap
+
+!Make mines discover new minerals:
   -Iterate over all areas.
     -Iterate over the area's building's minerals_mined.
       -If the minerals_mined's amount is HIDDEN_RESOURCE (i.e. we haven't
        actually found it yet), roll to randomly discover it.
         -If we succeed, set the minerals_mined's amount to 0.
 
--Build areas in our queue:
+< Mines discover new minerals
+
+>Build areas in our queue:
   -If the queue is not empty, look at the first item in the queue.
     -Decrease the days of construction remaining by 1.
     -If it hits 0, add a message, remove it from the queue, and call
      add_open_area().
 
--Build buildings in our queue:
+< Build areas in our queue
+
+>Build buildings in our queue:
   -If the queue is not empty, look at the first item in the queue.
     -Decrease the days of construction remaining by 1.
     -If it hits 0, add a message, remove it from the queue, and call
      add_open_building().
 
--Call check_unlockables().
+< Build buildings in our queue
+
+>Call check_unlockables().
 
 ________________________________________________________________________________
 
