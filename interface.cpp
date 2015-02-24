@@ -2644,148 +2644,267 @@ void Interface::luxury_management()
   Window w_luxuries(0, 0, 80, 24);
 
   std::vector<Resource>     luxuries;
-  std::vector<int>  luxury_production, luxury_available, luxury_morale,
-                    peasants_have, merchants_have, burghers_have, luxury_demand;
-  std::vector<std::string>  luxury_name, luxury_production_str,
-                            luxury_available_str, luxury_morale_str,
-                            peasants_have_str, merchants_have_str,
-                            burghers_have_str, luxury_demand_str;
+  std::vector<std::string>  luxury_name;
 
 // Populate our vectors.  Start at 1 to skip RES_NULL.
   for (int i = 1; i < RES_MAX; i++) {
     Resource res = Resource(i);
     Resource_datum* res_dat = Resource_data[res];
-    if (res_dat->morale > 0 && GAME->city->has_resource(res)) {
-// It's a luxury, and we have it!
-      luxuries.push_back(res);
-      luxury_name.push_back( res_dat->name );
+    if (res_dat->morale > 0) {
+// It's a luxury!
       int lux_production  = GAME->city->get_gross_resource_production(res);
-      int lux_available   = GAME->city->get_net_resource_production(res);
-      int lux_morale      = res_dat->morale;
-      int lux_demand      = res_dat->demand;
+      if (lux_production > 0) {
+// It's a luxury, and we have it!
+        luxuries.push_back(res);
+        std::stringstream ss_name;
+        ss_name << "<c=" << color_tag(res_dat->color) << ">" << res_dat->name <<
+                   "<c=/>";
+        luxury_name.push_back( ss_name.str() );
+      }
+    }
+  }
 
-      int lux_peasants    =
-        GAME->city->population[CIT_PEASANT].consumption[res];
-      int lux_merchants   =
-        GAME->city->population[CIT_MERCHANT].consumption[res];
-      int lux_burghers    =
-        GAME->city->population[CIT_BURGHER].consumption[res];
-
-      luxury_production.push_back(lux_production);
-      luxury_production_str.push_back( itos(lux_production) );
-
-      luxury_available.push_back(lux_available);
-      luxury_available_str.push_back( itos(lux_available) );
-
-      luxury_morale.push_back(lux_morale);
-      luxury_morale_str.push_back( itos(lux_morale) );
-
-      luxury_demand.push_back(lux_demand);
-      luxury_demand_str.push_back( itos(lux_demand) );
-
-      peasants_have.push_back(lux_peasants);
-      peasants_have_str.push_back( itos(lux_peasants) );
-
-      merchants_have.push_back(lux_merchants);
-      merchants_have_str.push_back( itos(lux_merchants) );
-
-      burghers_have.push_back(lux_burghers);
-      burghers_have_str.push_back( itos(lux_burghers) );
-    } // if (res_dat->morale > 0 && GAME->city->has_resource(res))
-  } // for (int i = 1; i < RES_MAX; i++)
-
-// Link up our interface to our vectors.
-  i_luxuries.ref_data("list_luxury",         &luxury_name          );
-  i_luxuries.ref_data("list_production",     &luxury_production_str);
-  i_luxuries.ref_data("list_available",      &luxury_available_str );
-  i_luxuries.ref_data("list_morale",         &luxury_morale_str    );
-  i_luxuries.ref_data("list_peasants_have",  &peasants_have_str    );
-  i_luxuries.ref_data("list_merchants_have", &merchants_have_str   );
-  i_luxuries.ref_data("list_burghers_have",  &burghers_have_str    );
-  i_luxuries.ref_data("list_peasants_want",  &luxury_demand_str    );
-  i_luxuries.ref_data("list_merchants_want", &luxury_demand_str    );
-  i_luxuries.ref_data("list_burghers_want",  &luxury_demand_str    );
-
-  i_luxuries.select("list_luxuries");
+  i_luxuries.ref_data("list_luxury_name", &luxury_name);
+  i_luxuries.select("list_luxury_name");
+  int cur_index = -1; // -1 ensures the first loop will always populated values
+  Resource cur_res;
 
   while (true) {
+    int new_index = i_luxuries.get_int("list_luxury_name");
 
-    int index = i_luxuries.get_int("list_luxuries");
-    Resource res = RES_NULL;
-    if (index >= 0 && index < luxuries.size()) {
-      res = luxuries[index];
-    }
+    if (new_index != cur_index &&
+        new_index >= 0 && new_index < luxuries.size()) {
+      cur_index = new_index;
+      cur_res = luxuries[cur_index];
+      Resource_datum* res_dat = Resource_data[cur_res];
+      Luxury_type lux_type = res_dat->luxury_type;
+
+      i_luxuries.set_data("text_luxury_type", luxury_type_name(lux_type));
+      i_luxuries.set_data("num_morale", res_dat->morale);
+      i_luxuries.set_data("num_morale", c_ltgreen);
+
+      int production = GAME->city->get_gross_resource_production(cur_res);
+      int available  = GAME->city->get_net_resource_production  (cur_res);
+
+      i_luxuries.set_data("num_production", production);
+
+      i_luxuries.set_data("num_available", available);
+      if (available == 0) {
+        i_luxuries.set_data("num_available", c_dkgray);
+      } else {
+        i_luxuries.set_data("num_available", c_ltgray);
+      }
+
+      int stockpile = GAME->city->get_resource_amount(cur_res);
+      i_luxuries.set_data("num_stockpile", stockpile);
+      if (stockpile == 0) {
+        i_luxuries.set_data("num_stockpile", c_dkgray);
+      } else {
+        i_luxuries.set_data("num_stockpile", c_ltgray);
+      }
+
+// Citizen-class-specific values
+      for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+        Citizen_type cit = Citizen_type(i);
+        Citizens* citizens = &(GAME->city->population[i]);
+        std::string cit_name = citizen_type_name(cit, true);
+// Set up the names of the fields we'll be populating.
+        std::stringstream category_name, have_name, want_name, gain_name,
+                          total_name;
+        category_name << "text_category_" << cit_name;
+        have_name     << "text_" << cit_name << "_have";
+        want_name     << "text_" << cit_name << "_want";
+        gain_name     << "text_" << cit_name << "_morale_gained";
+        total_name    << "text_" << cit_name << "_morale_total";
+
+// Add a description of which luxury of the current resource's Luxury_type each
+// Citizen_type wants.  If it's LUX_NULL, it's always in demand.
+        std::stringstream ss_category;
+        if (lux_type == LUX_NULL) {
+          ss_category << "<c=white>" << res_dat->name <<
+                         " is always in demand.<c=/>";
+        } else {
+          ss_category << luxury_type_name(lux_type) << " demanded: ";
+          if (citizens->luxury_demands.count(lux_type) == 0 ||
+              citizens->luxury_demands[lux_type] == RES_NULL) {
+            ss_category << "<c=white>Any<c=/>";
+          } else {
+            Resource res_demanded = citizens->luxury_demands[lux_type];
+            if (citizens->luxury_demands[lux_type] == cur_res) {
+              ss_category << "<c=ltgreen>";
+            } else {
+              ss_category << "<c=ltred>";
+            }
+            ss_category << Resource_data[res_demanded]->name << "<c=/>";
+          }
+        } // lux_type != LUX_NULL
+        i_luxuries.set_data(category_name.str(), capitalize(ss_category.str()));
+
+        std::stringstream ss_have;
+        int have = citizens->consumption[cur_res];
+        int want = (res_dat->demand * citizens->count) / 100;
+        if (have == 0) {
+          ss_have << "<c=dkgray>";
+        } else if (have >= want) {
+          ss_have << "<c=ltgreen>";
+        }
+        ss_have << have << "<c=/>";
+        i_luxuries.set_data(have_name.str(), ss_have.str());
+
+        std::stringstream ss_want;
+        if (want == 0) {
+          ss_want << "<c=dkgray>";
+        }
+        ss_want << want << "<c=/>";
+        i_luxuries.set_data(want_name.str(), ss_want.str());
+
+        int morale_gain = 0;
+        if (citizens->count == 0) {
+          morale_gain = 0;
+        } else if (have >= want) {
+          morale_gain = res_dat->morale;
+        } else if (have > 0) {
+          morale_gain = (res_dat->morale * have) / (want);
+        }
+        if (lux_type != LUX_NULL &&
+            citizens->luxury_demands[lux_type] != RES_NULL && 
+            citizens->luxury_demands[lux_type] != cur_res) {
+          morale_gain *= .4;
+        }
+        std::stringstream ss_gain;
+        if (morale_gain == 0) {
+          ss_gain << "<c=dkgray>";
+        } else if (have >= want) {
+          ss_gain << "<c=ltgreen>";
+        }
+        ss_gain << morale_gain << "<c=dkgray>";
+        i_luxuries.set_data(gain_name.str(), ss_gain.str());
+
+        std::stringstream ss_total;
+        int total_morale = citizens->get_morale_percentage();
+        if (total_morale < -50) {
+          ss_total << "<c=ltred>";
+        } else if (total_morale < 0) {
+          ss_total << "<c=red>";
+        } else if (total_morale == 0) {
+          ss_total << "<c=ltgray>";
+        } else if (total_morale < 50) {
+          ss_total << "<c=green>";
+        } else if (total_morale < 95) {
+          ss_total << "<c=ltgreen>";
+        } else {
+          ss_total << "<c=white>";
+        }
+        ss_total << total_morale << "<c=/>";
+        i_luxuries.set_data(total_name.str(), ss_total.str());
+      } // for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++)
+    } //if (new_index != cur_index && ...)
 
     i_luxuries.draw(&w_luxuries);
     w_luxuries.refresh();
 
+    Citizens* peasants  = &(GAME->city->population[CIT_PEASANT] );
+    Citizens* merchants = &(GAME->city->population[CIT_MERCHANT]);
+    Citizens* burghers  = &(GAME->city->population[CIT_BURGHER] );
+    int available = GAME->city->get_net_resource_production(cur_res);
+    int stockpile = GAME->city->get_resource_amount(cur_res);
+
     long ch = input();
+
     switch (ch) {
 
       case 'w':
       case 'W':
-        if (res != RES_NULL && peasants_have[index] > 0) {
-          GAME->city->population[CIT_PEASANT].consumption[res]--;
-          peasants_have[index]--;
-          luxury_available[index]++;
-          peasants_have_str[index]    = itos(peasants_have[index]   );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (peasants->consumption[cur_res] > 0) {
+          peasants->consumption[cur_res]--;
+          cur_index = -1; // Force a data refresh
         }
         break;
 
       case 'e':
       case 'E':
-        if (res != RES_NULL && luxury_available[index] > 0) {
-          GAME->city->population[CIT_PEASANT].consumption[res]++;
-          peasants_have[index]++;
-          luxury_available[index]--;
-          peasants_have_str[index]    = itos(peasants_have[index]   );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (peasants->count > 0 &&
+            (available > 0 ||
+             stockpile + available >= peasants->consumption[cur_res] + 1)) {
+          peasants->consumption[cur_res]++;
+          cur_index = -1; // Force a data refresh
         }
         break;
 
       case 's':
       case 'S':
-        if (res != RES_NULL && merchants_have[index] > 0) {
-          GAME->city->population[CIT_MERCHANT].consumption[res]--;
-          merchants_have[index]--;
-          luxury_available[index]++;
-          merchants_have_str[index]   = itos(merchants_have[index]  );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (merchants->consumption[cur_res] > 0) {
+          merchants->consumption[cur_res]--;
+          cur_index = -1; // Force a data refresh
         }
         break;
 
       case 'd':
       case 'D':
-        if (res != RES_NULL && luxury_available[index] > 0) {
-          GAME->city->population[CIT_MERCHANT].consumption[res]++;
-          merchants_have[index]++;
-          luxury_available[index]--;
-          merchants_have_str[index]   = itos(merchants_have[index]  );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (merchants->count > 0 &&
+            (available > 0 ||
+             stockpile + available >= merchants->consumption[cur_res] + 1)) {
+          merchants->consumption[cur_res]++;
+          cur_index = -1; // Force a data refresh
         }
         break;
 
       case 'x':
       case 'X':
-        if (res != RES_NULL && burghers_have[index] > 0) {
-          GAME->city->population[CIT_BURGHER].consumption[res]--;
-          burghers_have[index]--;
-          luxury_available[index]++;
-          burghers_have_str[index]    = itos(burghers_have[index]   );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (burghers->consumption[cur_res] > 0) {
+          burghers->consumption[cur_res]--;
+          cur_index = -1; // Force a data refresh
         }
         break;
 
       case 'c':
       case 'C':
-        if (res != RES_NULL && luxury_available[index] > 0) {
-          GAME->city->population[CIT_BURGHER].consumption[res]++;
-          burghers_have[index]++;
-          luxury_available[index]--;
-          burghers_have_str[index]    = itos(burghers_have[index]   );
-          luxury_available_str[index] = itos(luxury_available[index]);
+        if (burghers->count > 0 &&
+            (available > 0 ||
+             stockpile + available >= burghers->consumption[cur_res] + 1)) {
+          burghers->consumption[cur_res]++;
+          cur_index = -1; // Force a data refresh
         }
+        break;
+
+      case 'a':
+      case 'A': // Disperse remaining luxury automatically
+        if (peasants->count > 0) {
+          Resource_datum* res_dat = Resource_data[cur_res];
+          int wanted = (res_dat->demand * peasants->count) / 100;
+          wanted -= peasants->consumption[cur_res];
+          if (wanted > available) {
+            wanted = available;
+          }
+          peasants->consumption[cur_res] += wanted;
+        }
+        if (merchants->count > 0 && available > 0) {
+          Resource_datum* res_dat = Resource_data[cur_res];
+          int wanted = (res_dat->demand * merchants->count) / 100;
+          wanted -= merchants->consumption[cur_res];
+          if (wanted > available) {
+            wanted = available;
+          }
+          merchants->consumption[cur_res] += wanted;
+        }
+        if (burghers->count > 0 && available > 0) {
+          Resource_datum* res_dat = Resource_data[cur_res];
+          int wanted = (res_dat->demand * burghers->count) / 100;
+          wanted -= burghers->consumption[cur_res];
+          if (wanted > available) {
+            wanted = available;
+          }
+          burghers->consumption[cur_res] += wanted;
+        }
+        cur_index = -1; // Force a data refresh.
+        break;
+
+      case 'z':
+      case 'Z': // Clear all assignments of this luxury.
+        peasants->consumption[cur_res] = 0;
+        merchants->consumption[cur_res] = 0;
+        burghers->consumption[cur_res] = 0;
+        cur_index = -1; // Force a data refresh.
         break;
 
       case 'q':
@@ -2794,10 +2913,9 @@ void Interface::luxury_management()
         return;
 
       default:
-        i_luxuries.handle_keypress(ch); // Handles scrolling up/down
+        i_luxuries.handle_keypress(ch); // Handles scrolling the list
     } // switch (ch)
   } // while (true)
-
 }
 
 void Interface::minister_supplies()
