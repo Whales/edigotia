@@ -45,6 +45,33 @@ Resource lookup_resource(std::string name)
   return RES_NULL;
 }
 
+Luxury_type lookup_luxury_type(std::string name)
+{
+  name = no_caps( trim( name ) );
+  for (int i = 0; i < LUX_MAX; i++) {
+    Luxury_type ret = Luxury_type(i);
+    if (no_caps( luxury_type_name(ret) ) == name) {
+      return ret;
+    }
+  }
+  return LUX_NULL;
+}
+
+std::string luxury_type_name(Luxury_type type)
+{
+  switch (type) {
+    case LUX_NULL:          return "NULL";
+    case LUX_SPICE:         return "spice";
+    case LUX_SMOKABLE:      return "smokable";
+    case LUX_HALLUCINOGEN:  return "hallucinogen";
+    case LUX_COATS:         return "warm coats";
+    case LUX_HOUSEWARES:    return "housewares";
+    case LUX_MAX:           return "BUG - LUX_MAX";
+    default:                return "BUG - Unnamed Luxury_type";
+  }
+  return "BUG - Escaped luxury_type_name() switch!";
+}
+
 Crop_type lookup_crop_type(std::string name)
 {
   name = no_caps( trim( name ) );

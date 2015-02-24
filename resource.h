@@ -38,14 +38,27 @@ enum Resource
   RES_UNICORN_HORN,
 
 // Luxuries - these impart morale
+  // Spices
+  RES_PEPPER,
+  RES_CINNAMON,
+  // Smokeables
+  RES_TOBACCO,
+  RES_CANNABIS,
+  // Hallucinogens
+  RES_AMANITAS,
+  RES_AYAHUASCA,
+  RES_SPICEREED,
+  // Clothing
   RES_CLOTHING,
   RES_FUR_COATS,
   RES_LEATHER_COATS,
-  RES_FURNITURE,
+  // Housewares
   RES_WOOD_HOUSEWARES,
   RES_TIN_HOUSEWARES,
   RES_COPPER_HOUSEWARES,
   RES_IRON_HOUSEWARES,
+  // Misc
+  RES_FURNITURE,
   RES_JEWELRY,
 
 // Meta-resources
@@ -63,11 +76,18 @@ enum Luxury_type
 {
   LUX_NULL = 0, // A valid option, if it's a unique luxury
 
+  LUX_SPICE,    // Food spices.
+  LUX_SMOKABLE, // A smokable soft drug
+  LUX_HALLUCINOGEN,
   LUX_COATS,
   LUX_HOUSEWARES,
 
   LUX_MAX
 };
+
+// See resource.cpp for this stuff
+Luxury_type lookup_luxury_type(std::string name);
+std::string luxury_type_name(Luxury_type type);
 
 struct Resource_datum
 {

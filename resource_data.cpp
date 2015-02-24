@@ -4,6 +4,7 @@ Resource_datum* Resource_data [RES_MAX];
 Crop_datum*     Crop_data     [CROP_MAX];
 Mineral_datum*  Mineral_data  [MINERAL_MAX];
 
+// RESOURCE MACROS
 #define _resource(n) \
   cur_id = (n)
 #define _rname(s) \
@@ -19,10 +20,12 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
 #define _meta() \
   Resource_data[cur_id]->meta = true
 
+// CROP MACROS
 #define _crop(n) \
   cur_id = (n)
 #define _cname(s) \
   Crop_data[cur_id]->name = (s)
+// percentage is the frequency of placement; what % of terrain should it cover
 #define _cpercent(s) \
   Crop_data[cur_id]->percentage = (s)
 #define _food(s) \
@@ -32,6 +35,7 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
 #define _type(s) \
   Crop_data[cur_id]->type = (s)
 
+// MINERAL MACROS
 #define _mineral(n) \
   cur_id = (n)
 #define _mpercent(s) \
@@ -97,6 +101,55 @@ void init_resource_data()
     _rname("unicorn horn");
     _rcolor(c_pink);
 
+  _resource(RES_PEPPER);
+    _rname("pepper");
+    _rcolor(c_dkgray);
+    _luxury(LUX_SPICE);
+    _demand(80);
+    _morale(5);
+
+  _resource(RES_CINNAMON);
+    _rname("cinnamon");
+    _rcolor(c_brown);
+    _luxury(LUX_SPICE);
+    _demand(40);
+    _morale(3);
+
+  _resource(RES_TOBACCO);
+    _rname("tobacco");
+    _rcolor(c_brown);
+    _luxury(LUX_SMOKABLE);
+    _demand(75);
+    _morale(5);
+
+  _resource(RES_CANNABIS);
+    _rname("cannabis");
+    _rcolor(c_green);
+    _luxury(LUX_SMOKABLE);
+    _demand(50);
+    _morale(10);
+
+  _resource(RES_AMANITAS);
+    _rname("amanitas");
+    _rcolor(c_magenta);
+    _luxury(LUX_HALLUCINOGEN);
+    _demand(5);
+    _morale(3);
+
+  _resource(RES_AYAHUASCA);
+    _rname("ayahuasca");
+    _rcolor(c_magenta);
+    _luxury(LUX_HALLUCINOGEN);
+    _demand(4);
+    _morale(3);
+
+  _resource(RES_SPICEREED);
+    _rname("spicereed");
+    _rcolor(c_magenta);
+    _luxury(LUX_HALLUCINOGEN);
+    _demand(30);
+    _morale(4);
+
   _resource(RES_CLOTHING);
     _rname("clothing");
     _rcolor(c_white);
@@ -108,20 +161,14 @@ void init_resource_data()
     _rcolor(c_brown);
     _luxury(LUX_COATS);
     _demand(10);
-    _morale(15);
+    _morale(5);
 
   _resource(RES_LEATHER_COATS);
     _rname("leather coats");
     _rcolor(c_brown);
     _luxury(LUX_COATS);
     _demand(10);
-    _morale(15);
-
-  _resource(RES_FURNITURE);
-    _rname("furniture");
-    _rcolor(c_ltred);
-    _demand(8);
-    _morale(10);
+    _morale(5);
 
   _resource(RES_WOOD_HOUSEWARES);
     _rname("wood housewares");
@@ -150,6 +197,12 @@ void init_resource_data()
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(8);
+
+  _resource(RES_FURNITURE);
+    _rname("furniture");
+    _rcolor(c_ltred);
+    _demand(8);
+    _morale(10);
 
   _resource(RES_JEWELRY);
     _rname("jewelry");
@@ -221,32 +274,38 @@ void init_resource_data()
     _cname("pepper");
     _cpercent(60);
     _type(CROPTYPE_SPICE);
-    _food(20);
+    _food(15);
+    _bonus(RES_PEPPER, 90);
 
   _crop(CROP_CINNAMON);
     _cname("cinnamon");
     _cpercent(40);
     _type(CROPTYPE_SPICE);
+    _bonus(RES_CINNAMON, 100);
 
   _crop(CROP_TOBACCO);
     _cname("tobacco");
     _cpercent(30);
     _type(CROPTYPE_DRUG);
+    _bonus(RES_TOBACCO, 100);
 
   _crop(CROP_AMANITAS);
     _cname("amanitas");
     _cpercent(10);
     _type(CROPTYPE_DRUG);
+    _bonus(RES_AMANITAS, 100);
 
   _crop(CROP_AYAHUASCA);
     _cname("ayahuasca");
     _cpercent(10);
     _type(CROPTYPE_DRUG);
+    _bonus(RES_AYAHUASCA, 100);
 
   _crop(CROP_SPICEREED);
     _cname("spicereed");
     _cpercent(8);
     _type(CROPTYPE_DRUG);
+    _bonus(RES_SPICEREED, 100);
 
   _crop(CROP_DEATHCAP);
     _cname("deathcap");
@@ -267,11 +326,14 @@ void init_resource_data()
     _cname("cotton");
     _cpercent(70);
     _type(CROPTYPE_FIBER);
+    _bonus(RES_FIBER, 100);
 
   _crop(CROP_HEMP);
     _cname("hemp");
     _cpercent(60);
     _type(CROPTYPE_FIBER);
+    _bonus(RES_FIBER, 80);
+    _bonus(RES_CANNABIS, 20);
 
 // Minerals
 
