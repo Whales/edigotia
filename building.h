@@ -36,6 +36,7 @@ enum Building_type
 // Manufacturing
   BUILD_MASONRY,
   BUILD_MINT,
+  BUILD_KITCHEN,
 
   BUILD_MAX
 };

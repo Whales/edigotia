@@ -226,4 +226,19 @@ void init_building_data()
       _uses_mineral(MINERAL_GOLD, 3);
       _uses_mineral(MINERAL_COAL, 1);
 
+  _build(BUILD_KITCHEN);
+    _category(BUILDCAT_MANUFACTURING);
+    _name("kitchen");
+    _cost(RES_GOLD,  100);
+    _cost(RES_STONE, 120);
+    _build_time(4);
+    _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
+    _upkeep(3);
+    _jobs(CIT_MERCHANT, 5);
+    _wages(4);
+    _recipe(RES_SALT, 1);
+      _recipe_name("Prepare salt");
+      _units_per_day(5);
+      _uses_mineral(MINERAL_SALT, 1);
+
 }
