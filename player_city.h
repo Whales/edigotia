@@ -77,6 +77,9 @@ public:
 
 // Standard turn functions
   virtual void do_turn();
+  void handle_livestock();
+  void feed_citizens(); // Handles starvation, too, if it occurs
+
   void check_unlockables();// Go through all unlockable items & see if we get it
 
 // Mutators
@@ -172,6 +175,9 @@ public:
 
 // Resource-related functions
   int get_resource_production(Resource res);  // From all sources
+// Total amount produced daily, including from buildings and imports
+  virtual int get_gross_resource_production (Resource res);
+
 
   // General finance
   int get_total_wages(Citizen_type type = CIT_NULL);

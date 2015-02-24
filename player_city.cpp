@@ -586,7 +586,7 @@ void Player_city::draw_map(cuss::element* e_draw, Point sel, bool radius_limited
 
 void Player_city::do_turn()
 {
-// Reduce morale modifiers for all citizens.
+// Reduce morale modifiers for all citizens, and consume luxuries.
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
     population[i].decrease_morale_mods();
   }
@@ -611,20 +611,7 @@ void Player_city::do_turn()
 // Check for starvation.
   for (int i = 1; i < CIT_MAX; i++) {
     int starve_chance = population[i].get_starvation_chance();
-// TODO: Tweak this?
-    if (starve_chance > 3) {
-      starve_chance = (starve_chance * starve_chance) / 3;
-    }
     int dead = 0;
-/* Days: Odds:  (Example: after 5 days, each citizen has an 8% chance of dying).
-     1     1%
-     2     2%
-     3     3%
-     4     5%
-     5     8%
-    10    33%
-    17    96%
-*/
     if (starve_chance >= 100) {
       dead = population[i].count; // Game over, man!
     } else if (starve_chance > 0) {
@@ -641,6 +628,132 @@ void Player_city::do_turn()
   } // for (int i = 0; i < CIT_MAX; i++)
 
 // Handle livestock.
+  handle_livestock();
+
+// Handle areas & buildings: do_production() does innate resource production,
+// manufacturing, farming, mining, and logging.  We also call do_hunt() for
+// hunting camps and discover_minerals() for mines.
+  for (int i = 0; i < areas.size(); i++) {
+    Building* build = &(areas[i].building);
+    build->do_production(this);
+    if (build->produces_resource(RES_HUNTING)) {
+      do_hunt( &(areas[i]) );
+    }
+    if (build->produces_resource(RES_MINING)) {
+      build->discover_minerals(this);
+    }
+  }
+  for (int i = 0; i < buildings.size(); i++) {
+    buildings[i].do_production(this);
+  }
+
+// Increment hunt_record_days.
+  if (hunt_record_days >= 0) {
+    hunt_record_days++;
+  }
+
+// Consume food
+  feed_citizens();
+
+// Pay wages.
+  int wages = get_total_wages();
+  if (!expend_resource(RES_GOLD, wages)) {
+// TODO: Consequences for failure to pay wages!
+    resources[RES_GOLD] = 0;
+  }
+
+// Lose gold to corruption.
+  int corruption = get_corruption_amount();
+  if (!expend_resource(RES_GOLD, corruption)) {
+// TODO: Consequences for failure to pay corruption?
+    resources[RES_GOLD] = 0;
+  }
+
+// We total maintenance into a single pool because we'll need to divide the gold
+// by 10, and we want to lose as little to rounding as possible.
+  std::map<Resource,int> total_maintenance;
+// Deduct maintenance for all areas
+  for (int i = 0; i < areas.size(); i++) {
+    if (areas[i].is_open()) {
+      std::map<Resource,int> maintenance = areas[i].get_maintenance();
+      for (std::map<Resource,int>::iterator it = maintenance.begin();
+           it != maintenance.end();
+           it++) {
+        total_maintenance[it->first] += it->second;
+      }
+    }
+  }
+// Deduct maintenance for all buildings
+  for (int i = 0; i < buildings.size(); i++) {
+    if (buildings[i].open) {
+      std::map<Resource,int> maintenance = buildings[i].get_maintenance();
+      for (std::map<Resource,int>::iterator it = maintenance.begin();
+           it != maintenance.end();
+           it++) {
+        total_maintenance[it->first] += it->second;
+      }
+    }
+  }
+  if (total_maintenance.count(RES_GOLD)) {
+    total_maintenance[RES_GOLD] /= 10;
+  }
+  if (!expend_resources(total_maintenance)) {
+// TODO: Close some areas until we CAN pay this.
+  }
+
+// Let citizens consume luxuries.
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    population[i].consume_luxuries(this);
+  }
+
+// The last resource transaction we should do is exporting resources, since it's
+// presumably the one with the least consequences.
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource res_export = Resource(i);
+    int export_amt = get_export(res_export);
+    if (resources[res_export] >= export_amt) {
+      resources[res_export] -= export_amt;
+    } else {
+// TODO: consequences for failure to export
+    }
+  }
+
+// Make sure our food isn't above the cap (food goes bad y'know)
+  int food_cap = get_food_cap();
+  if (resources[RES_FOOD] > food_cap) {
+    resources[RES_FOOD] = food_cap;
+  }
+
+// Advance progress on the first area in our queue.
+  if (!area_queue.empty()) {
+    Area* area_to_build = &(area_queue[0]);
+    area_to_build->building.construction_left--;
+    if (area_to_build->building.construction_left <= 0) {
+      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
+                  area_queue[0].get_name().c_str());
+      add_open_area(area_queue[0]);
+      area_queue.erase( area_queue.begin() );
+    }
+  }
+
+// Advance progress on the first building in our queue.
+  if (!building_queue.empty()) {
+    Building* building_to_build = &(building_queue[0]);
+    building_to_build->construction_left--;
+    if (building_to_build->construction_left <= 0) {
+      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
+                  building_queue[0].get_name().c_str());
+      add_open_building(building_queue[0]);
+      building_queue.erase( building_queue.begin() );
+    }
+  }
+
+// Check if we've unlocked any new areas, buildings, etc.
+  check_unlockables();
+}
+
+void Player_city::handle_livestock()
+{
   for (std::map<Animal,int>::iterator it = livestock.begin();
        it != livestock.end();
        it++) {
@@ -768,32 +881,11 @@ void Player_city::do_turn()
         it->second += real_num_born;
       }
     } // if (num_born > 0)
-  } // Done with livestock!
+  } // for (std::map<Animal,int>::iterator it = livestock.begin(); .....
+}
 
-// Produce non-food resources from our farms' crops.
-  for (int i = 0; i < areas.size(); i++) {
-    Building* build = &(areas[i].building);
-    if (build->workers > 0 && areas[i].produces_resource(RES_FARMING)) {
-      for (int n = 0; n < build->crops_grown.size(); n++) {
-        int amount = build->crops_grown[n].amount;
-        if (amount > 0) {
-          Crop crop = build->crops_grown[n].type;
-          Crop_datum* crop_dat = Crop_data[crop];
-          for (int m = 0; m < crop_dat->bonus_resources.size(); m++) {
-            Resource_amount res = crop_dat->bonus_resources[m];
-            res.amount *= amount;
-            res.amount *= build->field_output;
-// field_output needs to be divided by 500
-            res.amount /= 500;
-            gain_resource(res);
-          }
-        } // if (amount > 0)
-      } // for (int n = 0; n < build->crops_grown.size(); n++)
-    } // if (build->workers > 0 && areas[i].produces_resource(RES_FARMING))
-  } // for (int i = 0; i < areas.size(); i++)
-
-// Produce and consume food
-  gain_resource( RES_FOOD, get_food_production() );
+void Player_city::feed_citizens()
+{
   int food_consumed = get_food_consumption();
   if (resources[RES_FOOD] >= food_consumed) {
     resources[RES_FOOD] -= food_consumed;
@@ -848,262 +940,6 @@ void Player_city::do_turn()
       } // resources[RES_FOOD] < type_consumption
     } // for (int i = CIT_MAX - 1; i > CIT_NULL; i--)
   } // resources[RES_FOOD] < food_consumed
-
-// Handle building production.
-  for (int i = 0; i < buildings.size(); i++) {
-    Building* bldg = &(buildings[i]);
-    if (bldg->open && !bldg->build_queue.empty()) {
-      Recipe_amount* rec_amt = &(bldg->build_queue[0]);
-      Recipe* rec = &(rec_amt->recipe);
-// Check if we can build the recipe today.
-      int num_built = 0;
-      if (rec->days_per_unit <= 1) {  // Can build it every day!
-        num_built = bldg->workers;
-        if (rec->units_per_day > 0) {
-          num_built *= rec->units_per_day;
-        }
-      } else {
-// Each worker reduces our counter by 1.
-        rec_amt->days_until_built -= bldg->workers;
-/* We might be able to build more than 1 per day.  If days_per_unit is 2, and we
- * have 5 workers, we'll produce 3 units the first day and wind up with
- * days_until_built of 1.  The next day we'll produce 2 untils and wind up with
- * days_until_built of 0.
- */
-        while (rec_amt->days_until_built < 0) {
-          num_built++;
-          rec_amt->days_until_built += rec->days_per_unit;
-        }
-      } // rec->days_per_unit > 1
-// Make sure we won't build more than are enqueued.
-      if (rec_amt->amount != INFINITE_RESOURCE && num_built > rec_amt->amount) {
-        num_built = rec_amt->amount;
-      }
-// Perform the following once for each unit built.
-      for (int n = 0; n < num_built; n++) {
-// Check that we have the resources and minerals before expending them, so that
-// we don't expend one only to find we lack the other.
-        if (has_resources(rec->resource_ingredients) &&
-            has_minerals(rec->mineral_ingredients)) {
-          expend_resources(rec->resource_ingredients);
-          expend_minerals (rec->mineral_ingredients );
-          gain_resource   (rec->result);
-          if (rec_amt->amount != INFINITE_RESOURCE) {
-            rec_amt->amount--;
-          }
-        }
-      }
-// Check if we've built all that we enqueued.
-      if (rec_amt->amount != INFINITE_RESOURCE && rec_amt->amount <= 0) {
-        bldg->build_queue.erase( bldg->build_queue.begin() );
-      }
-    } // if (!bldg->build_queue.empty())
-  } // for (int i = 0; i < buildings.size(); i++)
-
-// Produce minerals from mines, wood from sawmills, and hunts from hunting camps
-  for (int i = 0; i < areas.size(); i++) {
-
-    if (areas[i].produces_resource(RES_MINING)) { // It's a mine!
-      Building* mine_building = &(areas[i].building);
-      Point mine_pos = areas[i].pos;
-      Map_tile* tile = map.get_tile(mine_pos);
-
-      for (int n = 0; n < mine_building->minerals_mined.size(); n++) {
-        Mineral_amount min_mined = mine_building->minerals_mined[n];
-
-        if (min_mined.amount > 0) {
-          int workers = min_mined.amount; // In case we need to fire them; below
-          min_mined.amount *= mine_building->shaft_output;
-// Check that the terrain still has enough of that resource!
-          bool found_mineral = false;
-
-          for (int m = 0; !found_mineral && m < tile->minerals.size(); m++) {
-
-            if (tile->minerals[m].type == min_mined.type) {
-              found_mineral = true;
-              Mineral_amount* tile_min = &(tile->minerals[m]);
-
-              if (tile_min->amount == INFINITE_RESOURCE) {
-                minerals[min_mined.type] += min_mined.amount;
-
-              } else if (tile_min->amount < min_mined.amount) {
-                Mineral_datum* min_dat = Mineral_data[min_mined.type];
-                add_message(MESSAGE_MAJOR,
-                            "Our mine has exhausted its supply of %s!",
-                            min_dat->name.c_str());
-
-                minerals[min_mined.type] += tile_min->amount;
-                tile->minerals.erase( tile->minerals.begin() + m );
-// Fire any workers associated with that mineral.
-// TODO: Don't hardcode CIT_PEASANT, even though it's a perfectly OK assumption
-                fire_citizens(CIT_PEASANT, workers, mine_building);
-                mine_building->minerals_mined.erase(
-                  mine_building->minerals_mined.begin() + n
-                );
-                n--;
-
-              } else { // Not infinite, nor have we run out of the mineral
-                minerals[min_mined.type] += min_mined.amount;
-                tile_min->amount -= min_mined.amount;
-              }
-            } // if (tile->minerals[m].type == min_mined.type)
-          } // for (int m = 0; !found_mineral && m < tile->minerals.size(); m++)
-        } // if (min_mined.amount > 0)
-      } // for (int n = 0; n < mine_building->minerals_mined.size(); n++)
-    } // if (areas[i].produces_resource(RES_MINING))
-
-    if (areas[i].produces_resource(RES_LOGGING)) { // Sawmill etc
-      Building* sawmill_bldg = &(areas[i].building);
-      Point mine_pos = areas[i].pos;
-      Map_tile* tile = map.get_tile(mine_pos);
-      int wood_produced = (sawmill_bldg->workers *
-                           sawmill_bldg->amount_produced(RES_LOGGING));
-// Alter logging based on racial ability.
-// Skill level of 5 = no reduction, 1 = 1/5th of the normal rate.
-      wood_produced = (wood_produced *
-                       Race_data[race]->skill_level[SKILL_FORESTRY]) / 5;
-
-      if (tile->wood != INFINITE_RESOURCE && tile->wood < wood_produced) {
-        add_message(MESSAGE_MAJOR,
-                    "Our %s has cleared the %s and is now closed.",
-                    areas[i].get_name().c_str(),
-                    tile->get_terrain_name().c_str());
-
-        resources[RES_WOOD] += tile->wood;
-        tile->wood = 0;
-        tile->clear_wood();
-        areas[i].close(this);
-
-      } else { // We have not run out of wood.
-        resources[RES_WOOD] += wood_produced;
-        if (tile->wood != INFINITE_RESOURCE) {
-          tile->wood -= wood_produced;
-        }
-      }
-
-    } // if (areas[i].produces_resource(RES_LOGGING))
-
-    if (areas[i].produces_resource(RES_HUNTING)) {  // It's a hunting camp!
-      do_hunt( &(areas[i]) );
-    }
-
-  } // for (int i = 0; i < areas.size(); i++)
-
-  if (hunt_record_days >= 0) {
-    hunt_record_days++;
-  }
-
-// Pay wages.
-  int wages = get_total_wages();
-  if (!expend_resource(RES_GOLD, wages)) {
-// TODO: Consequences for failure to pay wages!
-    resources[RES_GOLD] = 0;
-  }
-
-// Lose gold to corruption.
-  int corruption = get_corruption_amount();
-  if (!expend_resource(RES_GOLD, corruption)) {
-    resources[RES_GOLD] = 0;
-// TODO: Consequences for failure to pay corruption?
-  }
-
-// We total maintenance into a single pool because we'll need to divide the gold
-// by 10, and we want to lose as little to rounding as possible.
-  std::map<Resource,int> total_maintenance;
-// Deduct maintenance for all areas
-  for (int i = 0; i < areas.size(); i++) {
-    if (areas[i].is_open()) {
-      std::map<Resource,int> maintenance = areas[i].get_maintenance();
-      for (std::map<Resource,int>::iterator it = maintenance.begin();
-           it != maintenance.end();
-           it++) {
-        total_maintenance[it->first] += it->second;
-      }
-    }
-  }
-// Deduct maintenance for all buildings
-  for (int i = 0; i < buildings.size(); i++) {
-    if (buildings[i].open) {
-      std::map<Resource,int> maintenance = buildings[i].get_maintenance();
-      for (std::map<Resource,int>::iterator it = maintenance.begin();
-           it != maintenance.end();
-           it++) {
-        total_maintenance[it->first] += it->second;
-      }
-    }
-  }
-  if (total_maintenance.count(RES_GOLD)) {
-    total_maintenance[RES_GOLD] /= 10;
-  }
-  if (!expend_resources(total_maintenance)) {
-// TODO: Close some areas until we CAN pay this.
-  }
-
-// The last resource transaction we should do is exporting resources, since it's
-// presumably the one with the least consequences.
-  for (int i = 1; i < RES_MAX; i++) {
-    Resource res_export = Resource(i);
-    int export_amt = get_export(res_export);
-    if (resources[res_export] >= export_amt) {
-      resources[res_export] -= export_amt;
-    } else {
-// TODO: consequences for failure to export
-    }
-  }
-
-// Make sure our food isn't above the cap (food goes bad y'know)
-  int food_cap = get_food_cap();
-  if (resources[RES_FOOD] > food_cap) {
-    resources[RES_FOOD] = food_cap;
-  }
-
-// Allow mines to discover new materials.
-// TODO: Make this better (put in its own function?)
-  for (int i = 0; i < areas.size(); i++) {
-    Building* area_build = &(areas[i].building);
-    for (int n = 0; n < area_build->minerals_mined.size(); n++) {
-      Mineral_amount* min_amt = &(area_build->minerals_mined[n]);
-      Map_tile* tile_here = map.get_tile( areas[i].pos );
-      int amount_buried = 0;
-      if (tile_here) {
-        amount_buried = tile_here->get_mineral_amount(min_amt->type);
-      }
-      if (min_amt->amount == HIDDEN_RESOURCE &&
-          (amount_buried == INFINITE_RESOURCE ||
-           rng(1, 20000) < amount_buried)) {
-        add_message(MESSAGE_MAJOR, "Our mine has discovered %s!",
-                    Mineral_data[min_amt->type]->name.c_str());
-        min_amt->amount = 0;
-      }
-    }
-  }
-
-// Advance progress on the first area in our queue.
-  if (!area_queue.empty()) {
-    Area* area_to_build = &(area_queue[0]);
-    area_to_build->building.construction_left--;
-    if (area_to_build->building.construction_left <= 0) {
-      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
-                  area_queue[0].get_name().c_str());
-      add_open_area(area_queue[0]);
-      area_queue.erase( area_queue.begin() );
-    }
-  }
-
-// Advance progress on the first building in our queue.
-  if (!building_queue.empty()) {
-    Building* building_to_build = &(building_queue[0]);
-    building_to_build->construction_left--;
-    if (building_to_build->construction_left <= 0) {
-      add_message(MESSAGE_MINOR, "Our %s has finished construction.",
-                  building_queue[0].get_name().c_str());
-      add_open_building(building_queue[0]);
-      building_queue.erase( building_queue.begin() );
-    }
-  }
-
-// Check if we've unlocked any new areas, buildings, etc.
-  check_unlockables();
 }
 
 void Player_city::check_unlockables()
@@ -1919,6 +1755,17 @@ int Player_city::get_resource_production(Resource res)
     }
   }
 
+  return ret;
+}
+
+int Player_city::get_gross_resource_production(Resource res)
+{
+  int ret = 0;
+  std::vector<Building*> bldgs = get_all_buildings();
+  for (int i = 0; i < bldgs.size(); i++) {
+    std::map<Resource,int> produced = bldgs[i]->get_resource_production(this);
+    ret += produced[res];
+  }
   return ret;
 }
 
