@@ -29,6 +29,8 @@ public:
 // get_food_production() is just resource_production[RES_FOOD]
   int get_net_food(); // production - consumption, obvs
 
+  virtual int get_gross_resource_production (Resource res);
+
   std::string list_production();  // For now, this is just debug output.
 
 private:
@@ -57,6 +59,8 @@ private:
 
   void add_mineral_production(Mineral_amount min_amt);
   void add_mineral_production(Mineral min, int amount);
+
+// *** DATA ***
 
   City_role role;
 

@@ -281,11 +281,21 @@ void AI_city::setup_resource_production(World_map* world)
       add_sawmills(tiles);
       break;
   } // switch (role)
+
+// Finally, add some buildings to create more advanced resources.
 }
 
 int AI_city::get_net_food()
 {
   return resource_production[RES_FOOD] - get_food_consumption();
+}
+
+int AI_city::get_gross_resource_production(Resource res)
+{
+  if (resource_production.count(res)) {
+    return resource_production[res];
+  }
+  return 0;
 }
 
 std::string AI_city::list_production()
