@@ -79,6 +79,7 @@ public:
   void  set_city(int x, int y, City* new_city);
   City* get_city(Point p);
   City* get_city(int x, int y);
+  City* lookup_city_uid(int uid);
 
 // Just references road[][]
   bool has_road(Point p);

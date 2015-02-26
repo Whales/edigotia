@@ -1595,6 +1595,16 @@ City* World_map::get_city(int x, int y)
   return city[x][y];
 }
 
+City* World_map::lookup_city_uid(int uid)
+{
+  for (int i = 0; i < city_list.size(); i++) {
+    if (city_list[i] && city_list[i]->uid == uid) {
+      return city_list[i];
+    }
+  }
+  return NULL;
+}
+
 bool World_map::has_road(Point p)
 {
   return has_road(p.x, p.y);
