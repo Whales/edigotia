@@ -248,7 +248,7 @@ void City::setup_trade_routes()
         dist = dist * 1.2;  // Penalty for trading outside our race
       }
       if (dist >= 0 && dist <= 5000) { // 50 days' travel
-        trade_routes[target->uid] = Trade_route(dist);
+        trade_routes[target->uid] = Trade_route(target->location, dist);
       }
     }
   }
@@ -334,6 +334,35 @@ City_type City::get_city_type()
 Race City::get_race()
 {
   return race;
+}
+
+std::vector<Trade_route> City::find_sellers_of(Resource res)
+{
+  std::vector<Trade_route> ret;
+  for (std::map<int,Trade_route>::iterator it = trade_routes.begin();
+       it != trade_routes.end();
+       it++) {
+    City* seller = GAME->world->lookup_city_uid(it->first);
+    if (seller) {
+      int avail = seller->get_net_resource_production(res);
+      if (avail > 0) {
+// Insert into our return vector, sorted by distance.
+// TODO: Sort by unit price!
+        int dist = it->second.distance;
+        bool found = false;
+        for (int i = 0; !found && i < ret.size(); i++) {
+          if (dist <= ret[i].distance) {
+            found = true;
+            ret.insert( ret.begin() + i, it->second );
+          }
+        }
+        if (!found) {
+          ret.push_back(it->second);
+        }
+      } // if (avail > 0)
+    } // if (seller)
+  } // for (std::map<int,Trade_route>::iterator it = trade_routes.begin(); ... )
+  return ret;
 }
 
 std::map<Resource,int> City::get_luxuries(Luxury_type type)

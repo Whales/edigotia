@@ -70,6 +70,9 @@ public:
   City_type get_city_type();
   Race get_race();
 
+// Trade-related functions
+  std::vector<Trade_route> find_sellers_of(Resource res);
+
 // Resource-related functions
 
 // Returns all resources we own with the given Luxury_type.
@@ -121,6 +124,8 @@ public:
   void gain_mineral (Mineral_amount res);
   void gain_minerals(std::vector<Mineral_amount> res_used);
   void gain_minerals(std::map<Mineral,int>       res_used);
+
+
 // Public data
   int uid;
 
