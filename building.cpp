@@ -451,23 +451,24 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
             std::map<Resource,int> bonus_resources;
             int total_food = 0;
             for (int n = 0; n < crops_grown.size(); n++) {
-              int amount = crops_grown[n].amount;
-              if (amount > 0) {
+              int crop_count = crops_grown[n].amount;
+              if (crop_count > 0) {
                 Crop crop = crops_grown[n].type;
                 Crop_datum* crop_dat = Crop_data[crop];
 // Add food from the crop.
                 int food = crop_dat->food;
-                food *= amount;
+                food *= crop_count;
                 food *= field_output;
                 total_food += food;
 // Look for any non-food resources the crop produces.
                 for (int m = 0; m < crop_dat->bonus_resources.size(); m++) {
                   Resource_amount res_amt = crop_dat->bonus_resources[m];
-                  res_amt.amount *= amount;
+                  res_amt.amount *= crop_count;
                   res_amt.amount *= field_output;
 // The amount needs to be divided by 100 since field_output is the terrain's
 // farmability, which is a percentage (0 to 100, should be 0.0 to 1.0).
-// (We'll divide by 100 again before adding bonus_resources to resource_gains)
+// (We'll divide by 100 again before adding bonus_resources to resource_gains,
+//  since the Resource_amount is per 100 crops)
                   res_amt.amount /= 100;
                   bonus_resources[res_amt.type] += res_amt.amount;
                 }
@@ -483,6 +484,7 @@ std::map<Resource,int> Building::get_resource_production(City* city, bool real)
             for (std::map<Resource,int>::iterator it = bonus_resources.begin();
                  it != bonus_resources.end();
                  it++) {
+// Here we only divide by 100, since terrain farmability is ignored.
               resource_gains[it->first] += it->second / 100;
             }
           } break;  // case RES_FARMING
