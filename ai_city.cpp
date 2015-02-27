@@ -340,30 +340,71 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
   Building_datum* farm_dat = Building_data[BUILD_FARM];
   int res_farming = farm_dat->amount_produced(RES_FARMING);
   int num_workers = farm_dat->get_total_jobs(CIT_PEASANT);
-// Find the most food-producing tile.
+// Find the most food-producing tile.  OR, if we're not trying to produce food,
+// find the most resource-value-producing tile.
   bool done = false;
   while (!done && !tiles.empty() && free_peasants > 0 &&
          (unlimited_food || food_req > 0)) {
-    int best_food = 0, best_index = -1;
+    int best_food = 0, best_res_value = 0, best_index = -1, best_res_index = -1;
     for (int i = 0; i < tiles.size(); i++) {
-      int food = tiles[i]->get_max_food_output();
-      if (food > best_food) {
-        best_food = food;
-        best_index = i;
+// Passing true to get_best_crop() prioritizes food output.
+      Crop best_crop = tiles[i]->get_best_crop( !unlimited_food );
+      Crop_datum* crop_dat = Crop_data[best_crop];
+      int farmability = tiles[i]->get_farmability();
+      int food = farmability * crop_dat->food;
+      int res_value = 0;
+      for (int n = 0; n < crop_dat->bonus_resources.size(); n++) {
+        Resource_amount res_amt = crop_dat->bonus_resources[n];
+        Resource_datum* res_dat = Resource_data[res_amt.type];
+        res_value += res_dat->value * res_amt.amount;
       }
-    }
-    if (best_index == -1) { // No tiles produce food!  At all!
+      if (unlimited_food) { // Check resource value first
+        if (res_value > best_res_value) {
+          best_res_value = res_value;
+          best_index = i;
+        } else if (food > best_food) {
+          best_food = food;
+          best_index = i;
+        }
+      } else {  // Check food output first
+        if (food > best_food) {
+          best_food = food;
+          best_index = i;
+        } else if (res_value > best_res_value) {
+          best_res_value = res_value;
+          best_res_index = i; // Used only if best_index == -1
+        }
+      }
+    } // for (int i = 0; i < tiles.size(); i++)
+    if (best_index == -1 && best_res_index == -1) { // No useful tiles!
       done = true;
     } else {
+// If we couldn't find good food crops, use good resource crop instead.
+      if (best_index == -1) {
+        best_index = best_res_index;
+      }
+
+      Map_tile* farm_tile = tiles[best_index];
+      int farmability = farm_tile->get_farmability();
+      Crop crop = farm_tile->get_best_crop( !unlimited_food );
+      Crop_datum* crop_dat = Crop_data[crop];
 // Multiply by our race's farming skill, and res_farming from above.
       if (free_peasants < num_workers) {
         num_workers = free_peasants;
       }
-      best_food = best_food * farm_skill * res_farming * num_workers;
-      food_req -= best_food;
+      int food_grown = crop_dat->food * farmability * farm_skill * res_farming *
+                       num_workers;
+      food_req -= food_grown;
+      add_resource_production(RES_FOOD, food_grown / 10000);
+
+// Add any resources, too
+      for (int i = 0; i < crop_dat->bonus_resources.size(); i++) {
+        Resource_amount res_amt = crop_dat->bonus_resources[i];
+        res_amt.amount *= farmability * farm_skill * res_farming * num_workers;
+        add_resource_production(res_amt.type, res_amt.amount / 10000);
+      }
       free_peasants -= num_workers;
       add_area(AREA_FARM);
-      add_resource_production(RES_FOOD, best_food / 10000);
       tiles.erase(tiles.begin() + best_index);
     }
   } // while (!done && food_req > 0 && !tiles.empty())
