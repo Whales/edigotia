@@ -124,7 +124,10 @@ struct Map_tile
   std::string    get_animals_info();
 
   int get_farmability();
+  Crop get_best_crop(bool prioritize_food = true); // Pick the best crop
   int get_max_food_output();  // Pick the best crop and multiply by farmability
+// Find the crop that produces the highest-value resource
+  int get_resource_crop_output();
   int get_avg_hunting_output(); // Averages food values of animals
 
   bool can_build(Area_type area);

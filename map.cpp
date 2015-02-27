@@ -169,6 +169,60 @@ int Map_tile::get_farmability()
   return Terrain_data[ter]->farm_percent;
 }
 
+// prioritize_food defaults to true
+Crop Map_tile::get_best_crop(bool prioritize_food)
+{
+  if (!can_build(AREA_FARM)) {
+    return CROP_NULL;
+  }
+  if (crops.empty()) {
+    return CROP_NULL;
+  }
+// Value of each crop for food and resource
+  std::vector<int> food_value, res_value;
+
+  for (int i = 0; i < crops.size(); i++) {
+    Crop crop = crops[i];
+    Crop_datum* crop_dat = Crop_data[crop];
+    int total_food_value = Resource_data[RES_FOOD]->value;
+    food_value.push_back(crop_dat->food * total_food_value * get_farmability());
+// Find the total value of the resources this crop produces
+    int total_res_value = 0;
+    for (int n = 0; n < crop_dat->bonus_resources.size(); n++) {
+      Resource_amount res_amt = crop_dat->bonus_resources[n];
+      Resource_datum* res_dat = Resource_data[res_amt.type];
+      total_res_value += res_amt.amount * get_farmability() * res_dat->value;
+    }
+    res_value.push_back( total_res_value );
+  }
+
+// Now loop through and find the best one!
+  int best_value = 0,  best_food_value = 0,
+      best_index = -1, best_food_index = -1;
+  for (int i = 0; i < crops.size(); i++) {
+    int this_value = food_value[i] + res_value[i];
+    int this_food_value = food_value[i];
+    if (this_value > best_value) {
+      best_value = this_value;
+      best_index = i;
+    }
+    if (this_food_value > best_food_value) {
+      best_food_value = this_food_value;
+      best_food_index = -1;
+    }
+  }
+
+// If we're prioritizing food, try to use best_food_index first.
+  if (prioritize_food && best_food_index != -1) {
+    return crops[best_food_index];
+  }
+  if (best_index == -1) {
+// No useful crops here!
+    return CROP_NULL;
+  }
+  return crops[best_index];
+}
+
 int Map_tile::get_max_food_output()
 {
   if (!can_build(AREA_FARM)) {
@@ -190,6 +244,40 @@ int Map_tile::get_max_food_output()
   int farmability = get_farmability();
 // We don't divide by 10000 at this point, in order to avoid rounding errors.
   return (best_food * farmability);
+}
+
+// Here the crop "value" is the 100 - Crop_datum's percentage value.
+int Map_tile::get_resource_crop_output()
+{
+  if (!can_build(AREA_FARM)) {
+    return 0;
+  }
+
+// Go through all crops here, and find the one that produces the most high-value
+// resource.
+  int best_value = 0;
+  for (int i = 0; i < crops.size(); i++) {
+    Crop crop = crops[i];
+    Crop_datum* crop_dat = Crop_data[crop];
+// Find the resource associated with this crop with the highest value
+    int best_res_value = 0;
+    for (int n = 0; n < crop_dat->bonus_resources.size(); n++) {
+      Resource res = crop_dat->bonus_resources[n].type;
+      Resource_datum* res_dat = Resource_data[res];
+      int res_value = crop_dat->bonus_resources[n].amount * res_dat->value;
+      if (res_value > best_res_value) {
+        best_res_value = res_value;
+      }
+    }
+// Now compare the best resource that crop produces with the best we've found so
+// far.
+    if (best_res_value > best_value) {
+      best_value = best_res_value;
+    }
+  }
+
+// Bonus resources ignore farmability, so just return that value.
+  return best_value;
 }
 
 int Map_tile::get_avg_hunting_output()
