@@ -1552,6 +1552,9 @@ void Player_city::birth_citizens(int num)
         new_cit_type = cit_type;
       }
     }
+    if (new_cit_type == CIT_NULL) {
+      new_cit_type = CIT_PEASANT; // Birth peasants by default.
+    }
 // Add to born, either an existing element or a new one
     bool found = false;
     for (int i = 0; !found && i < born.size(); i++) {
