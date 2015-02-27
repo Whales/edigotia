@@ -11,6 +11,8 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
   Resource_data[cur_id]->name = (s)
 #define _rcolor(c) \
   Resource_data[cur_id]->color = (c)
+#define _rvalue(n) \
+  Resource_data[cur_id]->value = (n)
 #define _luxury(t) \
   Resource_data[cur_id]->luxury_type = (t)
 #define _demand(n) \
@@ -71,38 +73,47 @@ void init_resource_data()
 
   _resource(RES_GOLD);
     _rname("gold");
+    _rvalue(100);
     _rcolor(c_yellow);
 
   _resource(RES_FOOD);
     _rname("food");
+    _rvalue(20);
     _rcolor(c_green);
 
   _resource(RES_WOOD);
     _rname("wood");
+    _rvalue(30);
     _rcolor(c_ltred);
 
   _resource(RES_STONE);
     _rname("stone");
+    _rvalue(10);
     _rcolor(c_ltgray);
 
   _resource(RES_FIBER);
     _rname("fiber");
+    _rvalue(14);
     _rcolor(c_ltgray);
 
   _resource(RES_FUR);
     _rname("fur");
+    _rvalue(16);
     _rcolor(c_brown);
 
   _resource(RES_LEATHER);
     _rname("leather");
+    _rvalue(16);
     _rcolor(c_brown);
 
   _resource(RES_UNICORN_HORN);
     _rname("unicorn horn");
+    _rvalue(5000);
     _rcolor(c_pink);
 
   _resource(RES_SALT);
     _rname("salt");
+    _rvalue(25);
     _rcolor(c_white);
     _luxury(LUX_NULL);  // Salt's technical a spice, but it's universally wanted
     _demand(100);
@@ -110,6 +121,7 @@ void init_resource_data()
 
   _resource(RES_PEPPER);
     _rname("pepper");
+    _rvalue(28);
     _rcolor(c_dkgray);
     _luxury(LUX_SPICE);
     _demand(80);
@@ -117,6 +129,7 @@ void init_resource_data()
 
   _resource(RES_CINNAMON);
     _rname("cinnamon");
+    _rvalue(26);
     _rcolor(c_brown);
     _luxury(LUX_SPICE);
     _demand(40);
@@ -124,6 +137,7 @@ void init_resource_data()
 
   _resource(RES_TOBACCO);
     _rname("tobacco");
+    _rvalue(30);
     _rcolor(c_brown);
     _luxury(LUX_SMOKABLE);
     _demand(75);
@@ -131,6 +145,7 @@ void init_resource_data()
 
   _resource(RES_CANNABIS);
     _rname("cannabis");
+    _rvalue(38);
     _rcolor(c_green);
     _luxury(LUX_SMOKABLE);
     _demand(40);
@@ -138,6 +153,7 @@ void init_resource_data()
 
   _resource(RES_AMANITAS);
     _rname("amanitas");
+    _rvalue(75);
     _rcolor(c_magenta);
     _luxury(LUX_HALLUCINOGEN);
     _demand(5);
@@ -145,6 +161,7 @@ void init_resource_data()
 
   _resource(RES_AYAHUASCA);
     _rname("ayahuasca");
+    _rvalue(80);
     _rcolor(c_magenta);
     _luxury(LUX_HALLUCINOGEN);
     _demand(4);
@@ -152,6 +169,7 @@ void init_resource_data()
 
   _resource(RES_SPICEREED);
     _rname("spicereed");
+    _rvalue(45);
     _rcolor(c_magenta);
     _luxury(LUX_HALLUCINOGEN);
     _demand(30);
@@ -159,63 +177,72 @@ void init_resource_data()
 
   _resource(RES_CLOTHING);
     _rname("clothing");
+    _rvalue(35);
     _rcolor(c_white);
-    _demand(15);
-    _morale(10);
+    _demand(20);
+    _morale(2);
 
   _resource(RES_FUR_COATS);
     _rname("fur coats");
+    _rvalue(60);
     _rcolor(c_brown);
     _luxury(LUX_COATS);
     _demand(10);
-    _morale(5);
+    _morale(3);
 
   _resource(RES_LEATHER_COATS);
     _rname("leather coats");
+    _rvalue(65);
     _rcolor(c_brown);
     _luxury(LUX_COATS);
-    _demand(10);
-    _morale(5);
+    _demand(8);
+    _morale(3);
 
   _resource(RES_WOOD_HOUSEWARES);
     _rname("wood housewares");
+    _rvalue(70);
     _rcolor(c_ltred);
+    _luxury(LUX_HOUSEWARES);
+    _demand(10);
+    _morale(4);
+
+  _resource(RES_TIN_HOUSEWARES);
+    _rname("tin housewares");
+    _rvalue(85);
+    _rcolor(c_ltcyan);
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(5);
 
-  _resource(RES_TIN_HOUSEWARES);
-    _rname("tin housewares");
-    _rcolor(c_ltcyan);
+  _resource(RES_COPPER_HOUSEWARES);
+    _rname("copper housewares");
+    _rvalue(90);
+    _rcolor(c_ltred);
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(6);
 
-  _resource(RES_COPPER_HOUSEWARES);
-    _rname("copper housewares");
-    _rcolor(c_ltred);
+  _resource(RES_IRON_HOUSEWARES);
+    _rname("iron housewares");
+    _rvalue(110);
+    _rcolor(c_cyan);
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(7);
 
-  _resource(RES_IRON_HOUSEWARES);
-    _rname("iron housewares");
-    _rcolor(c_cyan);
-    _luxury(LUX_HOUSEWARES);
-    _demand(10);
-    _morale(8);
-
   _resource(RES_FURNITURE);
     _rname("furniture");
+    _rvalue(130);
     _rcolor(c_ltred);
     _demand(8);
-    _morale(10);
+    _morale(8);
 
   _resource(RES_JEWELRY);
     _rname("jewelry");
+    _rvalue(200);
     _rcolor(c_magenta);
     _demand(5);
-    _morale(15);
+    _morale(12);
 
   _resource(RES_FARMING);
     _rname("farming");

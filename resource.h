@@ -92,12 +92,18 @@ std::string luxury_type_name(Luxury_type type);
 
 struct Resource_datum
 {
-  Resource_datum(std::string N = "", nc_color C = c_white, int D = 0, int M = 0,
-                 Luxury_type L = LUX_NULL, bool MT = false) :
-    name (N), color (C), demand (D), morale (M), luxury_type (L), meta (MT) { }
+  Resource_datum(std::string N = "", nc_color C = c_white, int V = 0, int D = 0,
+                 int M = 0, Luxury_type L = LUX_NULL, bool MT = false) :
+    name (N), color (C), value (V), demand (D), morale (M), luxury_type (L),
+    meta (MT) { }
 
   std::string name;
   nc_color color;
+
+// The actual price we pay for a resource is determined by supply & demand, and
+// the price a city sets for it.  But the value property is a basic guide and
+// helps AI cities determine what crops to grow, for instance.
+  int value;
   int demand; // Standard demand each turn per 100 citizens
   int morale; // Morale boost when the demand is met
   Luxury_type luxury_type;
