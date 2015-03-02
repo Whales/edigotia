@@ -34,6 +34,11 @@ bool Message::load_data(std::istream& data)
   }
   type = Message_type(tmptype);
 
+  if (!date.load_data(data)) {
+    debugmsg("Message failed to load its date.");
+    return false;
+  }
+
   std::string word;
   while (word != "!") {
     data >> word;
@@ -43,11 +48,6 @@ bool Message::load_data(std::istream& data)
       }
       text = text + word;
     }
-  }
-
-  if (!date.load_data(data)) {
-    debugmsg("Message failed to load its date.");
-    return false;
   }
 
   return true;
@@ -168,7 +168,7 @@ std::string Player_city::save_data()
   ret << show_livestock_messages << " ";
   ret << messages.size() << " ";
   for (int i = 0; i < messages.size(); i++) {
-    ret << messages[i].save_data() << " ";
+    ret << messages[i].save_data() << std::endl;
   }
   ret << std::endl;
 
