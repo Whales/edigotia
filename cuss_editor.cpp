@@ -2,6 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 #include <iostream> // For displaying messages to the terminal
+#include <algorithm>  // For sorting the list of loadable files
 #include "cuss.h"
 #include "files.h"
 #include "stringfunc.h"
@@ -512,8 +513,13 @@ bool starting_window(interface &edited)
  if (!i_start.load_from_file("cuss/editor/i_start.cuss"))
   return false;
 
- i_start.set_data("list_interfaces", files_in("cuss", "cuss"));
+ std::vector<std::string> cuss_files = files_in("cuss", "cuss");
+ std::sort(cuss_files.begin(), cuss_files.end());
+
+ i_start.set_data("list_interfaces", cuss_files);
  std::string selname = i_start.get_str("list_interfaces");
+
+ i_start.set_data("text_search", "<c=ltblue>/<c=white>: Find filename");
 
  if (selname != "") {
   std::stringstream filename;
@@ -525,11 +531,43 @@ bool starting_window(interface &edited)
  }
  i_start.select("list_interfaces");
 
+ bool searchmode = false;
+ std::string search_string;
  bool done = false;
  while (!done) {
   i_start.draw(&w_start);
   w_start.refresh();
   long ch = getch();
+// Hitting enter works even if we're in search mode.
+  if (ch != '\n' && searchmode) {
+   if (ch == KEY_ESC || ch == '/') {
+    search_string = "";
+    searchmode = false;
+    i_start.set_data("text_search", "<c=ltblue>/<c=white>: Find filename");
+   } else if (ch == KEY_BACKSPACE || ch == 127 || ch == 8) {
+    if (!search_string.empty()) {
+     search_string = search_string.substr(0, search_string.size() - 1);
+    }
+   } else {
+    search_string += ch;
+    i_start.set_data("text_search", search_string);
+    bool search_done = false;
+    for (int i = 0; !search_done && i < cuss_files.size(); i++) {
+     if (cuss_files[i].find(search_string) != std::string::npos) {
+      search_done = true;
+      i_start.set_data("list_interfaces", i);
+     }
+    }
+    if (!search_done) { // Couldn't find it!
+     i_start.set_data("text_search", c_ltred);
+    }
+   }
+  } // if (ch != '\n' && searchmode)
+  if (ch == '/') {
+   searchmode = true;
+   search_string = "";
+   i_start.clear_data("text_search");
+  }
   if (ch == 'j' || ch == '2' || ch == KEY_DOWN) {
    i_start.add_data("list_interfaces",  1);
    selname = i_start.get_str("list_interfaces");
