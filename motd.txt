@@ -1,0 +1,12 @@
+Welcome to the pre-release version of <c=white>Edigotia!<c=/>
+
+Edigotia is written by <c=ltblue>Whales<c=/>.
+
+
+<c=magenta>Email:<c=/>   <c=ltcyan>fivedozenwhales@gmail.com<c=/>
+
+<c=magenta>Github:<c=/>  <c=cyan>https://github.com/Whales/edigotia<c=/>
+
+<c=magenta>License:<c=/> <c=cyan>http://opensource.org/licenses/GPL-3.0<c=/>
+
+(Free to copy & modify, but your version must be too)
