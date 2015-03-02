@@ -14,9 +14,11 @@ City::City()
   }
   for (int i = 0; i < RES_MAX; i++) {
     resources[i] = 0;
+    resource_price[i] = Resource_data[i]->value;
   }
   for (int i = 0; i < MINERAL_MAX; i++) {
     minerals[i] = 0;
+    mineral_price[i] = Mineral_data[i]->value;
   }
 }
 
@@ -363,6 +365,23 @@ std::vector<Trade_route> City::find_sellers_of(Resource res)
     } // if (seller)
   } // for (std::map<int,Trade_route>::iterator it = trade_routes.begin(); ... )
   return ret;
+}
+
+std::vector<Trade_route> City::find_buyers_for(Resource res)
+{
+  std::vector<Trade_route> ret;
+
+  return ret;
+}
+
+int City::get_price(Resource res)
+{
+  return resource_price[res];
+}
+
+int City::get_price(Mineral min)
+{
+  return mineral_price[min];
 }
 
 std::map<Resource,int> City::get_luxuries(Luxury_type type)

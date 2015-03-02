@@ -72,6 +72,16 @@ public:
 
 // Trade-related functions
   std::vector<Trade_route> find_sellers_of(Resource res);
+/* find_buyers_for() looks at all our Trade_routes (the potential cities we can
+ * trade with).  For each of those target cities, if the target wants the
+ * resource in question, it runs find_sellers_of(res).  If we are the FIRST city
+ * in that list, then that target city is returned by find_buyers_for(res).  If
+ * we are not the first city, then the target city will buy from one of our
+ * competitors instead!
+ */
+  std::vector<Trade_route> find_buyers_for(Resource res);
+  int get_price(Resource res);
+  int get_price(Mineral  min);
 
 // Resource-related functions
 
@@ -147,6 +157,9 @@ protected:
   std::string name;
   City_type type;
   Race race;
+
+  int resource_price[RES_MAX];
+  int mineral_price[MINERAL_MAX];
 
 // Which cities are we *directly* connected to via road?
   //std::vector<City*> road_connections;
