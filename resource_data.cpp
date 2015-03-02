@@ -346,6 +346,7 @@ void init_resource_data()
     _rainfall(0, 15);
     _type(CROPTYPE_FOOD);
     _food(60);
+    _bonus(RES_FIBER, 20);
 
   _crop(CROP_PEPPER);
     _cname("pepper");
