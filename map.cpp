@@ -870,7 +870,7 @@ void City_map::generate(Map_type type,
         if (crop_assigned ||
             (rng(1, 100) <= crop_dat->percentage &&
              rng(1, 100) <= crop_dat->percentage &&
-             rng(1, 100) <= crop_dat->percentage   )) {
+             rng(1, 100) <= crop_dat->percentage && one_in(4))) {
           tiles[x][y].crops.push_back(crop);
         }
       }
@@ -896,7 +896,7 @@ void City_map::generate(Map_type type,
           tiles[x][y].minerals.push_back( min_amount );
         } else if (mineral_assigned) {
           tiles[x][y].minerals.push_back( min_amount.randomize() );
-        } else if (rng(1, 150) <= mineral_dat->percentage) {
+        } else if (rng(1, 150) <= mineral_dat->percentage && one_in(2)) {
           tiles[x][y].minerals.push_back( min_amount.make_small() );
         }
       }
