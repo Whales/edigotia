@@ -47,7 +47,7 @@ bool Map_tile::load_data(std::istream& data)
              tmpter, TER_MAX - 1);
     return false;
   }
-  ter = Terrain_type(ter);
+  ter = Terrain_type(tmpter);
 
   data >> wood;
 
