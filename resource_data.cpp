@@ -30,6 +30,15 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
 // percentage is the frequency of placement; what % of terrain should it cover
 #define _cpercent(s) \
   Crop_data[cur_id]->percentage = (s)
+#define _temperature(a, b) \
+  Crop_data[cur_id]->min_temp = (a); \
+  Crop_data[cur_id]->max_temp = (b)
+#define _altitude(a, b) \
+  Crop_data[cur_id]->min_altitude = (a); \
+  Crop_data[cur_id]->max_altitude = (b)
+#define _rainfall(a, b) \
+  Crop_data[cur_id]->min_rainfall = (a); \
+  Crop_data[cur_id]->max_rainfall = (b)
 #define _food(s) \
   Crop_data[cur_id]->food = (s)
 #define _bonus(t, a) \
@@ -133,6 +142,22 @@ void init_resource_data()
     _rcolor(c_brown);
     _luxury(LUX_SPICE);
     _demand(40);
+    _morale(3);
+
+  _resource(RES_CUMIN);
+    _rname("cumin");
+    _rvalue(45);
+    _rcolor(c_brown);
+    _luxury(LUX_SPICE);
+    _demand(30);
+    _morale(5);
+
+  _resource(RES_PAPRIKA);
+    _rname("paprika");
+    _rvalue(20);
+    _rcolor(c_ltred);
+    _luxury(LUX_SPICE);
+    _demand(60);
     _morale(3);
 
   _resource(RES_TOBACCO);
@@ -271,100 +296,169 @@ void init_resource_data()
   _crop(CROP_WHEAT);
     _cname("wheat");
     _cpercent(90);
+    _temperature(25, 90);
+    _altitude(0, 90);
+    _rainfall(10, 70);
     _type(CROPTYPE_FOOD);
     _food(100);
 
   _crop(CROP_CABBAGE);
     _cname("cabbage");
     _cpercent(70);
+    _temperature(10, 75);
+    _altitude(0, 80);
+    _rainfall(5, 100);
     _type(CROPTYPE_FOOD);
     _food(120);
 
   _crop(CROP_GRAPES);
     _cname("grapes");
     _cpercent(30);
+    _temperature(30, 70);
+    _altitude(15, 90);
+    _rainfall(15, 60);
     _type(CROPTYPE_FOOD);
     _food(50);
 
   _crop(CROP_MELON);
     _cname("melon");
     _cpercent(40);
+    _temperature(35, 90);
+    _altitude(0, 60);
+    _rainfall(20, 100);
     _type(CROPTYPE_FOOD);
     _food(80);
 
   _crop(CROP_RICE);
     _cname("rice");
     _cpercent(90);
+    _temperature(50, 100);
+    _altitude(0, 45);
+    _rainfall(45, 100);
     _type(CROPTYPE_FOOD);
     _food(110);
 
   _crop(CROP_CACTUS);
     _cname("cactus");
     _cpercent(90);
+    _temperature(60, 100);
+    _altitude(0, 80);
+    _rainfall(0, 15);
     _type(CROPTYPE_FOOD);
     _food(60);
 
   _crop(CROP_PEPPER);
     _cname("pepper");
-    _cpercent(60);
+    _cpercent(40);
+    _temperature(60, 90);
+    _altitude(0, 60);
+    _rainfall(10, 60);
     _type(CROPTYPE_SPICE);
     _food(15);
     _bonus(RES_PEPPER, 90);
 
   _crop(CROP_CINNAMON);
     _cname("cinnamon");
-    _cpercent(40);
+    _cpercent(20);
+    _temperature(65, 90);
+    _altitude(15, 80);
+    _rainfall(10, 60);
     _type(CROPTYPE_SPICE);
     _bonus(RES_CINNAMON, 100);
+
+  _crop(CROP_CUMIN);
+    _cname("cumin");
+    _cpercent(8);
+    _temperature(70, 100);
+    _altitude(10, 65);
+    _rainfall(40, 100);
+    _type(CROPTYPE_SPICE);
+    _bonus(RES_CUMIN, 80);
+
+  _crop(CROP_PAPRIKA);
+    _cname("paprika");
+    _cpercent(45);
+    _temperature(40, 70);
+    _altitude(0, 50);
+    _rainfall(20, 60);
+    _type(CROPTYPE_SPICE);
+    _bonus(RES_PAPRIKA, 100);
 
   _crop(CROP_TOBACCO);
     _cname("tobacco");
     _cpercent(30);
+    _temperature(50, 85);
+    _altitude(0, 50);
+    _rainfall(20, 50);
     _type(CROPTYPE_DRUG);
     _bonus(RES_TOBACCO, 100);
 
   _crop(CROP_AMANITAS);
     _cname("amanitas");
     _cpercent(10);
+    _temperature(0, 40);
+    _altitude(0, 70);
+    _rainfall(20, 100);
     _type(CROPTYPE_DRUG);
     _bonus(RES_AMANITAS, 100);
 
   _crop(CROP_AYAHUASCA);
     _cname("ayahuasca");
     _cpercent(10);
+    _temperature(65, 100);
+    _altitude(20, 70);
+    _rainfall(60, 100);
     _type(CROPTYPE_DRUG);
     _bonus(RES_AYAHUASCA, 100);
 
   _crop(CROP_SPICEREED);
     _cname("spicereed");
     _cpercent(8);
+    _temperature(70, 100);
+    _altitude(0, 30);
+    _rainfall(0, 15);
     _type(CROPTYPE_DRUG);
     _bonus(RES_SPICEREED, 100);
 
   _crop(CROP_DEATHCAP);
     _cname("deathcap");
     _cpercent(7);
+    _temperature(20, 70);
+    _altitude(0, 70);
+    _rainfall(45, 100);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_VIPERVINE);
     _cname("vipervine");
     _cpercent(10);
+    _temperature(65, 100);
+    _altitude(20, 70);
+    _rainfall(40, 100);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_SCORPICON);
     _cname("scorpicon");
     _cpercent(7);
+    _temperature(60, 100);
+    _altitude(0, 70);
+    _rainfall(0, 10);
     _type(CROPTYPE_POISON);
 
   _crop(CROP_COTTON);
     _cname("cotton");
     _cpercent(70);
+    _temperature(60, 90);
+    _altitude(0, 80);
+    _rainfall(10, 50);
     _type(CROPTYPE_FIBER);
     _bonus(RES_FIBER, 100);
 
   _crop(CROP_HEMP);
     _cname("hemp");
     _cpercent(60);
+    _temperature(25, 90);
+    _altitude(0, 100);
+    _rainfall(5, 100);
     _type(CROPTYPE_FIBER);
     _bonus(RES_FIBER, 80);
     _bonus(RES_CANNABIS, 20);

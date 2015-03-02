@@ -325,7 +325,12 @@ Placing %d blobs [%d%%%%%%%%]",
                      num_blobs, (100 * n) / num_blobs);
       }
       int radius = rng(min_radius, max_radius);
-      Point p( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      Point p;
+      int tries = 0;
+      do {
+        tries++;
+        p = Point( rng(0, WORLD_MAP_SIZE - 1), rng(0, WORLD_MAP_SIZE - 1) );
+      } while (tries < 20 && !tile_okay_for_crop(p, crop));
       add_crop(p, crop, radius);
     }
   }
@@ -1055,7 +1060,10 @@ void World_map::add_resource(Point origin, Crop crop, Mineral mineral,
     int x = placement[i].x, y = placement[i].y;
     if (tiles[x][y] != MAP_NULL && tiles[x][y] != MAP_OCEAN) {
       if (crop != CROP_NULL) {
-        crops[x][y]    |= int(pow(2, crop));
+// With crops, we need to check to make sure the environment is a match
+        if (tile_okay_for_crop(x, y, crop)) {
+          crops[x][y]    |= int(pow(2, crop));
+        }
       } else if (mineral != MINERAL_NULL) {
         minerals[x][y] |= int(pow(2, mineral));
       } else if (animal != ANIMAL_NULL) {
@@ -1109,6 +1117,22 @@ void World_map::update_travel_map(Race traveler)
       }
     }
   }
+}
+
+bool World_map::tile_okay_for_crop(Point p, Crop crop)
+{
+  return tile_okay_for_crop(p.x, p.y, crop);
+}
+
+bool World_map::tile_okay_for_crop(int x, int y, Crop crop)
+{
+  Crop_datum* crop_dat = Crop_data[crop];
+  return (temperature[x][y] >= crop_dat->min_temp &&
+          temperature[x][y] <= crop_dat->max_temp &&
+          altitude[x][y]    >= crop_dat->min_altitude &&
+          altitude[x][y]    <= crop_dat->max_altitude &&
+          rainfall[x][y]    >= crop_dat->min_rainfall &&
+          rainfall[x][y]    <= crop_dat->max_rainfall);
 }
 
 bool World_map::tile_okay_for_animal(Point p, Animal animal)

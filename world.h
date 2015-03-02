@@ -172,6 +172,9 @@ private:
 // races.  Can be time consuming!
   void update_travel_map(Race traveler = RACE_NULL);
 
+  bool tile_okay_for_crop(Point p, Crop crop);
+  bool tile_okay_for_crop(int x, int y, Crop crop);
+
   bool tile_okay_for_animal(Point p, Animal animal);
   bool tile_okay_for_animal(int x, int y, Animal animal);
 

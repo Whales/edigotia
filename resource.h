@@ -42,6 +42,8 @@ enum Resource
   RES_SALT,
   RES_PEPPER,
   RES_CINNAMON,
+  RES_CUMIN,
+  RES_PAPRIKA,
   // Smokeables
   RES_TOBACCO,
   RES_CANNABIS,
@@ -154,6 +156,8 @@ enum Crop
 // Spices
   CROP_PEPPER,
   CROP_CINNAMON,
+  CROP_CUMIN,
+  CROP_PAPRIKA,
 
 // Drugs
   CROP_TOBACCO,
@@ -198,13 +202,27 @@ enum Mineral
 
 struct Crop_datum
 {
-  Crop_datum() { food = 0; percentage = 0; type = CROPTYPE_NULL; }
+  Crop_datum()
+  {
+    food = 0;
+    percentage = 0;
+    type = CROPTYPE_NULL;
+    min_temp = 0;
+    max_temp = 100;
+    min_altitude = 0;
+    max_altitude = 100;
+    min_rainfall = 0;
+    max_rainfall = 100;
+  }
 
   nc_color get_color();
 
   std::string name;
   int food;
   int percentage;
+  int min_temp, max_temp;         // Range of temperature we grow in
+  int min_altitude, max_altitude; // Range of altitude    we grow in
+  int min_rainfall, max_rainfall; // Range of rainfall    we grow in
   Crop_type type;
 
   std::vector<Resource_amount> bonus_resources;
