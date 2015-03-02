@@ -473,34 +473,34 @@ void init_resource_data()
   _mineral(MINERAL_STONE);
     _mname("stone");
     _mpercent(98);
-    _mvalue(1);
+    _mvalue(5);
     _mcolor(c_white);
 
   _mineral(MINERAL_TIN);
     _mname("tin");
     _mpercent(70);
-    _mvalue(5);
+    _mvalue(15);
     _mcolor(c_ltcyan);
     _mhidden();
 
   _mineral(MINERAL_COPPER);
     _mname("copper");
     _mpercent(50);
-    _mvalue(20);
+    _mvalue(30);
     _mcolor(c_ltred);
     _mhidden();
 
   _mineral(MINERAL_IRON);
     _mname("iron");
     _mpercent(70);
-    _mvalue(25);
+    _mvalue(50);
     _mcolor(c_cyan);
     _mhidden();
 
   _mineral(MINERAL_SALT);
     _mname("salt");
     _mpercent(50);
-    _mvalue(18);
+    _mvalue(28);
     _mcolor(c_white);
     _mhidden();
 
