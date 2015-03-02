@@ -236,7 +236,8 @@ struct Mineral_datum
   nc_color color;
   bool hidden;
 
-  Mineral_datum() { percentage = 0; color = c_ltgray; hidden = false; }
+  Mineral_datum() { percentage = 0; value = 0; color = c_ltgray; hidden = false;
+                  }
 };
 
 // These search for the name (trimmed & non-case-sensitive) in the data pools;
