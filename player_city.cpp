@@ -918,7 +918,8 @@ void Player_city::feed_citizens()
         int citizen_consumption = citizen_food_consumption(cit_type);
         int hungry_citizens = 0;
         if (citizen_consumption > 0) {
-          hungry_citizens = food_deficit / citizen_consumption;
+// Multiply food_deficit by 100, since citizen_consumption is per 100 citizens
+          hungry_citizens = (100 * food_deficit) / citizen_consumption;
         }
 // Everyone starves.  No reduction in starvation, only an increase.
         if (hungry_citizens >= population[cit_type].count) {
