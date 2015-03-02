@@ -132,17 +132,9 @@ bool Game::generate_world()
 
 bool Game::save_game()
 {
+// Save the player's city.
   std::ofstream fout;
   std::string filename = SAVE_DIR + "cities/" + city->get_name() + ".sav";
-  fout.open(filename.c_str());
-  if (!fout.is_open()) {
-    debugmsg("Couldn't open %s for writing.", filename.c_str());
-    return false;
-  }
-
-  fout << date.save_data() << " ";
-  fout << next_city_uid << " ";
-  fout << std::endl;
   fout << city->save_data();
 
   fout.close();
@@ -161,13 +153,6 @@ bool Game::load_game(std::string filename)
     debugmsg("Couldn't open %s for reading.", filename.c_str());
     return false;
   }
-
-  if (!date.load_data(fin)) {
-    debugmsg("Game failed to load date.");
-    return false;
-  }
-
-  fin >> next_city_uid;
 
   if (!city->load_data(fin)) {
     debugmsg("Game failed to load city.");
@@ -367,6 +352,9 @@ bool Game::save_kingdoms()
     return false;
   }
 
+  fout << date.save_data() << std::endl;
+  fout << next_city_uid << std::endl;
+
   fout << kingdoms.size() << std::endl;
   for (int i = 0; i < kingdoms.size(); i++) {
     fout << kingdoms[i]->save_data() << std::endl;
@@ -389,6 +377,14 @@ bool Game::load_kingdoms()
   if (!fin.is_open()) {
     return false;
   }
+
+  if (!date.load_data(fin)) {
+    debugmsg("Game failed to load date.");
+    return false;
+  }
+
+  fin >> next_city_uid;
+
 
   int num_kingdoms;
   fin >> num_kingdoms;
