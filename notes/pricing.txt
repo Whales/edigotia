@@ -1,0 +1,30 @@
+We have a weighted graph where each vertex is a city and each edge is a trade route between cities.  The weight of each edge represents a flat overhead cost of sending a trade caravan from one city to the other.
+
+Three cities sell iron; all other cities wish to purchase iron.  A purchaser will buy from whatever city offers the lowest overall cost, where the overall cost is equal to the overhead (sum of all edge weights between the purchaser and the seller) plus a set price for the iron.  What is the most efficient algorithm or formula for setting the price of iron in these cities in such a way that each city maximizes its profits?  Assume that profits is equal to the number of buyers times the price set.
+
+The naive algorithm is to start with some high price (say, 100) in each selling city.  Next, each city reduces its price to the highest value between 1 and the current price which will increase its profits.  We stop as soon as none of the sellers wish to reduce their price.
+
+Buyers: abc
+Sellers: AB
+a - A: 10
+a - B: 13
+b - A: 8
+b - B: 3
+c - A: 16
+c - B: 18
+
+PA = Profit of A
+CA = Price (Cost) set by A
+BA = Buyers who will buy from A
+
+PA = CA * BA
+SA = 1?
+
+A: 100
+  a: 110
+  b: 108
+  c: 116
+B: 90
+  a: 
+  b: 103
+  c: 118
