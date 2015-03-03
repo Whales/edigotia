@@ -5,13 +5,43 @@ Three cities sell iron; all other cities wish to purchase iron.  A purchaser wil
 The naive algorithm is to start with some high price (say, 100) in each selling city.  Next, each city reduces its price to the highest value between 1 and the current price which will increase its profits.  We stop as soon as none of the sellers wish to reduce their price.
 
 Buyers: abc
-Sellers: AB
+Sellers: ABC
 a - A: 10
 a - B: 13
+a - C: 9
 b - A: 8
 b - B: 3
+b - C: 6
 c - A: 16
 c - B: 18
+c - C: 21
+
+a will buy from A if Price-A + 2 < Price-B
+A wins a's contract if Price-A - 2 < Price-B AND Price-A + 2 < Price-C
+A wins b's contract if Price-A + 6 < Price-B AND Price-A + 3 < Price-C
+A wins c's contract if Price-A - 1 < Price-B AND Price-A - 4 < Price-C
+
+# of A-contracts:
+  0: Price-A - 2 >= Price-B AND Price-A - 4 >= Price-C
+  1: Price-A - 1 >= Price-B AND Price-A - 2 <  Price-B AND
+     Price-A + 2 >= Price-C AND Price-A - 4 <  Price-C
+  2: Price-A + 6 >= Price-B AND Price-A - 1 <  Price-B AND
+     Price-A + 3 >= Price-C AND Price-A + 2 <  Price-C
+  3: Price-A + 6 <  Price-B AND Price-A + 3 <  Price-C
+
+Price for # of contracts:
+  0: >= Price-B + 2 AND >= Price-C + 4;
+     >= MIN + 4;
+     >= MAX - 4;
+
+  1: >= Price-B + 1 AND <  Price-B + 2 AND
+     >= Price-C - 2 AND <  Price-C + 4;
+
+     =  Price-B +1 AND >= Price-C - 2 AND < Price-C + 4
+
+Profit-A for # of contracts:
+  0: 0
+
 
 PA = Profit of A
 CA = Price (Cost) set by A
