@@ -10,9 +10,9 @@ AI_city::AI_city()
   race = RACE_NULL;
   role = CITY_ROLE_NULL;
   radius = 1;
-  free_peasants = 0;
   for (int i = 0; i < CIT_MAX; i++) {
     population[i].type = Citizen_type(i);
+    free_citizens[i] = 0;
   }
 }
 
@@ -26,7 +26,9 @@ std::string AI_city::save_data()
   ret << City::save_data() << std::endl;
   ret << int(role) << " ";
   ret << radius << " ";
-  ret << free_peasants << " ";
+  for (int i = 0; i < CIT_MAX; i++) {
+    ret << free_citizens[i] << " ";
+  }
 
   ret << areas_built.size() << " ";
   for (std::map<Area_type,int>::iterator it = areas_built.begin();
@@ -71,7 +73,11 @@ bool AI_city::load_data(std::istream& data)
 
   role = City_role(tmprole);
 
-  data >> radius >> free_peasants;
+  data >> radius;
+
+  for (int i = 0; i < CIT_MAX; i++) {
+    data >> free_citizens[i];
+  }
 
   int num_areas;
   data >> num_areas;
@@ -151,11 +157,13 @@ void AI_city::randomize_properties(World_map* world)
   int merchants = (pop - burghers) / (1 + ratio_a);
   int peasants  = pop - merchants - burghers;
 
-  population[CIT_PEASANT ].add_citizens(peasants);
+  population[CIT_PEASANT ].add_citizens(peasants );
   population[CIT_MERCHANT].add_citizens(merchants);
-  population[CIT_BURGHER ].add_citizens(burghers);
+  population[CIT_BURGHER ].add_citizens(burghers );
 
-  free_peasants = population[CIT_PEASANT].count;
+  free_citizens[CIT_PEASANT ] = population[CIT_PEASANT ].count;
+  free_citizens[CIT_MERCHANT] = population[CIT_MERCHANT].count;
+  free_citizens[CIT_BURGHER ] = population[CIT_BURGHER ].count;
 
 // Figure out our radius, based on population.
   if (pop >= 10000) {
@@ -283,6 +291,11 @@ void AI_city::setup_resource_production(World_map* world)
   } // switch (role)
 
 // Finally, add some buildings to create more advanced resources.
+  bool done_with_buildings = add_random_building();
+  while (!done_with_buildings) {
+    done_with_buildings = add_random_building();
+  }
+  
 }
 
 int AI_city::get_net_food()
@@ -343,7 +356,7 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
 // Find the most food-producing tile.  OR, if we're not trying to produce food,
 // find the most resource-value-producing tile.
   bool done = false;
-  while (!done && !tiles.empty() && free_peasants > 0 &&
+  while (!done && !tiles.empty() && free_citizens[CIT_PEASANT] > 0 &&
          (unlimited_food || food_req > 0)) {
     int best_food = 0, best_res_value = 0, best_index = -1, best_res_index = -1;
     for (int i = 0; i < tiles.size(); i++) {
@@ -389,8 +402,8 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
       Crop crop = farm_tile->get_best_crop( !unlimited_food );
       Crop_datum* crop_dat = Crop_data[crop];
 // Multiply by our race's farming skill, and res_farming from above.
-      if (free_peasants < num_workers) {
-        num_workers = free_peasants;
+      if (free_citizens[CIT_PEASANT] < num_workers) {
+        num_workers = free_citizens[CIT_PEASANT];
       }
       int food_grown = crop_dat->food * farmability * farm_skill * res_farming *
                        num_workers;
@@ -403,7 +416,7 @@ void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
         res_amt.amount *= farmability * farm_skill * res_farming * num_workers;
         add_resource_production(res_amt.type, res_amt.amount / 10000);
       }
-      free_peasants -= num_workers;
+      free_citizens[CIT_PEASANT] -= num_workers;
       add_area(AREA_FARM);
       tiles.erase(tiles.begin() + best_index);
     }
@@ -425,7 +438,7 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
   int num_workers = camp_dat->get_total_jobs(CIT_PEASANT);
 // Find the most food-producing tile.
   bool done = false;
-  while (!done && !tiles.empty() && free_peasants > 0 &&
+  while (!done && !tiles.empty() && free_citizens[CIT_PEASANT] > 0 &&
          (unlimited_food || food_req > 0)) {
     int best_food = 0, best_index = -1;
     for (int i = 0; i < tiles.size(); i++) {
@@ -441,13 +454,13 @@ void AI_city::add_hunting_camps(std::vector<Map_tile*>& tiles, int& food_req)
 // Multiply by our race's hunting skill, and res_hunting from above.
 // Also multiply by 10,000 since food_req is multiplied by 10,000!  But also
 // divide by 10 since we multiply by (5 + hunting_skill).
-      if (free_peasants < num_workers) {
-        num_workers = free_peasants;
+      if (free_citizens[CIT_PEASANT] < num_workers) {
+        num_workers = free_citizens[CIT_PEASANT];
       }
       best_food = (1000 * best_food * (5 + hunting_skill) * res_hunting *
                    num_workers);
       food_req -= best_food;
-      free_peasants -= num_workers;
+      free_citizens[CIT_PEASANT] -= num_workers;
       add_resource_production(RES_FOOD, best_food / 10000);
       add_area(AREA_HUNTING_CAMP);
       tiles.erase(tiles.begin() + best_index);
@@ -570,14 +583,14 @@ void AI_city::add_mines(std::vector<Map_tile*>& tiles)
 // TODO: Get info on how much a mine outputs per worker, and our race's skill
   Building_datum* mine_dat = Building_data[BUILD_MINE];
   int num_workers = mine_dat->get_total_jobs(CIT_PEASANT);
-  for (int i = 0; free_peasants > 0 && i < tiles.size(); i++) {
+  for (int i = 0; free_citizens[CIT_PEASANT] > 0 && i < tiles.size(); i++) {
     Map_tile* tile = tiles[i];
     if (tile->can_build(AREA_MINE)) {
 // Remove the tile from availability.
       tiles.erase(tiles.begin() + i);
       i--;
-      if (free_peasants < num_workers) {
-        num_workers = free_peasants;
+      if (free_citizens[CIT_PEASANT] < num_workers) {
+        num_workers = free_citizens[CIT_PEASANT];
       }
       add_area(AREA_MINE);
       for (int n = 0; n < tile->minerals.size(); n++) {
@@ -593,14 +606,14 @@ void AI_city::add_sawmills(std::vector<Map_tile*>& tiles)
   Building_datum* sawmill_dat = Building_data[BUILD_SAWMILL];
   int res_wood = sawmill_dat->amount_produced(RES_LOGGING);
   int num_workers = sawmill_dat->get_total_jobs(CIT_PEASANT);
-  for (int i = 0; free_peasants > 0 && i < tiles.size(); i++) {
+  for (int i = 0; free_citizens[CIT_PEASANT] > 0 && i < tiles.size(); i++) {
     Map_tile* tile = tiles[i];
     if (tile->can_build(AREA_SAWMILL) && tile->wood >= 3000) {
 // Remove the tile from availability.
       tiles.erase(tiles.begin() + i);
       i--;
-      if (free_peasants < num_workers) {
-        num_workers = free_peasants;
+      if (free_citizens[CIT_PEASANT] < num_workers) {
+        num_workers = free_citizens[CIT_PEASANT];
       }
       add_resource_production(RES_WOOD, num_workers * res_wood);
       add_area(AREA_SAWMILL);
@@ -610,11 +623,125 @@ void AI_city::add_sawmills(std::vector<Map_tile*>& tiles)
 
 void AI_city::add_area(Area_type type)
 {
-  if (areas_built.count(type)) {
-    areas_built[type]++;
-  } else {
-    areas_built[type] = 1;
+  areas_built[type]++;
+}
+
+bool AI_city::add_random_building()
+{
+  int start_type = rng(BUILD_NULL + 1, BUILD_MAX - 1);
+  for (int i = start_type + 1; i != start_type; i++) {
+    if (i == BUILD_MAX) {
+      i = BUILD_NULL + 1; // Loop around to the start
+    }
+    Building_type type = Building_type(i);
+    Building_datum* build_dat = Building_data[type];
+    bool can_build = true;
+// Check 1: Do we have available employees
+    Citizen_amount jobs = build_dat->jobs;
+    if (free_citizens[jobs.type] > 0) {
+      can_build = false;
+    }
+// Check 2: Ensure we can (and want to) pay the maintenance cost
+    for (int n = 0; can_build && n < build_dat->maintenance_cost.size(); n++) {
+      Resource_amount res_amt = build_dat->maintenance_cost[n];
+      if (resource_production[res_amt.type] < res_amt.amount) {
+        can_build = false;
+      }
+    }
+// Check 3: Does it make something we want
+    bool good_output = false;
+    for (int n = 0; !good_output && n < build_dat->production.size(); n++) {
+      Resource_amount res_amt = build_dat->production[n];
+      if (resource_production.count(res_amt.type) == 0) {
+// If it produces something we don't have, we want it!
+        good_output = true;
+      } else {
+// Randomly decide if we want more of that resource.  If the building gives us
+// five percent of our current output, it's an even split; the more we already
+// produce the less likely it is that we want more.
+        int bldg_roll = rng(0, 20 * res_amt.amount);
+        int cur_roll  = rng(0, resource_production[res_amt.type]);
+        if (bldg_roll >= cur_roll) {
+          good_output = true;
+        }
+      }
+    }
+
+    if (!good_output && !build_dat->recipes.empty()) {
+// If it doesn't have any constant production we want, maybe we want a recipe?
+      for (int n = 0; !good_output && n < build_dat->recipes.size(); n++) {
+        Recipe recipe = build_dat->recipes[n];
+// Ensure that we have all the ingredients.
+        bool has_ingredients = true;
+        for (int m = 0;
+             has_ingredients && m < recipe.resource_ingredients.size();
+             m++) {
+          Resource_amount res_amt = recipe.resource_ingredients[m];
+          if (resource_production[res_amt.type] < res_amt.amount) {
+            has_ingredients = false;
+          }
+        }
+        for (int m = 0;
+             has_ingredients && m < recipe.mineral_ingredients.size();
+             m++) {
+          Mineral_amount min_amt = recipe.mineral_ingredients[m];
+          if (mineral_production[min_amt.type] < min_amt.amount) {
+            has_ingredients = false;
+          }
+        }
+// If we have the ingredients, verify that we actually want the output (same as
+// above)
+        if (has_ingredients) {
+          Resource_amount res_amt = recipe.result;
+          if (resource_production.count(res_amt.type) == 0) {
+// If it produces something we don't have, we want it!
+            good_output = true;
+          } else {
+// Randomly decide if we want more of that resource.  If the building gives us
+// five percent of our current output, it's an even split; the more we already
+// produce the less likely it is that we want more.
+            int bldg_roll = rng(0, 20 * res_amt.amount);
+            int cur_roll  = rng(0, resource_production[res_amt.type]);
+            if (bldg_roll >= cur_roll) {
+              good_output = true;
+            }
+          }
+        }
+      } // for (int n = 0; !good_output && n < build_dat->recipes.size(); n++)
+    } // if (!good_output && !build_dat->recipes.empty())
+
+    if (can_build && good_output) {
+// We can build it, and we want to build it, so build it!
+      if (add_building(type)) { // add_building() returns false on fail
+        return true;
+      }
+    }
+  } // for (int i = start_type + 1; i != start_type; i++)
+
+// If we reach this point, we didn't find a single building we want!
+  return false;
+}
+
+bool AI_city::add_building(Building_type type)
+{
+  Building_datum* build_dat = Building_data[type];
+  int workers = build_dat->jobs.amount;
+  if (free_citizens[build_dat->jobs.type] == 0) {
+    return false;
+  } else if (free_citizens[build_dat->jobs.type] < workers) {
+    workers = free_citizens[build_dat->jobs.type];
   }
+
+  free_citizens[build_dat->jobs.type] -= workers;
+// Add the production.
+  for (int i = 0; i < build_dat->production.size(); i++) {
+    Resource_amount res_amt = build_dat->production[i];
+    res_amt.amount *= workers;
+    resource_production[res_amt.type] += res_amt.amount;
+  }
+
+  buildings_built[type]++;
+  return true;
 }
 
 void AI_city::add_resource_production(Resource_amount res_amt)

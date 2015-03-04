@@ -54,6 +54,14 @@ private:
 // This adds 1 to the count in areas_built
   void add_area(Area_type type);
 
+/* add_random_building() randomly picks a starting point in Building_type, and
+ * progresses forward from there (looping back to BUILD_NULL if necessary) until
+ * it finds something we want to & can build.  It returns false if it doesn't
+ * find anything; otherwise, it calls add_building() and returns true.
+ */
+  bool add_random_building();
+  bool add_building(Building_type type);  // Returns true if we really built it
+
   void add_resource_production(Resource_amount res_amt);
   void add_resource_production(Resource res, int amount);
 
@@ -69,9 +77,10 @@ private:
  * based on our population.
  */
   int radius;
-  int free_peasants;
+  int free_citizens[CIT_MAX]; // Free as in unemployed & otherwise not used
 
   std::map<Area_type,int> areas_built;
+  std::map<Building_type,int> buildings_built;
 
   std::map<Resource,int> resource_production;
   std::map<Mineral,int>  mineral_production;
