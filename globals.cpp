@@ -1,8 +1,11 @@
 #include "globals.h"
 #include "files.h"
+#include "help.h"
 #include "window.h" // For debugmsg()
 
 Game* GAME;
+
+Help_database* HELP;
 
 std::string SAVE_DIR;
 
