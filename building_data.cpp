@@ -55,6 +55,9 @@ Building_datum* Building_data[BUILD_MAX];
 #define _livestock(n) \
   Building_data[cur_id]->livestock_space = (n)
 
+#define _base_morale(n) \
+  Building_data[cur_id]->base_morale = (n)
+
 // <recipes>
 
 #define _recipe(r, a) \
@@ -91,13 +94,35 @@ void init_building_data()
 
   int cur_id;
 
+  _build(BUILD_PARK);
+    _name("park");
+    _cost(RES_GOLD, 300);
+    _build_time(3);
+    _destroy_cost(20);
+    _base_morale(3);
+
+  _build(BUILD_PLAZA);
+    _name("plaza");
+    _cost(RES_GOLD, 300);
+    _cost(RES_STONE, 50);
+    _build_time(5);
+    _destroy_cost(150);
+    _base_morale(1);
+
+  _build(BUILD_MARKETPLACE);
+    _name("marketplace");
+    _cost(RES_GOLD,  800);
+    _cost(RES_STONE, 140);
+    _build_time(7);
+    _destroy_cost(350);
+
   _build(BUILD_HOVEL);
     _name("hovels");
     _plural();
     _cost(RES_GOLD, 100);
     _cost(RES_WOOD, 10);
     _build_time(3);
-    _destroy_cost(150);
+    _destroy_cost(250);
     _upkeep(5);
     _housing(CIT_PEASANT, 100);
 
@@ -167,7 +192,7 @@ void init_building_data()
     _cost(RES_GOLD,  100);
     _cost(RES_STONE,  50);
     _build_time(5);
-    _destroy_cost(200);
+    _destroy_cost(350);
     _upkeep(3);
     _jobs(CIT_PEASANT, 5);
     _wages(3);

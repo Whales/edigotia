@@ -17,6 +17,11 @@ enum Building_type
 {
   BUILD_NULL = 0,
 
+// Infrastructure - ALL AREAS, not real buildings
+  BUILD_PARK,
+  BUILD_PLAZA,
+  BUILD_MARKETPLACE,
+
 // Housing - ALL AREAS, not real buildings
   BUILD_HOVEL,
   BUILD_HOUSE,
@@ -64,8 +69,14 @@ enum Building_category
   BUILDCAT_MAX
 };
 
+// These are defined in building.cpp
 Building_category lookup_building_category(std::string name);
 std::string building_category_name(Building_category category);
+
+// get_true_building_types() returns all Building_types that are NOT just data
+// for an area (i.e. Building_category != BUILDCAT_NULL).  It's defined in
+// building.cpp.
+std::vector<Building_type> get_true_building_types();
 
 struct Recipe
 {
@@ -117,6 +128,7 @@ struct Building_datum
 
 // Data functions
   std::string get_short_description();
+  std::string generate_help_text(); // Generates text with all critical data
   bool produces_resource(Resource res = RES_NULL);
   bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
@@ -129,9 +141,8 @@ struct Building_datum
   int uid;  // Unique identifier; not sure if we need this but doesn't hurt
 
   std::string name;
+  std::string description;  // Formatted for help; see help.h
   bool plural;  // If true, name is treated as a plural
-
-  std::string description;
 
   Building_category category;
 
@@ -146,6 +157,7 @@ struct Building_datum
   std::vector<Citizen_amount> housing;
   int military_support;
   int livestock_space;
+  int base_morale;  // A morale bonus to all citizens just for existing
 
   Citizen_amount jobs;
   int wages;  // Measured in 1/10th of a gold!

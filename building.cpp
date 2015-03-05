@@ -1083,3 +1083,15 @@ std::string building_category_name(Building_category category)
   }
   return "BUG - Escaped building_category_name() switch";
 }
+
+std::vector<Building_type> get_true_building_types()
+{
+  std::vector<Building_type> ret;
+  for (int i = BUILD_NULL + 1; i < BUILD_MAX; i++) {
+    Building_datum* build_dat = Building_data[i];
+    if (build_dat->category != BUILDCAT_NULL) {
+      ret.push_back( Building_type(i) );
+    }
+  }
+  return ret;
+}
