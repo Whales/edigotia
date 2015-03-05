@@ -152,6 +152,9 @@ void init_terrain_data()
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_DIRE_WOLF,    12);
     _animal(ANIMAL_UNICORN,       2);
+    _buildable(AREA_PARK);
+    _buildable(AREA_PLAZA);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -187,6 +190,9 @@ void init_terrain_data()
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_DIRE_WOLF,    60);
     _animal(ANIMAL_BASILISK,     12);
+    _buildable(AREA_PARK);
+    _buildable(AREA_PLAZA);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -227,6 +233,8 @@ void init_terrain_data()
     _animal(ANIMAL_DIRE_WOLF,    60);
     _animal(ANIMAL_MANTICORE,    15);
     _animal(ANIMAL_BASILISK,     18);
+    _buildable(AREA_PARK);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -291,6 +299,7 @@ void init_terrain_data()
     _animal(ANIMAL_DIRE_WOLF,    50);
     _animal(ANIMAL_UNICORN,      80);
     _animal(ANIMAL_BASILISK,     10);
+    _buildable(AREA_PARK);
     _buildable(AREA_HOVELS);
 // Houses and manors take up too much space to be built in a forest!
     _buildable(AREA_KEEP);
@@ -320,6 +329,9 @@ void init_terrain_data()
     _animal(ANIMAL_DIRE_WOLF,    20);
     _animal(ANIMAL_UNICORN,      10);
     _animal(ANIMAL_BASILISK,     12);
+    _buildable(AREA_PARK);
+    _buildable(AREA_PLAZA);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -371,6 +383,8 @@ void init_terrain_data()
     _animal(ANIMAL_JELLY,        50);
     _animal(ANIMAL_MANTICORE,   120);
     _animal(ANIMAL_BASILISK,     50);
+    _buildable(AREA_PLAZA);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_MANOR);
@@ -441,6 +455,8 @@ void init_terrain_data()
     _farm(0);
     _hunting_difficulty(1000);
     _animal(ANIMAL_AKHLUT,       50);
+    _buildable(AREA_PLAZA);
+    _buildable(AREA_MARKETPLACE);
     _buildable(AREA_HOVELS);
     _buildable(AREA_HOUSES);
     _buildable(AREA_HUNTING_CAMP);
