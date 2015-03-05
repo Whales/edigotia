@@ -38,7 +38,8 @@ enum Morale_mod_type
   MORALE_MOD_NULL = 0,
 
 // Good modifiers
-  MORALE_MOD_LUXURY,
+  MORALE_MOD_LUXURY,    // Always disappears after 1 turn!
+  MORALE_MOD_BUILDING,  // Always disappears after 1 turn!
   MORALE_MOD_FESTIVAL,
 
 // Bad modifiers
@@ -54,8 +55,8 @@ std::string morale_mod_type_name(Morale_mod_type type);
 struct Morale_modifier
 {
   Morale_modifier( Morale_mod_type T = MORALE_MOD_NULL, int A = 0,
-                   Resource L = RES_NULL ) :
-    type (T), amount (A), luxury (L) { }
+                   Resource L = RES_NULL, std::string S = "" ) :
+    type (T), amount (A), luxury (L), term (S) { }
 
 // get_name() returns morale_mod_type_name(type) unless it's MORALE_MOD_LUXURY,
 // in which case we refer to the resource name.
@@ -66,7 +67,8 @@ struct Morale_modifier
 
   Morale_mod_type type;
   int amount; // Mesaured in 1/10th of a morale percentage.
-  Resource luxury;  // for MORALE_MOD_LUXURY, we need the resource consumed
+  Resource luxury;  // For MORALE_MOD_LUXURY, we need the resource consumed
+  std::string term; // Other mods want some specific term to describe them
 };
 
 class City;
@@ -112,8 +114,16 @@ struct Citizens
   int add_possession(Resource_amount res);
   int add_possession(Resource res, int amount);
 
+// We can't just use default parameters for add_morale_modifier(), since we have
+// one version with a Resource but no string, and another with a string but no
+// resource (plus one with neither, and the full version has both).
+  void add_morale_modifier(Morale_mod_type type, int amount);
   void add_morale_modifier(Morale_mod_type type, int amount,
-                           Resource luxury = RES_NULL);
+                           Resource luxury);
+  void add_morale_modifier(Morale_mod_type type, int amount,
+                           std::string term);
+  void add_morale_modifier(Morale_mod_type type, int amount, Resource luxury,
+                           std::string term);
 
   void add_citizens   (int amount);
   void remove_citizens(int amount);

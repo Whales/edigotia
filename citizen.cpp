@@ -288,6 +288,7 @@ void Citizens::decrease_morale_mods()
     }
 // Luxuries are always a single-turn modifier!
     if (morale_modifiers[i].type == MORALE_MOD_LUXURY ||
+        morale_modifiers[i].type == MORALE_MOD_BUILDING ||
         morale_modifiers[i].amount == 0) {
       morale_modifiers.erase( morale_modifiers.begin() + i);
       i--;
@@ -317,9 +318,25 @@ int Citizens::add_possession(Resource res, int amount)
   return 0;
 }
 
-// luxury defaults to RES_NULL
+void Citizens::add_morale_modifier(Morale_mod_type type, int amount)
+{
+  add_morale_modifier(type, amount, RES_NULL, "");
+}
+
 void Citizens::add_morale_modifier(Morale_mod_type type, int amount,
                                    Resource luxury)
+{
+  add_morale_modifier(type, amount, luxury, "");
+}
+
+void Citizens::add_morale_modifier(Morale_mod_type type, int amount,
+                                   std::string term)
+{
+  add_morale_modifier(type, amount, RES_NULL, term);
+}
+
+void Citizens::add_morale_modifier(Morale_mod_type type, int amount,
+                                   Resource luxury, std::string term)
 {
   if (amount == 0 || type == MORALE_MOD_NULL || type == MORALE_MOD_MAX ||
       count == 0) {
@@ -327,13 +344,14 @@ void Citizens::add_morale_modifier(Morale_mod_type type, int amount,
   }
 // Check if we have a modifier of that type.
   for (int i = 0; i < morale_modifiers.size(); i++) {
-    if (morale_modifiers[i].type == type &&
-        morale_modifiers[i].luxury == luxury) {
+    if (morale_modifiers[i].type    == type &&
+        morale_modifiers[i].luxury  == luxury &&
+        morale_modifiers[i].term    == term) {
       morale_modifiers[i].amount += amount;
       return;
     }
   }
-  Morale_modifier mod(type, amount, luxury);
+  Morale_modifier mod(type, amount, luxury, term);
   morale_modifiers.push_back(mod);
 }
 
@@ -406,8 +424,9 @@ std::string morale_mod_type_name(Morale_mod_type type)
 {
   switch (type) {
     case MORALE_MOD_NULL:     return "NULL";
-    case MORALE_MOD_FESTIVAL: return "festival";
     case MORALE_MOD_LUXURY:   return "luxury";
+    case MORALE_MOD_BUILDING: return "building";
+    case MORALE_MOD_FESTIVAL: return "festival";
     case MORALE_MOD_HUNGER:   return "hunger";
     case MORALE_MOD_DEATH:    return "death";
     case MORALE_MOD_MAX:      return "BUG - MORALE_MOD_MAX";
@@ -421,6 +440,10 @@ std::string Morale_modifier::get_name()
   if (type == MORALE_MOD_LUXURY) {
     std::stringstream ret;
     ret << "Luxury: " << Resource_data[luxury]->name;
+    return ret.str();
+  } else if (type == MORALE_MOD_BUILDING) {
+    std::stringstream ret;
+    ret << "Building: " << term;
     return ret.str();
   }
   return morale_mod_type_name(type);
