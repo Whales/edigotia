@@ -5,6 +5,24 @@
 #include <vector>
 #include <map>
 
+/* Data structures and functions for in-game help.
+ *
+ * Help pages have a title, a type, and a body of text.
+ *
+ * The title is what the page refers to, e.g. "Masonry".  Searching for titles
+ * is not case sensitive.
+ *
+ * The type is the category of the page.  Since it's a string you can use
+ * whatever you want, but it's best to restrict it to an existing type:
+ * Building, Area, Terrain, Map Type, Resource, Crop, Mineral, Animal, Race
+ *
+ * The body of text is the content of the article.  It uses normal color
+ * formatting tags (i.e. "<c=COLOR> ... <c=/>").  You can add links to your page
+ * by using the "<link=TARGET> ... </link>" tag.  For example, if you put
+ * "<link=area>areas</link>" in your page, then the word "areas" will show up in
+ * light blue and will allow the player to jump to the help page on "area".
+ */
+
 struct Help_link
 {
   Help_link(std::string _target, std::string _text) :
