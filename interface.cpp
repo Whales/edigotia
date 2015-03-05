@@ -1117,7 +1117,7 @@ bool Interface::load_game()
 
   while (true) {
     int new_index = i_load.get_int("list_cities");
-    if (new_index != cur_index) {
+    if (new_index != cur_index && new_index > 0 && new_index < cities.size()) {
       cur_index = new_index;
       cur_city = cities[cur_index];
       i_load.set_data("text_race", Race_data[cur_city->get_race()]->name);
