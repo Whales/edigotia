@@ -635,7 +635,18 @@ void Player_city::do_turn()
 // hunting camps and discover_minerals() for mines.
   for (int i = 0; i < areas.size(); i++) {
     Building* build = &(areas[i].building);
+    Building_datum* build_dat = build->get_building_datum();
+
     build->do_production(this);
+
+    if (build_dat->base_morale > 0) {
+// Give all our citizens its morale
+      for (int n = CIT_PEASANT; n <= CIT_BURGHER; n++) {
+        population[n].add_morale_modifier(MORALE_MOD_BUILDING,
+                                          build_dat->base_morale * 10,
+                                          build->get_name());
+      }
+    }
     if (build->produces_resource(RES_HUNTING)) {
       do_hunt( &(areas[i]) );
     }
@@ -643,8 +654,20 @@ void Player_city::do_turn()
       build->discover_minerals(this);
     }
   }
+
   for (int i = 0; i < buildings.size(); i++) {
+    Building_datum* build_dat = buildings[i].get_building_datum();
+
     buildings[i].do_production(this);
+
+    if (build_dat->base_morale > 0) {
+// Give all our citizens its morale
+      for (int n = CIT_PEASANT; n <= CIT_BURGHER; n++) {
+        population[n].add_morale_modifier(MORALE_MOD_BUILDING,
+                                          build_dat->base_morale * 10,
+                                          buildings[i].get_name());
+      }
+    }
   }
 
 // Increment hunt_record_days.
