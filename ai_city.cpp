@@ -291,9 +291,9 @@ void AI_city::setup_resource_production(World_map* world)
   } // switch (role)
 
 // Finally, add some buildings to create more advanced resources.
-  bool done_with_buildings = add_random_building();
-  while (!done_with_buildings) {
-    done_with_buildings = add_random_building();
+  bool adding_buildings = add_random_building();
+  while (adding_buildings) {
+    adding_buildings = add_random_building();
   }
   
 }
@@ -628,12 +628,17 @@ void AI_city::add_area(Area_type type)
 
 bool AI_city::add_random_building()
 {
-  int start_type = rng(BUILD_NULL + 1, BUILD_MAX - 1);
-  for (int i = start_type + 1; i != start_type; i++) {
-    if (i == BUILD_MAX) {
-      i = BUILD_NULL + 1; // Loop around to the start
+// TODO: REENABLE THIS SHIT
+  return false;
+// This filters out any buildings that are just data for Areas.
+  std::vector<Building_type> buildable = get_true_building_types();
+  int start = rng(0, buildable.size() - 1);
+  for (int i = start + 1; i != start; i++) {
+debugmsg("Loop %d (%d)", i, start);
+    if (i == buildable.size()) {
+      i = -1; // Loop around to the start
     }
-    Building_type type = Building_type(i);
+    Building_type type = buildable[i];
     Building_datum* build_dat = Building_data[type];
     bool can_build = true;
 // Check 1: Do we have available employees
@@ -711,6 +716,7 @@ bool AI_city::add_random_building()
     } // if (!good_output && !build_dat->recipes.empty())
 
     if (can_build && good_output) {
+debugmsg("Building %s", build_dat->name.c_str());
 // We can build it, and we want to build it, so build it!
       if (add_building(type)) { // add_building() returns false on fail
         return true;
