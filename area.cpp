@@ -12,6 +12,7 @@ Area_datum::Area_datum()
   uid = -1;
   category = AREACAT_NULL;
   building = BUILD_NULL;
+  buildings_supported = 0;
   unlockable = false;
 }
 
@@ -238,13 +239,14 @@ Area_category lookup_area_category(std::string name)
 std::string area_category_name(Area_category category)
 {
   switch (category) {
-    case AREACAT_NULL:      return "NULL";
-    case AREACAT_HOUSING:   return "housing";
-    case AREACAT_FOOD:      return "food";
-    case AREACAT_RESOURCES: return "resources";
-    case AREACAT_MILITARY:  return "military";
-    case AREACAT_MAX:       return "BUG - AREACAT_MAX";
-    default:                return "BUG - Unnamed Area_category";
+    case AREACAT_NULL:            return "NULL";
+    case AREACAT_INFRASTRUCTURE:  return "infrastructure";
+    case AREACAT_HOUSING:         return "housing";
+    case AREACAT_FOOD:            return "food";
+    case AREACAT_RESOURCES:       return "resources";
+    case AREACAT_MILITARY:        return "military";
+    case AREACAT_MAX:             return "BUG - AREACAT_MAX";
+    default:                      return "BUG - Unnamed Area_category";
   }
   return "BUG - Escaped area_category_name() switch!";
 }

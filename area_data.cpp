@@ -17,6 +17,9 @@ Area_datum* Area_data[AREA_MAX];
 #define _building(bt) \
   Area_data[cur_id]->building = (bt)
 
+#define _buildings_supported(n) \
+  Area_data[cur_id]->buildings_supported = (n)
+
 #define _unlock(t, a, b) \
   Area_data[cur_id]->unlockable = true; \
   Area_data[cur_id]->unlock_condition = City_achievement( (t), (a), (b) )
@@ -28,6 +31,26 @@ void init_area_data()
     Area_data[i]->uid = i;
   }
   int cur_id = 0;
+
+  _area(AREA_PARK);
+    _name("park");
+    _symbol('P', c_ltgreen);
+    _category(AREACAT_INFRASTRUCTURE);
+    _building(BUILD_PARK);
+
+  _area(AREA_PLAZA);
+    _name("plaza");
+    _symbol('&', c_ltgreen);
+    _category(AREACAT_INFRASTRUCTURE);
+    _building(BUILD_PLAZA);
+    _buildings_supported(4);
+
+  _area(AREA_MARKETPLACE);
+    _name("marketplace");
+    _symbol('&', c_ltblue);
+    _category(AREACAT_INFRASTRUCTURE);
+    _building(BUILD_MARKETPLACE);
+    _buildings_supported(10);
 
   _area(AREA_HOVELS);
     _name("hovels");
@@ -54,6 +77,7 @@ void init_area_data()
     _symbol('@', c_yellow);
     _category(AREACAT_HOUSING);
     _building(BUILD_KEEP);
+    _buildings_supported(6);
 
   _area(AREA_FARM);
     _name("farm");
@@ -81,7 +105,7 @@ void init_area_data()
 
   _area(AREA_PASTURE);
     _name("pasture");
-    _symbol('O', c_brown);
+    _symbol('0', c_brown);
     _category(AREACAT_FOOD);
     _building(BUILD_PASTURE);
 

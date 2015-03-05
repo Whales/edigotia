@@ -23,6 +23,11 @@ enum Area_type
 {
   AREA_NULL = 0,
 
+// Infrastructure
+  AREA_PARK,
+  AREA_PLAZA,
+  AREA_MARKETPLACE,
+
 // Housing
   AREA_HOVELS,
   AREA_HOUSES,
@@ -49,6 +54,7 @@ enum Area_category
 {
   AREACAT_NULL = 0,
 
+  AREACAT_INFRASTRUCTURE, // Basic infrastructure - plaza, marketplace
   AREACAT_HOUSING,  // Things that provide housing - hovels, houses, manor, keep
 
   AREACAT_FOOD,     // Things that produce food - farm, hunting camp, fishery
@@ -65,6 +71,7 @@ std::string area_category_name(Area_category category);
 struct Area_datum
 {
   Area_datum();
+
   std::string name;
   int uid;
   glyph symbol;
@@ -72,6 +79,10 @@ struct Area_datum
   Area_category category;
 
   Building_type building;
+
+// In order to add buildings to the city, we need areas that support them.
+// buildings_supported tells us how many buildings this area lets us build.
+  int buildings_supported;
 
   bool unlockable;
   City_achievement unlock_condition;
