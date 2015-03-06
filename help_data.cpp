@@ -32,6 +32,93 @@ Inside the cities there is a number of <link=citizens>citizens</link>, \
 </link> and <link=military>armies</link>.\
 ");
 
+  _article("Kingdom");
+  _type("Game Concept");
+  _text("\
+Kingdoms are loosely affiliated sets of <link=city>cities</link>.  Usually, \
+kingdoms are tied to <link=race>races</link>; each race has one kingdom \
+associated with it, and a kingdom is made up entirely of that race.  This \
+makes the concept of \"race\" and \"kingdom\" closely related, and you may see \
+them used somewhat interchangably.  However, while \"race\" refers to the \
+particular attributes of <link=nobles>nobles</link> and <link=citizens>citizens\
+</link>, \"kingdom\" refers to a political structure.\n\
+\n\
+Kingdoms are based on a political hierarchy.  Each kingdom has one capital \
+city, the home of the <link=king>king or queen</link> of the kingdom.  The \
+rest of the kingdom is split into several <link=duchy>duchies</link>, each of \
+which has its own capital city, which is the home of the <c=ltgreen>duke or \
+duchess<c=/>.  Within each duchy are several cities, run by <c=ltgreen>mayors\
+<c=/>.\n\
+\n\
+Each mayor is expected to obey the rule of its duke, and each duke is \
+duty-bound to the king.  The most concrete form of this fealty is seen in \
+taxes; all cities owe a certain monthly sum to their duke, while each duchy \
+must pay monthly taxes to the king.  The end result is that the kingdom's \
+capital city enjoys great wealth.\n\
+\n\
+In addition to taxes, cities may be asked to come to the aid of their lord, \
+and of their duchy in general.  This may involve sending <link=food>food\
+</link> to cities in need, <link=conscription>conscripting</link> citizens for \
+service in the royal <link=army>army</link>, or changing their laws to match \
+the demands of the lord.  If a city performs well in the eyes of their lord, \
+they will gain royal <link=relations>favor</link>, improving their political \
+standing.  Favors are a two-way street; if your city is in need, whether it be \
+a food shortage, impending military invasion, or other issue, asking your lord \
+for help is often the best solution.  However, asking for help too often will \
+damage your favor, and your lord may eventually cut you off altogether.\n\
+\n\
+While you start the game in control of a normal city, this is not necessarily \
+your eternal fate.  There are ways to climb the political ladder, advancing to \
+the status of a duke and even king or queen.  This simplest - and most \
+dangerous - is a military invasion, taking the duchy seat as your own.  This \
+will almost always provoke a response of force from the king, unless you have \
+their support.  A safer option would be political maneuvering.  If you can \
+gain great favor with the king, while simultaneously turning the king against \
+your duke, they may instate you as a new duke.  Alternatively, if the duke \
+dies and leaves no heir, they may select a very close friend to inherit their \
+dynasty.\n\
+\n\
+Similarly to how cities have often-complex relationships, different kingdoms \
+have their own relationships with each other.  Kingdoms that share a border \
+may develop tensions, and issues of trade and war can further strain them.  If \
+two kingdoms end up going to war, the individual cities inside them will be \
+expected to cut off all trade with each other, and may be asked to contribute \
+soldiers to the war effort.\
+");
+
+  _article("Race");
+  _type("Game Concept");
+  _text("\
+<c=magenta>For a list of races, see <link=list of races>list of races.</link>\n\
+\n\
+The world of Edigotia is populated by various races.  Members of each race \
+will band together to form a <link=kingdom>kingdom</link>, forming the world's \
+political structures.  Each <link=city>city</link> in the world belongs to a \
+single race, though it may have visitors or <link=slaves>slaves</link> of \
+other races.  The kingdoms of various races are built differently; some races \
+prefer a large number of low-population cities, while others gather in \
+relatively few metropolises.\n\
+\n\
+Races can have wildly different attributes which greatly impact the way the \
+city they live in runs.  The most notable attribute is their \
+<link=skills>skills</link>.  These are the race's aptitudes with various tasks \
+that befall its <link=citizens>citizens</link>.  These determine the output of \
+various <link=area>areas</link> and <link=building>buildings</link>, along \
+with their abilities in <link=trade>trade</link> and <link=war>warfare\
+</link>.  For a list of skills, see <link=list of skills>list of skills\
+</link>.\n\
+\n\
+Races have other attributes as well.  For instance, their ability to travel \
+across or fight in various terrains may vary.  They also have different \
+<link=combat>combat</link> attributes, like base skill, <link=hit points>hit \
+points</link>, and skills with various <link=weapon>weapons</link>.\n\
+Some races consume <link=food>food</link> much faster than others, making food \
+a more pressing concern.  The citizens and <link=resources>resources</link> \
+each race starts with is different.  Birth rate and citizen class ratios may \
+differ as well, as well as the citizens' <link=morale>morale</link> demands \
+and acceptable <link=taxes>tax rates</link>.\
+");
+
   _article("Area");
   _type("Game Concept");
   _text("\
@@ -164,6 +251,35 @@ class, so some areas or buildings may be useless if you don't have available \
 citizens of that class.  When citizens aren't working a job, they aren't \
 idle!  They are working from their homes as seamstresses, tinkers, or other \
 small odd jobs.  This produces a small amount of income which may be \
-<link=taxes>taxed</link>.\
+<link=taxes>taxed</link>.  Merchants generate more income than peasants, and \
+burghers produce more than merchants.  Taxes are an important source of \
+revenue for most cities, so it's important to balanced how many citizens you \
+employ.\n\
+\n\
+Taxation also forms the basis of your citizens' <link=morale</link>.  Morale is the overall happiness of your citizens, and is affected by a wide range of \
+sources.  Middling morale will usually have no effects, but when it's very \
+or very low the effects can be dramatic.  The most common ways to improve \
+morale is by reducing taxation or giving your citizens <link=luxuries>luxuries\
+</link>.\n\
+\n\
+Before a citizen can work a job or produce income, they have to have a home.  \
+Each class lives in a different kind of housing, and the housing for higher \
+classes is more expensive than that for lower classes.  Housing may only be \
+built as an <link=area>area</link>, so you will need to plan carefully to \
+anticipate increase population!  Any homeless citizens will be unable to hold \
+a job or produce income, but will continue to consume food and resources.\n\
+\n\
+The most important resource your citizens need is food.  The amount of food \
+each citizen consumes depends on your race.  Addtionally, higher-class \
+citizens eat more than lower-class ones.  If you cannot feed your citizens, \
+they will begin to starve and, if the food deficit continues for long enough, \
+may die.\n\
+\n\
+If your citizens are well-fed, they will eventually start giving birth.  A \
+citizen will be born into the highest class available.  Citizen classes have \
+to maintain a certain ratio.  The exact numbers depend on your race; for \
+humans, there must be 10 peasants for every merchant, and 10 merchants for \
+every burgher.  Addtionally, a class's morale must be above a certain level \
+for the class above it to be born.\
 ");
 }
