@@ -178,6 +178,15 @@ private:
   // Helper functions for pick_area();
   void set_area_list(Area_category category, std::vector<Area_type>& types);
 
+// Shows all help categories and articles
+  void help_index();
+
+// Allows you to search the help
+  void help_search();
+
+// Shows a single article; allows linking to others, etc
+  void help_article(std::string name);
+
 
 // *** Helper / data-storing functions ***
 
