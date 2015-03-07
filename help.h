@@ -44,6 +44,10 @@ struct Help_article
   std::string type; // The type of article, e.g. "race" "building" etc.
   std::string text;
   std::vector<Help_link> links;
+
+// If redirect is not empty, then loading this article will automatically
+// redirect to the article with this name.
+  std::string redirect;
 };
 
 enum Help_result_type

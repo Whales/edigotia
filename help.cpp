@@ -130,14 +130,16 @@ void Help_database::process_categories()
        it++) {
     Help_article* article = it->second;
     std::string category = no_caps(article->type);
+    if (!category.empty()) {  // Redirect articles have no category
 // Add the article to the category list, too
-    if (categories.count(category) == 0) {
+      if (categories.count(category) == 0) {
 // Make a new vector
-      std::vector<Help_article*> tmpvec;
-      tmpvec.push_back(article);
-      categories[category] = tmpvec;
-    } else {
-      categories[category].push_back(article);
+        std::vector<Help_article*> tmpvec;
+        tmpvec.push_back(article);
+        categories[category] = tmpvec;
+      } else {
+        categories[category].push_back(article);
+      }
     }
   }
 }
@@ -218,10 +220,10 @@ std::string Help_database::get_article_name(std::string term)
 
 std::string Help_database::get_article_type(std::string term)
 {
-  term = no_caps(term);
-
-  if (articles.count(term)) {
-    return articles[term]->type;
+// Use get_article() in case there's a redirect.
+  Help_article* article = get_article(term);
+  if (article) {
+    return article->type;
   }
 
   return std::string();
@@ -232,7 +234,20 @@ Help_article* Help_database::get_article(std::string term)
   term = no_caps(term);
 
   if (articles.count(term)) {
-    return articles[term];
+    Help_article* ret = articles[term];
+    if (!ret->redirect.empty()) {
+      Help_article* redirect = get_article(ret->redirect);
+// There may be multiple redirects!
+      while (redirect && !redirect->redirect.empty()) {
+        ret = redirect;
+        redirect = get_article(redirect->redirect);
+      }
+// If redirect eventually becomes null, we'll use the last-non-null article
+      if (redirect) {
+        return redirect;
+      }
+    }
+    return ret;
   }
 
   return NULL;
