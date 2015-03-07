@@ -5,6 +5,8 @@
 #include "race.h"
 #include "animal.h"
 #include "ai.h"
+#include "help.h"
+#include "globals.h"
 
 bool init_all_data()
 {
@@ -16,6 +18,9 @@ bool init_all_data()
   init_animal_data();
   init_races();
   init_city_roles();
+
+  HELP = new Help_database;
+  init_help();
 
   return true;
 }
