@@ -141,7 +141,11 @@ bool ele_drawing::translate(long from, long to)
 // *** TEXTBOX ELEMENT ***
 void ele_textbox::draw(Window *win)
 {
- std::vector<std::string> broken = break_into_lines(*text, sizex);
+ int effective_sizex = sizex;
+ if (selectable)
+  effective_sizex--;
+
+ std::vector<std::string> broken = break_into_lines(*text, effective_sizex);
  
  win->clear_area(posx, posy, posx + sizex - 1, posy + sizey - 1);
 
