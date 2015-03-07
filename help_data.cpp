@@ -256,9 +256,10 @@ burghers produce more than merchants.  Taxes are an important source of \
 revenue for most cities, so it's important to balanced how many citizens you \
 employ.\n\
 \n\
-Taxation also forms the basis of your citizens' <link=morale</link>.  Morale is the overall happiness of your citizens, and is affected by a wide range of \
-sources.  Middling morale will usually have no effects, but when it's very \
-or very low the effects can be dramatic.  The most common ways to improve \
+Taxation also forms the basis of your citizens' <link=morale>morale</link>.  \
+Morale is the overall happiness of your citizens, and is affected by a wide \
+range of sources.  Middling morale will usually have no effects, but when it's \
+very or very low the effects can be dramatic.  The most common ways to improve \
 morale is by reducing taxation or giving your citizens <link=luxuries>luxuries\
 </link>.\n\
 \n\
@@ -282,4 +283,14 @@ humans, there must be 10 peasants for every merchant, and 10 merchants for \
 every burgher.  Addtionally, a class's morale must be above a certain level \
 for the class above it to be born.\
 ");
+
+  _article("Plaza");
+  _type("Area");
+  _text("Just a demo");
+
+  _article("Humans");
+  _type("Race");
+  _text("Just a demo");
+
+  HELP->process_categories();
 }
