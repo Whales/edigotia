@@ -180,12 +180,11 @@ private:
 
 // Shows all help categories and articles
   void help_index();
-
 // Allows you to search the help
   void help_search();
-
 // Shows a single article; allows linking to others, etc
-  void help_article(std::string name);
+// Returns false if we quit help, true if we just went back
+  bool help_article(std::string name);
 
 
 // *** Helper / data-storing functions ***

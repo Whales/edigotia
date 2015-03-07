@@ -10,6 +10,7 @@
 #include "rng.h"
 #include "globals.h"
 #include "files.h"
+#include "help.h"
 #include <sstream>
 #include <fstream>
 #include <cstdarg> // For the variadic function below
@@ -82,7 +83,7 @@ bool Interface::init()
 
   add_menu(MENU_HELP, "Help",
 "Index",
-"Start Tutorial",
+"Search",
 0
 );
 
@@ -165,6 +166,13 @@ bool Interface::starting_screen()
     ch = input();
 
     switch (ch) {
+
+      case 'h':
+      case 'H':
+        help_index();
+        i_start.draw(&w_start);
+        w_start.refresh();
+        break;
 
       case 'l':
       case 'L':
@@ -918,6 +926,17 @@ void Interface::do_menu_action(Menu_id menu, int index)
       switch (index) {
         case 1: // View map
           GAME->world->draw( GAME->city->location, &(GAME->city->world_seen) );
+          break;
+      }
+      break;
+
+    case MENU_HELP:
+      switch (index) {
+        case 1: // Help index
+          help_index();
+          break;
+        case 2: // Search
+          help_search();
           break;
       }
       break;
@@ -4123,6 +4142,297 @@ void Interface::set_area_list(Area_category category,
     i_main.add_data("text_commands", "<c=pink>Q<c=/>: Change category");
 
   }
+}
+
+void Interface::help_index()
+{
+  cuss::interface i_help;
+  if (!i_help.load_from_file("cuss/help_index.cuss")) {
+    return;
+  }
+
+  Window w_help(0, 0, 80, 24);
+
+// articles will be set the first time our while loop runs.
+  std::vector<std::string> articles;
+  std::vector<std::string> categories = HELP->get_categories();
+
+  i_help.ref_data("list_articles",   &articles  );
+  i_help.ref_data("list_categories", &categories);
+
+  i_help.set_data("num_articles",   HELP->num_articles()  );
+  i_help.set_data("num_categories", HELP->num_categories());
+  i_help.set_data("num_articles",   c_ltblue );
+  i_help.set_data("num_categories", c_ltgreen);
+
+  i_help.select("list_categories");
+  int cur_index = -1;
+
+  while (true) {
+    int new_index = i_help.get_int("list_categories");
+    if (new_index != cur_index && new_index >= 0 &&
+        new_index < categories.size()) {
+      cur_index = new_index;
+      std::string cat_name = categories[cur_index];
+      articles = HELP->get_titles_in_category(cat_name);
+    }
+
+    i_help.draw(&w_help);
+    w_help.refresh();
+
+    bool article_list = (i_help.selected()->name == "list_articles");
+
+    long ch = input();
+
+    switch (ch) {
+
+      case '/':
+        help_search();
+        break;
+
+      case '\n':
+        if (article_list) {
+// help_article() returns false if we quit help altogether
+          if (!help_article( i_help.get_str("list_articles") )) {
+            return;
+          }
+        } else {
+          i_help.select("list_articles");
+        }
+        break;
+
+      case 'q':
+      case 'Q':
+      case KEY_ESC:
+        return;
+
+      default:
+        i_help.handle_keypress(ch);
+        break;
+    }
+  }
+}
+
+void Interface::help_search()
+{
+  cuss::interface i_help;
+  if (!i_help.load_from_file("cuss/help_search.cuss")) {
+    return;
+  }
+
+  Window w_help(0, 0, 80, 24);
+
+// These affect the search results we include.
+  bool non_exact_search = false, content_search = false;
+
+  std::string search_term;
+
+  std::vector<Help_result> results;
+
+  std::vector<std::string> articles, categories;
+
+  i_help.ref_data("entry_search",    &search_term);
+  i_help.ref_data("list_articles",   &articles   );
+  i_help.ref_data("list_categories", &categories );
+  i_help.set_data("text_non_exact",  "off"       );
+  i_help.set_data("text_content",    "off"       );
+
+  i_help.select("entry_search");
+
+  while (true) {
+
+    i_help.draw(&w_help);
+    w_help.refresh();
+
+    bool entry = (i_help.selected() &&
+                  i_help.selected()->name == "entry_search");
+
+    long ch = input();
+
+    switch (ch) {
+
+      case '!':
+        i_help.clear_data("text_search_results");
+        i_help.select("entry_search");
+        search_term = "";
+        break;
+
+      case ',':
+        non_exact_search = !non_exact_search;
+        i_help.set_data("text_non_exact", (non_exact_search ? "on" : "off") );
+        break;
+
+      case '.':
+        content_search = !content_search;
+        i_help.set_data("text_content", (content_search ? "on" : "off") );
+        break;
+
+      case '\n':
+        if (entry) {  // We were entering a search term, now we're searching!
+          results = HELP->search(search_term, non_exact_search, content_search);
+// Fill the search results element
+          if (results.empty()) {
+            i_help.set_data("text_search_results", "<c=ltred>No results.<c=/>");
+          } else {
+            std::stringstream ss_results;
+            ss_results << "<c=ltgreen>" << results.size() << " results.<c=/>";
+            i_help.set_data("text_search_results", ss_results.str());
+          }
+// Populate our vectors (and the interface's lists)
+          articles.clear();
+          categories.clear();
+          for (int i = 0; i < results.size(); i++) {
+            articles.push_back  ( results[i].article_name );
+            categories.push_back( results[i].article_type );
+          }
+          i_help.select("list_articles");
+
+        } else {  // We were selecting an article from the list.
+
+          std::string article_name = i_help.get_str("list_articles");
+          if (!article_name.empty()) {
+            if (!help_article( article_name )) {
+              return; // help_article() returns false to indicate "quit help"
+            }
+          }
+
+        }
+        break;
+
+      case KEY_ESC:
+// Don't include 'Q' / 'q' here since we want to capture that for text entry
+        return;
+
+      default:
+        if (!i_help.handle_keypress(ch)) {
+// NOW we can use 'Q' / 'q' to quit.
+          if (ch == 'q' || ch == 'Q') {
+            return;
+          }
+        }
+        break;
+
+    } // switch (ch)
+
+  } // while (true)
+
+}
+
+bool Interface::help_article(std::string name)
+{
+  cuss::interface i_help;
+  if (!i_help.load_from_file("cuss/help_article.cuss")) {
+    return false;
+  }
+
+  Window w_help(0, 0, 80, 24);
+
+  Help_article* article = HELP->get_article(name);
+
+  if (!article) {
+// Special case - no article found!
+    i_help.set_data("text_title", "<c=ltred>Article not found.<c=/>");
+    std::stringstream ss_error;
+    ss_error << "There is no article named <c=ltcyan>" << name << "<c=/>." <<
+                "  If you are seeing this, it is likely a bug!" << std::endl <<
+                std::endl << "Press any key to leave this screen...";
+    i_help.set_data("text_content", ss_error.str());
+
+    i_help.draw(&w_help);
+    w_help.refresh();
+
+    input();
+    return true;
+  }
+
+/* This bears explaining.  We may have several pages of links; since we select
+ * them using number keys (0 - 9), we can only display 10 at a time.  Hence, we
+ * divide them into "pages" of links.  Each page is the top-level vector, and
+ * consists of a vector of up to 10 strings.
+ */
+  std::vector< std::vector<std::string> > links;
+
+// We'll always have at least 1 link_page, even if there's no links!
+// This makes it always safe to refer to links[0].
+  int link_pages = 1 + article->links.size() / 10;
+
+  for (int i = 0; i < link_pages; i++) {
+    std::vector<std::string> page;
+// Page $i uses the ($i * 10) through ($i * 10 + 9)th links.
+    for (int n = 10 * i; n < 10 * (i + 1) && n < article->links.size(); n++) {
+      std::stringstream ss_link;
+// Links are labeled 0 through 9 on each page.
+      int num = n - (10 * i);
+      ss_link << "<c=magenta>" << num << "<c=/>: " << article->links[n].text;
+      page.push_back( ss_link.str() );
+    }
+    links.push_back(page);
+  }
+
+  i_help.set_data("text_title", article->name);
+  i_help.set_data("text_title", c_ltcyan);
+// Use ref_data since it could be a biiiig string.
+  i_help.ref_data("text_content", &(article->text));
+
+  int link_page = 0;
+  i_help.set_data("list_links", links[0]);
+
+  i_help.select("text_content");
+
+  while (true) {
+    i_help.draw(&w_help);
+    w_help.refresh();
+
+    long ch = input();
+
+    if (ch >= '0' && ch <= '9' && ch - '0' < links[link_page].size()) {
+// We selected a valid link!
+      int link_index = link_page * 10 + ch - '0';
+      Help_link following = article->links[link_index];
+      help_article( following.target );
+    } else {
+
+      switch (ch) {
+        case KEY_BACKSPACE:
+        case 127:
+        case 8:
+          i_help.set_data("text_content", 0); // Scroll to top
+          break;
+
+        case '+':
+        case '=':
+          link_page++;
+          if (link_page == links.size()) {
+            link_page = 0;
+          }
+          i_help.set_data("list_links", links[link_page]);
+          break;
+
+        case '-':
+          link_page--;
+          if (link_page < 0) {
+            link_page = links.size() - 1;
+          }
+          i_help.set_data("list_links", links[link_page]);
+          break;
+
+        case 'h':
+        case 'H':
+        case '4':
+        case KEY_LEFT:
+          return true;  // Go back an article
+
+        case 'q':
+        case 'Q':
+        case KEY_ESC:
+          return false; // Quit help altogether
+
+        default:
+          i_help.handle_keypress(ch);
+          break;
+      } // switch (ch)
+    } // We did NOT select a link.
+  } // while (true)
 }
 
 void Interface::get_menu_info(Menu_id item, std::string& name, int& posx)
