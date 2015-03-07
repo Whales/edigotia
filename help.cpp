@@ -116,49 +116,91 @@ already exists!", lookup_name.c_str());
 
   articles[lookup_name] = article;
 
+  std::string category = no_caps(article->type);
+
   return true;
 }
 
-std::vector<Help_result> Help_database::search(std::string term)
+void Help_database::process_categories()
+{
+  categories.clear(); // Just in case
+
+  for (std::map<std::string,Help_article*>::iterator it = articles.begin();
+       it != articles.end();
+       it++) {
+    Help_article* article = it->second;
+    std::string category = no_caps(article->type);
+// Add the article to the category list, too
+    if (categories.count(category) == 0) {
+// Make a new vector
+      std::vector<Help_article*> tmpvec;
+      tmpvec.push_back(article);
+      categories[category] = tmpvec;
+    } else {
+      categories[category].push_back(article);
+    }
+  }
+}
+
+
+int Help_database::num_articles()
+{
+  return articles.size();
+}
+
+int Help_database::num_categories()
+{
+  return categories.size();
+}
+
+// non_exact and content both default to true
+std::vector<Help_result> Help_database::search(std::string term,
+                                               bool non_exact, bool content)
 {
   term = no_caps(term);
   std::vector<Help_result> all_matches, title_matches, text_matches;
 
 // First, check for an exact match.
   if (articles.count(term)) {
-    Help_result exact_match( get_article_name(term), HELP_RESULT_EXACT );
+    Help_result exact_match( get_article_name(term), get_article_type(term),
+                             HELP_RESULT_EXACT );
     all_matches.push_back( exact_match );
   }
 
 // Next, check for articles where the title is a *partial* match, or the text
 // matches.
-  for (std::map<std::string,Help_article*>::iterator it = articles.begin();
-       it != articles.end();
-       it++) {
-    std::string lookup_name = it->first;
-    std::string* text = &(it->second->text);
+  if (non_exact || content) {
+    for (std::map<std::string,Help_article*>::iterator it = articles.begin();
+         it != articles.end();
+         it++) {
+      std::string lookup_name = it->first;
+      std::string* text = &(it->second->text);
 
-    if (it->first != term) {  // Skip the exact match we already used.
+      if (it->first != term) {  // Skip the exact match we already used.
 
-      if (lookup_name.find(term) != std::string::npos) {
-        Help_result title_match( it->second->name, HELP_RESULT_TITLE );
-        title_matches.push_back( title_match );
+        if (non_exact && lookup_name.find(term) != std::string::npos) {
+          Help_result title_match( it->second->name, it->second->type,
+                                   HELP_RESULT_TITLE );
+          title_matches.push_back( title_match );
 
-      } else if (text->find(term) != std::string::npos) {
-        Help_result text_match( it->second->name, HELP_RESULT_TEXT );
-        text_matches.push_back( text_match );
+        } else if (content && text->find(term) != std::string::npos) {
+          Help_result text_match( it->second->name, it->second->type,
+                                   HELP_RESULT_TEXT );
+          text_matches.push_back( text_match );
+        }
+
       }
-
     }
-  }
 
 // Now, put it all together in the same vector.
-  for (int i = 0; i < title_matches.size(); i++) {
-    all_matches.push_back( title_matches[i] );
-  }
-  for (int i = 0; i < text_matches.size(); i++) {
-    all_matches.push_back( text_matches[i] );
-  }
+    for (int i = 0; i < title_matches.size(); i++) {
+      all_matches.push_back( title_matches[i] );
+    }
+    for (int i = 0; i < text_matches.size(); i++) {
+      all_matches.push_back( text_matches[i] );
+    }
+
+  } // if (non_exact || content)
 
   return all_matches;
 }
@@ -174,6 +216,17 @@ std::string Help_database::get_article_name(std::string term)
   return std::string();
 }
 
+std::string Help_database::get_article_type(std::string term)
+{
+  term = no_caps(term);
+
+  if (articles.count(term)) {
+    return articles[term]->type;
+  }
+
+  return std::string();
+}
+
 Help_article* Help_database::get_article(std::string term)
 {
   term = no_caps(term);
@@ -183,4 +236,46 @@ Help_article* Help_database::get_article(std::string term)
   }
 
   return NULL;
+}
+
+std::vector<std::string> Help_database::get_categories()
+{
+  std::vector<std::string> ret;
+
+  for (std::map< std::string,std::vector<Help_article*> >::iterator it =
+         categories.begin();
+       it != categories.end();
+       it++) {
+    ret.push_back( capitalize(it->first) );
+  }
+
+  return ret;
+}
+
+std::vector<Help_article*> Help_database::get_articles_in_category(std::string
+                                                                   category)
+{
+  category = no_caps(category);
+
+  if (categories.count(category) == 0) {  // Category does not exist!
+    return std::vector<Help_article*>();
+  }
+
+  return categories[category];
+}
+
+std::vector<std::string> Help_database::get_titles_in_category(std::string
+                                                               category)
+{
+  category = no_caps(category);
+
+  std::vector<std::string> ret;
+  
+  std::vector<Help_article*> article_list = get_articles_in_category(category);
+
+  for (int i = 0; i < article_list.size(); i++) {
+    ret.push_back( article_list[i]->name );
+  }
+
+  return ret;
 }
