@@ -11,6 +11,9 @@
 #define _text(n) \
   cur_article->set_text( (n) )
 
+#define _redirect(n) \
+  cur_article->redirect = (n)
+
 void init_help()
 {
   Help_article* cur_article;
@@ -44,7 +47,7 @@ particular attributes of <link=nobles>nobles</link> and <link=citizens>citizens\
 </link>, \"kingdom\" refers to a political structure.\n\
 \n\
 Kingdoms are based on a political hierarchy.  Each kingdom has one capital \
-city, the home of the <link=king>king or queen</link> of the kingdom.  The \
+city, the home of the <link=monarch>king or queen</link> of the kingdom.  The \
 rest of the kingdom is split into several <link=duchy>duchies</link>, each of \
 which has its own capital city, which is the home of the <c=ltgreen>duke or \
 duchess<c=/>.  Within each duchy are several cities, run by <c=ltgreen>mayors\
@@ -84,6 +87,124 @@ may develop tensions, and issues of trade and war can further strain them.  If \
 two kingdoms end up going to war, the individual cities inside them will be \
 expected to cut off all trade with each other, and may be asked to contribute \
 soldiers to the war effort.\
+");
+
+  _article("Queen");
+  _redirect("Monarch");
+
+  _article("King");
+  _redirect("Monarch");
+
+  _article("Monarch");
+  _type("Game Concept");
+  _text("\
+The monarch (king or queen) is a <link=nobles>noble</link> who rules over a \
+<link=kingdom>kingdom</link>.  This honor is generally passed on from \
+generation to generation; when the current ruler passes away, their eldest \
+heir is named king or queen after them.  If there is no eligable heir, there \
+is a <link=succession crisis>succession crisis</link>, and the kingdom will be \
+without a leader until one is selected (by any surviving royal family) or \
+someone <link=coup>seizes the throne</link>.\n\
+\n\
+The <link=city>city</link> that the monarch rules over is the de facto \
+capital of the kingdom.  This city usually enjoys a great surplus of wealth, \
+as all <link=duchy>duchies</link> under its rule must pay taxes to the city.  \
+This frees the city up to spend its time and <link=resources>resources</link> \
+on matters of state, rather than securing <link=trade>trades</link> for \
+wealth.  The monarch is also expected to tend to the needs of its duchies, who \
+in turn will come to the aid of their cities, so much of this wealth will wind \
+up back in the hands of the kingdom's cities.\n\
+\n\
+The monarch enjoys the power to declare the <link=laws>laws</link> of the \
+kingdom.  They can declare <link=war>war</link> against another kingdom, \
+<link=trade embargo>trade embargoes</link> against a kingdom or city, \
+<link=prohibition>prohibit</link> the produce, sale or use of various \
+resources, or various other laws.  Cities may choose to disobey the law of the \
+monarch, but will lose <link=favor>favor</link> or may see their ruler removed \
+from power.\n\
+\n\
+As the ruler of the kingdom, the monarch is often under threat of \
+assassination.  Foreign powers may benefit from the chaos caused when a \
+monarch dies, and even the subjects of the monarch may want to depose their \
+ruler, either to disrupt unfair rule or for a chance to seize the throne.  For \
+this reason, most monarch will want to keep a sizable <link=army>army</link> \
+to defend their city, and a strong <link=city guard>city guard</link> to \
+thwart assassins.\
+");
+
+  _article("Duke");
+  _redirect("Duchy");
+
+  _article("Duchess");
+  _redirect("Duchy");
+
+  _article("Duchy");
+  _type("Game Concept");
+  _text("\
+A duchy is a district of a <link=kingdom>kingdom</link> under the rule of a \
+<c=ltgreen>duke or duchess<c=/>.  A duchy consists of several <link=city>cities\
+</link>, one of which is home to and ruled by the duke, known as the \
+<c=ltgreen>duchy seat<c=/>.  The duchy seat collects monthly taxes from its \
+subject cities, allowing it to focus on matters of state rather than securing \
+a strong economy.  However, cities in need will often turn to their duke for \
+aid, so this tax wealth is often redistributed to the duchy's cities.\n\
+\n\
+The duke is allowed to write the <link=laws>laws</link> for its subject \
+cities.  These can range from general civil or religious laws, including \
+<link=prohibition>prohibition</link> of various <link=resources>resources\
+</link>, to <link=trade embargo>trade bans</link> or even <link=war>war</link> \
+against other cities.  However, the duchy is in turn subject to the laws of \
+the <link=monarch>king or queen</link>.\n\
+\n\
+When a duke or duchess passes away, rule generally passes to their eldest \
+heir.  If there is no eligable heir, it falls to the monarch to select a new \
+ruler of the duchy.  In most cases, the monarch will pick whatever noble in \
+the region has the greatest <link=favor>favor</link> with them.  Dukes may be \
+deposed by the monarch if they are disobedient and replaced with the monarch's \
+choice of ruler.  Finally, dukes are in danger of assassination by nobles who \
+aspire to seize control of the duchy.\
+");
+
+  _article("Nobles");
+  _type("Game Concept");
+  _text("\
+Nobles are members of the ruling class in Edigotia.  At the start of a new \
+game, you control a single noble of your design, who acts as the ruler of your \
+<link=city>city</link>.  This noble <c=white>is<c=/> you!  If they die, and \
+you have no other nobles under your control, your game is over.  For this \
+reason, keeping your nobles safe, and obtaining more, is very important.\n\
+\n\
+Nobles fill a wide range of purposes (<c=magenta>for a full list, see \
+<link=list of noble roles>list of noble roles</link>).  The most important, \
+and the first role your noble will take, is the <link=governor>governor</link> \
+of your city.  As you gain more nobles, you can assign them other roles via \
+the <link=nobles screen>noble control screen</link>.\n\
+\n\
+Each noble is unique.  In addition to more-or-less cosmetic details like their \
+name, sex, and <link=coat of arms>coat of arms</link>, they have two \
+<link=noble traits>traits</link> and a variety of <link=noble skills>skills\
+</link>.  The traits are innate to your noble and cannot be changed.  They \
+provide some bonuses (or in some cases, penalties) to various areas of the \
+game, and may alter how your city grows.  The skills may be increased through \
+training, and represent how good your noble is at the various jobs they can \
+take on.\n\
+\n\
+Your noble is an important dignitary.  In addition to overseeing \
+<link=diplomacy>diplomatic</link> and <link=trade>trade</link> agreements, \
+they can attend various social functions at home or in foreign cities.  These \
+events are a good opportunity for your noble to meet a future husband or \
+wife.  Marriages can be founded in romance, if both parties are lucky enough \
+to be attracted to each other, but more often they are the product of a \
+political agreement to bring two cities closer together.\n\
+\n\
+After your noble has wed a spouse, you can start trying to sire some heirs.  \
+Heirs are a crucial mid-game goal, as they allow you to continue your \
+<link=dynasty>lineage</link> and continue playing the game after the first \
+generation of nobles has passed away.  The children of two nobles will inherit \
+a random trait from each one.  There is a small random chance for them to \
+instead receive a completely random trait, introducing some change into the \
+family.  If the parents are related (second cousins or closer), then there is \
+a chance that the child will receive a random <c=ltred>bad<c=/> trait!\
 ");
 
   _article("Race");
@@ -208,6 +329,67 @@ meet certain <link=unlockables>unlock conditions</link> in order to build a \
 certain building.\
 ");
 
+  _article("World Map");
+  _type("Game Concept");
+  _text("\
+<c=magenta>For a list of <link=map type>map types</link><c=magenta> and world \
+map terrain, see <link=list of map types>list of map types.</link>\n\
+\n\
+The world map is a flat map of the known world.  The world is flat, and \
+exploring beyond the edge of the map will lead to nothing but open seas and \
+eventually the edge of the world!\n\
+\n\
+The world is composed of several continents, separated by ocean.  The world's \
+<link=temperature>temperature</link> is colder towards the north and south \
+ends, and warmest at the equator.  The continents are covered with a variety \
+of <link=mountainous>mountain ranges</link> and long flat areas, and are more \
+likely to be flat near the coats.  There are complex patterns of rainfall.  \
+Prevailing winds go from west to east.  As the wind travels over ocean, it \
+builds up moisture, resulting in higher <link=rainfall>rainfall</link> near \
+west coasts.  If the wind hits a mountain range, it will result in high \
+rainfall to the west of the mountains, and a much drier climate to the east.  \
+For this reason, you will often see areas of <link=desert>desert</link> to the \
+east of mountains.\n\
+\n\
+Each tile of the world map has a different <link=map type>terrain</link>.  \
+This terrain determines what the <link=city map>map</link> of a <link=city>city\
+</link> built on that tile will look like.  Terrain is determined by altitude, \
+temperature and rainfall.  Areas with low altitude and moderate temperature \
+and rainfall, like <link=plains>plains</link>, are generally the easiest to \
+survive in.  However, all terrains are survivable and offer different types of \
+<link=resources>resources</link>, <link=crops>crops</link> and \
+<link=animals>wildlife</link> to <link=hunting>hunt</link>.  A city can thrive \
+anywhere by exploiting the unique benefits of the terrain!\n\
+\n\
+Large areas of the world are claimed by various <link=kingdom>kingdoms\
+</link>.  Each kingdom is dotted with cities, connected by <link=road>roads\
+</link>.  Roads are just one (albeit the most important) of many \
+<link=world map improvements>improvements</link> that can be built on the \
+world map.  When you start a new game, the part of the world claimed by the \
+kingdom you belong to is revealed, along with a small area outside of it.  \
+Additionally, any coastlines somewhat close to your kingdom are revealed.  You \
+can gain knowledge of more of the world map by exploring with an \
+<link=adventurer>adventurer</link> or <link=army>army</link>, or by \
+<link=trade>trading</link> maps with another kingdom (though most kingdoms are \
+very hesitant to reveal what they know of the world).\n\
+\n\
+Traveling across the world is fastest via roads.  Traveling off-road is slower \
+and may even be dangerous!  For instance, <link=jungle>jungles</link> have \
+many hazards to overcome, and the heat and lack of water in deserts will wear \
+down an army.  Various <link=race>races</link> fare different in different \
+terrains; for instance, <link=elves>elves</link> fight and travel much more \
+easily in <link=forest>forests</link> than most races.\n\
+\n\
+The world is dotted with <link=special location>special locations</link>.  \
+These are ruins, monster nests, and other places of interest.  Many of these \
+areas can be visited and explored by armies, while others can only be fully \
+explored by an adventurer.  Some may require the power of a <link=mage>mage\
+</link> to fully exploit!  Be careful, because these special locations often \
+contain traps, monsters, and other hazards which may kill those who dare to \
+enter them.  But if these challenges can be overcome, there is almost always a \
+valuable treasure or magical effect to win!\
+");
+
   _article("City Map");
   _type("Game Concept");
   _text("\
@@ -282,6 +464,55 @@ to maintain a certain ratio.  The exact numbers depend on your race; for \
 humans, there must be 10 peasants for every merchant, and 10 merchants for \
 every burgher.  Addtionally, a class's morale must be above a certain level \
 for the class above it to be born.\
+");
+
+  _article("World Map Improvements");
+  _type("Game Concept");
+  _text("\
+<c=magenta>See the bottom of this article for a list of improvements.<c=/>\n\
+\n\
+The <link=world map>world map</link> is mostly static, but it can be changed \
+by industrious <link=race>races</link> by placing world map improvements.  \
+These are various buildings which make the world a more inhabitable place and \
+safer for travel.\n\
+\n\
+Improvements can be built on the world map by pulling up the world map from \
+the <link=main screen>main screen</link> and pressing the button for \
+<c=magenta>\"Build Improvement\"<c=/>.  Building an improvement will require \
+you to send multiple <link=citizens>citizens</link> outside of your city, \
+usually <link=peasants>peasants</link>.  Be careful, because there may be \
+<link=world hazards</link>hazards</link> that pose mortal danger to these \
+workers!  You may want to send a small <link=army>army</link> with them for \
+safety.\n\
+\n\
+Building a world improvement will also cost some <link=resources>resources\
+</link>, including <link=gold>gold</link> to pay the workers and provide them \
+with basic supplies for their journey.  The further from your <link=city>city\
+</link> the improvement is placed, the more gold you'll need to spend.  Many \
+improvements will help secure your city's safety or improve your \
+<link=trade>trade</link> options, so over time they will pay for themselves!\n\
+\n\
+At the start of the game, most cities within any given <link=kingdom>kingdom\
+</link> will be connected by roads, though some small or isolated villages may \
+be left unconnected.  Often neighboring kingdoms will be connected by road as \
+well, facilitating trade.  Sometimes a kingdom's capital city will have some \
+watch towers around it.  Particularly industrious kingdoms may wall off some \
+of their borders with walls.\n\
+\n\
+<c=magenta>List of world improvements:</link>\n\
+<link=road>Road</link> - Makes travel faster and decreases trade \
+<link=overhead>overhead</link>.\n\
+<link=watch tower>Watch Tower</link> - Must be staffed by at least one \
+citizen.  Reveals any dangers or armies close to the tower, and can signal \
+your city to impending danger more or less instantly.\n\
+<link=wall>Wall</link> - Makes it very difficult for enemy armies to pass.  \
+While they are trying to pass the wall, they are very susceptible to attack, \
+particularly by <link=ranged combat>ranged attacks</link> like \
+<link=archer>archers</link> or <link=mage>mages</link>, so you may want to \
+station such armies on the wall.  Walls take a lot of time, gold, and \
+<link=stone>stone</link> to build, so you may want to carefully select their \
+placement; for instance, <link=mountainous>mountains</link> are already hard \
+to pass, so you can place walls in the gaps between mountains.\
 ");
 
   _article("Plaza");
