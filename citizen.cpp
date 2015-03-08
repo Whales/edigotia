@@ -496,9 +496,9 @@ int citizen_idle_income(Citizen_type type)
   switch (type) {
     case CIT_NULL:      return   0;
     case CIT_SLAVE:     return   0;
-    case CIT_PEASANT:   return  15;
-    case CIT_MERCHANT:  return 100;
-    case CIT_BURGHER:   return 300;
+    case CIT_PEASANT:   return  30;
+    case CIT_MERCHANT:  return  80;
+    case CIT_BURGHER:   return 150;
     case CIT_MAX:       return   0;
     default:            return   0;
   }
