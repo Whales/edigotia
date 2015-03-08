@@ -248,8 +248,8 @@ bool ele_textbox::set_data(int data)
  std::vector<std::string> broken = break_into_lines(*text, sizex);
  offset = data;
  int text_size = broken.size(); // Since broken.size() is an unsigned int
- if (offset > text_size - sizey)
-  offset = text_size - sizey;
+ if (offset > 1 + text_size - sizey)
+  offset = 1 + text_size - sizey;
  if (offset < 0)
   offset = 0;
 /*
