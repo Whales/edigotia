@@ -4360,6 +4360,12 @@ bool Interface::help_article(std::string name)
 // This makes it always safe to refer to links[0].
   int link_pages = 1 + article->links.size() / 10;
 
+// However, we DON'T want that extra page if the number of links is more than 0
+// and we'll get one if it's exactly divisible by 10, so...
+  if (link_pages > 1 && article->links.size() % 10 == 0) {
+    link_pages--;
+  }
+
   for (int i = 0; i < link_pages; i++) {
     std::vector<std::string> page;
 // Page $i uses the ($i * 10) through ($i * 10 + 9)th links.
@@ -4378,8 +4384,10 @@ bool Interface::help_article(std::string name)
 // Use ref_data since it could be a biiiig string.
   i_help.ref_data("text_content", &(article->text));
 
-  int link_page = 0;
+  int link_page = 1;
   i_help.set_data("list_links", links[0]);
+  i_help.set_data("num_total_links_pages", link_pages);
+  i_help.ref_data("num_cur_links_page", &link_page);
 
   i_help.select("text_content");
 
@@ -4389,9 +4397,9 @@ bool Interface::help_article(std::string name)
 
     long ch = input();
 
-    if (ch >= '0' && ch <= '9' && ch - '0' < links[link_page].size()) {
+    if (ch >= '0' && ch <= '9' && ch - '0' < links[link_page - 1].size()) {
 // We selected a valid link!
-      int link_index = link_page * 10 + ch - '0';
+      int link_index = (link_page - 1) * 10 + ch - '0';
       Help_link following = article->links[link_index];
       help_article( following.target );
     } else {
@@ -4406,18 +4414,18 @@ bool Interface::help_article(std::string name)
         case '+':
         case '=':
           link_page++;
-          if (link_page == links.size()) {
-            link_page = 0;
+          if (link_page > links.size()) {
+            link_page = 1;
           }
-          i_help.set_data("list_links", links[link_page]);
+          i_help.set_data("list_links", links[link_page - 1]);
           break;
 
         case '-':
           link_page--;
-          if (link_page < 0) {
-            link_page = links.size() - 1;
+          if (link_page == 0) {
+            link_page = links.size();
           }
-          i_help.set_data("list_links", links[link_page]);
+          i_help.set_data("list_links", links[link_page - 1]);
           break;
 
         case 'h':
