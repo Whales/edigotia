@@ -340,8 +340,8 @@ efficient.\
       _uses_mineral(MINERAL_SALT, 1);
     _description("\
 A kitchen is a <link=building>building</link> where food and spices can be \
-processed.  Notably, <link=merchants>merchants</link> can use the kitchen to \
-process raw <link=salt>salt</link> into a useable <link=luxury>luxury</link>.\
+processed.  Notably, raw <link=salt>salt</link> can be processed into a \
+useable <link=luxury>luxury</link>.\
 ");
 
   _build(BUILD_TAILOR);
@@ -392,9 +392,8 @@ A tailor is a <link=building>building</link> where <link=clothing>clothing\
       _days_per_unit(2);
       _uses_resource(RES_WOOD, 15);
     _description("\
-A woodworking shop is a <link=building>building</link> where \
-<link=merchants>merchants</link> can be employed as woodworkers, making a \
-variety of goods from wood.\
+A woodworking shop is a <link=building>building</link> where woodworkers are \
+employed, making a variety of goods from <link=wood>wood</link>.\
 ");
 
   _build(BUILD_SMITH);
@@ -427,7 +426,7 @@ variety of goods from wood.\
       _uses_mineral(MINERAL_GEMS,   2);
     _description("\
 A smith is a <link=building>building</link> where various metal goods are \
-fashioned by <link=merchants>merchants</link>.\
+fashioned.\
 ");
 
 }
