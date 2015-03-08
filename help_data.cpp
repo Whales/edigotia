@@ -1,5 +1,6 @@
 #include "help.h"
 #include "globals.h"
+#include "area.h"
 #include "building.h"
 #include "stringfunc.h" // For capitalize()
 
@@ -503,23 +504,30 @@ watch towers around it.  Particularly industrious kingdoms may wall off some \
 of their borders with walls.\n\
 \n\
 <c=magenta>List of world improvements:</link>\n\
-<link=road>Road</link> - Makes travel faster and decreases trade \
-<link=overhead>overhead</link>.\n\
-<link=watch tower>Watch Tower</link> - Must be staffed by at least one \
-citizen.  Reveals any dangers or armies close to the tower, and can signal \
-your city to impending danger more or less instantly.\n\
-<link=wall>Wall</link> - Makes it very difficult for enemy armies to pass.  \
-While they are trying to pass the wall, they are very susceptible to attack, \
-particularly by <link=ranged combat>ranged attacks</link> like \
-<link=archer>archers</link> or <link=mage>mages</link>, so you may want to \
-station such armies on the wall.  Walls take a lot of time, gold, and \
-<link=stone>stone</link> to build, so you may want to carefully select their \
-placement; for instance, <link=mountainous>mountains</link> are already hard \
-to pass, so you can place walls in the gaps between mountains.\
+<c=white>*<c=/> <link=road>Road</link> - Makes travel faster and decreases \
+trade <link=overhead>overhead</link>.\n\
+<c=white>*<c=/> <link=watch tower>Watch Tower</link> - Must be staffed by at \
+least one citizen.  Reveals any dangers or armies close to the tower, and can \
+signal your city to impending danger more or less instantly.\n\
+<c=white>*<c=/> <link=wall>Wall</link> - Makes it very difficult for enemy \
+armies to pass.  While they are trying to pass the wall, they are very \
+susceptible to attack, particularly by <link=ranged combat>ranged attacks\
+</link> like <link=archer>archers</link> or <link=mage>mages</link>, so you \
+may want to station such armies on the wall.  Walls take a lot of time, gold, \
+and <link=stone>stone</link> to build, so you may want to carefully select \
+their placement; for instance, <link=mountainous>mountains</link> are already \
+hard to pass, so you can place walls in the gaps between mountains.\
 ");
 
-// Add all non-area buildings to the help database!
+// Add all Area_datums to the help database!
+  for (int i = 0; i < AREA_MAX; i++) {
+    Area_datum* area_dat = Area_data[i];
+    _article( capitalize( area_dat->name ) );
+    _type("Area");
+    _text( area_dat->generate_help_text() );
+  }
 
+// Add all non-area Building_datums to the help database!
   for (int i = 0; i < BUILD_MAX; i++) {
     Building_datum* build_dat = Building_data[i];
     if (build_dat->category != BUILDCAT_NULL) { // i.e. it's not an area
@@ -528,14 +536,6 @@ to pass, so you can place walls in the gaps between mountains.\
       _text( build_dat->generate_help_text() );
     }
   }
-
-  _article("Plaza");
-  _type("Area");
-  _text("Just a demo");
-
-  _article("Humans");
-  _type("Race");
-  _text("Just a demo");
 
   HELP->process_categories();
 }
