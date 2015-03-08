@@ -1,6 +1,8 @@
 #ifndef _CITY_ACHIEVEMENT_H_
 #define _CITY_ACHIEVEMENT_H_
 
+#include <string>
+
 // City achievements are waypoints for cities, certain conditions that they've
 // met.  They're used, for example, for unlocking areas and buildings.
 
@@ -13,11 +15,16 @@ enum City_achievement_type
   CITY_ACHIEVE_MAX
 };
 
+City_achievement_type lookup_city_achievement_type(std::string name);
+std::string city_achievement_type_name(City_achievement_type type);
+
 struct City_achievement
 {
   City_achievement(City_achievement_type T = CITY_ACHIEVE_NULL,
                    int VA = 0, int VB = 0) :
     type (T), value_a (VA), value_b (VB) { }
+
+  std::string get_description();
 
   City_achievement_type type;
 
