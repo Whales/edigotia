@@ -562,63 +562,64 @@ bool starting_window(interface &edited)
      i_start.set_data("text_search", c_ltred);
     }
    }
-  } // if (ch != '\n' && searchmode)
-  if (ch == '/') {
-   searchmode = true;
-   search_string = "";
-   i_start.clear_data("text_search");
-  }
-  if (ch == 'j' || ch == '2' || ch == KEY_DOWN) {
-   i_start.add_data("list_interfaces",  1);
-   selname = i_start.get_str("list_interfaces");
-   if (selname != "") {
-    std::stringstream filename;
-    filename << "cuss/" << selname;
-    selected.load_from_file(filename.str());
-    i_start.set_data("list_elements", selected.element_names());
-    i_start.set_data("num_x", selected.sizex);
-    i_start.set_data("num_y", selected.sizey);
+  } else { // if (ch != '\n' && searchmode)
+   if (ch == '/') {
+    searchmode = true;
+    search_string = "";
+    i_start.clear_data("text_search");
    }
-  }
-  if (ch == 'k' || ch == '8' || ch == KEY_UP) {
-   i_start.add_data("list_interfaces", -1);
-   selname = i_start.get_str("list_interfaces");
-   if (selname != "") {
-    std::stringstream filename;
-    filename << "cuss/" << selname;
-    selected.load_from_file(filename.str());
-    i_start.set_data("list_elements", selected.element_names());
-    i_start.set_data("num_x", selected.sizex);
-    i_start.set_data("num_y", selected.sizey);
-   }
-  }
-  if (ch == 'l' || ch == 'L' || ch == '\n') {
-   done = true;
-   std::stringstream filename;
-   filename << "cuss/" << i_start.get_str("list_interfaces");
-   edited.load_from_file(filename.str());
-  }
-  if (ch == 'c' || ch == 'C') {
-    done = true;
-    std::stringstream filename;
-    std::string name = i_start.get_str("list_interfaces");
-    filename << "cuss/" << name;
-    name = name.substr(0, name.length() - 5); // Strip off ".cuss"
-    edited.load_from_file(filename.str());
-    edited.name = string_edit_popup(name, "Name: ");
-  }
-  if (ch == 'n' || ch == 'N') {
-   std::string name = string_input_popup("Name: ");
-   if (name != "") {
-    int x = int_input_popup("X dim:"), y = int_input_popup("Y dim:");
-    if (x > 0 && y > 0) {
-      done = true;
-      init_interface(edited, name, x, y);
+   if (ch == 'j' || ch == '2' || ch == KEY_DOWN) {
+    i_start.add_data("list_interfaces",  1);
+    selname = i_start.get_str("list_interfaces");
+    if (selname != "") {
+     std::stringstream filename;
+     filename << "cuss/" << selname;
+     selected.load_from_file(filename.str());
+     i_start.set_data("list_elements", selected.element_names());
+     i_start.set_data("num_x", selected.sizex);
+     i_start.set_data("num_y", selected.sizey);
     }
    }
+   if (ch == 'k' || ch == '8' || ch == KEY_UP) {
+    i_start.add_data("list_interfaces", -1);
+    selname = i_start.get_str("list_interfaces");
+    if (selname != "") {
+     std::stringstream filename;
+     filename << "cuss/" << selname;
+     selected.load_from_file(filename.str());
+     i_start.set_data("list_elements", selected.element_names());
+     i_start.set_data("num_x", selected.sizex);
+     i_start.set_data("num_y", selected.sizey);
+    }
+   }
+   if (ch == 'l' || ch == 'L' || ch == '\n') {
+    done = true;
+    std::stringstream filename;
+    filename << "cuss/" << i_start.get_str("list_interfaces");
+    edited.load_from_file(filename.str());
+   }
+   if (ch == 'c' || ch == 'C') {
+     done = true;
+     std::stringstream filename;
+     std::string name = i_start.get_str("list_interfaces");
+     filename << "cuss/" << name;
+     name = name.substr(0, name.length() - 5); // Strip off ".cuss"
+     edited.load_from_file(filename.str());
+     edited.name = string_edit_popup(name, "Name: ");
+   }
+   if (ch == 'n' || ch == 'N') {
+    std::string name = string_input_popup("Name: ");
+    if (name != "") {
+     int x = int_input_popup("X dim:"), y = int_input_popup("Y dim:");
+     if (x > 0 && y > 0) {
+       done = true;
+       init_interface(edited, name, x, y);
+     }
+    }
+   }
+   if (ch == 'q' || ch == 'Q')
+    return true;
   }
-  if (ch == 'q' || ch == 'Q')
-   return true;
  }
  return false;
 }
