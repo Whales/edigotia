@@ -910,18 +910,33 @@ Building_datum::~Building_datum()
 {
 }
 
-std::string Building_datum::get_short_description()
+// help_links defaults to false.
+std::string Building_datum::get_short_description(bool help_links)
 {
   std::stringstream ret;
 
   ret << "<c=white>" << name << "<c=/>" << std::endl;
+  ret << "<c=magenta>" << building_category_name(category) << "<c=/>" <<
+         std::endl;
 
   ret << "<c=yellow>Build time: " << build_time << " days.<c=/>" << std::endl;
   if (!build_costs.empty()) {
     ret << "<c=yellow>Build cost: ";
     for (int i = 0; i < build_costs.size(); i++) {
-      ret << Resource_data[ build_costs[i].type ]->name << " x " <<
-             build_costs[i].amount;
+      std::string res_name = Resource_data[ build_costs[i].type ]->name;
+
+      if (help_links) {
+        ret << "<link=" << res_name << ">";
+      }
+
+      ret << Resource_data[ build_costs[i].type ]->name;
+
+      if (help_links) {
+        ret << "</link><c=yellow>";
+      }
+
+      ret << " x " << build_costs[i].amount;
+
       if (i + 1 < build_costs.size()) {
         ret << ", ";
       }
@@ -929,11 +944,33 @@ std::string Building_datum::get_short_description()
     ret << "<c=/>" << std::endl;
   }
 
+  if (unlockable) {
+    if (help_links) {
+      ret << "<link=unlockables>Unlock Condition</link>: ";
+    } else {
+      ret << "<c=ltblue>Unlock Condition: ";
+    }
+    ret << "<c=white>" << unlock_condition.get_description() << "<c=/>" <<
+           std::endl;
+  }
+
   if (!maintenance_cost.empty()) {
     ret << "<c=ltred>Maintenance cost: ";
     for (int i = 0; i < maintenance_cost.size(); i++) {
-      ret << Resource_data[ maintenance_cost[i].type ]->name << " x " <<
-             maintenance_cost[i].amount;
+      std::string res_name = Resource_data[ maintenance_cost[i].type ]->name;
+
+      if (help_links) {
+        ret << "<link=" << res_name << ">";
+      }
+
+      ret << res_name;
+
+      if (help_links) {
+        ret << "</link><c=ltred>";
+      }
+
+      ret << " x " << maintenance_cost[i].amount;
+
       if (i + 1 < maintenance_cost.size()) {
         ret << ", ";
       }
@@ -942,21 +979,60 @@ std::string Building_datum::get_short_description()
   }
 
   if (!housing.empty()) {
-    ret << "<c=brown>Houses ";
+    if (help_links) {
+      ret << "<link=housing>Houses</link><c=brown> ";
+    } else {
+      ret << "<c=brown>Houses ";
+    }
     for (int i = 0; i < housing.size(); i++) {
       std::string cit_name = citizen_type_name(housing[i].type, true);
-      ret << housing[i].amount << " " << cit_name << "<c=/>" << std::endl;
+      ret << housing[i].amount << " ";
+
+      if (help_links) {
+        ret << "<link=" << cit_name << ">";
+      }
+
+      ret << cit_name;
+
+      if (help_links) {
+        ret << "</link>";
+      }
+
+      ret << "<c=/>" << std::endl;
     }
   }
 
   if (jobs.amount > 0) {
-    ret << "<c=cyan>Employs " << jobs.amount << " " <<
-           citizen_type_name(jobs.type) << "s.<c=/>" << std::endl;
+    ret << "<c=cyan>Employs " << jobs.amount << " ";
+
+    if (help_links) {
+      ret << "<link=" << citizen_type_name(jobs.type, true) << ">";
+    }
+
+    ret << citizen_type_name(jobs.type, (jobs.amount > 1));
+
+    if (help_links) {
+      ret << "</link><c=cyan>";
+    }
+
+    ret << ".<c=/>" << std::endl;
+
     if (!production.empty()) {
       ret << "<c=ltgreen>Each worker produces: ";
       for (int i = 0; i < production.size(); i++) {
-        ret << Resource_data[ production[i].type ]->name << " x " <<
-               production[i].amount;
+        std::string res_name = Resource_data[ production[i].type ]->name;
+
+        if (help_links) {
+          ret << "<link=" << res_name << ">";
+        }
+
+        ret << res_name;
+
+        if (help_links) {
+          ret << "</link><c=ltgreen>";
+        }
+
+        ret << " x " << production[i].amount;
         if (i + 1 < production.size()) {
           ret << ", ";
         }
@@ -968,13 +1044,32 @@ std::string Building_datum::get_short_description()
   if (!recipes.empty()) {
     ret << "<c=ltblue>Constructs: ";
     for (int i = 0; i < recipes.size(); i++) {
-      ret << Resource_data[ recipes[i].get_resource() ]->name;
+      std::string res_name = Resource_data[ recipes[i].get_resource() ]->name;
+
+      if (help_links) {
+        ret << "<link=" << res_name << ">";
+      }
+
+      ret << res_name;
+
+      if (help_links) {
+        ret << "</link><c=ltblue>";
+      }
+
       if (i + 1 < recipes.size()) {
         ret << ", ";
       }
     }
     ret << "<c=/>" << std::endl;
   }
+
+  return ret.str();
+}
+
+std::string Building_datum::generate_help_text()
+{
+  std::stringstream ret;
+  ret << get_short_description(true) << std::endl << std::endl << description;
 
   return ret.str();
 }
