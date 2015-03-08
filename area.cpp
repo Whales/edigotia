@@ -21,6 +21,39 @@ Building_datum* Area_datum::get_building_datum()
   return Building_data[building];
 }
 
+std::string Area_datum::generate_help_text()
+{
+  std::stringstream ret;
+
+  ret << "<c=white>" << capitalize(name) << "<c=/> " <<
+         symbol.text_formatted() << std::endl;
+  ret << "<c=magenta>Type: " << capitalize( area_category_name(category) ) <<
+         "<c=/>" << std::endl;
+
+  Building_datum* bldg = get_building_datum();
+  if (!bldg) {
+    ret << "<c=red>ERROR<c=/>: No building datum for area " << name << "!";
+  } else {
+// 1st true: turn on help links.  2nd true: format for area
+    ret << bldg->get_short_description(true, true);
+  }
+
+  if (buildings_supported > 0) {
+    ret << "<c=ltred>Supports " << buildings_supported << " <link=building>" <<
+           "buildings</link>" << std::endl;
+  }
+  if (unlockable) {
+    ret << "<link=unlockables>Unlock Condition</link>: <c=white>" <<
+           unlock_condition.get_description() << "<c=/>" << std::endl;
+  }
+
+  if (bldg) {
+    ret << std::endl << bldg->description;
+  }
+
+  return ret.str();
+}
+
 Area::Area(Area_type T, Point P)
 {
   type = T;

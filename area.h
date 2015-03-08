@@ -72,6 +72,10 @@ struct Area_datum
 {
   Area_datum();
 
+  Building_datum* get_building_datum();
+
+  std::string generate_help_text();
+
   std::string name;
   int uid;
   glyph symbol;
@@ -86,8 +90,6 @@ struct Area_datum
 
   bool unlockable;
   City_achievement unlock_condition;
-
-  Building_datum* get_building_datum();
 };
 
 struct Area
