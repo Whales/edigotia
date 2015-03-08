@@ -716,8 +716,10 @@ void Interface::print_data()
           ss_data << "<c=" << color_tag( Resource_data[res]->color ) << ">";
           ss_data << res_name << "<c=/>:";
 // Insert spaces for alignment.  length() + 1 because of the :
-          for (int n = 0; n < 15 - (res_name.length() + 1); n++) {
-            ss_data << " ";
+          if (res_name.length() < 14) {
+            for (int n = 0; n < 15 - (res_name.length() + 1); n++) {
+              ss_data << " ";
+            }
           }
 // More spaces for number alignment.
           for (int n = 0; n < 5 - digits_in(amount); n++) {
