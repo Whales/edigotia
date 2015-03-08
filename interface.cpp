@@ -4191,6 +4191,10 @@ void Interface::help_index()
         break;
 
       case '\n':
+      case 'l':
+      case 'L':
+      case '6':
+      case KEY_RIGHT:
         if (article_list) {
 // help_article() returns false if we quit help altogether
           if (!help_article( i_help.get_str("list_articles") )) {
