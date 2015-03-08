@@ -1,5 +1,7 @@
 #include "help.h"
 #include "globals.h"
+#include "building.h"
+#include "stringfunc.h" // For capitalize()
 
 #define _article(n) \
   cur_article = new Help_article( (n) ); \
@@ -446,11 +448,12 @@ morale is by reducing taxation or giving your citizens <link=luxuries>luxuries\
 </link>.\n\
 \n\
 Before a citizen can work a job or produce income, they have to have a home.  \
-Each class lives in a different kind of housing, and the housing for higher \
-classes is more expensive than that for lower classes.  Housing may only be \
-built as an <link=area>area</link>, so you will need to plan carefully to \
-anticipate increase population!  Any homeless citizens will be unable to hold \
-a job or produce income, but will continue to consume food and resources.\n\
+Each class lives in a different kind of <link=housing>housing</link>, and the \
+housing for higher classes is more expensive than that for lower classes.  \
+Housing may only be built as an <link=area>area</link>, so you will need to \
+plan carefully to anticipate increase population!  Any homeless citizens will \
+be unable to hold a job or produce income, but will continue to consume food \
+and resources.\n\
 \n\
 The most important resource your citizens need is food.  The amount of food \
 each citizen consumes depends on your race.  Addtionally, higher-class \
@@ -514,6 +517,17 @@ station such armies on the wall.  Walls take a lot of time, gold, and \
 placement; for instance, <link=mountainous>mountains</link> are already hard \
 to pass, so you can place walls in the gaps between mountains.\
 ");
+
+// Add all non-area buildings to the help database!
+
+  for (int i = 0; i < BUILD_MAX; i++) {
+    Building_datum* build_dat = Building_data[i];
+    if (build_dat->category != BUILDCAT_NULL) { // i.e. it's not an area
+      _article( capitalize( build_dat->name ) );
+      _type("Building");
+      _text( build_dat->generate_help_text() );
+    }
+  }
 
   _article("Plaza");
   _type("Area");
