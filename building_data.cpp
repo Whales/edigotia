@@ -198,8 +198,8 @@ A keep is the center of any city.  It provides a home for the \
     _build_time(1);
     _destroy_cost(50);
     _upkeep(1);
-    _jobs(CIT_PEASANT, 10);
-    _wages(2);
+    _jobs(CIT_PEASANT, 15);
+    _wages(1);
     _produces(RES_FARMING, 1);
     _description("\
 A farm is a tilled piece of land designed for growing <link=crop>crops</link>.\
@@ -212,7 +212,7 @@ A farm is a tilled piece of land designed for growing <link=crop>crops</link>.\
     _destroy_cost(100);
     _upkeep(3);
     _jobs(CIT_PEASANT, 10);
-    _wages(2);
+    _wages(1);
     _produces(RES_HUNTING, 1);
     _description("\
 A hunting camp is a base of operations for <link=hunting>hunters</link>, \
@@ -227,8 +227,8 @@ built.\
     _build_time(10);
     _destroy_cost(1500);
     _upkeep(8);
-    _jobs(CIT_PEASANT, 6);
-    _wages(5);
+    _jobs(CIT_PEASANT, 8);
+    _wages(2);
     _produces(RES_MINING, 5);
     _description("\
 A mine is set of several shafts dug into the land, allowing <link=mining>miners\
@@ -242,8 +242,8 @@ A mine is set of several shafts dug into the land, allowing <link=mining>miners\
     _build_time(5);
     _destroy_cost(350);
     _upkeep(3);
-    _jobs(CIT_PEASANT, 5);
-    _wages(3);
+    _jobs(CIT_PEASANT, 6);
+    _wages(1);
     _produces(RES_LOGGING, 5);
     _description("\
 A sawmill is a site for the processing of <link=logging>logging</link> \
@@ -288,7 +288,7 @@ Barracks are a space for the housing and training of <link=army>military units\
     _build_time(5);
     _upkeep(8);
     _jobs(CIT_PEASANT, 3);
-    _wages(3);
+    _wages(2);
     _recipe(RES_STONE, 1);
       _units_per_day(3);
       _uses_mineral(MINERAL_STONE, 1);
@@ -354,7 +354,7 @@ useable <link=luxury>luxury</link>.\
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(2);
     _jobs(CIT_MERCHANT, 5);
-    _wages(3);
+    _wages(5);
     _recipe(RES_CLOTHING, 1);
       _recipe_name("Sew clothing");
       _units_per_day(3);
@@ -382,7 +382,7 @@ A tailor is a <link=building>building</link> where <link=clothing>clothing\
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(2);
     _jobs(CIT_MERCHANT, 5);
-    _wages(3);
+    _wages(5);
     _recipe(RES_WOOD_HOUSEWARES, 1);
       _recipe_name("Make wooden housewares");
       _units_per_day(4);
@@ -405,7 +405,7 @@ employed, making a variety of goods from <link=wood>wood</link>.\
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(3);
     _jobs(CIT_MERCHANT, 6);
-    _wages(3);
+    _wages(5);
     _recipe(RES_TIN_HOUSEWARES, 1);
       _recipe_name("Smith tin housewares");
       _units_per_day(3);
