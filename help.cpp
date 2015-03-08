@@ -45,7 +45,17 @@ void Help_article::set_text(std::string _text)
       std::string link_text =
         text.substr(target_stop + 1, link_stop - target_stop - 1);
 
-      links.push_back( Help_link( link_target, link_text ) );
+// Check if we already have that link.
+      bool has_link = false;
+      for (int i = 0; !has_link && i < links.size(); i++) {
+        if (no_caps(links[i].target) == no_caps(link_target)) {
+          has_link = true;
+        }
+      }
+
+      if (!has_link) {
+        links.push_back( Help_link( link_target, link_text ) );
+      }
 
     } // if (next_link != std::string::npos)
 
