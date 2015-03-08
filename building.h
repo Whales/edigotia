@@ -132,7 +132,8 @@ struct Building_datum
 // Data functions
 // If help_links is true, then the return string has all references to other
 // data surrounded by <link=...> </link> tags.
-  std::string get_short_description(bool help_links = false);
+  std::string get_short_description(bool help_links = false,
+                                    bool for_area = false);
   std::string generate_help_text(); // Generates text with all critical data
   bool produces_resource(Resource res = RES_NULL);
   bool builds_resource  (Resource res = RES_NULL);

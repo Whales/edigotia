@@ -910,14 +910,18 @@ Building_datum::~Building_datum()
 {
 }
 
-// help_links defaults to false.
-std::string Building_datum::get_short_description(bool help_links)
+// help_links and for_area both default to false.
+std::string Building_datum::get_short_description(bool help_links,
+                                                  bool for_area)
 {
   std::stringstream ret;
 
-  ret << "<c=white>" << name << "<c=/>" << std::endl;
-  ret << "<c=magenta>" << building_category_name(category) << "<c=/>" <<
-         std::endl;
+  if (!for_area) {
+    ret << "<c=white>" << capitalize( name ) << "<c=/>" << std::endl;
+    ret << "<c=magenta>Type: " <<
+           capitalize( building_category_name(category) ) << "<c=/>" <<
+           std::endl;
+  }
 
   ret << "<c=yellow>Build time: " << build_time << " days.<c=/>" << std::endl;
   if (!build_costs.empty()) {
@@ -944,7 +948,7 @@ std::string Building_datum::get_short_description(bool help_links)
     ret << "<c=/>" << std::endl;
   }
 
-  if (unlockable) {
+  if (!for_area && unlockable) {
     if (help_links) {
       ret << "<link=unlockables>Unlock Condition</link>: ";
     } else {
@@ -980,9 +984,9 @@ std::string Building_datum::get_short_description(bool help_links)
 
   if (!housing.empty()) {
     if (help_links) {
-      ret << "<link=housing>Houses</link><c=brown> ";
+      ret << "<link=housing>Housing</link> <c=brown>for ";
     } else {
-      ret << "<c=brown>Houses ";
+      ret << "<c=brown>Housing for ";
     }
     for (int i = 0; i < housing.size(); i++) {
       std::string cit_name = citizen_type_name(housing[i].type, true);
@@ -995,11 +999,18 @@ std::string Building_datum::get_short_description(bool help_links)
       ret << cit_name;
 
       if (help_links) {
-        ret << "</link>";
+        ret << "</link><c=brown>";
       }
 
-      ret << "<c=/>" << std::endl;
+      if (i + 1 < housing.size()) {
+        ret << ", ";
+      }
+      if (i + 2 == housing.size()) {
+        ret << "and ";
+      }
+
     }
+    ret << "<c=/>" << std::endl;
   }
 
   if (jobs.amount > 0) {
@@ -1069,7 +1080,7 @@ std::string Building_datum::get_short_description(bool help_links)
 std::string Building_datum::generate_help_text()
 {
   std::stringstream ret;
-  ret << get_short_description(true) << std::endl << std::endl << description;
+  ret << get_short_description(true) << std::endl << description;
 
   return ret.str();
 }
