@@ -110,8 +110,8 @@ seating areas.\
 
   _build(BUILD_PLAZA);
     _name("plaza");
-    _cost(RES_GOLD, 300);
-    _cost(RES_STONE, 50);
+    _cost(RES_GOLD,  500);
+    _cost(RES_STONE, 500);
     _build_time(5);
     _destroy_cost(150);
     _upkeep(4);
@@ -124,8 +124,8 @@ and strolling areas of a <link=park>park</link>, with the \
 
   _build(BUILD_MARKETPLACE);
     _name("marketplace");
-    _cost(RES_GOLD,  800);
-    _cost(RES_STONE, 140);
+    _cost(RES_GOLD,   800);
+    _cost(RES_STONE, 1500);
     _build_time(7);
     _destroy_cost(350);
     _upkeep(2);
@@ -137,8 +137,8 @@ A marketplace is an area designed purely for business, with lots of space for \
   _build(BUILD_HOVEL);
     _name("hovels");
     _plural();
-    _cost(RES_GOLD, 100);
-    _cost(RES_WOOD, 10);
+    _cost(RES_GOLD, 300);
+    _cost(RES_WOOD, 300);
     _build_time(3);
     _destroy_cost(250);
     _upkeep(5);
@@ -151,8 +151,8 @@ utilitarian living space for <link=peasants>peasants</link>.\
   _build(BUILD_HOUSE);
     _name("houses");
     _plural();
-    _cost(RES_GOLD, 400);
-    _cost(RES_WOOD, 20);
+    _cost(RES_GOLD, 800);
+    _cost(RES_WOOD, 500);
     _build_time(10);
     _destroy_cost(600);
     _upkeep(10);
@@ -164,8 +164,9 @@ the <link=merchants>middle classes</link>.\
 
   _build(BUILD_MANOR);
     _name("manor");
-    _cost(RES_GOLD, 800);
-    _cost(RES_STONE, 100);
+    _cost(RES_GOLD,  1200);
+    _cost(RES_WOOD,   500);
+    _cost(RES_STONE, 1000);
     _build_time(30);
     _destroy_cost(1250);
     _upkeep(20);
@@ -177,8 +178,8 @@ density quarters are ideal for the <link=burghers>upper class</link>.\
 
   _build(BUILD_KEEP);
     _name("keep");
-    _cost(RES_GOLD, 1500);
-    _cost(RES_STONE, 500);
+    _cost(RES_GOLD,  3000);
+    _cost(RES_STONE, 4000);
     _build_time(90);
     _destroy_cost(2500);
     _upkeep(30);
@@ -194,7 +195,7 @@ A keep is the center of any city.  It provides a home for the \
 
   _build(BUILD_FARM);
     _name("farm");
-    _cost(RES_GOLD, 100);
+    _cost(RES_GOLD, 250);
     _build_time(1);
     _destroy_cost(50);
     _upkeep(1);
@@ -207,7 +208,7 @@ A farm is a tilled piece of land designed for growing <link=crop>crops</link>.\
 
   _build(BUILD_HUNTING_CAMP);
     _name("hunting camp");
-    _cost(RES_GOLD, 50);
+    _cost(RES_GOLD, 200);
     _build_time(1);
     _destroy_cost(100);
     _upkeep(3);
@@ -223,7 +224,7 @@ built.\
   _build(BUILD_MINE);
     _name("mine");
     _cost(RES_GOLD, 500);
-    _cost(RES_WOOD, 50);
+    _cost(RES_WOOD, 400);
     _build_time(10);
     _destroy_cost(1500);
     _upkeep(8);
@@ -237,8 +238,8 @@ A mine is set of several shafts dug into the land, allowing <link=mining>miners\
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
-    _cost(RES_GOLD,  100);
-    _cost(RES_STONE,  50);
+    _cost(RES_GOLD,  200);
+    _cost(RES_STONE, 350);
     _build_time(5);
     _destroy_cost(350);
     _upkeep(3);
@@ -255,8 +256,8 @@ sawmill will automatically close.\
 
   _build(BUILD_PASTURE);
     _name("pasture");
-    _cost(RES_GOLD, 50);
-    _cost(RES_WOOD, 10);
+    _cost(RES_GOLD, 100);
+    _cost(RES_WOOD, 100);
     _build_time(1);
     _destroy_cost(20);
     _upkeep(1);
@@ -269,8 +270,8 @@ A pasture is a fenced-in area used for keeping <link=livestock>livestock\
   _build(BUILD_BARRACKS);
     _name("barracks");
     _plural();
-    _cost(RES_GOLD, 500);
-    _cost(RES_WOOD,  80);
+    _cost(RES_GOLD, 800);
+    _cost(RES_WOOD, 650);
     _build_time(14);
     _destroy_cost(800);
     _upkeep(15);
@@ -283,12 +284,12 @@ Barracks are a space for the housing and training of <link=army>military units\
   _build(BUILD_MASONRY);
     _category(BUILDCAT_MANUFACTURING);
     _name("masonry");
-    _cost(RES_GOLD, 150);
-    _cost(RES_WOOD,  60);
+    _cost(RES_GOLD, 250);
+    _cost(RES_WOOD, 600);
     _build_time(5);
-    _upkeep(8);
+    _upkeep(3);
     _jobs(CIT_PEASANT, 3);
-    _wages(2);
+    _wages(1);
     _recipe(RES_STONE, 1);
       _units_per_day(3);
       _uses_mineral(MINERAL_STONE, 1);
@@ -297,11 +298,60 @@ A masonry is a <link=building>building</link> where uncut <link=stone>stone\
 </link> is cut into useful blocks.\
 ");
 
+  _build(BUILD_SMELTERY);
+    _category(BUILDCAT_MANUFACTURING);
+    _name("smeltery");
+    _cost(RES_GOLD,   500);
+    _cost(RES_STONE, 1000);
+    _build_time(6);
+    _unlock(CITY_ACHIEVE_ORES, 0, 0);
+    _jobs(CIT_PEASANT, 10);
+    _wages(2);
+    _recipe(RES_TIN, 1);
+      _recipe_name("Smelt tin (burn wood)");
+      _units_per_day(1);
+      _uses_mineral(MINERAL_TIN, 1);
+      _uses_resource(RES_WOOD, 3);
+    _recipe(RES_TIN, 3);
+      _recipe_name("Smelt tin (burn coal)");
+      _units_per_day(3);
+      _uses_mineral(MINERAL_TIN, 3);
+      _uses_mineral(MINERAL_COAL, 1);
+    _recipe(RES_COPPER, 1);
+      _recipe_name("Smelt copper (burn wood)");
+      _units_per_day(1);
+      _uses_mineral(MINERAL_COPPER, 1);
+      _uses_resource(RES_WOOD, 3);
+    _recipe(RES_COPPER, 3);
+      _recipe_name("Smelt copper (burn coal)");
+      _units_per_day(3);
+      _uses_mineral(MINERAL_COPPER, 3);
+      _uses_mineral(MINERAL_COAL, 1);
+    _recipe(RES_IRON, 1);
+      _recipe_name("Smelt iron (burn wood)");
+      _days_per_unit(2);
+      _uses_mineral(MINERAL_IRON, 1);
+      _uses_resource(RES_WOOD, 3);
+    _recipe(RES_IRON, 3);
+      _recipe_name("Smelt iron (burn coal)");
+      _units_per_day(2);
+      _uses_mineral(MINERAL_IRON, 3);
+      _uses_mineral(MINERAL_COAL, 1);
+    _description("\
+A smeltery is a high-temperature furnace used to melt metals out of the \
+<link=minerals>ores</link> they naturally appear in.  These ores are virtually \
+useless before smelting; thus a smeltery is a vital addition to any mining \
+operation.  It is possible to smelt ores using <link=wood>wood</link> as a \
+fuel; however, it is much faster and more efficient to burn <link=coal>coal\
+</link> if it is available.\
+");
+
   _build(BUILD_MINT);
     _category(BUILDCAT_MANUFACTURING);
     _name("mint");
-    _cost(RES_GOLD,  150);
-    _cost(RES_STONE, 150);
+    _cost(RES_GOLD,   500);
+    _cost(RES_STONE, 1000);
+    _cost(RES_IRON,   200);
     _build_time(6);
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(6);
@@ -327,8 +377,9 @@ efficient.\
   _build(BUILD_KITCHEN);
     _category(BUILDCAT_MANUFACTURING);
     _name("kitchen");
-    _cost(RES_GOLD,  100);
-    _cost(RES_STONE, 120);
+    _cost(RES_GOLD,  400);
+    _cost(RES_WOOD,  400);
+    _cost(RES_STONE, 800);
     _build_time(4);
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(3);
@@ -347,9 +398,9 @@ useable <link=luxury>luxury</link>.\
   _build(BUILD_TAILOR);
     _category(BUILDCAT_MANUFACTURING);
     _name("tailor");
-    _cost(RES_GOLD, 100);
-    _cost(RES_WOOD,  50);
-    _cost(RES_STONE, 50);
+    _cost(RES_GOLD,  500);
+    _cost(RES_WOOD,  500);
+    _cost(RES_STONE, 500);
     _build_time(3);
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(2);
@@ -376,19 +427,20 @@ A tailor is a <link=building>building</link> where <link=clothing>clothing\
   _build(BUILD_WOOD_SHOP);
     _category(BUILDCAT_MANUFACTURING);
     _name("woodworking shop");
-    _cost(RES_GOLD, 100);
-    _cost(RES_WOOD, 100);
+    _cost(RES_GOLD,  500);
+    _cost(RES_WOOD, 1000);
+    _cost(RES_IRON,  150);
     _build_time(4);
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(2);
     _jobs(CIT_MERCHANT, 5);
     _wages(5);
     _recipe(RES_WOOD_HOUSEWARES, 1);
-      _recipe_name("Make wooden housewares");
+      _recipe_name("Wooden housewares");
       _units_per_day(4);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_FURNITURE, 1);
-      _recipe_name("Make furniture");
+      _recipe_name("Furniture");
       _days_per_unit(2);
       _uses_resource(RES_WOOD, 15);
     _description("\
@@ -399,8 +451,9 @@ employed, making a variety of goods from <link=wood>wood</link>.\
   _build(BUILD_SMITH);
     _category(BUILDCAT_MANUFACTURING);
     _name("smith");
-    _cost(RES_GOLD,  150);
-    _cost(RES_STONE, 120);
+    _cost(RES_GOLD,   750);
+    _cost(RES_STONE, 1000);
+    _cost(RES_IRON,   750);
     _build_time(5);
     _unlock( CITY_ACHIEVE_POP, CIT_MERCHANT, 1 );
     _upkeep(3);
@@ -409,21 +462,21 @@ employed, making a variety of goods from <link=wood>wood</link>.\
     _recipe(RES_TIN_HOUSEWARES, 1);
       _recipe_name("Smith tin housewares");
       _units_per_day(3);
-      _uses_mineral(MINERAL_TIN, 3);
+      _uses_resource(RES_TIN, 3);
     _recipe(RES_COPPER_HOUSEWARES, 1);
       _recipe_name("Smith copper housewares");
       _units_per_day(3);
-      _uses_mineral(MINERAL_COPPER, 3);
+      _uses_resource(RES_COPPER, 3);
     _recipe(RES_IRON_HOUSEWARES, 1);
       _recipe_name("Smith iron housewares");
       _units_per_day(3);
-      _uses_mineral(MINERAL_IRON, 3);
+      _uses_resource(RES_IRON, 3);
     _recipe(RES_JEWELRY, 1);
       _recipe_name("Craft jewelry");
       _days_per_unit(2);
-      _uses_mineral(MINERAL_TIN,    1);
-      _uses_mineral(MINERAL_COPPER, 1);
-      _uses_mineral(MINERAL_GEMS,   2);
+      _uses_resource(RES_TIN,      1);
+      _uses_resource(RES_COPPER,   1);
+      _uses_mineral (MINERAL_GEMS, 2);
     _description("\
 A smith is a <link=building>building</link> where various metal goods are \
 fashioned.\

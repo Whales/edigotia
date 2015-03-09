@@ -40,6 +40,7 @@ enum Building_type
 
 // Manufacturing
   BUILD_MASONRY,
+  BUILD_SMELTERY,
   BUILD_MINT,
   BUILD_KITCHEN,
   BUILD_TAILOR,
