@@ -162,8 +162,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
-    _starting_resources (RES_WOOD,     110);
-    _starting_resources (RES_STONE,    110);
+    _starting_resources (RES_WOOD,    2500);
+    _starting_resources (RES_STONE,   2500);
 
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  90);
@@ -240,8 +240,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
-    _starting_resources (RES_WOOD,     120);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_WOOD,    3000);
+    _starting_resources (RES_STONE,   2000);
 
     _birth_rate         (CIT_PEASANT,  120);
     _birth_rate         (CIT_MERCHANT, 110);
@@ -342,9 +342,9 @@ void init_races()
     _food_consumption(105);
 
     _starting_population(CIT_PEASANT,  100);
-    _starting_resources (RES_GOLD,    6000);
-    _starting_resources (RES_WOOD,     100);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_GOLD,    6500);
+    _starting_resources (RES_WOOD,    2000);
+    _starting_resources (RES_STONE,   2000);
 
     _birth_rate         (CIT_PEASANT,  120);
     _birth_rate         (CIT_MERCHANT, 110);
@@ -433,8 +433,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  120);
     _starting_resources (RES_GOLD,    5000);
-    _starting_resources (RES_WOOD,     100);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_WOOD,    2000);
+    _starting_resources (RES_STONE,   2000);
 
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  95);
@@ -521,8 +521,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  140);
     _starting_resources (RES_GOLD,    4000);
-    _starting_resources (RES_WOOD,     100);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_WOOD,    1600);
+    _starting_resources (RES_STONE,   1600);
 
     _birth_rate         (CIT_PEASANT,   90);
     _birth_rate         (CIT_MERCHANT,  90);
@@ -628,8 +628,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,   90);
     _starting_resources (RES_GOLD,    4500);
-    _starting_resources (RES_WOOD,     130);
-    _starting_resources (RES_STONE,    130);
+    _starting_resources (RES_WOOD,    2800);
+    _starting_resources (RES_STONE,   2800);
 
     _birth_rate         (CIT_PEASANT,  120);
     _birth_rate         (CIT_MERCHANT, 110);
@@ -700,8 +700,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,   20);
     _starting_resources (RES_GOLD,    6000);
-    _starting_resources (RES_WOOD,     100);
-    _starting_resources (RES_STONE,    150);
+    _starting_resources (RES_WOOD,    2000);
+    _starting_resources (RES_STONE,   3500);
 
     _birth_rate         (CIT_PEASANT,  180);
     _birth_rate         (CIT_MERCHANT, 170);
@@ -790,8 +790,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
-    _starting_resources (RES_WOOD,     120);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_WOOD,    2500);
+    _starting_resources (RES_STONE,   2000);
 
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  90);
@@ -848,8 +848,8 @@ void init_races()
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
-    _starting_resources (RES_WOOD,     100);
-    _starting_resources (RES_STONE,    100);
+    _starting_resources (RES_WOOD,    2000);
+    _starting_resources (RES_STONE,   2000);
 
     _birth_rate         (CIT_PEASANT,  100);
     _birth_rate         (CIT_MERCHANT,  90);
