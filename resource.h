@@ -29,6 +29,11 @@ enum Resource
   RES_WOOD,
   RES_STONE,
 
+// Forged minerals
+  RES_TIN,
+  RES_COPPER,
+  RES_IRON,
+
 // Component resources
   RES_FIBER,  // Anything than can become cloth; cotton, wool, etc
   RES_FUR,

@@ -100,6 +100,21 @@ void init_resource_data()
     _rvalue(10);
     _rcolor(c_ltgray);
 
+  _resource(RES_TIN);
+    _rname("tin");
+    _rvalue(15);
+    _rcolor(c_ltcyan);
+
+  _resource(RES_COPPER);
+    _rname("copper");
+    _rvalue(30);
+    _rcolor(c_ltred);
+
+  _resource(RES_IRON);
+    _rname("iron");
+    _rvalue(50);
+    _rcolor(c_cyan);
+
   _resource(RES_FIBER);
     _rname("fiber");
     _rvalue(14);
@@ -477,23 +492,23 @@ void init_resource_data()
     _mcolor(c_white);
 
   _mineral(MINERAL_TIN);
-    _mname("tin");
+    _mname("tin ore");
     _mpercent(70);
-    _mvalue(15);
+    _mvalue(5);
     _mcolor(c_ltcyan);
     _mhidden();
 
   _mineral(MINERAL_COPPER);
-    _mname("copper");
+    _mname("copper ore");
     _mpercent(50);
-    _mvalue(30);
+    _mvalue(10);
     _mcolor(c_ltred);
     _mhidden();
 
   _mineral(MINERAL_IRON);
-    _mname("iron");
+    _mname("iron ore");
     _mpercent(70);
-    _mvalue(50);
+    _mvalue(30);
     _mcolor(c_cyan);
     _mhidden();
 
