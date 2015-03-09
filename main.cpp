@@ -26,6 +26,7 @@ int main()
   }
 
   if (!set_directories()) {
+    debugmsg("Failed to set directories!");
     return 1;
   }
 
