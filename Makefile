@@ -57,6 +57,6 @@ $(ODIR)/%.o: %.cpp
 	$(CXX) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(TARGET) $(CUSSED_TARGET) $(CUSSTEST_TARGET) $(ODIR)/*.o
+	rm -f $(TARGET) $(CUSSED_TARGET) $(CUSSTEST_TARGET) $(ODIR)/*.o save/*.sav save/*.txt save/cities/*
 
 -include $(SOURCES:%.cpp=$(DEPDIR)/%.P)
