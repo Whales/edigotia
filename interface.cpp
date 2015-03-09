@@ -89,9 +89,6 @@ bool Interface::init()
 
   set_menu_str();
 
-// Set data mode, so that the selectors are set too
-  set_data_mode(DATA_MODE_CITIZENS);
-
   return true;
 }
 
@@ -230,6 +227,7 @@ void Interface::main_loop()
   i_main.set_data("text_city_race", ss_city_race.str());
 
   set_mode(IMODE_VIEW_MAP);
+  set_data_mode(DATA_MODE_CITIZENS);
 
   int date_size = i_main.element_width("text_date");
 
