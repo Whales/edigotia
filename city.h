@@ -94,11 +94,11 @@ public:
 // Total amount produced daily, including from buildings and imports
 // Note that this generic City version just returns 0, since we don't have
 // Areas and Buildings, even fake ones.
-  virtual int get_gross_resource_production (Resource res);
+  virtual int get_gross_resource_production(Resource res);
 // Total amount expended daily, including use by citizens and exports
-  virtual int get_resource_consumption(Resource res);
+  virtual int get_resource_consumption     (Resource res);
 // Gross production minus gross consumption
-  virtual int get_net_resource_production   (Resource res);
+  virtual int get_net_resource_production  (Resource res);
 
   int get_resource_amount(Resource res);
   int get_mineral_amount (Mineral  min);
