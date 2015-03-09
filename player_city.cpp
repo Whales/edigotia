@@ -2299,6 +2299,11 @@ bool Player_city::meets_achievement(City_achievement achievement)
     case CITY_ACHIEVE_POP:
       return (population[a].count >= b);
 
+    case CITY_ACHIEVE_ORES:
+      return (get_mineral_amount(MINERAL_TIN   ) > 0 ||
+              get_mineral_amount(MINERAL_COPPER) > 0 ||
+              get_mineral_amount(MINERAL_IRON  ) > 0   );
+
     default:
       debugmsg("No code for City_achievement type %d", achievement.type);
       return false;
