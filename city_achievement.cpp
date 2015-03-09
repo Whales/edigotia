@@ -36,7 +36,7 @@ std::string City_achievement::get_description()
     case CITY_ACHIEVE_NULL:
       return "None";
 
-    case CITY_ACHIEVE_CORES:
+    case CITY_ACHIEVE_ORES:
       return "Have tin, copper, or iron ore";
 
     case CITY_ACHIEVE_POP:
