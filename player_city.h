@@ -166,6 +166,7 @@ public:
 // all) they will return the sum total of ALL buildings/areas.
   int get_number_of_buildings(Building_type type = BUILD_NULL);
   int get_number_of_areas    (Area_type     type = AREA_NULL);
+  int get_buildings_supported();  // Total of buildings_supported of all areas
   int get_total_maintenance();
   int get_fields_worked();
   int get_empty_fields();

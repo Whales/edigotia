@@ -1708,6 +1708,17 @@ int Player_city::get_number_of_areas(Area_type type)
   return ret;
 }
 
+int Player_city::get_buildings_supported()
+{
+  int ret = 0;
+  for (int i = 0; i < areas.size(); i++) {
+    Area_datum* area_dat = areas[i].get_area_datum();
+    ret += area_dat->buildings_supported;
+  }
+
+  return ret;
+}
+
 int Player_city::get_total_maintenance()
 {
   int ret = 0;
