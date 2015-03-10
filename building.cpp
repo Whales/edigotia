@@ -11,6 +11,9 @@
 Recipe::Recipe(Resource R, int A)
 {
   result = Resource_amount(R, A);
+  units_per_day = 1;
+  days_per_unit = 0;
+  max_deficit = -10;
 }
 
 std::string Recipe::save_data()

@@ -76,6 +76,9 @@ Building_datum* Building_data[BUILD_MAX];
   Building_data[cur_id]->recipes.back().days_per_unit = (a); \
   Building_data[cur_id]->recipes.back().units_per_day =  0
 
+#define _max_deficit(a) \
+  Building_data[cur_id]->recipes.back().max_deficit = (a)
+
 #define _uses_resource(r, a) \
   Building_data[cur_id]->recipes.back().resource_ingredients.push_back( \
     Resource_amount( (r), (a) ) )
@@ -292,6 +295,7 @@ Barracks are a space for the housing and training of <link=army>military units\
     _wages(1);
     _recipe(RES_STONE, 1);
       _units_per_day(3);
+      _max_deficit(0);
       _uses_mineral(MINERAL_STONE, 1);
     _description("\
 A masonry is a <link=building>building</link> where uncut <link=stone>stone\
@@ -310,31 +314,37 @@ A masonry is a <link=building>building</link> where uncut <link=stone>stone\
     _recipe(RES_TIN, 1);
       _recipe_name("Smelt tin (burn wood)");
       _units_per_day(1);
+      _max_deficit(0);
       _uses_mineral(MINERAL_TIN, 1);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_TIN, 3);
       _recipe_name("Smelt tin (burn coal)");
       _units_per_day(3);
+      _max_deficit(0);
       _uses_mineral(MINERAL_TIN, 3);
       _uses_mineral(MINERAL_COAL, 1);
     _recipe(RES_COPPER, 1);
       _recipe_name("Smelt copper (burn wood)");
       _units_per_day(1);
+      _max_deficit(0);
       _uses_mineral(MINERAL_COPPER, 1);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_COPPER, 3);
       _recipe_name("Smelt copper (burn coal)");
       _units_per_day(3);
+      _max_deficit(0);
       _uses_mineral(MINERAL_COPPER, 3);
       _uses_mineral(MINERAL_COAL, 1);
     _recipe(RES_IRON, 1);
       _recipe_name("Smelt iron (burn wood)");
       _days_per_unit(2);
+      _max_deficit(0);
       _uses_mineral(MINERAL_IRON, 1);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_IRON, 3);
       _recipe_name("Smelt iron (burn coal)");
       _units_per_day(2);
+      _max_deficit(0);
       _uses_mineral(MINERAL_IRON, 3);
       _uses_mineral(MINERAL_COAL, 1);
     _description("\
@@ -360,11 +370,13 @@ fuel; however, it is much faster and more efficient to burn <link=coal>coal\
     _recipe(RES_GOLD, 1);
       _recipe_name("Gold (burn wood)");
       _units_per_day(3);
+      _max_deficit(0);
       _uses_mineral(MINERAL_GOLD, 1);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_GOLD, 3);
       _recipe_name("Gold (burn coal)");
       _units_per_day(3);
+      _max_deficit(0);
       _uses_mineral(MINERAL_GOLD, 3);
       _uses_mineral(MINERAL_COAL, 1);
     _description("\
@@ -388,6 +400,7 @@ efficient.\
     _recipe(RES_SALT, 1);
       _recipe_name("Prepare salt");
       _units_per_day(5);
+      _max_deficit(0);
       _uses_mineral(MINERAL_SALT, 1);
     _description("\
 A kitchen is a <link=building>building</link> where food and spices can be \
@@ -409,10 +422,12 @@ useable <link=luxury>luxury</link>.\
     _recipe(RES_CLOTHING, 1);
       _recipe_name("Sew clothing");
       _units_per_day(3);
+      _max_deficit(-10);
       _uses_resource(RES_FIBER, 10);
     _recipe(RES_FUR_COATS, 1);
       _recipe_name("Sew fur coats");
       _units_per_day(2);
+      _max_deficit(-8);
       _uses_resource(RES_FUR,    8);
     _recipe(RES_LEATHER_COATS, 1);
       _recipe_name("Sew leather coats");
@@ -438,10 +453,12 @@ A tailor is a <link=building>building</link> where <link=clothing>clothing\
     _recipe(RES_WOOD_HOUSEWARES, 1);
       _recipe_name("Wooden housewares");
       _units_per_day(4);
+      _max_deficit(-15);
       _uses_resource(RES_WOOD, 3);
     _recipe(RES_FURNITURE, 1);
       _recipe_name("Furniture");
       _days_per_unit(2);
+      _max_deficit(-25);
       _uses_resource(RES_WOOD, 15);
     _description("\
 A woodworking shop is a <link=building>building</link> where woodworkers are \
@@ -462,18 +479,22 @@ employed, making a variety of goods from <link=wood>wood</link>.\
     _recipe(RES_TIN_HOUSEWARES, 1);
       _recipe_name("Smith tin housewares");
       _units_per_day(3);
+      _max_deficit(-15);
       _uses_resource(RES_TIN, 3);
     _recipe(RES_COPPER_HOUSEWARES, 1);
       _recipe_name("Smith copper housewares");
       _units_per_day(3);
+      _max_deficit(-15);
       _uses_resource(RES_COPPER, 3);
     _recipe(RES_IRON_HOUSEWARES, 1);
       _recipe_name("Smith iron housewares");
       _units_per_day(3);
+      _max_deficit(-15);
       _uses_resource(RES_IRON, 3);
     _recipe(RES_JEWELRY, 1);
       _recipe_name("Craft jewelry");
       _days_per_unit(2);
+      _max_deficit(-3);
       _uses_resource(RES_TIN,      1);
       _uses_resource(RES_COPPER,   1);
       _uses_mineral (MINERAL_GEMS, 2);

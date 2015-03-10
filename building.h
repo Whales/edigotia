@@ -107,6 +107,11 @@ struct Recipe
   int units_per_day;  // Defaults to 1
   int days_per_unit;  // Defaults to 0
 
+// max_deficit is used for AI and defaults to -10.  Basically, an AI_city won't
+// add this building if it has a deficit of more than this value of any of the
+// required resources or minerals.
+  int max_deficit;
+
   std::vector<Resource_amount> resource_ingredients;
   std::vector<Mineral_amount>  mineral_ingredients;
 };
