@@ -725,27 +725,25 @@ debugmsg("Can't build %s; maintenance deficit of %s is %d.", build_dat->name.c_s
       for (int n = 0; !good_output && n < build_dat->recipes.size(); n++) {
         Recipe recipe = build_dat->recipes[n];
 // Ensure that we have all the ingredients.
-        bool has_ingredients = true;
+        bool has_ingredients = false;
         for (int m = 0;
-             has_ingredients && m < recipe.resource_ingredients.size();
+             !has_ingredients && m < recipe.resource_ingredients.size();
              m++) {
           Resource_amount res_amt = recipe.resource_ingredients[m];
           int max_deficit = recipe.max_deficit;
           int deficit = resource_production[res_amt.type] - res_amt.amount;
-          if (deficit < max_deficit) {
-debugmsg("Can't build %s; recipe deficit of %s is %d (max is %d).", build_dat->name.c_str(), Resource_data[res_amt.type]->name.c_str(), deficit, max_deficit);
-            has_ingredients = false;
+          if (deficit > max_deficit) {
+            has_ingredients = true;
           }
         }
         for (int m = 0;
-             has_ingredients && m < recipe.mineral_ingredients.size();
+             !has_ingredients && m < recipe.mineral_ingredients.size();
              m++) {
           Mineral_amount min_amt = recipe.mineral_ingredients[m];
           int max_deficit = recipe.max_deficit;
           int deficit = mineral_production[min_amt.type] - min_amt.amount;
-          if (deficit < max_deficit) {
-debugmsg("Can't build %s; recipe deficit of %s is %d (max is %d).", build_dat->name.c_str(), Mineral_data[min_amt.type]->name.c_str(), deficit, max_deficit);
-            has_ingredients = false;
+          if (deficit > max_deficit) {
+            has_ingredients = true;
           }
         }
 // If we have the ingredients, verify that we actually want the output (same as
@@ -770,7 +768,6 @@ debugmsg("Can't build %s; recipe deficit of %s is %d (max is %d).", build_dat->n
     } // if (!good_output && !build_dat->recipes.empty())
 
     if (can_build && good_output) {
-debugmsg("Building %s", build_dat->name.c_str());
 // We can build it, and we want to build it, so build it!
       if (add_building(type)) { // add_building() returns false on fail
         return true;
