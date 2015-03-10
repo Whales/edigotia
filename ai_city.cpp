@@ -200,7 +200,12 @@ void AI_city::randomize_properties(World_map* world)
     role = available_roles[index];
   }
 
+// We ALWAYS get a keep!
+  areas_built[AREA_KEEP] = 1;
+
   setup_resource_production(world);
+
+  init_demands();
 }
 
 void AI_city::setup_resource_production(World_map* world)
@@ -273,6 +278,11 @@ void AI_city::setup_resource_production(World_map* world)
 // Okay!  We are done with setting up food production.
 // Now set up some production based on our City_role.
   switch (role) {
+    case CITY_ROLE_NULL:
+// We can add more buildings!
+// TODO: Put this in a function and make it more good-er.
+      areas_built[AREA_MARKETPLACE] = 3;
+      break;
     case CITY_ROLE_FARMING:
       add_farms(tiles);
       break;
@@ -291,8 +301,9 @@ void AI_city::setup_resource_production(World_map* world)
   } // switch (role)
 
 // Finally, add some buildings to create more advanced resources.
-  bool adding_buildings = add_random_building();
-  while (adding_buildings) {
+  bool adding_buildings = (get_net_buildings_supported() > 0 &&
+                           add_random_building());
+  while (get_net_buildings_supported() > 0 && adding_buildings) {
     adding_buildings = add_random_building();
   }
   
@@ -301,6 +312,22 @@ void AI_city::setup_resource_production(World_map* world)
 int AI_city::get_net_food()
 {
   return resource_production[RES_FOOD] - get_food_consumption();
+}
+
+int AI_city::get_daily_demand(Resource res)
+{
+  if (resource_demand.count(res)) {
+    return resource_demand[res];
+  }
+  return 0;
+}
+
+int AI_city::get_daily_demand(Mineral min)
+{
+  if (mineral_demand.count(min)) {
+    return mineral_demand[min];
+  }
+  return 0;
 }
 
 int AI_city::get_gross_resource_production(Resource res)
@@ -344,6 +371,23 @@ std::string AI_city::list_production()
     ret << Mineral_data[min]->name << ": " << amount << std::endl;
   }
   return ret.str();
+}
+
+int AI_city::get_net_buildings_supported()
+{
+  int ret = 0;
+  for (std::map<Area_type,int>::iterator it = areas_built.begin();
+       it != areas_built.end();
+       it++) {
+    ret += Area_data[it->first]->buildings_supported;
+  }
+  for (std::map<Building_type,int>::iterator it = buildings_built.begin();
+       it != buildings_built.end();
+       it++) {
+    ret -= it->second;
+  }
+
+  return ret;
 }
 
 void AI_city::add_farms(std::vector<Map_tile*>& tiles, int& food_req)
@@ -628,28 +672,32 @@ void AI_city::add_area(Area_type type)
 
 bool AI_city::add_random_building()
 {
-// TODO: REENABLE THIS SHIT
-  return false;
 // This filters out any buildings that are just data for Areas.
   std::vector<Building_type> buildable = get_true_building_types();
   int start = rng(0, buildable.size() - 1);
-  for (int i = start + 1; i != start; i++) {
-debugmsg("Loop %d (%d)", i, start);
+  bool done = false;
+  for (int i = start + 1; !done && i != start; i++) {
     if (i == buildable.size()) {
-      i = -1; // Loop around to the start
+      i = 0; // Loop around to the start
+      if (start == 0) {
+        done = true;
+      }
     }
     Building_type type = buildable[i];
     Building_datum* build_dat = Building_data[type];
     bool can_build = true;
 // Check 1: Do we have available employees
     Citizen_amount jobs = build_dat->jobs;
-    if (free_citizens[jobs.type] > 0) {
+    if (free_citizens[jobs.type] <= 0) {
       can_build = false;
     }
 // Check 2: Ensure we can (and want to) pay the maintenance cost
     for (int n = 0; can_build && n < build_dat->maintenance_cost.size(); n++) {
       Resource_amount res_amt = build_dat->maintenance_cost[n];
-      if (resource_production[res_amt.type] < res_amt.amount) {
+      int deficit = resource_production[res_amt.type] - res_amt.amount;
+// TODO: Don't hardcode this value.
+      if (deficit < -5) {
+debugmsg("Can't build %s; maintenance deficit of %s is %d.", build_dat->name.c_str(), Resource_data[res_amt.type]->name.c_str(), deficit);
         can_build = false;
       }
     }
@@ -682,7 +730,10 @@ debugmsg("Loop %d (%d)", i, start);
              has_ingredients && m < recipe.resource_ingredients.size();
              m++) {
           Resource_amount res_amt = recipe.resource_ingredients[m];
-          if (resource_production[res_amt.type] < res_amt.amount) {
+          int max_deficit = recipe.max_deficit;
+          int deficit = resource_production[res_amt.type] - res_amt.amount;
+          if (deficit < max_deficit) {
+debugmsg("Can't build %s; recipe deficit of %s is %d (max is %d).", build_dat->name.c_str(), Resource_data[res_amt.type]->name.c_str(), deficit, max_deficit);
             has_ingredients = false;
           }
         }
@@ -690,7 +741,10 @@ debugmsg("Loop %d (%d)", i, start);
              has_ingredients && m < recipe.mineral_ingredients.size();
              m++) {
           Mineral_amount min_amt = recipe.mineral_ingredients[m];
-          if (mineral_production[min_amt.type] < min_amt.amount) {
+          int max_deficit = recipe.max_deficit;
+          int deficit = mineral_production[min_amt.type] - min_amt.amount;
+          if (deficit < max_deficit) {
+debugmsg("Can't build %s; recipe deficit of %s is %d (max is %d).", build_dat->name.c_str(), Mineral_data[min_amt.type]->name.c_str(), deficit, max_deficit);
             has_ingredients = false;
           }
         }
@@ -776,4 +830,101 @@ void AI_city::add_mineral_production(Mineral min, int amount)
   } else {
     mineral_production[min] = amount;
   }
+}
+
+void AI_city::init_demands()
+{
+// At the bottom of this function, we reduce each demand value by the amount we
+// produce.  We'll do food & gold after this reduction!
+
+// Demand for gold is always infinite.  We just love the stuff!
+  resource_demand[RES_GOLD] = INFINITE_RESOURCE;
+
+// We always want to have a healthy production of wood and stone, to help us
+// build more stuff!
+  resource_demand[RES_WOOD]  = 25;
+  resource_demand[RES_STONE] = 25;
+
+// Go through all buildings and find anything we need for recipes.
+  for (std::map<Building_type,int>::iterator it = buildings_built.begin();
+       it != buildings_built.end();
+       it++) {
+    Building_type type = it->first;
+    Building_datum* build_dat = Building_data[type];
+// Here, "amount" refers to the amount of workers at this building type.
+    int workers = it->second * build_dat->jobs.amount;
+
+    for (int i = 0; i < build_dat->recipes.size(); i++) {
+      Recipe rec = build_dat->recipes[i];
+      for (int n = 0; n < rec.resource_ingredients.size(); n++) {
+        Resource_amount res_amt = rec.resource_ingredients[n];
+        res_amt.amount *= workers;
+        resource_demand[res_amt.type] += res_amt.amount;
+      }
+      for (int n = 0; n < rec.mineral_ingredients.size(); n++) {
+        Mineral_amount min_amt = rec.mineral_ingredients[n];
+        min_amt.amount *= workers;
+        mineral_demand[min_amt.type] += min_amt.amount;
+      }
+    }
+  }
+
+// We might also demand luxuries!  First, pick what we like.
+  for (int i = CIT_PEASANT; i < CIT_BURGHER; i++) {
+    population[i].pick_luxuries(this);
+  }
+
+// Now, set up demand for all luxuries.
+  for (int i = 0; i < RES_MAX; i++) {
+    Resource res = Resource(i);
+    Resource_datum* res_dat = Resource_data[i];
+    if (res_dat->morale > 0) {
+      int total_demand = 0;
+      for (int n = CIT_PEASANT; n < CIT_BURGHER; n++) {
+        int demand = (res_dat->demand * population[n].count) / 100;
+        Luxury_type lux_type = res_dat->luxury_type;
+        if (lux_type != LUX_NULL &&
+            population[n].luxury_demands[lux_type] != res) {
+          demand *= 0.5;
+        }
+        total_demand += demand;
+      }
+      resource_demand[res] += total_demand;
+    }
+  }
+
+// Now reduce all demands by the amount we produce.
+  for (int i = 0; i < RES_MAX; i++) {
+    Resource res = Resource(i);
+    int produced = get_gross_resource_production(res);
+    if (resource_demand.count(res) && resource_demand[res] > 0) {
+      if (resource_demand[res] < produced) {
+        resource_demand.erase(res);
+      } else {
+        resource_demand[res] -= produced;
+      }
+    }
+  }
+
+  for (int i = 0; i < MINERAL_MAX; i++) {
+    Mineral min = Mineral(i);
+    int produced = (mineral_production.count(min) ? mineral_production[min] :0);
+    if (mineral_demand.count(min) && mineral_demand[min] > 0) {
+      if (mineral_demand[min] < produced) {
+        mineral_demand.erase(min);
+      } else {
+        mineral_demand[min] -= produced;
+      }
+    }
+  }
+
+// We always want gold!  We just love the stuff!
+  resource_demand[RES_GOLD] = INFINITE_RESOURCE;
+
+// Food demand is equivalent to 110% of our food deficit.
+  int net_food = get_net_food();
+  if (net_food < 0) {
+    resource_demand[RES_FOOD] = 1.1 * (0 - net_food);
+  }
+
 }

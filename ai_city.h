@@ -29,9 +29,15 @@ public:
 // get_food_production() is just resource_production[RES_FOOD]
   int get_net_food(); // production - consumption, obvs
 
+  virtual int get_daily_demand(Resource res);
+  virtual int get_daily_demand(Mineral  min);
+
   virtual int get_gross_resource_production (Resource res);
 
   std::string list_production();  // For now, this is just debug output.
+
+// buildings_supported of all areas, minus existing buildings.
+  int get_net_buildings_supported();
 
 private:
 // add_farms(), add_hunting_camps(), and add_pastures() have two forms; one with
@@ -68,6 +74,8 @@ private:
   void add_mineral_production(Mineral_amount min_amt);
   void add_mineral_production(Mineral min, int amount);
 
+  void init_demands();  // Looks at what we lack for recipes etc
+
 // *** DATA ***
 
   City_role role;
@@ -84,6 +92,9 @@ private:
 
   std::map<Resource,int> resource_production;
   std::map<Mineral,int>  mineral_production;
+
+  std::map<Resource,int> resource_demand;
+  std::map<Mineral,int>  mineral_demand;
 
 };
 
