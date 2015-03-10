@@ -250,8 +250,14 @@ void Citizens::consume_luxuries(City* city)
     int amount = it->second;
     if (city->expend_resource(res, amount)) {
       Resource_datum* res_dat = Resource_data[res];
+      Luxury_type lux_type = res_dat->luxury_type;
       int res_demand = (res_dat->demand * count) / 100;
       int res_morale = res_dat->morale;
+      if (lux_type != LUX_NULL && luxury_demands[lux_type] != RES_NULL &&
+          luxury_demands[lux_type] != res) {
+        res_demand *= .5;
+        res_morale *= .4;
+      }
       int morale_gain = 0;
 // If this luxury is not the one we want, then it only gives 40% the morale!
       if (it->second >= res_demand) {
@@ -259,11 +265,6 @@ void Citizens::consume_luxuries(City* city)
       } else if (it->second > 0) {
 // If we don't meet demand, give partial morale.
         morale_gain = (res_morale * consumption[res]) / (res_demand);
-      }
-      Luxury_type lux_type = res_dat->luxury_type;
-      if (lux_type != LUX_NULL && luxury_demands[lux_type] != RES_NULL &&
-          luxury_demands[lux_type] != res) {
-        morale_gain *= .4;
       }
       add_morale_modifier(MORALE_MOD_LUXURY, morale_gain * 10, res);
 
