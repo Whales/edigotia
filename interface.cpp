@@ -2762,6 +2762,9 @@ void Interface::luxury_management()
         std::stringstream ss_have;
         int have = citizens->consumption[cur_res];
         int want = (res_dat->demand * citizens->count) / 100;
+        if (citizens->luxury_demands[res_dat->luxury_type] != cur_res) {
+          want *= 0.5;
+        }
         if (have == 0) {
           ss_have << "<c=dkgray>";
         } else if (have >= want) {
