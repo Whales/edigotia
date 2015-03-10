@@ -83,6 +83,12 @@ public:
   int get_price(Resource res);
   int get_price(Mineral  min);
 
+// The quantity that we want on a daily basis.
+// NOTE: Both of these are overridden for AI_city and Player_city; as such, the
+// City version just returns 0.
+  virtual int get_daily_demand(Resource res);
+  virtual int get_daily_demand(Mineral  min);
+
 // Resource-related functions
 
 // Returns all resources we own with the given Luxury_type.

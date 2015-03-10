@@ -395,6 +395,18 @@ int City::get_price(Mineral min)
   return mineral_price[min];
 }
 
+// get_daily_demand() (both versions) are overridden for AI_city and Player_city
+// and as such, the City version just returns 0 (it's not used).
+int City::get_daily_demand(Resource res)
+{
+  return 0;
+}
+
+int City::get_daily_demand(Mineral min)
+{
+  return 0;
+}
+
 std::map<Resource,int> City::get_luxuries(Luxury_type type)
 {
   std::map<Resource,int> ret;
