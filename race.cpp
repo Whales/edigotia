@@ -11,6 +11,7 @@ Race_datum::Race_datum()
   name        = "Uninitialized Race";
   plural_name = "Uninitialized Race";
   adjective   = "Uninitialized Race";
+  description = "Uninitialized Race";
 
   color = c_ltgray;
 
@@ -38,6 +39,10 @@ Race_datum::Race_datum()
   citizen_ratio[CIT_BURGHER]  = 10;
   morale_requirement[CIT_MERCHANT] = 50;
   morale_requirement[CIT_BURGHER]  = 50;
+
+  for (int i = 0; i < RACE_MAX; i++) {
+    relations[i] = 0;
+  }
 
   for (int i = 0; i < SKILL_MAX; i++) {
     skill_level[i] = 3;
@@ -154,6 +159,96 @@ std::string Race_datum::get_city_name()
   }
 
   return capitalize( name );
+}
+
+std::string Race_datum::generate_help_text()
+{
+// TODO: More links.
+  std::stringstream ret;
+  ret << "<c=" << color_tag(color) << ">" << capitalize(plural_name) <<
+         "<c=/>" << std::endl;
+  ret << "<c=ltgreen>Starting population: " << std::endl;
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    ret << "  " << citizen_type_name( Citizen_type(i), true ) << ": " <<
+           starting_population[i] << std::endl;
+  }
+  ret << std::endl;
+  ret << "<c=yellow>Starting resources: " << std::endl;
+  for (int i = 0; i < RES_MAX; i++) {
+    if (starting_resources[i] > 0) {
+      ret << "  " << Resource_data[i]->name << ": " << starting_resources[i] <<
+             std::endl;
+    }
+  }
+  ret << std::endl;
+  ret << "<c=ltred>Base combat skill: " << base_combat << "<c=/>" << std::endl;
+  ret << "<c=ltred>HP: " << hp << "<c=/>" << std::endl;
+
+  ret << "<c=white>Citizen:      Birth rate:      Acceptable tax range:<c=/>";
+  for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
+    std::string cit_name = citizen_type_name( Citizen_type(i), true );
+    ret << "<c=white>" << cit_name << "<c=/>";
+    for (int n = 0; n < (21 - cit_name.length()); n++) {
+      ret << " ";
+    }
+    std::string rate_text = itos( birth_rate[i] * 100 );
+    ret << "<c=ltgreen>" << birth_rate[i] << "<c=/>";
+    for (int n = 0; n < (11 - rate_text.length()); n++) {
+      ret << " ";
+    }
+    ret << "<c=yellow>" << low_tax_rate[i] << " - " << high_tax_rate[CIT_MAX] <<
+           "<c=/>" << std::endl;
+  }
+  ret << "<c=white>(Birth rate is the number of citizens required to result " <<
+         "in one birth per day.)<c=/>" << std::endl << std::endl;
+
+  ret << "<c=yellow>" << citizen_ratio[CIT_MERCHANT] << " <c=white>peasants " <<
+         "<c=ltgreen>required to support one <c=white>merchant<c=/>." <<
+         std::endl;
+  ret << "<c=white>Peasant<c=ltgreen> morale must be at least <c=yellow>" <<
+         morale_requirement[CIT_MERCHANT] << " <c=ltgreen>to guarantee that " <<
+         "<c=white>merchants<c=ltgreen> can be born.<c=/>" << std::endl;
+  ret << "<c=yellow>" << citizen_ratio[CIT_BURGHER] << " <c=white>merchants " <<
+         "<c=ltgreen>required to support one <c=white>burgher<c=/>." <<
+         std::endl;
+  ret << "<c=white>Merchant<c=ltgreen> morale must be at least <c=yellow>" <<
+         morale_requirement[CIT_BURGHER] << " <c=ltgreen>to guarantee that " <<
+         "<c=white>burghers<c=ltgreen> can be born.<c=/>" << std::endl;
+  ret << std::endl;
+
+  ret << "<c=green>Food consumption: <c=white>" << food_consumption << 
+         "%%%%<c=/>" << std::endl << std::endl;
+
+  ret << "<c=yellow>Skills: <c=/>" << std::endl;
+// Start at 1 to skip SKILL_NULL
+  for (int i = 1; i < SKILL_MAX; i++) {
+    std::string skill_name = race_skill_name( Race_skill(i) );
+    ret << "  <link=" << skill_name << ">" << skill_name << "</link>:  ";
+    for (int n = 0; n < (20 - skill_name.length()); n++) {
+      ret << " ";
+    }
+    ret << "<c=white>" << skill_level[i] << "<c=/>" << std::endl;
+  }
+
+  ret << std::endl;
+  ret << "<c=pink>Race relations:<c=/>" << std::endl;
+// Start at 1 to skip RACE_NULL
+  for (int i = 1; i < RACE_MAX; i++) {
+    std::string race_name = Race_data[i]->name;
+    ret << "<c=white>" << race_name << ":<c=/>";
+    int extra_space = (relations[i] >= 0 ? 1 : 0);
+    for (int n = 0; n < (extra_space + 15 - race_name.length()); n++) {
+      ret << " ";
+    }
+    ret << relations[i] << std::endl;
+  }
+
+// TODO: Incude map_type_travel_cost
+
+  ret << std::endl;
+  ret << description;
+
+  return ret.str();
 }
 
 Race_skill lookup_race_skill(std::string name)

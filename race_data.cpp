@@ -73,8 +73,14 @@ Race_datum* Race_data[RACE_MAX];
 #define _high_tax_rate(t, n) \
   Race_data[cur_id]->high_tax_rate[ (t) ] = (n)
 
+#define _relations(r, n) \
+  Race_data[cur_id]->relations[ (r) ] = (n)
+
 #define _skill(t, n) \
   Race_data[cur_id]->skill_level[ (t) ] = (n)
+
+#define _description(s) \
+  Race_data[cur_id]->description = (s)
 
 void init_races()
 {
@@ -179,11 +185,34 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  65);
     _high_tax_rate      (CIT_BURGHER,   50);
 
+    _relations(RACE_ELF,      2);
+    _relations(RACE_DWARF,    1);
+    _relations(RACE_GOBLIN,  -1);
+    _relations(RACE_OGRE,     2);
+    _relations(RACE_TROLL,   -3);
+    _relations(RACE_HALFLING, 2);
+
     _skill(SKILL_FARMING,   4);
     _skill(SKILL_HUNTING,   3);
     _skill(SKILL_LIVESTOCK, 3);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  3);
+
+    _description("\
+Humans are a versatile <link=race>race</link>, and can inhabit almost any part \
+of the world.  They are notably average in many senses.  They give birth \
+fairly quickly, though they do not live particularly long.  They are \
+reasonably skilled in all areas.  <link=farming>Farming</link> is a particular \
+strength for humans, and they are most at home living on flat \
+<link=plains>plains</link>.\n\
+Humans are natural <link=kingdom>kingdom</link>-builders, and most prefer to \
+live in established cities rather thanon their own.  Their loyalty to their \
+<link=monarch>king or queen</link> is great, but it is not unknown for humans \
+to backstab their way to the top.\n\
+Humans are a generally friendly race, and get along well with most other \
+races.  True to their generally vain nature, they get along best with those \
+who resemble them; in particular, the elves and the halflings.\
+");
 
 
   _race(RACE_ELF);
@@ -257,11 +286,44 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  75);
     _high_tax_rate      (CIT_BURGHER,   65);
 
+    _relations(RACE_HUMAN,     1);
+    _relations(RACE_DWARF,     1);
+    _relations(RACE_ORC,      -2);
+    _relations(RACE_GOBLIN,   -2);
+    _relations(RACE_OGRE,     -1);
+    _relations(RACE_TROLL,    -3);
+    _relations(RACE_HALFLING, -1);
+
     _skill(SKILL_FARMING,   4);
     _skill(SKILL_HUNTING,   5);
     _skill(SKILL_LIVESTOCK, 3);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  5);
+
+    _description("\
+Elves are a tall, slender, nimble <link=race>race</link> of <link=forest>forest\
+</link>-dwellers.  Elves have a great affinity for plants, and fare \
+excellently in forests, <link=jungle>jungles</link> and <link=swamp>swamps\
+</link> but poorly in <link=desert>deserts</link> or <link=mountain>mountains\
+</link>.  They are skilled woodsmen; however, elves consider it immoral to \
+fell a living tree, and they can not build sawmills.  Instead, elves can build \
+a <link=sacred grove>Sacred Grove</link>, an enchanted copse of trees which \
+willingly give up their branches for use.  Elves are also legendary for their \
+finely crafted bows, and prowess at hunting.\n\
+Elves have long lives, but are slow to give birth.  Many prefer to live as \
+<link=homesteader>loners</link> deep in the forest, and it may be difficult to \
+lure them into city living.  They are noble warriors with a strong sense of \
+duty to their <link=kingdom>kingdom</link>, but they are also careful \
+thinkers, more prone to finding diplomatic solutions than going to \
+<link=war>war</link>.\n\
+Elves are a rather haughty race, and tend to look down on other races, while \
+not actually harboring any ill will.  They have a particular distaste for \
+those races for whom destruction, either careless or wanton, lies in their \
+nature, such as <link=orcs>orcs</link> or <link=goblins>goblins</link>.  The \
+exceptions to this rule are <link=humans>humans</link> and \
+<link=dwarves>dwarves</link>, with whom the elves share a history of mutual \
+respect.\
+");
 
 
   _race(RACE_DWARF);
@@ -360,11 +422,40 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  75);
     _high_tax_rate      (CIT_BURGHER,   65);
 
+    _relations(RACE_HUMAN,     1);
+    _relations(RACE_ELF,       1);
+    _relations(RACE_ORC,      -1);
+    _relations(RACE_OGRE,      1);
+    _relations(RACE_TROLL,    -5);
+    _relations(RACE_HALFLING,  2);
+
     _skill(SKILL_FARMING,   2);
     _skill(SKILL_HUNTING,   2);
     _skill(SKILL_LIVESTOCK, 3);
     _skill(SKILL_MINING,    5);
     _skill(SKILL_FORESTRY,  2);
+
+    _description("\
+Dwarves are a stocky, short <link=race>race</link>.  They have a great \
+affinity for tunnels and caverns, and their small stature helps to make them \
+excellent <link=mining>miners</link>.  Because of this, dwarves are usually \
+most at home in <link=mountain>mountains</link> and <link=hill>foothills\
+</link>, and less comfortable in wide open spaces.  Their small size and great \
+strength makes them excellent at navigating mountains, but slower than most \
+when traveling open <link=plains>plains</link>.\n\
+Dwarves are not particularly social creatures, and give birth more slowly than \
+most races.  They also often prefer to live as <link=homesteader>hermits\
+</link> rather than in cities.  Dwarves have strong regional ties, and are \
+often more loyal to their home <link=city>city</link> rather than to some far-\
+off <link=monarch>king</link>.  They are rarely aggressive, but fight with a \
+great ferocity if provoked.  A dwarf can be rather difficult to kill!  Their \
+<link=armor>armor</link> and <link=weapons>weapons</link> are of legendary \
+quality, particularly their <link=axes>battleaxes</link>, which are considered \
+some of the best weapons in the world.\n\
+Dwarves are fairly affable in regards to the other races in the world.  They \
+have a particular fondness for <link=halflings>halflings</link> due to their \
+similar stature and culinary appetites.\
+");
 
 
   _race(RACE_ORC);
@@ -450,11 +541,51 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  85);
     _high_tax_rate      (CIT_BURGHER,   70);
 
+    _relations(RACE_DWARF,     1);
+    _relations(RACE_GOBLIN,   -1);
+    _relations(RACE_OGRE,      1);
+    _relations(RACE_TROLL,     1);
+    _relations(RACE_HALFLING, -3);
+
     _skill(SKILL_FARMING,   1);
     _skill(SKILL_HUNTING,   4);
     _skill(SKILL_LIVESTOCK, 2);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  3);
+
+    _description("\
+Orcs are a nasty, brutish <link=race>race</link>, and they are proud of it.  \
+Among all the races, orcs are the most eager for <link=war>conflict</link>.  \
+Orcish citizens quickly grow bored if there is not a war to fight; this is the \
+opposite of most races, which <link=war weariness>grow discontent during war\
+</link>.  Fortunately (for them), orcs are naturally skilled in \
+<link=combat>combat</link> and difficult to kill.  <c=white>Un<c=/>\
+fortunately, orcs are not very skilled at crafting <link=armor>armor</link> or \
+<link=weapons>weapons</link>, and will usually seek to <link=trade>buy</link> \
+them from a race who can produce better than their crude equipment.\n\
+Outside of combat, orcs are largely unskilled.  They are decent \
+<link=mining>miners</link> and <link=forestry>woodsmen</link>, and good at the \
+<link=hunting>hunt</link>, but fare poorly at other methods of obtaining \
+food.  Orcs tend to have food imported, or more often, raid cities and \
+<link=caravan>trade caravans</link> for their food supply.\n\
+Orcs fare quite well in any terrain.  Their strength makes them better than \
+most at traversing rough terrain, and they are quite happy living in \
+<link=hill>hills</link> and <link=mountain>mountains</link>.  Orcs have a \
+complex social structure.  While they do have a sense of loyalty to their \
+<link=monarch>monarch</link> and <link=duke>dukes</link>, aggression is as \
+common within an orc <link=kingdom>kingdom</link> as it is against other \
+races.  Orcish cities which fail to demonstrate their success in the \
+battlefield will be perceived as weak and unworthy, and it is perfectly \
+socially acceptable for their neighbors to attack and destroy them.  Orcs do \
+not have a typical sense of hereditary <link=succession>succession</link> as \
+most races do.  Instead, a duke - or even the king or queen - is replaced when \
+one of their subjects manages to invade their city and kill them.\n\
+Orcs' relations with other races are ruled by might.  Orcs have respect for \
+races who are skilled in combat, and nothing but contempt for those who are \
+not.  The only exception is their degenerate cousins the <link=goblins>goblins\
+</link> - orcs should despise these weaklings, but instead only view them with \
+a mild distaste.\
+");
 
 
   _race(RACE_GOBLIN);
@@ -490,7 +621,7 @@ void init_races()
     _cluster_size(5, 8);
     _city_size(CITY_TYPE_CITY,     150,  2000);
     _city_size(CITY_TYPE_DUCHY,   1200,  6000);
-    _city_size(CITY_TYPE_CAPITAL, 3000, 1200);
+    _city_size(CITY_TYPE_CAPITAL, 3000,  1200);
 
     _city_name_start("ak", "ar", "bek", "bik", "bir", "bu", "buk", "dak", "dek",
                      "dik", "dir", "du", "ek", "er", "fek", "fik", "fu", "hak",
@@ -524,11 +655,11 @@ void init_races()
     _starting_resources (RES_WOOD,    1600);
     _starting_resources (RES_STONE,   1600);
 
-    _birth_rate         (CIT_PEASANT,   90);
-    _birth_rate         (CIT_MERCHANT,  90);
-    _birth_rate         (CIT_BURGHER,   90);
-    _citizen_ratio      (CIT_MERCHANT,  14);
-    _citizen_ratio      (CIT_BURGHER,   12);
+    _birth_rate         (CIT_PEASANT,   80);
+    _birth_rate         (CIT_MERCHANT,  80);
+    _birth_rate         (CIT_BURGHER,   80);
+    _citizen_ratio      (CIT_MERCHANT,  20);
+    _citizen_ratio      (CIT_BURGHER,   14);
     _morale_requirement (CIT_MERCHANT,  50);
     _morale_requirement (CIT_BURGHER,   75);
     _low_tax_rate       (CIT_PEASANT,   25);
@@ -538,12 +669,49 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  80);
     _high_tax_rate      (CIT_BURGHER,   60);
 
+    _relations(RACE_HUMAN,    -1);
+    _relations(RACE_ELF,      -2);
+    _relations(RACE_DWARF,     1);
+    _relations(RACE_ORC,       2);
+    _relations(RACE_OGRE,      1);
+    _relations(RACE_TROLL,     2);
+
     _skill(SKILL_FARMING,   3);
     _skill(SKILL_HUNTING,   2);
     _skill(SKILL_LIVESTOCK, 1);
     _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  2);
 
+    _description("\
+Goblins are a distant cousin of <link=orcs>orcs</link>, though the resemblance \
+is faint.  Unlike their large, strong, vicious relatives, goblins are small in \
+stature (often measuring less than four feet tall) and cowardly in nature.  \
+They fare poorly in <link=combat>combat</link> and are quite easily killed.  \
+However, they possess a cunning nature and make excellent <link=espionage>spies\
+</link> and <link=sabotauge>saboteurs</link>.  Other <link=race>races</link> \
+are wary of goblins, and rightfully so; they'll profess to be your friend, all \
+the while spying on your <link=city>cities</link> and selling what they learn \
+to your enemies.  If they feel they have an opportunity, goblins will happily \
+backstab you for whatever reward they can reap.  Still, goblins are eager to \
+find customers for their mercenary-spies, and they can be a good friend to \
+have.\n\
+One of the most notable traits of goblins is their \
+<link=citizen reproduction>fecundity</link>.  Few races give birth in greater \
+numbers than goblins do.  With this high birth rate comes a low sense of the \
+value of a life; goblins don't find it particularly immoral to kill another \
+goblin, and suicide missions are accepted as a fact of life.  Goblin cities \
+tend to be dominated by the <link=peasants>peasant</link> population, as this \
+lowly caste feels more \"natural\" to them.  Though decent as \
+<link=farming>farmers, goblins fare poorly at the <link=hunting>hunt</link>, \
+and even worse at keeping <link=livestock>livestock</link>; they have \
+absolutely no affinity for animals.\n\
+Goblins actually respect and even like members of other races, in particular \
+those seen as \"ugly\" by <link=humans>humans</link> and <link=elves>elves\
+</link> - whom the goblins despise due to their vanity and beauty \
+respectively.  Goblins carry a particular fondness for their cousins the \
+orcs.  Unfortunately for the poor goblins, almost none of these admirations \
+are returned.\
+");
 
 
   _race(RACE_OGRE);
@@ -622,7 +790,7 @@ void init_races()
                    "ton", "tor", "tot", "tord", "tork", "tort", "tud", "tuk",
                    "tun", "tut", "turd", "turk", "turt");
 
-    _base_combat(15);
+    _base_combat(13);
     _hp(150);
     _food_consumption(140);
 
@@ -645,12 +813,42 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  65);
     _high_tax_rate      (CIT_BURGHER,   50);
 
+    _relations(RACE_HUMAN,     2);
+    _relations(RACE_ELF,       2);
+    _relations(RACE_DWARF,     1);
+    _relations(RACE_ORC,      -2);
+    _relations(RACE_GOBLIN,   -1);
+    _relations(RACE_TROLL,    -3);
+    _relations(RACE_HALFLING,  3);
+
     _skill(SKILL_FARMING,   4);
     _skill(SKILL_HUNTING,   2);
     _skill(SKILL_LIVESTOCK, 4);
-    _skill(SKILL_MINING,    4);
+    _skill(SKILL_MINING,    3);
     _skill(SKILL_FORESTRY,  4);
 
+    _description("\
+Ogres are a large, lumbering <link=race>race</link>, resembling a huge version \
+of something from <link=humans>humans</link>' evolutionary past.  Their size \
+and innate strength make them decent fighters and quite difficult to kill, but \
+in fact ogres are a rather peaceful race.  The structure of their \
+<link=kingdom>kingdoms</link> is rather loose, and often ogres would rather \
+lead a <link=homesteaders>solitary existence</link> rather than accept the \
+social contract of living in a <link=city>city</link>.\n\
+Their large size gives ogres quite an appetite, and two ogres eat almost as \
+much as three humans.  Fortunately for them, ogres are skilled \
+<link=farming>farmers</link> and keepers of <link=livestock>livestock</link>.  \
+They are good <link=forestry>woodsmen</link> as well, but their size makes it \
+difficult for them to navigate <link=forest>forests</link> and other dense \
+terrain.\n\
+Ogres <link=citizen reproduction>give birth</link> somewhat slowly, and tend \
+to live in smaller numbers than most races.  Families tend to be small but \
+close-knit.\n\
+Ogres get along quite well with most other races, in particular their tiny \
+agrarian friends the <link=halflings>halflings</link>.  Due to their peace-\
+loving ways, ogres harbor a dislike for the more warfaring races like \
+<link=orcs>orcs</link>.\
+");
 
 
   _race(RACE_TROLL);
@@ -717,12 +915,54 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  95);
     _high_tax_rate      (CIT_BURGHER,   90);
 
+    _relations(RACE_HUMAN,    -2);
+    _relations(RACE_ELF,      -3);
+    _relations(RACE_DWARF,    -5);
+    _relations(RACE_ORC,      -1);
+    _relations(RACE_GOBLIN,   -2);
+    _relations(RACE_OGRE,     -2);
+    _relations(RACE_HALFLING, -3);
+
     _skill(SKILL_FARMING,   1);
     _skill(SKILL_HUNTING,   4);
     _skill(SKILL_LIVESTOCK, 1);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  1);
 
+    _description("\
+Of all the <link=race>races</link> in the world, the trolls are without a \
+doubt the most terrifying and garish.  Most races regard them as barely more \
+than animals; those who are lucky enough to have never met one often think of \
+them as nothing more than fairy tales to scare children.  But trolls are all \
+too real, and do indeed gather to live in <link=city>settlements</link>.  \
+Calling them \"cities\" may be a bit of a stretch, as they rather number more \
+than a few hundred residents.  The structure of troll \"<link=kingdom>kingdoms\
+</link>\" is similarly loose, with only a passing amount of rule wielded by \
+the <link=monarch>monarch</link> or <link=duke>duchies</link>.\n\
+Trolls are famed for being deadly in <link=combat>combat</link>.  They are not \
+skilled in using or making <link=weapon>weapons</link>, but they hardly need \
+them, as trolls have natural set of vicious claws and a skin that exceeds \
+<link=leather armor>leather armor</link> in toughness.  They also have a \
+natural regenerative ability, making <link=medic>field medics</link> totally \
+unnecessary.  They use these traits to their advantage when \
+<link=hunting>hunting</link>, essentially tearing through the terrain, \
+devouring any creatures unlucky enough to be in their path.  However, trolls \
+are totally useless at <link=farming>farming</link> and rearing \
+<link=livestock>livestock</link>.  In fact, they are abysmal at most \
+<link=race skills>skills</link>.  All trolls know is killing and eating.\n\
+And they eat a lot - a troll eats almost as much as two <link=humans>humans\
+</link> each day.  Since they <link=anthropophage>eat other races</link>, \
+trolls ofte rely on raiding cities to kill and eat their inhabitants.  Despite \
+their fast metabolism, trolls are quite slow to \
+<link=citizen reproduction>reproduce</link> and tend to have very small \
+cities, with most trolls living in the wilderness in a semi-feral state.\n\
+Trolls see little point in <link=diplomacy>diplomacy</link> or \
+<link=trade>trade</link> with non-trolls - after all, they're supposed to be \
+food, not friends.  They are particularly loathe to fraternize with \
+<link=dwarves>dwarves</link>, their ancient enemies.  One (slight) exception \
+is the <link=orcs>orcs</link>, whose prowess in battle is respected (to a \
+degree) by trolls.\
+");
 
 
   _race(RACE_HALFLING);
@@ -786,7 +1026,7 @@ void init_races()
 
     _base_combat(5);
     _hp(80);
-    _food_consumption(120);
+    _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
@@ -807,11 +1047,41 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  65);
     _high_tax_rate      (CIT_BURGHER,   50);
 
+    _relations(RACE_HUMAN,     1);
+    _relations(RACE_ELF,      -1);
+    _relations(RACE_DWARF,     2);
+    _relations(RACE_ORC,      -3);
+    _relations(RACE_GOBLIN,   -2);
+    _relations(RACE_OGRE,      2);
+    _relations(RACE_TROLL,    -4);
+
     _skill(SKILL_FARMING,   4);
     _skill(SKILL_HUNTING,   1);
     _skill(SKILL_LIVESTOCK, 5);
     _skill(SKILL_MINING,    2);
     _skill(SKILL_FORESTRY,  4);
+
+    _description("\
+Halflings are a reclusive <link=race>race</link>, small in stature (about half \
+the height of a <link=human>human</link> - hence the name).  They shun \
+adventure and <link=war>warfaring</link>, preferring instead to focus on \
+enjoying a life of leisure at home.  A halfling's favorite form of leisure is \
+<link=food>eating</link>.  They have a strong appetite, and will eat as much \
+as a human despite their small size.  What's more, halflings treat food as a \
+<link=luxury>luxury</link> and extra rations can be assigned in the \
+<link=luxury management screen>luxury management screen</link> to boost \
+<link=morale>morale</link>.\n\
+Fortunately for their appetites, halflings are skilled <link=farming>farmers\
+</link>, and their affinity with <link=livestock>livestock</link> is \
+unrivaled.  They are extremely poor <link=hunting>hunters</link>, however, and \
+not at all at home in a <link=mining>mine</link>.  They are also excessively \
+weak in <link=combat>combat</link>, and prefer to settle conflicts via \
+<link=diplomacy>diplomacy</link>.\n\
+Halflings don't particularly get along well with other races, particularly the \
+more adventurous or warlike of them.  Their similar stature makes \
+<link=dwarves>dwarves</link> their natural friends, and their agrarian \
+lifestyle leads to positive relations with <link=ogres>ogres</link>.\
+");
 
 }
 

@@ -78,10 +78,13 @@ struct Race_datum
   void add_city_names(std::string pos, ...);
   std::string get_city_name();
 
+  std::string generate_help_text();
+
   int uid;  // Probably don't need it, but why not
   std::string name;
   std::string plural_name;
   std::string adjective;  // "Buying ____ weapons.", e.g. "orcish"
+  std::string description;
 
   nc_color color;
   std::vector<nc_color> kingdom_colors; // Acceptable colors for kingdoms
@@ -128,7 +131,10 @@ struct Race_datum
   int low_tax_rate[CIT_MAX];  // Tax rates at/below this give a morale boost.
   int high_tax_rate[CIT_MAX]; // Tax rates at/above this give a big morale minus
 
+// DIPLOMACY STUFF
 
+// relations is our default opinion of a city belonging to this race
+  int relations[RACE_MAX];
 
 // SKILLS ETC
 
