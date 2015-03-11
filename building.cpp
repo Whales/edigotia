@@ -1088,6 +1088,29 @@ std::string Building_datum::generate_help_text()
   return ret.str();
 }
 
+bool Building_datum::built_by(Race race)
+{
+  if (!race_can_build.empty()) {
+    for (int i = 0; i < race_can_build.size(); i++) {
+      if (race_can_build[i] == race) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (!race_forbidden.empty()) {
+    for (int i = 0; i < race_forbidden.size(); i++) {
+      if (race_forbidden[i] == race) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  return true;
+}
+
 // res defaults to RES_NULL
 bool Building_datum::produces_resource(Resource res)
 {

@@ -20,6 +20,12 @@ Building_datum* Building_data[BUILD_MAX];
 #define _category(c) \
   Building_data[cur_id]->category = (c)
 
+#define _forbidden(r) \
+  Building_data[cur_id]->race_forbidden.push_back( (r) )
+
+#define _built_by(r) \
+  Building_data[cur_id]->race_can_build.push_back( (r) )
+
 #define _cost(t, n) \
   Building_data[cur_id]->build_costs.push_back( Resource_amount( (t), (n) ) )
 
@@ -241,6 +247,7 @@ A mine is set of several shafts dug into the land, allowing <link=mining>miners\
 
   _build(BUILD_SAWMILL);
     _name("sawmill");
+    _forbidden(RACE_ELF);
     _cost(RES_GOLD,  200);
     _cost(RES_STONE, 350);
     _build_time(5);

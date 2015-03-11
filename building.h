@@ -6,6 +6,7 @@
 #include "geometry.h"
 #include "city_achievement.h" // For unlockable buildings.
 #include "animal.h"
+#include "race.h" // For buildings with race restrictions.
 #include <string>
 #include <vector>
 #include <map>
@@ -141,6 +142,9 @@ struct Building_datum
   std::string get_short_description(bool help_links = false,
                                     bool for_area = false);
   std::string generate_help_text(); // Generates text with all critical data
+
+  bool built_by(Race race);
+
   bool produces_resource(Resource res = RES_NULL);
   bool builds_resource  (Resource res = RES_NULL);
   int  amount_produced  (Resource res);
@@ -160,6 +164,11 @@ struct Building_datum
 
   int build_time;
   std::vector<Resource_amount> build_costs;
+// race_forbidden is a list of races that can NOT build this.  All others CAN.
+// race_can_build is a list of races that CAN build this.  All others can NOT.
+// If both are empty, all races can build this.
+  std::vector<Race> race_forbidden;
+  std::vector<Race> race_can_build;
 
   bool unlockable;  // If false, this building is available from the start.
   City_achievement unlock_condition;
