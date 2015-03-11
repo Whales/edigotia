@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "area.h"
 #include "building.h"
+#include "race.h"
 #include "stringfunc.h" // For capitalize()
 
 #define _article(n) \
@@ -535,6 +536,14 @@ hard to pass, so you can place walls in the gaps between mountains.\
       _type("Building");
       _text( build_dat->generate_help_text() );
     }
+  }
+
+// Add all races to the help database!
+  for (int i = 0; i < RACE_MAX; i++) {
+    Race_datum* race_dat = Race_data[i];
+    _article( capitalize( race_dat->name ) );
+    _type("Race");
+    _text( race_dat->generate_help_text() );
   }
 
   HELP->process_categories();
