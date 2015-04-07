@@ -25,15 +25,18 @@ enum Race
   RACE_OGRE,
   RACE_TROLL,
   RACE_HALFLING,
-/*
   RACE_GNOME,
+
+// Rare/obscure fantasy races
+  RACE_MINOTAUR,
+  RACE_RAKSHASA,
+  RACE_NAGA,
+/*
+  RACE_LIZARDMAN,
   RACE_KOBOLD,
 
 // Rare/obscure/highly specialized fantasy races
-  RACE_NAGA,
   RACE_CENTAUR,
-  RACE_MINOTAUR,
-  RACE_LIZARDMAN,
   RACE_GNOLL,
 
 // Advanced/strange fantasy races
@@ -41,9 +44,8 @@ enum Race
   RACE_ARACHNID,  // Spider people
   RACE_GOLEM,
   RACE_GARGOYLE,
-  RACE_RAKSHASA,
-  RACE_DRACONIAN,
   RACE_DENDROID,  // Tree people
+  RACE_DRACONIAN,
   RACE_FELID,     // Cat people
   RACE_SPRIGGAN,  // Fairy-like creature
 */
@@ -61,6 +63,12 @@ enum Race_skill
   SKILL_LIVESTOCK,
   SKILL_MINING,
   SKILL_FORESTRY, // Includes logging
+
+// Other in-city skills
+  SKILL_CONSTRUCTION,
+
+// Intercity skills
+  SKILL_TRADE,
 
   SKILL_MAX
 };
