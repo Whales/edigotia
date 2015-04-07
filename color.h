@@ -26,19 +26,20 @@ c_yellow,
 c_null
 };
 
-long get_color_pair(nc_color fg, nc_color bg);
-void extract_colors(long color, long attributes, nc_color &fg, nc_color &bg);
+long        get_color_pair(nc_color fg, nc_color bg);
+void        extract_colors(long color, long attributes,
+                           nc_color &fg, nc_color &bg);
 
-nc_color color_string(std::string id);
-std::string color_name(nc_color color);
-std::string color_tag (nc_color color);
+nc_color    color_string  (std::string id);
+std::string color_name    (nc_color color);
+std::string color_tag     (nc_color color);
 
-nc_color hilight (nc_color orig);
-nc_color opposite(nc_color orig);
-nc_color contrast(nc_color orig);
+nc_color    hilight       (nc_color orig);
+nc_color    opposite      (nc_color orig);
+nc_color    contrast      (nc_color orig);
 
-bool is_bright(nc_color col);
-nc_color brighten(nc_color col);
-nc_color non_bright(nc_color col);
+bool        is_bright     (nc_color col);
+nc_color    brighten      (nc_color col);
+nc_color    non_bright    (nc_color col);
 
 #endif
