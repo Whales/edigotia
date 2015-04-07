@@ -185,18 +185,22 @@ void init_races()
     _high_tax_rate      (CIT_MERCHANT,  65);
     _high_tax_rate      (CIT_BURGHER,   50);
 
+    _relations(RACE_HUMAN,    3);
     _relations(RACE_ELF,      2);
     _relations(RACE_DWARF,    1);
     _relations(RACE_GOBLIN,  -1);
     _relations(RACE_OGRE,     2);
     _relations(RACE_TROLL,   -3);
     _relations(RACE_HALFLING, 2);
+    _relations(RACE_NAGA,    -2);
 
-    _skill(SKILL_FARMING,   4);
-    _skill(SKILL_HUNTING,   3);
-    _skill(SKILL_LIVESTOCK, 3);
-    _skill(SKILL_MINING,    3);
-    _skill(SKILL_FORESTRY,  3);
+    _skill(SKILL_FARMING,       4);
+    _skill(SKILL_HUNTING,       3);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        3);
+    _skill(SKILL_FORESTRY,      3);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         3);
 
     _description("\
 Humans are a versatile <link=race>race</link>, and can inhabit almost any part \
@@ -287,18 +291,24 @@ who resemble them; in particular, the elves and the halflings.\
     _high_tax_rate      (CIT_BURGHER,   65);
 
     _relations(RACE_HUMAN,     1);
+    _relations(RACE_ELF,       3);
     _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,      -2);
     _relations(RACE_GOBLIN,   -2);
     _relations(RACE_OGRE,     -1);
     _relations(RACE_TROLL,    -3);
     _relations(RACE_HALFLING, -1);
+    _relations(RACE_GNOME,    -2);
+    _relations(RACE_MINOTAUR, -1);
+    _relations(RACE_LIZARDMAN,-1);
 
-    _skill(SKILL_FARMING,   4);
-    _skill(SKILL_HUNTING,   5);
-    _skill(SKILL_LIVESTOCK, 3);
-    _skill(SKILL_MINING,    2);
-    _skill(SKILL_FORESTRY,  5);
+    _skill(SKILL_FARMING,       4);
+    _skill(SKILL_HUNTING,       5);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      5);
+    _skill(SKILL_CONSTRUCTION,  2);
+    _skill(SKILL_TRADE,         2);
 
     _description("\
 Elves are a tall, slender, nimble <link=race>race</link> of <link=forest>forest\
@@ -424,16 +434,22 @@ respect.\
 
     _relations(RACE_HUMAN,     1);
     _relations(RACE_ELF,       1);
+    _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,      -1);
     _relations(RACE_OGRE,      1);
     _relations(RACE_TROLL,    -5);
-    _relations(RACE_HALFLING,  2);
+    _relations(RACE_HALFLING,  1);
+    _relations(RACE_GNOME,     2);
+    _relations(RACE_MINOTAUR,  1);
+    _relations(RACE_NAGA,     -1);
 
-    _skill(SKILL_FARMING,   2);
-    _skill(SKILL_HUNTING,   2);
-    _skill(SKILL_LIVESTOCK, 3);
-    _skill(SKILL_MINING,    5);
-    _skill(SKILL_FORESTRY,  2);
+    _skill(SKILL_FARMING,       2);
+    _skill(SKILL_HUNTING,       2);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        5);
+    _skill(SKILL_FORESTRY,      2);
+    _skill(SKILL_CONSTRUCTION,  4);
+    _skill(SKILL_TRADE,         4);
 
     _description("\
 Dwarves are a stocky, short <link=race>race</link>.  They have a great \
@@ -453,8 +469,8 @@ great ferocity if provoked.  A dwarf can be rather difficult to kill!  Their \
 quality, particularly their <link=axes>battleaxes</link>, which are considered \
 some of the best weapons in the world.\n\
 Dwarves are fairly affable in regards to the other races in the world.  They \
-have a particular fondness for <link=halflings>halflings</link> due to their \
-similar stature and culinary appetites.\
+have a particular fondness for <link=gnomes>gnomes</link>, due to their 
+similar stature and mountain homes.\
 ");
 
 
@@ -542,16 +558,23 @@ similar stature and culinary appetites.\
     _high_tax_rate      (CIT_BURGHER,   70);
 
     _relations(RACE_DWARF,     1);
+    _relations(RACE_ORC,       2);
     _relations(RACE_GOBLIN,   -1);
     _relations(RACE_OGRE,      1);
     _relations(RACE_TROLL,     1);
     _relations(RACE_HALFLING, -3);
+    _relations(RACE_GNOME,    -2);
+    _relations(RACE_MINOTAUR,  2);
+    _relations(RACE_LIZARDMAN, 2);
+    _relations(RACE_NAGA,      1);
 
-    _skill(SKILL_FARMING,   1);
-    _skill(SKILL_HUNTING,   4);
-    _skill(SKILL_LIVESTOCK, 2);
-    _skill(SKILL_MINING,    3);
-    _skill(SKILL_FORESTRY,  3);
+    _skill(SKILL_FARMING,       1);
+    _skill(SKILL_HUNTING,       4);
+    _skill(SKILL_LIVESTOCK,     2);
+    _skill(SKILL_MINING,        3);
+    _skill(SKILL_FORESTRY,      3);
+    _skill(SKILL_CONSTRUCTION,  2);
+    _skill(SKILL_TRADE,         2);
 
     _description("\
 Orcs are a nasty, brutish <link=race>race</link>, and they are proud of it.  \
@@ -673,14 +696,19 @@ a mild distaste.\
     _relations(RACE_ELF,      -2);
     _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,       2);
+    _relations(RACE_GOBLIN,    1);
     _relations(RACE_OGRE,      1);
     _relations(RACE_TROLL,     2);
+    _relations(RACE_GNOME,     1);
+    _relations(RACE_NAGA,      1);
 
-    _skill(SKILL_FARMING,   3);
-    _skill(SKILL_HUNTING,   2);
-    _skill(SKILL_LIVESTOCK, 1);
-    _skill(SKILL_MINING,    3);
-    _skill(SKILL_FORESTRY,  2);
+    _skill(SKILL_FARMING,       3);
+    _skill(SKILL_HUNTING,       2);
+    _skill(SKILL_LIVESTOCK,     1);
+    _skill(SKILL_MINING,        3);
+    _skill(SKILL_FORESTRY,      2);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         3);
 
     _description("\
 Goblins are a distant cousin of <link=orcs>orcs</link>, though the resemblance \
@@ -818,14 +846,19 @@ are returned.\
     _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,      -2);
     _relations(RACE_GOBLIN,   -1);
+    _relations(RACE_OGRE,      3);
     _relations(RACE_TROLL,    -3);
     _relations(RACE_HALFLING,  3);
+    _relations(RACE_GNOME,    -1);
+    _relations(RACE_MINOTAUR,  2);
 
-    _skill(SKILL_FARMING,   4);
-    _skill(SKILL_HUNTING,   2);
-    _skill(SKILL_LIVESTOCK, 4);
-    _skill(SKILL_MINING,    3);
-    _skill(SKILL_FORESTRY,  4);
+    _skill(SKILL_FARMING,       4);
+    _skill(SKILL_HUNTING,       2);
+    _skill(SKILL_LIVESTOCK,     4);
+    _skill(SKILL_MINING,        3);
+    _skill(SKILL_FORESTRY,      4);
+    _skill(SKILL_CONSTRUCTION,  2);
+    _skill(SKILL_TRADE,         2);
 
     _description("\
 Ogres are a large, lumbering <link=race>race</link>, resembling a huge version \
@@ -922,12 +955,18 @@ loving ways, ogres harbor a dislike for the more warfaring races like \
     _relations(RACE_GOBLIN,   -2);
     _relations(RACE_OGRE,     -2);
     _relations(RACE_HALFLING, -3);
+    _relations(RACE_GNOME,    -3);
+    _relations(RACE_MINOTAUR, -1);
+    _relations(RACE_LIZARDMAN,-1);
+    _relations(RACE_NAGA,     -1);
 
-    _skill(SKILL_FARMING,   1);
-    _skill(SKILL_HUNTING,   4);
-    _skill(SKILL_LIVESTOCK, 1);
-    _skill(SKILL_MINING,    2);
-    _skill(SKILL_FORESTRY,  1);
+    _skill(SKILL_FARMING,       1);
+    _skill(SKILL_HUNTING,       4);
+    _skill(SKILL_LIVESTOCK,     1);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      1);
+    _skill(SKILL_CONSTRUCTION,  1);
+    _skill(SKILL_TRADE,         1);
 
     _description("\
 Of all the <link=race>races</link> in the world, the trolls are without a \
@@ -1054,12 +1093,19 @@ degree) by trolls.\
     _relations(RACE_GOBLIN,   -2);
     _relations(RACE_OGRE,      2);
     _relations(RACE_TROLL,    -4);
+    _relations(RACE_HALFLING,  3);
+    _relations(RACE_GNOME,    -1);
+    _relations(RACE_MINOTAUR,  1);
+    _relations(RACE_LIZARDMAN,-1);
+    _relations(RACE_NAGA,     -2);
 
-    _skill(SKILL_FARMING,   4);
-    _skill(SKILL_HUNTING,   1);
-    _skill(SKILL_LIVESTOCK, 5);
-    _skill(SKILL_MINING,    2);
-    _skill(SKILL_FORESTRY,  4);
+    _skill(SKILL_FARMING,       4);
+    _skill(SKILL_HUNTING,       1);
+    _skill(SKILL_LIVESTOCK,     5);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      4);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         2);
 
     _description("\
 Halflings are a reclusive <link=race>race</link>, small in stature (about half \
@@ -1083,6 +1129,277 @@ more adventurous or warlike of them.  Their similar stature makes \
 lifestyle leads to positive relations with <link=ogres>ogres</link>.\
 ");
 
+
+  _race(RACE_GNOME);
+    _name("gnome");
+    _plural_name("gnomes");
+    _adjective("gnomic");
+
+    _color(c_ltgray);
+    _kingdom_color(c_ltgray);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_cyan);
+
+    _map_type(MAP_CANYON,         100);
+    _map_type(MAP_FOOTHILLS,       90);
+    _map_type(MAP_MOUNTAINOUS,     85);
+    _map_type(MAP_BASIN,           40);
+    _map_type(MAP_PLAINS,          20);
+
+    _map_type(MAP_ICECAP,         -95);
+    _map_type(MAP_ICY_MOUNTAIN,   -95);
+    _map_type(MAP_TUNDRA,         -90);
+    _map_type(MAP_DESERT,         -90);
+    _map_type(MAP_ICY_FOOTHILLS,  -85);
+    _map_type(MAP_GLACIER,        -80);
+    _map_type(MAP_SWAMP,          -60);
+    _map_type(MAP_JUNGLE,         -30);
+    _map_type(MAP_FOREST,         -10);
+
+// They're small so most travel takes 50% longer; but small size means they're
+// good at picking through forests etc. so those have no penalty.  Also they're
+// excellent at mountain traveling, so they move faster there!
+    _travel_cost(MAP_TUNDRA,         90);
+    _travel_cost(MAP_DESERT,         75);
+    _travel_cost(MAP_WASTELAND,      75);
+    _travel_cost(MAP_PLAINS,         50);
+    _travel_cost(MAP_FOOTHILLS,      75);
+    _travel_cost(MAP_ICY_FOOTHILLS, 150);
+    _travel_cost(MAP_MOUNTAINOUS,   175);
+    _travel_cost(MAP_ICY_MOUNTAIN,  275);
+    _travel_cost(MAP_BASIN,          45);
+    _travel_cost(MAP_CANYON,         45);
+    _travel_cost(MAP_GLACIER,       130);
+    _travel_cost(MAP_COASTAL,        50);
+    _travel_cost(MAP_ICECAP,        165);
+    
+
+    _cluster_size(1, 4);
+    _city_size(CITY_TYPE_CITY,      40,   750);
+    _city_size(CITY_TYPE_DUCHY,    800,  4000);
+    _city_size(CITY_TYPE_CAPITAL, 3500, 12000);
+
+// City names are vaguely based on ancient greek!
+    _city_name_start("ab", "ab", "ach", "act", "aeg", "aeg", "aen", "akr", "al",
+                     "al", "amn", "and", "ant", "ap", "ast", "bhr", "br", "ch",
+                     "chr", "chron", "col", "cum", "cyn", "cyr", "dec", "del",
+                     "dod", "dor", "edes", "elat", "emp", "eph", "epid", "eret",
+                     "eub", "gour", "gort", "gyth", "hel", "hell", "herm",
+                     "hier", "hybl", "ias", "imbr", "ith", "kall", "kimm",
+                     "knid", "knos", "kyd", "kyr", "lam", "laod", "lemp",
+                     "lind", "liss", "mall", "mant", "morg", "myr", "myrm",
+                     "naucr", "naudr", "nic", "nymp", "nyr", "oen", "od", "old",
+                     "onch", "pand", "pandr", "padr", "patr", "perg", "phaitr",
+                     "phass", "phil", "phocr", "pis", "pix", "psych", "psydr",
+                     "pyr", "rhod", "sam", "sel", "sest", "syb", "syr", "tar",
+                     "tan", "thas", "th", "thr", "tr", "trip", "tyr", "tyr");
+                     
+
+    _city_name_middle("", "", "", "", "", "ac", "acl", "ad", "aed", "aeg",
+                      "ael", "aen", "aerr", "aes", "aeth", "alc", "all", "am",
+                      "amn", "ant", "anth", "ar", "aryn", "arynth", "ass",
+                      "ecus", "eil", "ein", "eir", "el", "eon", "em", "emb",
+                      "embr", "en", "end", "er", "esm", "ess", "est", "et",
+                      "eth", "i", "ic", "id", "ig", "il", "in", "ion", "iop",
+                      "ios", "ipp", "is", "ist", "istr", "oc", "od", "odr",
+                      "on", "ondr", "ones", "or", "os", "oss", "ost", "ostr",
+                      "oll", "om", "opol", "ycth", "yd", "yn", "ynth", "yntr",
+                      "yr", "yss", "yst", "yth");
+
+    _city_name_end("a", "aca", "ae", "aea", "ai", "ana", "ana", "atis", "e",
+                   "ea", "ea", "ede", "edon", "ene", "es", "esos", "esus",
+                   "eia", "ia", "ia", "ia", "ias", "ina", "ios", "is", "ium",
+                   "izi", "oa", "och", "oli", "olis", "olis", "olis", "on",
+                   "os", "us", "us", "yn");
+
+    _base_combat(6);
+    _hp(75);
+    _food_consumption(50);
+
+    _starting_population(CIT_PEASANT,   90);
+    _starting_resources (RES_GOLD,    8500);
+    _starting_resources (RES_WOOD,    1500);
+    _starting_resources (RES_STONE,   1500);
+
+    _birth_rate         (CIT_PEASANT,  120);
+    _birth_rate         (CIT_MERCHANT, 110);
+    _birth_rate         (CIT_BURGHER,  100);
+    _citizen_ratio      (CIT_MERCHANT,   5);
+    _citizen_ratio      (CIT_BURGHER,    5);
+    _morale_requirement (CIT_MERCHANT,  20);
+    _morale_requirement (CIT_BURGHER,   60);
+    _low_tax_rate       (CIT_PEASANT,   10);
+    _low_tax_rate       (CIT_MERCHANT,   7);
+    _low_tax_rate       (CIT_BURGHER,    5);
+    _high_tax_rate      (CIT_PEASANT,   65);
+    _high_tax_rate      (CIT_MERCHANT,  50);
+    _high_tax_rate      (CIT_BURGHER,   35);
+
+    _relations(RACE_HUMAN,      2);
+    _relations(RACE_DWARF,      3);
+    _relations(RACE_ORC,       -1);
+    _relations(RACE_GOBLIN,     1);
+    _relations(RACE_OGRE,      -1);
+    _relations(RACE_TROLL,     -3);
+    _relations(RACE_HALFLING,  -1);
+    _relations(RACE_GNOME,      2);
+    _relations(RACE_LIZARDMAN, -1);
+
+    _skill(SKILL_FARMING,       3);
+    _skill(SKILL_HUNTING,       1);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        4);
+    _skill(SKILL_FORESTRY,      3);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         5);
+
+    _description("\
+Gnomes are a secretive, reclusive <link=race>race</link> who tend to live in \
+defensible locations like <link=mountains>mountains</link> or \
+<link=foothills>hills</link>.  They are the most diminuitive of all the races, \
+and as a result travel tends to be quite slow when on foot (except when in \
+mountains, as gnomes are quite skilled at traversing their uneven terrain).  \
+Gnomes are most famous for their love of <link=gold>gold</link> and skill in \
+<link=trade>trading</link> and all other forms of commerce.  However, gnomes \
+are not misers, and are happy to extend a <link=loan>loan</link> to nearly \
+anyone, particularly their fellow gnomes.\n\
+\n\
+Unfortunately, many races oversee this and tend to regard gnomes with \
+suspicion and distrust.  For their part, gnomes tend to like other races, \
+though they look down their noses a bit at those whom they see as \"country \
+bumpkins\" like <link=ogres>ogres</link> or <link=halfling>halflings</link>.  \
+Gnomes prefer to live in cities with the latest amenities and developments.  \
+They are always interested in new ideas or <link=research>research</link>, and \
+have a great curiousity about the world (though they are much more likely to \
+pay another race for a glimpse at their <link=world map>map</link> than they \
+are to explore it themselves).  On the other hand, gnomes have absolutely no \
+time for the absurdity that is <link=gods>religion</link>.  They are totally \
+areligious, and the gods in turn will have nothing to do with them.\n\
+\n\
+Their small stature means that gnomes do not need very much food at all, \
+eating half as much as a human does.  It also makes them particularly weak in \
+combat, and easy to kill.  However, gnomes are quite skilled with \
+<link=crossbow>crossbows</link>, and the sight of a city wall lined with \
+gnomic crossbowmen is enough to turn away many armies.\n\
+\n\
+Outside of trade, gnomes are fairly decent at most skills, though they don't \
+have the patience or vigor for <link=hunting>hunting</link>.  Their society \
+prizes craftsmanship above all else, and gnomic <link=citizens>citizens</link> \
+tend to have as many <link=merchants>merchants</link> or \
+<link=burghers>burghers</link> as <link=peasants>peasants</link>.\
+");
+
+
+  _race(RACE_MINOTAUR);
+    _name("minotaur");
+    _plural_name("minotaurs");
+    _adjective("minotaur");
+
+    _color(c_red);
+    _kingdom_color(c_red);
+    _kingdom_color(c_blue);
+    _kingdom_color(c_green);
+
+    _map_type(MAP_BASIN,           100);
+    _map_type(MAP_PLAINS,           90);
+    _map_type(MAP_WASTELAND,        75);
+    _map_type(MAP_FOOTHILLS,        60);
+    _map_type(MAP_FOREST,           40);
+    _map_type(MAP_CANYON,           35);
+    _map_type(MAP_MOUNTAINOUS,      20);
+    _map_type(MAP_DESERT,           10);
+
+    _map_type(MAP_ICECAP,         -100);
+    _map_type(MAP_ICY_MOUNTAIN,   -100);
+    _map_type(MAP_TUNDRA,          -90);
+    _map_type(MAP_ICY_FOOTHILLS,   -70);
+    _map_type(MAP_GLACIER,         -50);
+    _map_type(MAP_SWAMP,           -15);
+    _map_type(MAP_JUNGLE,          -10);
+
+    _travel_cost(MAP_DESERT,        50);
+    _travel_cost(MAP_WASTELAND,     30);
+    _travel_cost(MAP_PLAINS,        20);
+
+    _cluster_size(2, 4);
+    _city_size(CITY_TYPE_CITY,     100, 1000);
+    _city_size(CITY_TYPE_DUCHY,    750, 3800);
+    _city_size(CITY_TYPE_CAPITAL, 1800, 7500);
+
+// More greek-flavored names!  kinda!
+    _city_name_start("ass", "b", "byr", "cr", "cyr", "d", "ess", "f", "g",
+                     "gr", "gyr", "h", "hyr", "ill", "iss", "k", "kn", "l", "m",
+                     "mn", "n", "oss", "pl", "pr", "pyr", "r", "st", "t", "tyr",
+                     "ull", "ulv", "z");
+
+    _city_name_middle("ad", "aed", "ael", "aer", "al", "all", "am", "amn", "an",                      "ap", "ar", "ard", "ars", "art", "at", "ath", "atr", "eg",                      "el", "ell", "em", "en", "esc", "esk", "esp", "ess",                            "est", "etr", "il", "in", "inn", "ist", "itr", "oc", "od",                      "odr", "oel", "ohem", "ol", "om", "omn", "on", "op",                            "opr", "os", "osk", "oss", "ost", "ostr", "ot", "otr",
+                      "ul", "uss", "ust", "ustr", "yd", "ydr", "yg", "yl", "ym",
+                      "ymn", "yp", "ypr", "ys", "yst", "ystr", "yt", "ytr");
+
+    _city_name_end("a", "e", "es", "ia", "o", "oa", "os", "otia", "ua", "ude",
+                   "ute", "yde", "ys");
+
+    _base_combat(12);
+    _hp(110);
+    _food_consumption(110);
+
+    _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    5000);
+    _starting_resources (RES_WOOD,    2000);
+    _starting_resources (RES_STONE,   3000);
+
+    _birth_rate         (CIT_PEASANT,   75);
+    _birth_rate         (CIT_MERCHANT,  85);
+    _birth_rate         (CIT_BURGHER,   90);
+    _citizen_ratio      (CIT_MERCHANT,  12);
+    _citizen_ratio      (CIT_BURGHER,   14);
+    _morale_requirement (CIT_MERCHANT,  30);
+    _morale_requirement (CIT_BURGHER,   50);
+    _low_tax_rate       (CIT_PEASANT,   30);
+    _low_tax_rate       (CIT_MERCHANT,  20);
+    _low_tax_rate       (CIT_BURGHER,   10);
+    _high_tax_rate      (CIT_PEASANT,   85);
+    _high_tax_rate      (CIT_MERCHANT,  70);
+    _high_tax_rate      (CIT_BURGHER,   65);
+
+    _relations(RACE_ELF,       -1);
+    _relations(RACE_DWARF,      1);
+    _relations(RACE_GOBLIN,    -1);
+    _relations(RACE_OGRE,       1);
+    _relations(RACE_TROLL,     -2);
+    _relations(RACE_GNOME,     -1);
+    _relations(RACE_MINOTAUR,   2);
+    _relations(RACE_NAGA,      -1);
+
+    _skill(SKILL_FARMING,       3);
+    _skill(SKILL_HUNTING,       2);
+    _skill(SKILL_LIVESTOCK,     4);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      3);
+    _skill(SKILL_CONSTRUCTION,  5);
+    _skill(SKILL_TRADE,         3);
+
+    _description("\
+Minotaurs are a <link=race>race</link> of large, muscular beings resembling a \
+bipedal <link=cow>cow</link>.  Like their bovine brethren, they are \
+<link=vegetarian>vegetarian</link>, and eat no meat.  They are at home in a \
+wide variety of environments, but prefer the open <link=farming>farmable\
+</link> terrain of <link=plains>plains</link>.  Minotaurs are famous for their \
+<link=construction>architecural</link> skills, and are proud of them.  Their \
+<link=building>buildings</link> are more ornate than any other race's, and \
+built more quickly to boot.\n\
+\n\
+Minotaurs are a noble race, placing great value on the labor of their \
+<link=peasants>peasants</link> as well as the other <link=citizens>classes\
+</link>.  They likewise hold respect for those races whom they perceive as \
+hard-working, while taking a dislike to races they believe to be effete or \
+treacherous.\n\
+While minotaurs are not particularly <link=war>warlike</link>, they can hold \
+their own in <link=combat>battle</link> and are difficult to kill.  They are \
+fairly decent at crafting <link=weapons>weapons</link> and can use almost any \
+of them fairly well.\
+");
+
 }
 
 /* Template
@@ -1098,15 +1415,21 @@ lifestyle leads to positive relations with <link=ogres>ogres</link>.\
     _kingdom_color(c_);
     _kingdom_color(c_);
 
-    _map_type(MAP_FOREST,      100);
-    _map_type(MAP_BASIN,        30);
-    _map_type(MAP_SWAMP,        15);
-    _map_type(MAP_PLAINS,       10);
+    _map_type(MAP_FOREST,          100);
+    _map_type(MAP_BASIN,            30);
+    _map_type(MAP_SWAMP,            15);
+    _map_type(MAP_PLAINS,           10);
 
-    _map_type(MAP_DESERT,      -40);
-    _map_type(MAP_MOUNTAINOUS, -30);
+    _map_type(MAP_ICY_FOOTHILLS,  -100);
+    _map_type(MAP_DESERT,          -40);
+    _map_type(MAP_MOUNTAINOUS,     -30);
+
+    _travel_cost(MAP_DESERT,        50);
 
     _cluster_size(2, 4);
+    _city_size(CITY_TYPE_CITY,      80,  900);
+    _city_size(CITY_TYPE_DUCHY,    600, 3500);
+    _city_size(CITY_TYPE_CAPITAL, 1600, 6000);
 
     _city_name_start( );
 
@@ -1114,6 +1437,8 @@ lifestyle leads to positive relations with <link=ogres>ogres</link>.\
 
     _city_name_end( );
 
+    _base_combat(9);
+    _hp(90);
     _food_consumption(100);
 
     _starting_population(CIT_PEASANT,  100);
@@ -1135,8 +1460,15 @@ lifestyle leads to positive relations with <link=ogres>ogres</link>.\
     _high_tax_rate      (CIT_MERCHANT,  65);
     _high_tax_rate      (CIT_BURGHER,   50);
 
-    _skill(SKILL_FARMING,   3);
-    _skill(SKILL_MINING,    3);
-    _skill(SKILL_FORESTRY,  3);
+    _relations(RACE_HUMAN,     1);
+    _relations(RACE_DWARF,     1);
+
+    _skill(SKILL_FARMING,       3);
+    _skill(SKILL_HUNTING,       3);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        3);
+    _skill(SKILL_FORESTRY,      3);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         3);
 
 */
