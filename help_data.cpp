@@ -471,6 +471,9 @@ every burgher.  Addtionally, a class's morale must be above a certain level \
 for the class above it to be born.\
 ");
 
+// TODO:  This includes a hard-coded list of world improvements.  Clearly not
+//        desirable.  Alter this to auto-generate, or add another article
+//        ("List of World Map Improvements") which is auto-generated.
   _article("World Map Improvements");
   _type("Game Concept");
   _text("\
