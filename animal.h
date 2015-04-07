@@ -34,7 +34,7 @@ enum Animal
 // Dangerous game - mostly more trouble than they're worth
   ANIMAL_BEAR,
   ANIMAL_WOLF,
-  ANIMAL_JAGUAR,
+  ANIMAL_TIGER,
   ANIMAL_LION,
   ANIMAL_ELEPHANT,
 

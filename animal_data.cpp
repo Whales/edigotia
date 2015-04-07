@@ -307,9 +307,9 @@ void init_animal_data()
     _size(10);
     _resource_killed(RES_FUR, 3);
 
-  _animal(ANIMAL_JAGUAR);
-    _name("jaguar");
-    _name_plural("jaguars");
+  _animal(ANIMAL_TIGER);
+    _name("tiger");
+    _name_plural("tigers");
     _temp_range     ( 60, 120);
     _altitude_range (  0,  80);
     _rainfall_range (  5,  90);

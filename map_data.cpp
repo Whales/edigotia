@@ -185,10 +185,10 @@ void init_terrain_data()
     _animal(ANIMAL_FOX,        1000);
     _animal(ANIMAL_BOAR,       1200);
     _animal(ANIMAL_WOLF,        800);
-    _animal(ANIMAL_JAGUAR,      180);
     _animal(ANIMAL_LION,        200);
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_DIRE_WOLF,    60);
+    _animal(ANIMAL_TIGER,        40);
     _animal(ANIMAL_BASILISK,     12);
     _buildable(AREA_PARK);
     _buildable(AREA_PLAZA);
@@ -228,9 +228,9 @@ void init_terrain_data()
     _animal(ANIMAL_DEER,        800);
     _animal(ANIMAL_BEAR,        250);
     _animal(ANIMAL_WOLF,        400);
-    _animal(ANIMAL_JAGUAR,      100);
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_DIRE_WOLF,    60);
+    _animal(ANIMAL_TIGER,        40);
     _animal(ANIMAL_MANTICORE,    15);
     _animal(ANIMAL_BASILISK,     18);
     _buildable(AREA_PARK);
@@ -377,7 +377,6 @@ void init_terrain_data()
     _animal(ANIMAL_HARE,       1000);
     _animal(ANIMAL_FOX,         300);
     _animal(ANIMAL_BOAR,        500);
-    _animal(ANIMAL_JAGUAR,      150);
     _animal(ANIMAL_LION,        300);
     _animal(ANIMAL_ELEPHANT,    150);
     _animal(ANIMAL_JELLY,        50);
@@ -440,8 +439,8 @@ void init_terrain_data()
     _crop(CROP_SCORPICON);
     _mineral(MINERAL_STONE,    1800);
     _mineral(MINERAL_COAL,     6000);
-    _animal(ANIMAL_BOAR,       1200);
-    _animal(ANIMAL_JAGUAR,      400);
+    _animal(ANIMAL_BOAR,       1400);
+    _animal(ANIMAL_TIGER,      1000);
     _animal(ANIMAL_ELEPHANT,     50);
     _animal(ANIMAL_JELLY,       100);
     _animal(ANIMAL_MAN_EATING_PLANT, 400);
