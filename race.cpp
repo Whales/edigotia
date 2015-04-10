@@ -246,7 +246,7 @@ std::string Race_datum::generate_help_text()
   for (int i = 1; i < SKILL_MAX; i++) {
     std::string skill_name = race_skill_name( Race_skill(i) );
     ret << "  <link=" << skill_name << ">" << skill_name << "</link>:  ";
-    for (int n = 0; n < (20 - skill_name.length()); n++) {
+    for (int n = 0; n < (30 - skill_name.length()); n++) {
       ret << " ";
     }
     ret << "<c=white>" << skill_level[i] << "<c=/>" << std::endl;
