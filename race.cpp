@@ -129,7 +129,7 @@ std::string Race_datum::get_city_name()
         new_name << name[0] << name.substr(2);
         name = new_name.str();
         i--;
-      } else if (!is_letter(name[i - 1] || is_vowel(name[i - 1]) ||
+      } else if (!is_letter(name[i - 1]) || is_vowel(name[i - 1]) ||
                  !is_vowel(name[i - 2])) {
 // Once again, just remove the *
         std::stringstream new_name;
