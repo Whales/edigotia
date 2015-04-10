@@ -70,6 +70,15 @@ enum Race_skill
 // Intercity skills
   SKILL_TRADE,
 
+// Magic skills
+  SKILL_MAGIC,
+  SKILL_EARTH_MAGIC,
+  SKILL_WATER_MAGIC,
+  SKILL_AIR_MAGIC,
+  SKILL_FIRE_MAGIC,
+  SKILL_LIFE_MAGIC,
+  SKILL_DEATH_MAGIC,
+
   SKILL_MAX
 };
 
