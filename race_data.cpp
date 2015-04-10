@@ -34,6 +34,18 @@ Race_datum* Race_data[RACE_MAX];
   Race_data[cur_id]->city_size_min[(t)] = (a); \
   Race_data[cur_id]->city_size_max[(t)] = (b); \
 
+/* We use two special characters in city names - '*' and '?'
+ *
+ * '*' means "Repeat the previous consonant if it's not preceded by a
+ * consonant."  e.g. "Wil*iams" => "Williams" but "Wilm*iams" => "Wilmiams"
+ *
+ * '?' means "If the previous characters AND the following character are
+ * identical, remove one."  e.g. "Wis?ster" => "Wister"
+ *
+ * '!' means "If the previous character is a consonant, remove the following
+ * character."  e.g. "Tat!bol" => "Tatol" but "Ta!bol" => "Tabol"
+ */
+
 #define _city_name_start(...) \
   Race_data[cur_id]->add_city_names("start", __VA_ARGS__, 0)
 
@@ -103,12 +115,6 @@ void init_races()
     _kingdom_color(c_ltgray);
     _kingdom_color(c_blue);
     _kingdom_color(c_cyan);
-/*
-    _kingdom_color(c_white);
-    _kingdom_color(c_ltblue);
-    _kingdom_color(c_ltcyan);
-    _kingdom_color(c_yellow);
-*/
 
     _map_type(MAP_BASIN,       100);
     _map_type(MAP_PLAINS,       90);
@@ -144,24 +150,6 @@ void init_races()
                    "?ston", "ter", "tin", "ton", "ton", "ton", "vale", "ville",
                    "ville");
 
-/*
-    _city_name_start("al", "ba", "bir", "cam", "car", "chel", "co", "da", "der",
-                     "ex", "glo", "her", "lam", "le", "li", "lo", "nor",
-                     "ox", "pe", "pre", "sa", "so", "sum", "tru", "wa",
-                     "wim", "wol", "yor");
-
-    _city_name_middle("", "", "can", "ces", "der", "el", "er", "fa", "ga",
-                      "ing", "ke", "ler", "man", "mer", "ming", "nor", "per",
-                      "sing", "ter", "til", "ting", "to", "ven", "ver", "ving");
-
-// Use repeats to make an ending more likely.
-    _city_name_end("borough", "borough", "burg", "burg", "burg", "bury", "bury",
-                   "bury", "by", "by", "caster", "cester", "don", "field",
-                   "field", "ford", "ford", "forth", "gale", "ham", "ham",
-                   "ham", "ia", "kirk", "mouth", "neck", "over", "pool", "pool",
-                   "sex", "ter", "tol", "ton", "ton", "vale", "ville");
-*/
-
     _base_combat(10);
     _hp(100);
     _food_consumption(100);
@@ -192,6 +180,7 @@ void init_races()
     _relations(RACE_OGRE,     2);
     _relations(RACE_TROLL,   -3);
     _relations(RACE_HALFLING, 2);
+    _relations(RACE_RAKSHASA, 1);
     _relations(RACE_NAGA,    -2);
 
     _skill(SKILL_FARMING,       4);
@@ -201,6 +190,13 @@ void init_races()
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_MAGIC,         2);
+    _skill(SKILL_EARTH_MAGIC,   3);
+    _skill(SKILL_WATER_MAGIC,   3);
+    _skill(SKILL_AIR_MAGIC,     3);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    3);
+    _skill(SKILL_DEATH_MAGIC,   3);
 
     _description("\
 Humans are a versatile <link=race>race</link>, and can inhabit almost any part \
@@ -215,7 +211,9 @@ live in established cities rather thanon their own.  Their loyalty to their \
 to backstab their way to the top.\n\
 Humans are a generally friendly race, and get along well with most other \
 races.  True to their generally vain nature, they get along best with those \
-who resemble them; in particular, the elves and the halflings.\
+who resemble them; in particular, the elves and the halflings.\n\
+Humans are not particularly in touch with the art of <link=magic>magic</link>, \
+and have no affinity for any particular <link=magical school>school</link>.\
 ");
 
 
@@ -300,7 +298,8 @@ who resemble them; in particular, the elves and the halflings.\
     _relations(RACE_HALFLING, -1);
     _relations(RACE_GNOME,    -2);
     _relations(RACE_MINOTAUR, -1);
-    _relations(RACE_LIZARDMAN,-1);
+    _relations(RACE_RAKSHASA,  2);
+    _relations(RACE_NAGA,      2);
 
     _skill(SKILL_FARMING,       4);
     _skill(SKILL_HUNTING,       5);
@@ -309,6 +308,13 @@ who resemble them; in particular, the elves and the halflings.\
     _skill(SKILL_FORESTRY,      5);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_MAGIC,         4);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   3);
+    _skill(SKILL_AIR_MAGIC,     2);
+    _skill(SKILL_FIRE_MAGIC,    2);
+    _skill(SKILL_LIFE_MAGIC,    4);
+    _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
 Elves are a tall, slender, nimble <link=race>race</link> of <link=forest>forest\
@@ -332,7 +338,10 @@ those races for whom destruction, either careless or wanton, lies in their \
 nature, such as <link=orcs>orcs</link> or <link=goblins>goblins</link>.  The \
 exceptions to this rule are <link=humans>humans</link> and \
 <link=dwarves>dwarves</link>, with whom the elves share a history of mutual \
-respect.\
+respect.\n\
+Elves are skilled <link=magic>spellcasters</link>, particularly in the \
+<link=magical school>schools</link> of <link=earth magic>earth</link> and \
+<link=life magic>life</link>.\
 ");
 
 
@@ -441,6 +450,7 @@ respect.\
     _relations(RACE_HALFLING,  1);
     _relations(RACE_GNOME,     2);
     _relations(RACE_MINOTAUR,  1);
+    _relations(RACE_RAKSHASA,  1);
     _relations(RACE_NAGA,     -1);
 
     _skill(SKILL_FARMING,       2);
@@ -450,6 +460,13 @@ respect.\
     _skill(SKILL_FORESTRY,      2);
     _skill(SKILL_CONSTRUCTION,  4);
     _skill(SKILL_TRADE,         4);
+    _skill(SKILL_MAGIC,         2);
+    _skill(SKILL_EARTH_MAGIC,   5);
+    _skill(SKILL_WATER_MAGIC,   2);
+    _skill(SKILL_AIR_MAGIC,     1);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    2);
+    _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
 Dwarves are a stocky, short <link=race>race</link>.  They have a great \
@@ -469,8 +486,13 @@ great ferocity if provoked.  A dwarf can be rather difficult to kill!  Their \
 quality, particularly their <link=axes>battleaxes</link>, which are considered \
 some of the best weapons in the world.\n\
 Dwarves are fairly affable in regards to the other races in the world.  They \
-have a particular fondness for <link=gnomes>gnomes</link>, due to their 
-similar stature and mountain homes.\
+have a particular fondness for <link=gnomes>gnomes</link>, due to their \
+similar stature and mountain homes.\n\
+Dwarves fare rather poorly when it comes to <link=magic>magic</link>, and they \
+lack an understanding of most <link=magical school>schools</link> of magic.  \
+However, they do possess an innate understanding of <link=earth magic>earth\
+</link> magic, and their <link=geomancer>geomancers</link>, rare though they \
+are, are among the most powerful in the world.\
 ");
 
 
@@ -565,7 +587,7 @@ similar stature and mountain homes.\
     _relations(RACE_HALFLING, -3);
     _relations(RACE_GNOME,    -2);
     _relations(RACE_MINOTAUR,  2);
-    _relations(RACE_LIZARDMAN, 2);
+    _relations(RACE_RAKSHASA,  1);
     _relations(RACE_NAGA,      1);
 
     _skill(SKILL_FARMING,       1);
@@ -575,6 +597,13 @@ similar stature and mountain homes.\
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_MAGIC,         1);
+    _skill(SKILL_EARTH_MAGIC,   2);
+    _skill(SKILL_WATER_MAGIC,   1);
+    _skill(SKILL_AIR_MAGIC,     1);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    1);
+    _skill(SKILL_DEATH_MAGIC,   3);
 
     _description("\
 Orcs are a nasty, brutish <link=race>race</link>, and they are proud of it.  \
@@ -607,7 +636,12 @@ Orcs' relations with other races are ruled by might.  Orcs have respect for \
 races who are skilled in combat, and nothing but contempt for those who are \
 not.  The only exception is their degenerate cousins the <link=goblins>goblins\
 </link> - orcs should despise these weaklings, but instead only view them with \
-a mild distaste.\
+a mild distaste.\n\
+Orcs have one of the worst affinities for <link=magic>magic</link> of all the \
+races, and only very rarely does an orc take up its study.  They also fare \
+very poorly in almost all <link=magical school>schools</link> of magic, the \
+exceptions being <link=fire magic>fire</link> and <link=death magic>death\
+</link>; and even those are only average.\
 ");
 
 
@@ -700,6 +734,7 @@ a mild distaste.\
     _relations(RACE_OGRE,      1);
     _relations(RACE_TROLL,     2);
     _relations(RACE_GNOME,     1);
+    _relations(RACE_RAKSHASA,  2);
     _relations(RACE_NAGA,      1);
 
     _skill(SKILL_FARMING,       3);
@@ -709,6 +744,13 @@ a mild distaste.\
     _skill(SKILL_FORESTRY,      2);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_MAGIC,         2);
+    _skill(SKILL_EARTH_MAGIC,   2);
+    _skill(SKILL_WATER_MAGIC,   2);
+    _skill(SKILL_AIR_MAGIC,     3);
+    _skill(SKILL_FIRE_MAGIC,    2);
+    _skill(SKILL_LIFE_MAGIC,    2);
+    _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
 Goblins are a distant cousin of <link=orcs>orcs</link>, though the resemblance \
@@ -738,7 +780,11 @@ those seen as \"ugly\" by <link=humans>humans</link> and <link=elves>elves\
 </link> - whom the goblins despise due to their vanity and beauty \
 respectively.  Goblins carry a particular fondness for their cousins the \
 orcs.  Unfortunately for the poor goblins, almost none of these admirations \
-are returned.\
+are returned.\n\
+Goblins are quite poor at the study of <link=magic>magic</link>, lacking both \
+the patience and the depth of thought required for its mastery.  They lack an \
+affinity for any of the <link=magical school>schools of magic</link>, save for \
+<link=air magic>air magic</link> at which they are merely average.\
 ");
 
 
@@ -850,6 +896,7 @@ are returned.\
     _relations(RACE_TROLL,    -3);
     _relations(RACE_HALFLING,  3);
     _relations(RACE_GNOME,    -1);
+    _relations(RACE_RAKSHASA,  1);
     _relations(RACE_MINOTAUR,  2);
 
     _skill(SKILL_FARMING,       4);
@@ -859,6 +906,13 @@ are returned.\
     _skill(SKILL_FORESTRY,      4);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_MAGIC,         2);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   4);
+    _skill(SKILL_AIR_MAGIC,     3);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    4);
+    _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
 Ogres are a large, lumbering <link=race>race</link>, resembling a huge version \
@@ -880,7 +934,12 @@ close-knit.\n\
 Ogres get along quite well with most other races, in particular their tiny \
 agrarian friends the <link=halflings>halflings</link>.  Due to their peace-\
 loving ways, ogres harbor a dislike for the more warfaring races like \
-<link=orcs>orcs</link>.\
+<link=orcs>orcs</link>.\n\
+Ogres don't have a particularly strong affinity for <link=magic>magic</link>, \
+but on the rare occasion that an ogre does undertake the study required to \
+become a <link=mage>mage</link> they have a strong connection to \
+<link=earth magic>earth</link>, <link=water magic>water</link> and \
+<link=life magic>life</link> magic, and fare well at most others.\
 ");
 
 
@@ -957,7 +1016,7 @@ loving ways, ogres harbor a dislike for the more warfaring races like \
     _relations(RACE_HALFLING, -3);
     _relations(RACE_GNOME,    -3);
     _relations(RACE_MINOTAUR, -1);
-    _relations(RACE_LIZARDMAN,-1);
+    _relations(RACE_RAKSHASA,  3);
     _relations(RACE_NAGA,     -1);
 
     _skill(SKILL_FARMING,       1);
@@ -967,6 +1026,13 @@ loving ways, ogres harbor a dislike for the more warfaring races like \
     _skill(SKILL_FORESTRY,      1);
     _skill(SKILL_CONSTRUCTION,  1);
     _skill(SKILL_TRADE,         1);
+    _skill(SKILL_MAGIC,         1);
+    _skill(SKILL_EARTH_MAGIC,   2);
+    _skill(SKILL_WATER_MAGIC,   1);
+    _skill(SKILL_AIR_MAGIC,     1);
+    _skill(SKILL_FIRE_MAGIC,    2);
+    _skill(SKILL_LIFE_MAGIC,    1);
+    _skill(SKILL_DEATH_MAGIC,   4);
 
     _description("\
 Of all the <link=race>races</link> in the world, the trolls are without a \
@@ -1000,7 +1066,11 @@ Trolls see little point in <link=diplomacy>diplomacy</link> or \
 food, not friends.  They are particularly loathe to fraternize with \
 <link=dwarves>dwarves</link>, their ancient enemies.  One (slight) exception \
 is the <link=orcs>orcs</link>, whose prowess in battle is respected (to a \
-degree) by trolls.\
+degree) by trolls.\n\
+Trolls lack the intelligence or organization to pursue <link=magic>magic\
+</link>, and even if they did, they have essentially no connection to any of \
+the <link=magical school>magical schools</link> besides \
+<link=death magic>death magic</link>.\
 ");
 
 
@@ -1096,7 +1166,7 @@ degree) by trolls.\
     _relations(RACE_HALFLING,  3);
     _relations(RACE_GNOME,    -1);
     _relations(RACE_MINOTAUR,  1);
-    _relations(RACE_LIZARDMAN,-1);
+    _relations(RACE_RAKSHASA,  1);
     _relations(RACE_NAGA,     -2);
 
     _skill(SKILL_FARMING,       4);
@@ -1106,6 +1176,13 @@ degree) by trolls.\
     _skill(SKILL_FORESTRY,      4);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_MAGIC,         3);
+    _skill(SKILL_EARTH_MAGIC,   3);
+    _skill(SKILL_WATER_MAGIC,   3);
+    _skill(SKILL_AIR_MAGIC,     3);
+    _skill(SKILL_FIRE_MAGIC,    2);
+    _skill(SKILL_LIFE_MAGIC,    4);
+    _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
 Halflings are a reclusive <link=race>race</link>, small in stature (about half \
@@ -1126,7 +1203,12 @@ weak in <link=combat>combat</link>, and prefer to settle conflicts via \
 Halflings don't particularly get along well with other races, particularly the \
 more adventurous or warlike of them.  Their similar stature makes \
 <link=dwarves>dwarves</link> their natural friends, and their agrarian \
-lifestyle leads to positive relations with <link=ogres>ogres</link>.\
+lifestyle leads to positive relations with <link=ogres>ogres</link>.\n\
+Halflings display a more or less average aptitude with <link=magic>magic\
+</link>, with a particular aptitude for the healing powers of \
+<link=life magic>life magic</link>.  They are less in touch with the more \
+destructive <link=magical school>schools</link> of <link=fire magic>fire\
+</link> and <link=death magic>death</link>.\
 ");
 
 
@@ -1243,7 +1325,7 @@ lifestyle leads to positive relations with <link=ogres>ogres</link>.\
     _relations(RACE_TROLL,     -3);
     _relations(RACE_HALFLING,  -1);
     _relations(RACE_GNOME,      2);
-    _relations(RACE_LIZARDMAN, -1);
+    _relations(RACE_RAKSHASA,   1);
 
     _skill(SKILL_FARMING,       3);
     _skill(SKILL_HUNTING,       1);
@@ -1252,6 +1334,13 @@ lifestyle leads to positive relations with <link=ogres>ogres</link>.\
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         5);
+    _skill(SKILL_MAGIC,         1);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   2);
+    _skill(SKILL_AIR_MAGIC,     2);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    1);
+    _skill(SKILL_DEATH_MAGIC,   1);
 
     _description("\
 Gnomes are a secretive, reclusive <link=race>race</link> who tend to live in \
@@ -1263,7 +1352,6 @@ Gnomes are most famous for their love of <link=gold>gold</link> and skill in \
 <link=trade>trading</link> and all other forms of commerce.  However, gnomes \
 are not misers, and are happy to extend a <link=loan>loan</link> to nearly \
 anyone, particularly their fellow gnomes.\n\
-\n\
 Unfortunately, many races oversee this and tend to regard gnomes with \
 suspicion and distrust.  For their part, gnomes tend to like other races, \
 though they look down their noses a bit at those whom they see as \"country \
@@ -1275,18 +1363,22 @@ pay another race for a glimpse at their <link=world map>map</link> than they \
 are to explore it themselves).  On the other hand, gnomes have absolutely no \
 time for the absurdity that is <link=gods>religion</link>.  They are totally \
 areligious, and the gods in turn will have nothing to do with them.\n\
-\n\
 Their small stature means that gnomes do not need very much food at all, \
 eating half as much as a human does.  It also makes them particularly weak in \
 combat, and easy to kill.  However, gnomes are quite skilled with \
 <link=crossbow>crossbows</link>, and the sight of a city wall lined with \
 gnomic crossbowmen is enough to turn away many armies.\n\
-\n\
 Outside of trade, gnomes are fairly decent at most skills, though they don't \
 have the patience or vigor for <link=hunting>hunting</link>.  Their society \
 prizes craftsmanship above all else, and gnomic <link=citizens>citizens</link> \
 tend to have as many <link=merchants>merchants</link> or \
-<link=burghers>burghers</link> as <link=peasants>peasants</link>.\
+<link=burghers>burghers</link> as <link=peasants>peasants</link>.\n\
+Gnomes' strong connection to the world that they can see, touch, and study \
+scientifically leaves them with a deficit in the world of <link=magic>magic\
+</link>, and it is extremely rare that a gnome will take up its study.  On the \
+exceptionally rare occasion that one does, they will find themselves skilled \
+in <link=earth magic>earth</link> and <link=fire magic>fire</link> magic, and \
+few other <link=magical school>schools</link>.\
 ");
 
 
@@ -1369,6 +1461,7 @@ tend to have as many <link=merchants>merchants</link> or \
     _relations(RACE_TROLL,     -2);
     _relations(RACE_GNOME,     -1);
     _relations(RACE_MINOTAUR,   2);
+    _relations(RACE_RAKSHASA,   1);
     _relations(RACE_NAGA,      -1);
 
     _skill(SKILL_FARMING,       3);
@@ -1378,6 +1471,13 @@ tend to have as many <link=merchants>merchants</link> or \
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  5);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_MAGIC,         2);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   3);
+    _skill(SKILL_AIR_MAGIC,     2);
+    _skill(SKILL_FIRE_MAGIC,    3);
+    _skill(SKILL_LIFE_MAGIC,    3);
+    _skill(SKILL_DEATH_MAGIC,   3);
 
     _description("\
 Minotaurs are a <link=race>race</link> of large, muscular beings resembling a \
@@ -1388,7 +1488,6 @@ wide variety of environments, but prefer the open <link=farming>farmable\
 <link=construction>architecural</link> skills, and are proud of them.  Their \
 <link=building>buildings</link> are more ornate than any other race's, and \
 built more quickly to boot.\n\
-\n\
 Minotaurs are a noble race, placing great value on the labor of their \
 <link=peasants>peasants</link> as well as the other <link=citizens>classes\
 </link>.  They likewise hold respect for those races whom they perceive as \
@@ -1397,7 +1496,294 @@ treacherous.\n\
 While minotaurs are not particularly <link=war>warlike</link>, they can hold \
 their own in <link=combat>battle</link> and are difficult to kill.  They are \
 fairly decent at crafting <link=weapons>weapons</link> and can use almost any \
-of them fairly well.\
+of them fairly well.\n\
+Minotaurs are not well-versed in the ways of <link=magic>magic</link>, but it \
+is not unknown to them.  They are equally skilled in all \
+<link=magical school>schools</link>, though they show a slight preference for \
+<link=earth magic>earth magic</link> over <link=air magic>air</link>.\
+");
+
+
+  _race(RACE_RAKSHASA);
+    _name("rakshasa");
+    _plural_name("rakshasa");
+    _adjective("rakshasan");
+
+    _color(c_pink);
+    _kingdom_color(c_magenta);
+    _kingdom_color(c_blue);
+    _kingdom_color(c_ltgray);
+
+    _map_type(MAP_JUNGLE,          100);
+    _map_type(MAP_FOREST,           90);
+    _map_type(MAP_CANYON,           85);
+    _map_type(MAP_BASIN,            80);
+    _map_type(MAP_MOUNTAINOUS,      40);
+    _map_type(MAP_FOOTHILLS,        30);
+    _map_type(MAP_SWAMP,            25);
+    _map_type(MAP_PLAINS,           10);
+
+    _map_type(MAP_ICY_MOUNTAIN,   -100);
+    _map_type(MAP_ICY_FOOTHILLS,  -100);
+    _map_type(MAP_TUNDRA,          -90);
+    _map_type(MAP_GLACIER,         -75);
+    _map_type(MAP_DESERT,          -10);
+
+// Rakshasa are great at traveling in jungles and forests, but fare poorly in
+// cold terrain.
+    _travel_cost(MAP_TUNDRA,        100);
+    _travel_cost(MAP_FOREST,         50);
+    _travel_cost(MAP_SWAMP,         100);
+    _travel_cost(MAP_JUNGLE,        125);
+    _travel_cost(MAP_ICY_FOOTHILLS, 200);
+    _travel_cost(MAP_ICY_MOUNTAIN,  800);
+    _travel_cost(MAP_GLACIER,       150);
+    _travel_cost(MAP_ICECAP,        200);
+
+    _cluster_size(1, 3);
+    _city_size(CITY_TYPE_CITY,      40,  500);
+    _city_size(CITY_TYPE_DUCHY,    300, 1800);
+    _city_size(CITY_TYPE_CAPITAL,  800, 4000);
+
+// Vaguely based on Arabic city names
+
+    _city_name_start("ab", "ab", "al", "al", "al", "al-", "al-", "al-", "al-",
+                     "ahm", "ar", "ark", "ash", "ashk", "bag", "bah", "bahr",
+                     "bat", "beir", "ben", "bir", "boum", "bur", "but", "dak",
+                     "dak", "dam", "dar", "dhu", "dub", "fal", "fus", "had",
+                     "haif", "har", "heb", "hej", "hib", "isk", "jeb", "jed",
+                     "jib", "jir", "jub",  "khar", "khir", "khob", "mad", "man",
+                     "mar", "mart", "mor", "mos", "nab", "nad", "naj", "niz",
+                     "qal", "qar", "rab", "raf", "ram", "raq", "ras Ab", "saf",
+                     "sak", "sam", "sam", "shar", "shef", "shul", "sid",
+                     "sok", "som", "su", "sul", "tab", "tak", "tar", "tar",
+                     "tas", "tid", "tik", "tir", "trip", "tru", "tul", "tun",
+                     "uk", "um ", "um ", "zag", "zan");
+
+    _city_name_middle("", "", "", " el-", " el-", "?-es-", "ab", "ab", "ab",
+                      "ad", "af", "ahm", "aib", "air", "aj", "ak", "akra-Sh",
+                      "an", "ans", "ar", "as", "asr", "assi", "at", "atri",
+                      "eb", "ebbr", "ed", "edr", "ef", "efa-Ab", "eid", "eid",
+                      "eif", "eir", "eit", "eitr", "ej", "ek", "ekr", "el",
+                      "em", "en", "epp", "es", "essr", "est", "estr", "?had",
+                      "?hadj", "?hah", "?hid", "?hidr", "?hif", "?hod", "?hof",
+                      "?hud", "?hudj", "?huj", "id", "idr", "if", "if", "ifr",
+                      "iq", "*iq", "iqr", "*iqr", "iq-Raf", "il", "il", "im",
+                      "in", "ir", "ir", "itr", "odj", "odr", "of", "ok", "okr",
+                      "ol", "on", "uad", "uar", "uk", "ukhr", "uw");
+
+    _city_name_end("a", "ab", "ab", "ad", "ad", "ada", "ah", "ah", "ah", "ah",
+                   "aib", "aid", "ail", "air", "ait", "aj", "aj", "akh", "al",
+                   "al", "am", "ama", "amm", "an", "an", "ankh", "ar", "ara",
+                   "asa", "at", "ata", "aud", "ayb", "az", "e'an", "e'un", "ea",
+                   "eb", "eba", "ed", "edi", "eij", "eikh", "eikh", "eiz", "ej",
+                   "em", "eppo", "erun", "es", "eth", "ez", "ezh", "i", "id",
+                   "ig", "il", "ina", "ioch", "ir", "ir", "it", "it", "iya",
+                   "iz", "o", "och", "od", "on", "ona", "ora", "os", "oukh",
+                   "oum", "ous", "outi", "ouz", "uba", "ubi", "ubos", "uel",
+                   "uk", "ukh", "un", "una", "ura", "us", "ut", "uzh", "ys");
+
+    _base_combat(12);
+    _hp(100);
+    _food_consumption(115);
+
+    _starting_population(CIT_PEASANT,   60);
+    _starting_population(CIT_MERCHANT,  20);
+    _starting_resources (RES_GOLD,    8500);
+    _starting_resources (RES_WOOD,    1500);
+    _starting_resources (RES_STONE,   1500);
+
+    _birth_rate         (CIT_PEASANT,  110);
+    _birth_rate         (CIT_MERCHANT, 100);
+    _birth_rate         (CIT_BURGHER,   90);
+    _citizen_ratio      (CIT_MERCHANT,   8);
+    _citizen_ratio      (CIT_BURGHER,    8);
+    _morale_requirement (CIT_MERCHANT,  75);
+    _morale_requirement (CIT_BURGHER,   90);
+    _low_tax_rate       (CIT_PEASANT,   10);
+    _low_tax_rate       (CIT_MERCHANT,   5);
+    _low_tax_rate       (CIT_BURGHER,    5);
+    _high_tax_rate      (CIT_PEASANT,   70);
+    _high_tax_rate      (CIT_MERCHANT,  50);
+    _high_tax_rate      (CIT_BURGHER,   40);
+
+    _relations(RACE_HUMAN,    -1);
+    _relations(RACE_ELF,       1);
+    _relations(RACE_DWARF,    -1);
+    _relations(RACE_ORC,      -2);
+    _relations(RACE_GOBLIN,   -3);
+    _relations(RACE_OGRE,     -2);
+    _relations(RACE_TROLL,    -5);
+    _relations(RACE_HALFLING, -2);
+    _relations(RACE_GNOME,     1);
+    _relations(RACE_MINOTAUR, -1);
+    _relations(RACE_RAKSHASA,  3);
+    _relations(RACE_NAGA,      2);
+
+    _skill(SKILL_FARMING,       2);
+    _skill(SKILL_HUNTING,       4);
+    _skill(SKILL_LIVESTOCK,     4);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      2);
+    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_TRADE,         4);
+    _skill(SKILL_MAGIC,         5);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   4);
+    _skill(SKILL_AIR_MAGIC,     4);
+    _skill(SKILL_FIRE_MAGIC,    4);
+    _skill(SKILL_LIFE_MAGIC,    4);
+    _skill(SKILL_DEATH_MAGIC,   4);
+
+    _description("\
+Rakshasa are an ancient <link=race>race</link>, said to be descended from \
+demons.  They resemble <link=human>humans</link> in form, but have the fur, \
+head and tail of a <link=tiger>tiger</link>.  Like tigers, rakshasa are most \
+at home in <link=jungle>jungles</link>, though they are also comfortable in \
+other wooded areas as well as <link=mountain>mountains</link>.\n\
+Rakshasa are creatures of comfort and personal freedom, and their social \
+structure reflects that.  All their <link=citizens>citizens</link> demand a \
+high level of <link=morale>morale</link> and relatively low <link=taxes>taxes\
+</link>.  Their population also tends to have higher numbers of \
+<link=merchants>merchants</link> and <link=burghers>burghers</link> than \
+others, and new rakshasa cities start with several merchants.  Rakshasa's \
+<link=race skills>skills</link> reflect this culture; they are generally poor \
+at manual tasks, but skilled at anything that required finess or \
+intelligence.  Their tiger-like nature results in a strong \
+<link=hunting>hunting</link> skill, while their ability to mentally influence \
+others means they are good with <link=livestock>livestock</link>.\n\
+Rakshasa have a deep, innate connection to <link=magic>magic</link> and are \
+the most adept spellcasters in the world.  This power goes beyond the typical \
+use of <link=spell>spells</link>; rakshasa have an ever-present magical aura, \
+often referred to as \"glamour,\" which manifests itself as a low-level \
+psychic control over anyone who meets a rakshasa (besides other rakshasa).  As \
+a result, most other races have a favorable reaction to rakshasa in \
+<link=diplomacy>diplomacy</link>.  Rakshasa, for their part, are a fairly \
+haughty race and tend to look down on other races, particularly those they see \
+as uncultured or agrarian.  There are a few exceptions, however; \
+<link=elves>Elves</link> for their hauteur, <link=gnomes>gnomes</link> for \
+their scientific prowess, and <link=naga>naga</link> for their affinity with \
+magic.\
+");
+
+
+  _race(RACE_NAGA);
+    _name("naga");
+    _plural_name("naga");
+    _adjective("naga");
+
+    _color(c_ltgreen);
+    _kingdom_color(c_brown);
+    _kingdom_color(c_green);
+    _kingdom_color(c_ltgray);
+
+    _map_type(MAP_SWAMP,           100);
+    _map_type(MAP_BASIN,            80);
+    _map_type(MAP_DESERT,           50);
+    _map_type(MAP_JUNGLE,           40);
+    _map_type(MAP_FOREST,           20);
+    _map_type(MAP_PLAINS,           10);
+
+    _map_type(MAP_ICY_MOUNTAIN,   -100);
+    _map_type(MAP_ICY_FOOTHILLS,  -100);
+    _map_type(MAP_TUNDRA,         -100);
+    _map_type(MAP_GLACIER,         -95);
+    _map_type(MAP_MOUNTAINOUS,     -90);
+    _map_type(MAP_CANYON,          -70);
+    _map_type(MAP_WASTELAND,       -30);
+    _map_type(MAP_FOOTHILLS,       -25);
+
+    _travel_cost(MAP_DESERT,        25);
+    _travel_cost(MAP_WASTELAND,     50);
+    _travel_cost(MAP_FOREST,       100);
+    _travel_cost(MAP_SWAMP,         30);
+    _travel_cost(MAP_JUNGLE,       175);
+    _travel_cost(MAP_MOUNTAINOUS,  500);
+    _travel_cost(MAP_ICY_MOUNTAIN, 650);
+
+    _cluster_size(2, 4);
+    _city_size(CITY_TYPE_CITY,      80,  900);
+    _city_size(CITY_TYPE_DUCHY,    600, 3500);
+    _city_size(CITY_TYPE_CAPITAL, 1600, 6000);
+
+    _city_name_start( );
+
+    _city_name_middle( );
+
+    _city_name_end( );
+
+    _base_combat(10);
+    _hp(100);
+    _food_consumption(100);
+
+    _starting_population(CIT_PEASANT,  100);
+    _starting_resources (RES_GOLD,    6000);
+    _starting_resources (RES_WOOD,    2500);
+    _starting_resources (RES_STONE,   2000);
+
+    _birth_rate         (CIT_PEASANT,  100);
+    _birth_rate         (CIT_MERCHANT, 100);
+    _birth_rate         (CIT_BURGHER,  100);
+    _citizen_ratio      (CIT_MERCHANT,  10);
+    _citizen_ratio      (CIT_BURGHER,   10);
+    _morale_requirement (CIT_MERCHANT,  40);
+    _morale_requirement (CIT_BURGHER,   60);
+    _low_tax_rate       (CIT_PEASANT,   20);
+    _low_tax_rate       (CIT_MERCHANT,  15);
+    _low_tax_rate       (CIT_BURGHER,   10);
+    _high_tax_rate      (CIT_PEASANT,   80);
+    _high_tax_rate      (CIT_MERCHANT,  65);
+    _high_tax_rate      (CIT_BURGHER,   50);
+
+    _relations(RACE_ELF,       2);
+    _relations(RACE_DWARF,     1);
+    _relations(RACE_ORC,      -2);
+    _relations(RACE_GOBLIN,   -1);
+    _relations(RACE_OGRE,      1);
+    _relations(RACE_TROLL,    -2);
+    _relations(RACE_HALFLING,  1);
+    _relations(RACE_GNOME,    -2);
+    _relations(RACE_RAKSHASA,  2);
+    _relations(RACE_NAGA,      2);
+
+    _skill(SKILL_FARMING,       3);
+    _skill(SKILL_HUNTING,       4);
+    _skill(SKILL_LIVESTOCK,     3);
+    _skill(SKILL_MINING,        2);
+    _skill(SKILL_FORESTRY,      4);
+    _skill(SKILL_CONSTRUCTION,  2);
+    _skill(SKILL_TRADE,         3);
+    _skill(SKILL_MAGIC,         5);
+    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_WATER_MAGIC,   5);
+    _skill(SKILL_AIR_MAGIC,     3);
+    _skill(SKILL_FIRE_MAGIC,    2);
+    _skill(SKILL_LIFE_MAGIC,    3);
+    _skill(SKILL_DEATH_MAGIC,   4);
+
+    _description("\
+Naga are a serpentine <link=race>race</link>, creatures with a large snake-\
+like tail and a <link=human>human</link> torso, albeit with four arms.  Nagas \
+come in two breeds, Desert Naga and Swamp Naga.  Despite the names, the only \
+difference between the two is in coloration; Desert Naga are tan and Swamp \
+Naga are are green and blue.  All naga are most comfortable in \
+<link=swamp>swamps</link>, but also fare quite well in <link=desert>deserts\
+</link>.  Their serpentine form helps them travel rapidly in mud, water, and \
+sand, but makes travel through rocky or uneven terrain quite difficult.\n\
+Naga are a somewhat reclusive race, not given to lengthy foreign travel or \
+invasions.  However, they are fiercely defensive of their homelands, and very \
+wary of those who would enter their territory.  Naga have a strong sense of \
+reverence for the land, particularly their ancestral homes of swamp and \
+desert, and their attitude towards other races reflects this.  They are most \
+receptive to relations with those races who share a similar respect for the \
+land, or at least a peaceful nature in harmony with it, and are wary of those \
+races who tend to ravage and exploit the world around them.\n\
+Naga are natural scholars and mages, and have a strong affinity for \
+<link=magic>magic</link>.  They are particularly adept at the \
+<link=magical school>school</link> of <link=water magic>water</link> magic, \
+and are well-versed in <link=earth magic>earth</link> magic as well.  They \
+have a darker nature as well, which puts them in touch with the school of \
+<link=death magic>death</link>.\
 ");
 
 }
