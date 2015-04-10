@@ -209,6 +209,27 @@ std::string capitalize(const std::string &orig)
   return ret; // All blank spaces??
 }
 
+std::string capitalize_all_words(const std::string &orig)
+{
+  std::string ret = orig;
+
+  for (int i = 0; i < ret.size(); i++) {
+    std::string tag_check = no_caps( ret.substr(i, 3) );
+    if (tag_check == "<c=") {  // It's a tag!
+// Advance until we find the end of the tag.
+      while (ret[i] != '>' && i < ret.size()) {
+        i++;
+      }
+      if (i >= ret.size()) {  // Unterminated tag, oh well
+        return ret;
+      }
+    }
+    if (ret[i] >= 'a' && ret[i] <= 'z' && (i == 0 || !is_letter(ret[i - 1]))) {
+      ret[i] = ret[i] - 'a' + 'A';
+    }
+  }
+}
+
 std::string remove_color_tags(const std::string &orig)
 {
   std::string ret;
@@ -332,7 +353,11 @@ std::string letters_after(long letter, bool vowel_before)
   }
   return "a";
 }
-  
+
+bool is_letter(char ch)
+{
+  return ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') );
+}
 
 bool is_vowel(char ch)
 {

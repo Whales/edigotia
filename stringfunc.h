@@ -18,13 +18,16 @@ std::string load_to_character(std::istream &datastream, std::string chars,
 
 std::string slurp_file(const std::string &filename);
 
-std::string trim             (const std::string &orig);
-std::string all_caps         (const std::string &orig);
-std::string no_caps          (const std::string &orig);
-std::string capitalize       (const std::string &orig);
-std::string remove_color_tags(const std::string &orig);
+std::string trim                (const std::string &orig);
+std::string all_caps            (const std::string &orig);
+std::string no_caps             (const std::string &orig);
+// capitalize("here are-the words") => "Here are-the words"
+std::string capitalize          (const std::string &orig);
+// capitalze_all_words("here are-the words") => "Here Are-The Words"
+std::string capitalize_all_words(const std::string &orig);
+std::string remove_color_tags   (const std::string &orig);
 
-int tagless_length           (const std::string &orig);
+int tagless_length              (const std::string &orig);
 
 // Convert an int to a string
 std::string itos(int num);
@@ -45,6 +48,7 @@ std::string color_gradient(int value, std::vector<int> breakpoints,
 // there should be a vowel before ch.
 std::string letter_after(long ch, bool vowel_before = false);
 
-bool is_vowel(char ch);
+bool is_letter(char ch);
+bool is_vowel (char ch);
 
 #endif
