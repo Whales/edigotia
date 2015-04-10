@@ -228,6 +228,8 @@ std::string capitalize_all_words(const std::string &orig)
       ret[i] = ret[i] - 'a' + 'A';
     }
   }
+
+  return ret;
 }
 
 std::string remove_color_tags(const std::string &orig)
