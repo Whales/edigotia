@@ -107,11 +107,13 @@ std::string Race_datum::get_city_name()
     ret << city_name_end[i];
   }
 
-/* Check for the characters '*' or '?'
+/* Check for the characters '*' '?' or '!'
  * '*' means "repeat the previous consonant if it's not preceded by a
- * consonant."  E.g. "Wil*iams" => "Williams" but "Wilm*iams" => "Wilmiams"
+ * consonant."  e.g. "Wil*iams" => "Williams" but "Wilm*iams" => "Wilmiams"
  * '?' means "if the previous character and the following character are
- * identical, remove one."  E.g. "Wis*ster" => "Wister"
+ * identical, remove one."  e.g. "Wis?ster" => "Wister"
+ * '!' means "if the previous character is a consonant, remove the following
+ * character."  e.g. "Tat!bol" => "Tatol" but "Ta!bol" => "Tabol"
  */
 
   std::string name = ret.str();
@@ -127,7 +129,8 @@ std::string Race_datum::get_city_name()
         new_name << name[0] << name.substr(2);
         name = new_name.str();
         i--;
-      } else if (is_vowel(name[i - 1]) || !is_vowel(name[i - 2])) {
+      } else if (!is_letter(name[i - 1] || is_vowel(name[i - 1]) ||
+                 !is_vowel(name[i - 2])) {
 // Once again, just remove the *
         std::stringstream new_name;
         new_name << name.substr(0, i) << name.substr(i + 1);
@@ -155,10 +158,29 @@ std::string Race_datum::get_city_name()
         name = new_name.str();
         i--;
       }
-    } // if (name[i] == '?')
+
+    } else if (name[i] == '!') {
+      if (i == 0) { // Just remove the !
+        name = name.substr(1);
+        i--;
+      } else if (i == name.size() - 1) {  // Just remove the ! again
+        name = name.substr(0, name.size() - 1);
+        i--;
+      } else if (!is_letter(name[i - 1]) || is_vowel(name[i - 1])) { // Remove !
+        std::stringstream new_name;
+        new_name << name.substr(0, i) << name.substr(i + 1);
+        name = new_name.str();
+        i--;
+      } else {  // Remove the ! AND the character after it.
+        std::stringstream new_name;
+        new_name << name.substr(0, i) << name.substr(i + 2);
+        name = new_name.str();
+        i--;
+      }
+    } // if (name[i] == '!')
   }
 
-  return capitalize( name );
+  return capitalize_all_words( name );
 }
 
 std::string Race_datum::generate_help_text()
