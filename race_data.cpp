@@ -1706,11 +1706,34 @@ magic.\
     _city_size(CITY_TYPE_DUCHY,    600, 3500);
     _city_size(CITY_TYPE_CAPITAL, 1600, 6000);
 
-    _city_name_start( );
+// Kinda based on Indian city names
 
-    _city_name_middle( );
+    _city_name_start("a", "acha", "ada", "adi", "ado", "afza", "ai", "baga",
+                     "baha", "bala", "bale", "bari", "bathi", "be", "bha",
+                     "bhi", "bho", "bika", "bo", "bra", "cha", "chi", "de",
+                     "dha", "dhu", "fari", "faro", "go", "gobi", "gu", "guja",
+                     "ha", "haji", "jala", "jha", "ka", "kari", "ke", "kha",
+                     "laha", "lakhi", "lu", "madhu", "maha", "malka", "mandi",
+                     "mi", "mo", "mu", "naga", "naga", "naga", "naha", "nama",
+                     "nara", "nau", "nawa", "ne", "niwa", "o", "pa", "pala",
+                     "pana", "para", "pau", "peri", "pili", "pra", "pudu",
+                     "pura", "ra", "raja", "rama", "raya", "rewa", "sa", "sada",
+                     "sadu", "sambha", "sata", "sava", "sha", "she", "sheo",
+                     "shi", "sho", "si", "sika", "siva", "sri", "sri ", "sume",
+                     "suri", "ta", "tali", "te", "thiru", "ti", "tiru", "tri",
+                     "uda", "uma", "ura", "utha", "utta", "vada", "vidi",
+                     "vikra", "ya", "yava");
 
-    _city_name_end( );
+    _city_name_middle("b", "br", "d", "dh", "dr", "g", "h", "hm", "k", "kud",
+                      "kund", "l", "m", "mg", "mk", "mp", "mr", "n", "ng", "nk",
+                      "nkl", "nt", "p", "pr", "r", "rk", "rkh", "rm", "rmir",
+                      "rn", "rp", "rs", "rt", "rudr", "rund", "sh", "ss", "t",
+                      "th", "thag", "tl", "tr", "v", "y");
+
+    _city_name_end("", "", "ab", "abad", "adesh", "aka", "al", "ala", "am",
+                   "an", "ana", "and", "anja", "anji", "apur", "ara", "asa",
+                   "ati", "atra", "eli", "er", "esh", "i", "ia", "impa", "inga",
+                   "ior", "iri", "oha", "ul", "ula", "und", "ur", "ura");
 
     _base_combat(10);
     _hp(100);
