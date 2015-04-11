@@ -87,7 +87,7 @@ private:
   int radius;
   int free_citizens[CIT_MAX]; // Free as in unemployed & otherwise not used
 
-  std::map<Area_type,int> areas_built;
+  std::map<Area_type,int>     areas_built;
   std::map<Building_type,int> buildings_built;
 
   std::map<Resource,int> resource_production;
