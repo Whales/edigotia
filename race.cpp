@@ -54,6 +54,8 @@ Race_datum::Race_datum()
   base_combat = 10;
   hp = 100;
   food_consumption = 100;
+  warlikeness = -2;
+  life_value = 3;
 
 }
 
@@ -288,14 +290,23 @@ Race_skill lookup_race_skill(std::string name)
 std::string race_skill_name(Race_skill skill)
 {
   switch (skill) {
-    case SKILL_NULL:      return "NULL";
-    case SKILL_FARMING:   return "farming";
-    case SKILL_HUNTING:   return "hunting";
-    case SKILL_LIVESTOCK: return "livestock";
-    case SKILL_MINING:    return "mining";
-    case SKILL_FORESTRY:  return "forestry";
-    case SKILL_MAX:       return "BUG - SKILL_MAX";
-    default:              return "BUG - Unnamed Race_skill";
+    case SKILL_NULL:          return "NULL";
+    case SKILL_FARMING:       return "farming";
+    case SKILL_HUNTING:       return "hunting";
+    case SKILL_LIVESTOCK:     return "livestock";
+    case SKILL_MINING:        return "mining";
+    case SKILL_FORESTRY:      return "forestry";
+    case SKILL_CONSTRUCTION:  return "construction";
+    case SKILL_TRADE:         return "trade";
+    case SKILL_MAGIC:         return "magic";
+    case SKILL_EARTH_MAGIC:   return "earth magic";
+    case SKILL_WATER_MAGIC:   return "water magic";
+    case SKILL_AIR_MAGIC:     return "air magic";
+    case SKILL_FIRE_MAGIC:    return "fire magic";
+    case SKILL_LIFE_MAGIC:    return "life magic";
+    case SKILL_DEATH_MAGIC:   return "death magic";
+    case SKILL_MAX:           return "BUG - SKILL_MAX";
+    default:                  return "BUG - Unnamed Race_skill";
   }
   return "BUG - Escaped race_skill_name() switch";
 }

@@ -64,6 +64,12 @@ Race_datum* Race_data[RACE_MAX];
 #define _food_consumption(n) \
   Race_data[cur_id]->food_consumption = (n)
 
+#define _warlikeness(n) \
+  Race_data[cur_id]->warlikeness = (n)
+
+#define _life_value(n) \
+  Race_data[cur_id]->life_value = (n)
+
 #define _starting_population(t, n) \
   Race_data[cur_id]->starting_population[ (t) ] = (n)
 
@@ -153,6 +159,8 @@ void init_races()
     _base_combat(10);
     _hp(100);
     _food_consumption(100);
+    _warlikeness(-2);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
@@ -268,6 +276,8 @@ and have no affinity for any particular <link=magical school>school</link>.\
     _base_combat(9);
     _hp(90);
     _food_consumption(95);
+    _warlikeness(-2);
+    _life_value(4);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
@@ -421,6 +431,8 @@ Elves are skilled <link=magic>spellcasters</link>, particularly in the \
     _base_combat(11);
     _hp(120);
     _food_consumption(105);
+    _warlikeness(-1);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    6500);
@@ -559,6 +571,8 @@ are, are among the most powerful in the world.\
     _base_combat(14);
     _hp(130);
     _food_consumption(105);
+    _warlikeness(3);
+    _life_value(2);
 
     _starting_population(CIT_PEASANT,  120);
     _starting_resources (RES_GOLD,    5000);
@@ -706,6 +720,8 @@ exceptions being <link=fire magic>fire</link> and <link=death magic>death\
     _base_combat(8);
     _hp(85);
     _food_consumption( 90);
+    _warlikeness(-1);
+    _life_value(1);
 
     _starting_population(CIT_PEASANT,  140);
     _starting_resources (RES_GOLD,    4000);
@@ -867,6 +883,8 @@ affinity for any of the <link=magical school>schools of magic</link>, save for \
     _base_combat(13);
     _hp(150);
     _food_consumption(140);
+    _warlikeness(-2);
+    _life_value(4);
 
     _starting_population(CIT_PEASANT,   90);
     _starting_resources (RES_GOLD,    4500);
@@ -987,6 +1005,8 @@ become a <link=mage>mage</link> they have a strong connection to \
     _base_combat(20);
     _hp(200);
     _food_consumption(180);
+    _warlikeness(0);  // Trolls truly don't care if they're at war or not!
+    _life_value(2);
 
     _starting_population(CIT_PEASANT,   20);
     _starting_resources (RES_GOLD,    6000);
@@ -1136,6 +1156,8 @@ the <link=magical school>magical schools</link> besides \
     _base_combat(5);
     _hp(80);
     _food_consumption(100);
+    _warlikeness(-3);
+    _life_value(4);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
@@ -1297,6 +1319,8 @@ destructive <link=magical school>schools</link> of <link=fire magic>fire\
     _base_combat(6);
     _hp(75);
     _food_consumption(50);
+    _warlikeness(-2);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,   90);
     _starting_resources (RES_GOLD,    8500);
@@ -1434,6 +1458,8 @@ few other <link=magical school>schools</link>.\
     _base_combat(12);
     _hp(110);
     _food_consumption(110);
+    _warlikeness(-1);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);
@@ -1586,6 +1612,8 @@ is not unknown to them.  They are equally skilled in all \
     _base_combat(12);
     _hp(100);
     _food_consumption(115);
+    _warlikeness(-1);
+    _life_value(5);
 
     _starting_population(CIT_PEASANT,   60);
     _starting_population(CIT_MERCHANT,  20);
@@ -1738,6 +1766,8 @@ magic.\
     _base_combat(10);
     _hp(100);
     _food_consumption(100);
+    _warlikeness(-2);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    6000);
@@ -1846,9 +1876,11 @@ have a darker nature as well, which puts them in touch with the school of \
 
     _city_name_end( );
 
-    _base_combat(9);
-    _hp(90);
+    _base_combat(10);
+    _hp(100);
     _food_consumption(100);
+    _warlikeness(-2);
+    _life_value(3);
 
     _starting_population(CIT_PEASANT,  100);
     _starting_resources (RES_GOLD,    5000);

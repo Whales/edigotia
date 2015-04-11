@@ -125,6 +125,8 @@ struct Race_datum
   int base_combat;      // Applies to fighting & hunting
   int hp;               // hp for combat; default is 100
   int food_consumption; // Default is 100
+  int warlikeness;      // Range is -3 to 3; default/norm is -2
+  int life_value;       // Range is 1 to 5; default is 3
 
 
 // GAME START VALUES
