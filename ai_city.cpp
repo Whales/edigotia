@@ -697,7 +697,6 @@ bool AI_city::add_random_building()
       int deficit = resource_production[res_amt.type] - res_amt.amount;
 // TODO: Don't hardcode this value.
       if (deficit < -5) {
-debugmsg("Can't build %s; maintenance deficit of %s is %d.", build_dat->name.c_str(), Resource_data[res_amt.type]->name.c_str(), deficit);
         can_build = false;
       }
     }
