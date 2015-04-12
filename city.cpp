@@ -374,7 +374,7 @@ std::vector<Trade_route> City::find_buyers_for(Resource res)
        it != trade_routes.end();
        it++) {
     City* buyer = GAME->world->lookup_city_uid(it->first);
-    if (buyer) {
+    if (buyer && buyer->get_daily_demand(res) > 0) {
       ret.push_back(it->second);
     }
   }
