@@ -305,8 +305,7 @@ and have no affinity for any particular <link=magical school>school</link>.\
     _relations(RACE_GOBLIN,   -2);
     _relations(RACE_OGRE,     -1);
     _relations(RACE_TROLL,    -3);
-    _relations(RACE_HALFLING, -1);
-    _relations(RACE_GNOME,    -2);
+    _relations(RACE_GNOME,    -1);
     _relations(RACE_MINOTAUR, -1);
     _relations(RACE_RAKSHASA,  2);
     _relations(RACE_NAGA,      2);
@@ -457,11 +456,10 @@ Elves are skilled <link=magic>spellcasters</link>, particularly in the \
     _relations(RACE_ELF,       1);
     _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,      -1);
-    _relations(RACE_OGRE,      1);
     _relations(RACE_TROLL,    -5);
     _relations(RACE_HALFLING,  1);
     _relations(RACE_GNOME,     2);
-    _relations(RACE_MINOTAUR,  1);
+    _relations(RACE_MINOTAUR,  2);
     _relations(RACE_RAKSHASA,  1);
     _relations(RACE_NAGA,     -1);
 
@@ -911,7 +909,7 @@ affinity for any of the <link=magical school>schools of magic</link>, save for \
     _relations(RACE_ORC,      -2);
     _relations(RACE_GOBLIN,   -1);
     _relations(RACE_OGRE,      3);
-    _relations(RACE_TROLL,    -3);
+    _relations(RACE_TROLL,    -4);
     _relations(RACE_HALFLING,  3);
     _relations(RACE_GNOME,    -1);
     _relations(RACE_RAKSHASA,  1);
@@ -952,7 +950,9 @@ close-knit.\n\
 Ogres get along quite well with most other races, in particular their tiny \
 agrarian friends the <link=halflings>halflings</link>.  Due to their peace-\
 loving ways, ogres harbor a dislike for the more warfaring races like \
-<link=orcs>orcs</link>.\n\
+<link=orcs>orcs</link>.  They're also highly distrustful of the arcane studies \
+of the <link=gnomes>gnomes</link> and of the wily ways of the \
+<link=goblins>goblins</link>.\n\
 Ogres don't have a particularly strong affinity for <link=magic>magic</link>, \
 but on the rare occasion that an ogre does undertake the study required to \
 become a <link=mage>mage</link> they have a strong connection to \
@@ -1030,7 +1030,6 @@ become a <link=mage>mage</link> they have a strong connection to \
     _relations(RACE_HUMAN,    -2);
     _relations(RACE_ELF,      -3);
     _relations(RACE_DWARF,    -5);
-    _relations(RACE_ORC,      -1);
     _relations(RACE_GOBLIN,   -2);
     _relations(RACE_OGRE,     -2);
     _relations(RACE_HALFLING, -3);
@@ -1077,8 +1076,8 @@ are totally useless at <link=farming>farming</link> and rearing \
 <link=race skills>skills</link>.  All trolls know is killing and eating.\n\
 And they eat a lot - a troll eats almost as much as two <link=humans>humans\
 </link> each day.  Since they <link=anthropophage>eat other races</link>, \
-trolls ofte rely on raiding cities to kill and eat their inhabitants.  Despite \
-their fast metabolism, trolls are quite slow to \
+trolls often rely on raiding cities to kill and eat their inhabitants.  \
+Despite their fast metabolism, trolls are quite slow to \
 <link=citizen reproduction>reproduce</link> and tend to have very small \
 cities, with most trolls living in the wilderness in a semi-feral state.\n\
 Trolls see little point in <link=diplomacy>diplomacy</link> or \
@@ -1187,7 +1186,6 @@ the <link=magical school>magical schools</link> besides \
     _relations(RACE_TROLL,    -4);
     _relations(RACE_HALFLING,  3);
     _relations(RACE_GNOME,    -1);
-    _relations(RACE_MINOTAUR,  1);
     _relations(RACE_RAKSHASA,  1);
     _relations(RACE_NAGA,     -2);
 
@@ -1518,7 +1516,7 @@ Minotaurs are a noble race, placing great value on the labor of their \
 <link=peasants>peasants</link> as well as the other <link=citizens>classes\
 </link>.  They likewise hold respect for those races whom they perceive as \
 hard-working, while taking a dislike to races they believe to be effete or \
-treacherous.\n\
+treacherous, or who value things like study or magic over a hard day's work.\n\
 While minotaurs are not particularly <link=war>warlike</link>, they can hold \
 their own in <link=combat>battle</link> and are difficult to kill.  They are \
 fairly decent at crafting <link=weapons>weapons</link> and can use almost any \
@@ -1636,7 +1634,6 @@ is not unknown to them.  They are equally skilled in all \
     _high_tax_rate      (CIT_BURGHER,   40);
 
     _relations(RACE_HUMAN,    -1);
-    _relations(RACE_ELF,       1);
     _relations(RACE_DWARF,    -1);
     _relations(RACE_ORC,      -2);
     _relations(RACE_GOBLIN,   -3);
@@ -1645,7 +1642,7 @@ is not unknown to them.  They are equally skilled in all \
     _relations(RACE_HALFLING, -2);
     _relations(RACE_GNOME,     1);
     _relations(RACE_MINOTAUR, -1);
-    _relations(RACE_RAKSHASA,  3);
+    _relations(RACE_RAKSHASA,  4);
     _relations(RACE_NAGA,      2);
 
     _skill(SKILL_FARMING,       2);
@@ -1691,7 +1688,9 @@ haughty race and tend to look down on other races, particularly those they see \
 as uncultured or agrarian.  There are a few exceptions, however; \
 <link=elves>Elves</link> for their hauteur, <link=gnomes>gnomes</link> for \
 their scientific prowess, and <link=naga>naga</link> for their affinity with \
-magic.\
+magic.  Rakshasa consider fellow rakshasa to be beyond reproach, and attacking \
+their own kind would be as unthinkable (though not unheard of) as attacking \
+their own siblings.\
 ");
 
 
@@ -1789,11 +1788,10 @@ magic.\
     _high_tax_rate      (CIT_BURGHER,   50);
 
     _relations(RACE_ELF,       2);
-    _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,      -2);
     _relations(RACE_GOBLIN,   -1);
     _relations(RACE_OGRE,      1);
-    _relations(RACE_TROLL,    -2);
+    _relations(RACE_TROLL,    -3);
     _relations(RACE_HALFLING,  1);
     _relations(RACE_GNOME,    -2);
     _relations(RACE_RAKSHASA,  2);
@@ -1831,7 +1829,7 @@ desert, and their attitude towards other races reflects this.  They are most \
 receptive to relations with those races who share a similar respect for the \
 land, or at least a peaceful nature in harmony with it, and are wary of those \
 races who tend to ravage and exploit the world around them.\n\
-Naga are natural scholars and mages, and have a strong affinity for \
+Naga are natural philosophers and mages, and have a strong affinity for \
 <link=magic>magic</link>.  They are particularly adept at the \
 <link=magical school>school</link> of <link=water magic>water</link> magic, \
 and are well-versed in <link=earth magic>earth</link> magic as well.  They \
