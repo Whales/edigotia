@@ -370,18 +370,14 @@ std::vector<Trade_route> City::find_sellers_of(Resource res)
 std::vector<Trade_route> City::find_buyers_for(Resource res)
 {
   std::vector<Trade_route> ret;
-/*
   for (std::map<int,Trade_route>::iterator it = trade_routes.begin();
        it != trade_routes.end();
        it++) {
     City* buyer = GAME->world->lookup_city_uid(it->first);
     if (buyer) {
-      City* best_seller = buyer->find_best_seller(res);
-      if (best_seller->uid == uid) {  // We're the best seller!
-        ret.push_back( it->second );
-      }
-*/
-
+      ret.push_back(it->second);
+    }
+  }
   return ret;
 }
 
