@@ -18,6 +18,66 @@
 #define _redirect(n) \
   cur_article->redirect = (n)
 
+/* TODO: Write the following:
+ *
+ * world hazards
+ * luxuries
+ * morale
+ * peasants
+ * merchants
+ * burghers
+ * city map tile (really?)
+ * mage
+ * special location
+ * list of special locations
+ * adventurer (noble job)
+ * animals
+ * hunting
+ * rainfall
+ * temperature
+ * Map Type
+ * List of map types
+ * Messages
+ * Unlockables
+ * Destroying Areas
+ * Destroying Buildings
+ * Closing Areas and Buildings
+ * Building Status Screen
+ * Main Screen
+ * City Radius
+ * Taxes
+ * Hit Points
+ * Weapon
+ * Combat
+ * List of Skills
+ * Skills (i.e. race skills)
+ * Slaves
+ * Dynasty
+ * Diplomacy
+ * Noble Skills
+ * Noble Traits
+ * Coat of Arms
+ * List of Interfaces
+ * Nobles Screen
+ * Governor
+ * List of Noble Roles
+ * Army
+ * City Guard
+ * Trade Embargo
+ * Prohibition
+ * War
+ * Laws
+ * Trade
+ * Resources
+ * Coup
+ * Succession Crisis
+ * Relations (e.g. favor)
+ * Conscription
+ * Food
+ * Military
+ * Road
+ */
+
 void init_help()
 {
   Help_article* cur_article;
@@ -489,7 +549,7 @@ the <link=main screen>main screen</link> and pressing the button for \
 <c=magenta>\"Build Improvement\"<c=/>.  Building an improvement will require \
 you to send multiple <link=citizens>citizens</link> outside of your city, \
 usually <link=peasants>peasants</link>.  Be careful, because there may be \
-<link=world hazards</link>hazards</link> that pose mortal danger to these \
+<link=world hazards>hazards</link> that pose mortal danger to these \
 workers!  You may want to send a small <link=army>army</link> with them for \
 safety.\n\
 \n\
@@ -542,12 +602,31 @@ hard to pass, so you can place walls in the gaps between mountains.\
   }
 
 // Add all races to the help database!
+// Also, start writing the text of the "List of Races" article.
+  std::stringstream race_list_text;
+  race_list_text << "The following is a list of all <link=race>races</link> " <<
+                    "to be found in the world:" << std::endl << std::endl;
+
   for (int i = 0; i < RACE_MAX; i++) {
     Race_datum* race_dat = Race_data[i];
-    _article( capitalize( race_dat->name ) );
+
+    std::string proper_name = capitalize( race_dat->plural_name );
+    race_list_text << "<link=" << proper_name << ">" << proper_name << 
+                      "</link>" << std::endl;
+
+    _article( proper_name );
     _type("Race");
     _text( race_dat->generate_help_text() );
+// Redirect other forms of their name to this article.
+    _article(  capitalize( race_dat->name        ) );
+    _redirect( capitalize( race_dat->plural_name ) );
+    _article(  capitalize( race_dat->adjective   ) );
+    _redirect( capitalize( race_dat->plural_name ) );
   }
+
+  _article("List of Races");
+  _type("Game Concept");
+  _text( race_list_text.str() );
 
   HELP->process_categories();
 }
