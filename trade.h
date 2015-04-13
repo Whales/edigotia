@@ -12,7 +12,7 @@ class City;
 struct Trade_route
 {
   Trade_route();
-  Trade_route(Point _target, int _distance = -1);
+  Trade_route(Point _target, int _distance = -1, int _overhead = -1);
   Trade_route(const Trade_route& other);
   ~Trade_route();
 
@@ -25,6 +25,13 @@ struct Trade_route
  * route to our destination.
  */
   int distance;
+
+/* overhead is a static price that must be paid (effectively lost - no one
+ * receives this "payment") by the buyer when goods are bought via this trade
+ * route.  It's mainly based off "distance" above, but is also affected by race,
+ * and maybe other factors???
+ */
+  int overhead;
 };
 
 #endif

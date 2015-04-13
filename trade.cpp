@@ -6,12 +6,13 @@ Trade_route::Trade_route()
   distance = -1;
 }
 
-// _distance defaults to -1
-Trade_route::Trade_route(Point _target, int _distance)
+// _distance and _overhead default to -1
+Trade_route::Trade_route(Point _target, int _distance, int _overhead)
 {
   target = _target;
-// TODO: Warn if _distance <= 0?
+// TODO: Warn if _distance or _overhead <= 0?
   distance = _distance;
+  overhead = _overhead;
 }
 
 Trade_route::Trade_route(const Trade_route& other)
