@@ -20,12 +20,16 @@
 
 /* TODO: Write the following:
  *
+ * value of life
+ * warlikeness
+ * commander
+ * immigration
+ * emigration
+ * strike
+ * revolt
  * world hazards
- * luxuries
  * morale
- * peasants
- * merchants
- * burghers
+ * housing
  * city map tile (really?)
  * mage
  * special location
@@ -33,6 +37,9 @@
  * adventurer (noble job)
  * animals
  * hunting
+ * farming
+ * mining
+ * logging
  * rainfall
  * temperature
  * Map Type
@@ -68,7 +75,6 @@
  * War
  * Laws
  * Trade
- * Resources
  * Coup
  * Succession Crisis
  * Relations (e.g. favor)
@@ -528,7 +534,300 @@ citizen will be born into the highest class available.  Citizen classes have \
 to maintain a certain ratio.  The exact numbers depend on your race; for \
 humans, there must be 10 peasants for every merchant, and 10 merchants for \
 every burgher.  Addtionally, a class's morale must be above a certain level \
-for the class above it to be born.\
+for the class above it to be born; this level depends on your race as well.\
+");
+
+  _article("Peasant");
+  _redirect("Peasants");
+
+  _article("Peasants");
+  _type("Citizen Type");
+  _text("\
+Peasants are the lowest class of <link=citizens>citizen</link>.  They live in \
+the cheapest <link=housing>housing</link>, eat the least <link=food>food\
+</link>, and most importantly, do all the mindless physical labor.  \
+<link=farming>Farming</link>, <link=mining>mining</link>, <link=hunting>hunting\
+</link> and <link=logging>logging</link> are all performed by peasants.  There \
+are a few <link=building>buildings</link> which use peasant labor, but for the \
+most part they are consigned to hard work outdoors.\n\
+\n\
+Peasants also form the backbone of nearly any <link=city>city</link>.  After \
+all, few cities could last long without farmers or hunters, and the jobs \
+peasants perform tend to exist in much higher numbers than nearly any other \
+work.  Most <link=race>races</link> begin new cities with no citizens other \
+than peasants, so the ability to manage them is crucial.  Fortunately, it's \
+very easy to do; peasants have few <link=morale>morale</link> needs, and are \
+easy to house and feed.  However, this doesn't mean you can abuse them \
+endlessly; if peasants are made unhappy enough (and <link=fear>fear</link> no \
+longer keeps them in line), they may stage a bloody <link=revolt>revolt\
+</link>.\n\
+\n\
+Peasants are also an important component of any <link=army>army</link>, where \
+they are employed as <link=infantry>infantry</link>.  Though they cannot take \
+on any advanced military training, it is often by sheer numbers that battles \
+are won or lost, and sheer numbers are were peasants excel.\n\
+\n\
+Peasants consume <c=green>1 food<c=/> apiece each day.  When not working an \
+assigned job, they produce <c=green>0.3 gold<c=/> apiece each day; this income \
+may be taxed.\
+");
+
+  _article("Merchant");
+  _redirect("Merchants");
+
+  _article("Merchants");
+  _type("Citizen Type");
+  _text("\
+Merchants are the middle class of Edigotia.  Counting several merchants among \
+its <link=citizens>citizens</link> is what turns a small town into a proper \
+<link=city>city</link>.  Merchants are your town's craftsmen and artisans, \
+finding work in specialized <link=building>buildings</link> rather than in the \
+fields like <link=peasants>peasants</link>.  They are required if your city is \
+to produce its own <link=weapon>weapons</link>, <link=luxury>crafted goods\
+</link>, and anything else that requires skilled production.  Merchants \
+require finer <link=housing>housing</link> and more <link=food>food</link> \
+than peasants, and they also have some morale demands which usually need to be \
+addressed through luxuries.  If merchants are upset enough, they may either \
+<link=revolt>revolt</link> violently or stage a <link=strike>strike</link>.\n\
+\n\
+Most <link=race>races</link> do not begin new cities with any merchants.  If \
+your peasants are happy and healthy, a merchant will eventually be born.  This \
+will generally <link=unlockables>unlock</link> a wide range of buildings which \
+use merchants as their employees, allowing you to put the merchant to work \
+producing goods.  You can also leave the merchant unemployed, allowing them to \
+produce an income which can then be <link=taxes>taxed</link>.\n\
+\n\
+In <link=army>armies</link>, merchants are your skilled warriors.  Any \
+<link=weapon>weapon</link> which requires special training to use needs a \
+merchant behind it; this includes <link=bow>bows</link>, which are cheap to \
+build and make your army much more deadly.  Merchants can also be trained in \
+non-combat roles such as <link=medic>medicine</link> to help heal wounded \
+soldiers.  Finally, merchants can become low-level <link=mage>mages</link>, \
+another way to multiply the deadliness of your army.\n\
+\n\
+Merchants consume <c=green>1.4 food<c=/> apiece each day.  When not working an \
+assigned job, they produce <c=green>0.8 gold<c=/> apiece each day; this income \
+may be taxed.\
+");
+
+  _article("Burgher");
+  _redirect("Burghers");
+
+  _article("Burghers");
+  _type("Citizen Type");
+  _text("\
+Burghers are the highest class of <link=citizens>citizen</link> (not counting \
+<link=noble>nobles</link>, of course).  They demand high-cost, low-density \
+<link=housing>housing</link>, large amounts of <link=food>food</link>, and the \
+finest <link=luxuries>luxuries</link>.  If burghers are not kept happy, they \
+may stage a <link=strike>strike</link> or cause more serious trouble.  They \
+are also in constant danger of <link=emigration>emigrating</link> to a nearby \
+city which provides better amenities.\n\
+\n\
+Burghers are the rarest of all citizens, so it is fitting that the jobs they \
+may fill are few and far between.  Generally burghers work as high-ranking \
+officials, either in civic positions (for instance, as a <link=court>judge\
+</link>) or social ones (as the president of a <link=university>university\
+</link> for instance).  However, when self-employed burghers are a great asset \
+as well, as they generate a huge amount of <link=taxes>taxable</link> income.\n\
+\n\
+In <link=army>armies</link>, burghers serve as <link=commander>commanders\
+</link>, multiplying the effectiveness of all soldiers under their command.  \
+They may also take on the role of a powerful <link=mage>mage</link>, casting a \
+variety of spells in combat.\n\
+\n\
+Burghers consume <c=green>1.8 food<c=/> apiece each day.  When not working an \
+assigned job, they produce <c=green>25 gold<c=/> apiece each day; this income \
+may be taxed.\
+");
+
+  _article("Slave");
+  _redirect("Slaves");
+
+  _article("Slaves");
+  _type("Citizen Type");
+  _text("\
+Slaves are a special type of <link=citizens>citizen</link>, kept in your \
+<link=city>city</link> against their will.  They can perform all the same jobs \
+as <link=peasants>peasants</link>, but are paid no wages.  Unlike peasants or \
+other citizens, slaves will not generate any income when not employed (but \
+will still need to be <link=food>fed</link>).  Slaves do have a \
+<link=morale>morale</link> level, but it can never rise above zero.  Over \
+time, slaves' morale will decrease to negative levels, and will do so faster \
+the more they are required to work.  If slave morale decreases far enough, \
+they may stage a <link=revolt>revolt</link>.
+\n\
+Slaves can be acquired in many ways.  Your <link=laws>laws</link> may cite \
+slavery as punishment for various <link=crime>crimes</link>.  When you defeat \
+an <link=army>army</link> or invade a city, you may capture your enemies as \
+slaves.  Slaves can also be <link=trade>bought or sold</link> as \
+<link=resources>resources</link> are.\n\
+\n\
+Even in the often-harsh world of Edigotia, keeping slaves can be a \
+controversial decision.  The presence of slaves in your city will decrease the \
+morale of all other citizens by an amount proportional to your <link=race>race\
+</link>'s <link=value of life>value of life</link>.  Other cities who do not \
+keep slaves will look down on you for this cold-hearted act.  Should you have \
+a change of heart and decide to free some or all of your slaves, they will \
+either <link=emigration>emigrate</link> to a nearby city or flee to the \
+countryside to live as <link=homesteaders>homesteaders</link>.  Rarely, they \
+may opt to join your city as free peasants.\n\
+\n\
+Slaves consume <c=green>0.5 food<c=/> apiece each day.\
+");
+
+  _article("Homesteader");
+  _redirect("Homesteaders");
+
+  _article("Homesteaders");
+  _type("Game Concept");
+  _text("\
+Homesteaders are men and women who live beyond the borders of any \
+<link=city>city</link>.  They are generally considered to be \
+<link=citizen>citizens</link> of whichever <link=duchy>duchy</link> and \
+<link=kingdom>kingdom</link> they happen to live in, but owe them no \
+allegiance; they will not fight in its <link=war>wars</link> nor pay any \
+<link=taxes>taxes</link>.\n\
+\n\
+Homesteaders can be found in varying numbers throughout any kingdom.  They are \
+found in the highest numbers at a certain distance from cities; they do not \
+like to live too close to any city (particularly large ones, duchy seats and \
+kingdom capitals), but they also don't like to be too far from these hubs of \
+<link=trade>trade</link>.  Homesteaders are never found in the wilderness \
+unclaimed by any kingdom.\n\
+\n\
+Using the <link=world map>world map</link>, you can see a rough estimate of \
+the number of homesteaders on any given tile.  By sending an emissary to these \
+settlements, you can try to persuade homesteaders to \
+<link=immigration>immigrate</link> to your city; this is more effective if you \
+send a <link=noble>noble</link>, particularly one skilled at negotiation.  \
+Homesteaders may also be tempted to immigrate without coaxing if your city is \
+very successful, offering its citizens a wealth of <link=luxuries>luxuries\
+</link> combined with low taxes (the latter is more important to the freedom-\
+loving homesteaders!).  Highly restrictive <link=laws>laws</link> will be very \
+offputting to homesteaders.\
+");
+
+  _article("Housing");
+  _type("Game Concept");
+  _text("\
+All <link=citizens>citizens</link> (with the exception of <link=slaves>slaves\
+</link) require housing.  Citizens without a home will be unable to work or \
+produce income, and essentially exist only as a burden on your <link=city>city\
+</link>.\n\
+\n\
+Housing takes the form of several <link=area>areas</link>.  Most housing \
+serves one type of citizen; the higher classes demand housing that is more \
+expensive to build and maintain, and hold fewer citizens.  Since the \
+<link=city radius>available space</link> you have to build areas is limited, \
+it's important to plan carefully to ensure you're able to build all the \
+necessary housing for your citizens (and any citizens yet to be born!).\n\
+\n\
+Cities always start with a <link=keep>keep</link>, which provides a home for \
+several citizens of all classes.  Once your keep is full, you will need to \
+build <link=hovels>hovels</link> for <link=peasants>peasants</link>, \
+<link=houses>houses</link> for <link=merchants>merchants</link>, and \
+<link=manor>manors</link> for <link=burghers>burghers</link>.\
+");
+
+  _article("Resource");
+  _redirect("Resources");
+
+// TODO:  This article states "no city can survive without food," which won't be
+//        true if golems are added.
+  _article("Resources");
+  _type("Game Concept");
+  _text("\
+<c=magenta>See the article <link=List of Resources>List of Resources</link> \
+<c=magenta>for a list of all resources in the game.<c=/>\n\
+\n\
+Resources are valuable goods that <link=city>cities</link> can produce, \
+consume, and trade.  They are vital for the growth and development of any \
+city, can be used to keep your <link=citizens>citizens</link> happy, forged \
+into weapons, or traded to others.  As such, resource management is a vital \
+part of city management.\n\
+\n\
+Resources are similar to but distinct from <link=minerals>minerals</link>.  \
+Minerals are acquired strictly through <link=mining>mining</link> or trade, \
+and are useless (except as an export) until <link=smeltery>smelted</link> into \
+a resource form.
+\n\
+<link=gold>Gold</link> can be considered the most basic resource.  It has no \
+use of its own aside from as a currency, traded between cities, or paid to \
+citizens as wages, then recollected as <link=taxes>taxes</link>.\n\
+<link=food>Food</link> is the most essential resource; without it, no city can \
+last for long.  Fortunately, there are a wide range of sources for food, from \
+<link=farming>farming</link> to <link=hunting>hunting</link>, and it can \
+always be imported if need be.\n\
+<link=wood>Wood</link> and <link=stone>stone</link> are used to craft a \
+variety of goods, but their most important use is in building new \
+<link=area>areas</link> and <link=building>buildings</link> for your city.  A \
+new city will start out with healthy amounts of both, and both can usually be \
+easily acquired from the land.\n\
+\n\
+In addition to these four essential resources, there are many others such as \
+<link=fiber>fiber</link> and <link=leather>leather</link> which are not useful \
+on their own, but which can be crafted into other resources, if the correct \
+building is available.\n\
+Finally, a wide variety of resources are used as <link=luxuries>luxuries\
+</link>.  These resources can be dispensed to your citizens as a way of \
+improving their <link=morale>morale</link>.  Not all luxuries are equal; some \
+are more highly prized, and result in a higher morale bonus, than others.  The \
+expense of producing or trading for a luxury tends to be on par with the \
+benefits it confers.\n\
+\n\
+There are a few <c=yellow>concepts<c=/> which are treated like resources.  \
+These are referred to as <c=white>metaresources<c=/> and are not physical \
+goods, and as such cannot be stored or traded.  However, they are produced by \
+areas and may lead to other resources being acquired.  These metaresources \
+include farming, mining, hunting, and <link=logging>logging</link>.\
+");
+
+  _article("Luxury");
+  _redirect("Luxuries");
+
+// TODO:  Include information in this article about some of the negative effects
+//        of drugs, like addiction, health effects, or effects on labor output
+  _article("Luxuries");
+  _type("Game Concept");
+  _text("\
+Luxuries are a type of <link=resources>resource</link> which may be consumed \
+by your <link=citizens>citizens</link> to improve their <link=morale>morale\
+</link>.  Luxuries may be a natural product, like <link=salt>salt</link>, or a \
+manufactured good like <link=jewelry>jewelry</link>.\n\
+\n\
+Each luxury has two important values: the <c=yellow>morale<c=/> it may bestow, \
+and the <c=yellow>standard demand<c=/>.  The standard demand is how many \
+units, under normal circumstances, 100 citizens need to have (per day) to \
+receive the full morale bonus.  Under certain circumstances, your citizens may \
+demand even more, but this is rare.  The standard demand for consumable \
+products (like luxury foods or drugs) tends to be rather high, since once a \
+citizen receives the item they will use it up quickly.  Other more permanent \
+items like <link=furniture>furniture</link> have a much lower standard demand, \
+since once bought a piece may last a long time.  Luxuries with a lower \
+standard demand tend to be priced more highly.\n\
+\n\
+Some luxuries are divided into types, such as \"coats.\"  Out of all the \
+luxuries in a category, only one will be truly demanded and have the full \
+standard demand and morale boost values.  The rest will have half the normal \
+demand, and only earn two-fifths the normal morale.  This reflects the whims \
+of fashion and popularity.  In our \"coats\" example, there are two luxuries \
+that are considered to be coats; <link=fur coats>fur coats</link> and \
+<link=leather coats>leather coats</link>.  If fur coats are the \
+currently-fashionable choice, then leather coats will not be nearly as valued \
+as fur coats.\n\
+Each class of citizens has its own opinions on fashion; what \
+<link=peasants>peasants</link> find desirable may be unpopular among the \
+<link=merchants>merchants</link>.  Whichever product finds its way into the \
+hands of your citizens first will always be the desired product.  However, the \
+winds of fashion change frequently, and every so often there is a chance for \
+another currently-available luxury to take over as the preferred good.  What's \
+more, other cities may use propaganda - books, traveling salesmen, etc - to \
+try and persuade your citizens that a certain product (usually the one they \
+produce) is the better pick!\n\
+\n\
+A full list of luxury categories may be seen at \
+<link=List of Luxury Categories>List of Luxury Categories</link>.\
 ");
 
 // TODO:  This includes a hard-coded list of world improvements.  Clearly not
@@ -583,6 +882,36 @@ their placement; for instance, <link=mountainous>mountains</link> are already \
 hard to pass, so you can place walls in the gaps between mountains.\
 ");
 
+// Automatically populated articles
+
+// List of Resources
+  _article("List of Resources");
+  _type("Index");
+  std::stringstream ss_resources;
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource_datum* res_dat = Resource_data[i];
+    ss_resources << "<link=" << res_dat->name << ">" << res_dat->name <<
+                    "</link>";
+    if (res_dat->meta) {
+      ss_resources << "  <c=magenta>(Non-physical metaresource)<c=/>";
+    } else if (res_dat->morale > 0) {
+      ss_resources << "  <c=ltgreen>(Luxury)<c=/>";
+    ss_resources << "\n";
+  }
+  _text( ss_resources.str() );
+
+// List of Luxury Categories
+  _article("Luxury Categories");
+  _redirect("List of Luxury Categories");
+
+  _article("List of Luxury Categories");
+  _type("Index");
+  std::stringstream ss_luxcat;
+  for (int i = 1; i < LUX_MAX; i++) {
+    ss_luxcat << luxury_type_name( Luxury_type(i) ) << std::endl;
+  }
+  _text( ss_luxcat.str() );
+
 // Add all Area_datums to the help database!
   for (int i = 0; i < AREA_MAX; i++) {
     Area_datum* area_dat = Area_data[i];
@@ -625,7 +954,7 @@ hard to pass, so you can place walls in the gaps between mountains.\
   }
 
   _article("List of Races");
-  _type("Game Concept");
+  _type("Index");
   _text( race_list_text.str() );
 
   HELP->process_categories();
