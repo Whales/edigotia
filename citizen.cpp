@@ -481,7 +481,7 @@ int citizen_food_consumption(Citizen_type type)
 {
   switch (type) {
     case CIT_NULL:      return   0;
-    case CIT_SLAVE:     return 500;
+    case CIT_SLAVE:     return  50;
     case CIT_PEASANT:   return 100;
     case CIT_MERCHANT:  return 140;
     case CIT_BURGHER:   return 180;
@@ -499,7 +499,7 @@ int citizen_idle_income(Citizen_type type)
     case CIT_SLAVE:     return   0;
     case CIT_PEASANT:   return  30;
     case CIT_MERCHANT:  return  80;
-    case CIT_BURGHER:   return 150;
+    case CIT_BURGHER:   return 250;
     case CIT_MAX:       return   0;
     default:            return   0;
   }
