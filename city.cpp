@@ -246,11 +246,27 @@ void City::setup_trade_routes()
     if (target != this && manhattan_dist(location, target->location) <= 100) {
       int dist = GAME->world->get_trade_distance(race, location,
                                                  target->location);
+      int overhd = dist + 5;
       if (target->race != race) {
-        dist = dist * 1.2;  // Penalty for trading outside our race
+        Race_datum* our_race_dat = Race_data[race];
+        Race_datum* their_race_dat = Race_data[target->race];
+        int our_relation = our_race_dat->relations[target->race];
+        int their_relation = their_race_dat->relations[race];
+// Positive relations have a smaller/no impact on this penalty.
+        if (our_relation > 0) {
+          our_relation /= 2;
+        }
+        if (their_relation > 0) {
+          their_relation /= 2;
+        }
+        int penalty = 11 - our_relation - their_relation;
+// If our races like each other, there might be no penalty!
+        if (penalty > 10) {
+          overhd = (overhd * penalty) / 10;
+        }
       }
       if (dist >= 0 && dist <= 5000) { // 50 days' travel
-        trade_routes[target->uid] = Trade_route(target->location, dist);
+        trade_routes[target->uid] = Trade_route(target->location, dist, overhd);
       }
     }
   }
