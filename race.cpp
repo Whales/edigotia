@@ -191,37 +191,98 @@ std::string Race_datum::generate_help_text()
   std::stringstream ret;
   ret << "<c=" << color_tag(color) << ">" << capitalize(plural_name) <<
          "<c=/>" << std::endl;
-  ret << "<c=ltgreen>Starting population: " << std::endl;
+  ret << "<c=ltgreen>Starting population:<c=/> " << std::endl;
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
-    ret << "  " << citizen_type_name( Citizen_type(i), true ) << ": " <<
-           starting_population[i] << std::endl;
+    std::string cit_name = citizen_type_name( Citizen_type(i), true);
+    cit_name = capitalize(cit_name);
+    ret << "  " << cit_name << ":";
+    for (int n = 0; n < 10 - cit_name.length(); n++) {
+      ret << " ";
+    }
+    if (starting_population[i] < 10) {
+      ret << "  ";
+    } else if (starting_population[i] < 100) {
+      ret << " ";
+    }
+    if (starting_population[i] == 0) {
+      ret << "<c=dkgray>";
+    } else {
+      ret << "<c=ltgray>";
+    }
+    ret << starting_population[i] << "<c=/>" << std::endl;
   }
   ret << std::endl;
-  ret << "<c=yellow>Starting resources: " << std::endl;
+  ret << "<c=yellow>Starting resources:<c=/> " << std::endl;
   for (int i = 0; i < RES_MAX; i++) {
     if (starting_resources[i] > 0) {
-      ret << "  " << Resource_data[i]->name << ": " << starting_resources[i] <<
-             std::endl;
+      std::string res_name = capitalize( Resource_data[i]->name );
+      if (res_name.length() > 15) {
+        res_name = res_name.substr(0, 15);
+      }
+      ret << "  " << res_name << ":";
+      for (int n = 0; n < 16 - res_name.length(); n++) {
+        ret << " ";
+      }
+      std::string amount_str = itos(starting_resources[i]);
+      if (amount_str.length() < 6) {
+        for (int n = 0; n < 6 - amount_str.length(); n++) {
+          ret << " ";
+        }
+      }
+      ret << amount_str << std::endl;
     }
   }
-  ret << std::endl;
-  ret << "<c=ltred>Base combat skill: " << base_combat << "<c=/>" << std::endl;
-  ret << "<c=ltred>HP: " << hp << "<c=/>" << std::endl;
 
-  ret << "<c=white>Citizen:      Birth rate:      Acceptable tax range:<c=/>";
+  ret << std::endl;
+  std::string combat_color = "white";
+  if (base_combat >= 14) {
+    combat_color = "ltgreen";
+  } else if (base_combat >= 11) {
+    combat_color = "ltblue";
+  } else if (base_combat <= 6) {
+    combat_color = "red";
+  } else if (base_combat <= 9) {
+    combat_color = "yellow";
+  }
+  ret << "<c=ltred>Base combat skill: <c=" << combat_color << ">" <<
+         base_combat << "<c=/>" << std::endl;
+
+  std::string hp_color = "white";
+  if (hp >= 130) {
+    hp_color = "ltgreen";
+  } else if (hp > 100) {
+    hp_color = "ltblue";
+  } else if (hp <= 80) {
+    hp_color = "red";
+  } else if (hp < 100) {
+    hp_color = "yellow";
+  }
+  ret << "<c=ltred>HP: <c=" << hp_color << ">" << hp << "<c=/>" << std::endl;
+
+  ret << std::endl;
+  ret << "<c=white>Citizen:      Birth rate:     Acceptable tax range:<c=/>";
   for (int i = CIT_PEASANT; i <= CIT_BURGHER; i++) {
-    std::string cit_name = citizen_type_name( Citizen_type(i), true );
+    std::string cit_name = capitalize(citizen_type_name(Citizen_type(i), true));
     ret << "<c=white>" << cit_name << "<c=/>";
-    for (int n = 0; n < (21 - cit_name.length()); n++) {
+    for (int n = 0; n < (18 - cit_name.length()); n++) {
       ret << " ";
     }
     std::string rate_text = itos( birth_rate[i] * 100 );
-    ret << "<c=ltgreen>" << birth_rate[i] << "<c=/>";
-    for (int n = 0; n < (11 - rate_text.length()); n++) {
+    for (int n = 0; n < (6 - rate_text.length()); n++) {
       ret << " ";
     }
-    ret << "<c=yellow>" << low_tax_rate[i] << " - " << high_tax_rate[CIT_MAX] <<
-           "<c=/>" << std::endl;
+    ret << "<c=ltgreen>" << rate_text << "<c=/>";
+    ret << "        ";
+    if (low_tax_rate[i] < 10) {
+      ret << " ";
+    }
+    ret << "<c=yellow>" << low_tax_rate[i] << "  - ";
+    if (high_tax_rate[i] < 10) {
+      ret << "  ";
+    } else if (high_tax_rate[i] < 100) {
+      ret << " ";
+    }
+    ret << high_tax_rate[i] << "<c=/>" << std::endl;
   }
   ret << "<c=white>(Birth rate is the number of citizens required to result " <<
          "in one birth per day.)<c=/>" << std::endl << std::endl;
@@ -247,24 +308,47 @@ std::string Race_datum::generate_help_text()
 // Start at 1 to skip SKILL_NULL
   for (int i = 1; i < SKILL_MAX; i++) {
     std::string skill_name = race_skill_name( Race_skill(i) );
-    ret << "  <link=" << skill_name << ">" << skill_name << "</link>:  ";
-    for (int n = 0; n < (30 - skill_name.length()); n++) {
+    skill_name = capitalize_all_words(skill_name);
+    if (skill_name.length() > 18) {
+      skill_name = skill_name.substr(0, 18);
+    }
+    ret << "<link=" << skill_name << ">" << skill_name << "</link>:  ";
+    for (int n = 0; n < (19 - skill_name.length()); n++) {
       ret << " ";
     }
-    ret << "<c=white>" << skill_level[i] << "<c=/>" << std::endl;
+    std::string color_tag = "white";
+    switch (skill_level[i]) {
+      case 1: color_tag = "red";      break;
+      case 2: color_tag = "yellow";   break;
+      case 4: color_tag = "ltblue";   break;
+      case 5: color_tag = "ltgreen";  break;
+    }
+    ret << "<c=" << color_tag << ">" << skill_level[i] << "<c=/>" << std::endl;
   }
 
   ret << std::endl;
   ret << "<c=pink>Race relations:<c=/>" << std::endl;
 // Start at 1 to skip RACE_NULL
   for (int i = 1; i < RACE_MAX; i++) {
-    std::string race_name = Race_data[i]->name;
+    std::string race_name = capitalize( Race_data[i]->plural_name );
     ret << "<c=white>" << race_name << ":<c=/>";
     int extra_space = (relations[i] >= 0 ? 1 : 0);
-    for (int n = 0; n < (extra_space + 15 - race_name.length()); n++) {
-      ret << " ";
+    if (race_name.length() < 15) {
+      for (int n = 0; n < (extra_space + 15 - race_name.length()); n++) {
+        ret << " ";
+      }
     }
-    ret << relations[i] << std::endl;
+    std::string color_tag = "ltgray";
+    if (relations[i] <= -3) {
+      color_tag = "red";
+    } else if (relations[i] < 0) {
+      color_tag = "yellow";
+    } else if (relations[i] >= 3) {
+      color_tag = "ltgreen";
+    } else if (relations[i] > 0) {
+      color_tag = "ltblue";
+    }
+    ret << "<c=" << color_tag << ">" << relations[i] << "<c=/>" << std::endl;
   }
 
 // TODO: Incude map_type_travel_cost
@@ -298,6 +382,7 @@ std::string race_skill_name(Race_skill skill)
     case SKILL_FORESTRY:      return "forestry";
     case SKILL_CONSTRUCTION:  return "construction";
     case SKILL_TRADE:         return "trade";
+    case SKILL_ESPIONAGE:     return "espionage";
     case SKILL_MAGIC:         return "magic";
     case SKILL_EARTH_MAGIC:   return "earth magic";
     case SKILL_WATER_MAGIC:   return "water magic";
