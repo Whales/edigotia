@@ -10,6 +10,21 @@
 
 class World_map;
 
+// Parameters for decision-making
+struct AI_mayor
+{
+  AI_mayor();
+  ~AI_mayor();
+
+  void randomize();
+
+// *** DATA ***
+
+// How aggressively do we reduce our export prices to combat high overhead?
+// Range is 1 - 9; 9 may mean very low prices!
+  int price_aggressiveness;
+};
+
 class AI_city : public City
 {
 public:
@@ -33,6 +48,8 @@ public:
   virtual int get_daily_demand(Mineral  min);
 
   virtual int get_gross_resource_production (Resource res);
+
+  virtual void set_all_prices();
 
   std::string list_production();  // For now, this is just debug output.
 
@@ -75,10 +92,13 @@ private:
   void add_mineral_production(Mineral min, int amount);
 
   void init_demands();  // Looks at what we lack for recipes etc
+  void set_price(Resource res);
 
 // *** DATA ***
 
   City_role role;
+
+  AI_mayor mayor;
 
 /* City control radius, like the player uses, except we only use it to figure
  * out what tiles we're going to be exploiting.  It's also largely abstracted;
