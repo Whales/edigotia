@@ -4,6 +4,7 @@
 #include "building.h"
 #include "race.h"
 #include "stringfunc.h" // For capitalize()
+#include <sstream>
 
 #define _article(n) \
   cur_article = new Help_article( (n) ); \
@@ -655,7 +656,7 @@ will still need to be <link=food>fed</link>).  Slaves do have a \
 <link=morale>morale</link> level, but it can never rise above zero.  Over \
 time, slaves' morale will decrease to negative levels, and will do so faster \
 the more they are required to work.  If slave morale decreases far enough, \
-they may stage a <link=revolt>revolt</link>.
+they may stage a <link=revolt>revolt</link>.\n\
 \n\
 Slaves can be acquired in many ways.  Your <link=laws>laws</link> may cite \
 slavery as punishment for various <link=crime>crimes</link>.  When you defeat \
@@ -750,7 +751,7 @@ part of city management.\n\
 Resources are similar to but distinct from <link=minerals>minerals</link>.  \
 Minerals are acquired strictly through <link=mining>mining</link> or trade, \
 and are useless (except as an export) until <link=smeltery>smelted</link> into \
-a resource form.
+a resource form.\n\
 \n\
 <link=gold>Gold</link> can be considered the most basic resource.  It has no \
 use of its own aside from as a currency, traded between cities, or paid to \
@@ -890,12 +891,19 @@ hard to pass, so you can place walls in the gaps between mountains.\
   std::stringstream ss_resources;
   for (int i = 1; i < RES_MAX; i++) {
     Resource_datum* res_dat = Resource_data[i];
-    ss_resources << "<link=" << res_dat->name << ">" << res_dat->name <<
-                    "</link>";
+    ss_resources << "<link=" << res_dat->name << ">" <<
+                    capitalize_all_words( res_dat->name ) << "</link>";
     if (res_dat->meta) {
-      ss_resources << "  <c=magenta>(Non-physical metaresource)<c=/>";
+      for (int n = 0; n < 24 - res_dat->name.length(); n++) {
+        ss_resources << " ";
+      }
+      ss_resources << "<c=magenta>(Non-physical metaresource)<c=/>";
     } else if (res_dat->morale > 0) {
-      ss_resources << "  <c=ltgreen>(Luxury)<c=/>";
+      for (int n = 0; n < 24 - res_dat->name.length(); n++) {
+        ss_resources << " ";
+      }
+      ss_resources << "<c=ltgreen>(Luxury)<c=/>";
+    }
     ss_resources << "\n";
   }
   _text( ss_resources.str() );
@@ -908,12 +916,13 @@ hard to pass, so you can place walls in the gaps between mountains.\
   _type("Index");
   std::stringstream ss_luxcat;
   for (int i = 1; i < LUX_MAX; i++) {
-    ss_luxcat << luxury_type_name( Luxury_type(i) ) << std::endl;
+    ss_luxcat << capitalize_all_words( luxury_type_name( Luxury_type(i) ) ) <<
+                 std::endl;
   }
   _text( ss_luxcat.str() );
 
 // Add all Area_datums to the help database!
-  for (int i = 0; i < AREA_MAX; i++) {
+  for (int i = 1; i < AREA_MAX; i++) {
     Area_datum* area_dat = Area_data[i];
     _article( capitalize( area_dat->name ) );
     _type("Area");
@@ -921,7 +930,7 @@ hard to pass, so you can place walls in the gaps between mountains.\
   }
 
 // Add all non-area Building_datums to the help database!
-  for (int i = 0; i < BUILD_MAX; i++) {
+  for (int i = 1; i < BUILD_MAX; i++) {
     Building_datum* build_dat = Building_data[i];
     if (build_dat->category != BUILDCAT_NULL) { // i.e. it's not an area
       _article( capitalize( build_dat->name ) );
@@ -936,7 +945,7 @@ hard to pass, so you can place walls in the gaps between mountains.\
   race_list_text << "The following is a list of all <link=race>races</link> " <<
                     "to be found in the world:" << std::endl << std::endl;
 
-  for (int i = 0; i < RACE_MAX; i++) {
+  for (int i = 1; i < RACE_MAX; i++) {
     Race_datum* race_dat = Race_data[i];
 
     std::string proper_name = capitalize( race_dat->plural_name );
@@ -947,10 +956,15 @@ hard to pass, so you can place walls in the gaps between mountains.\
     _type("Race");
     _text( race_dat->generate_help_text() );
 // Redirect other forms of their name to this article.
-    _article(  capitalize( race_dat->name        ) );
-    _redirect( capitalize( race_dat->plural_name ) );
-    _article(  capitalize( race_dat->adjective   ) );
-    _redirect( capitalize( race_dat->plural_name ) );
+// The if statements are to check that the name isn't the same as the plural/adj
+    if (!HELP->get_article( race_dat->name )) {
+      _article(  capitalize( race_dat->name        ) );
+      _redirect( capitalize( race_dat->plural_name ) );
+    }
+    if (!HELP->get_article( race_dat->adjective )) {
+      _article(  capitalize( race_dat->adjective   ) );
+      _redirect( capitalize( race_dat->plural_name ) );
+    }
   }
 
   _article("List of Races");
