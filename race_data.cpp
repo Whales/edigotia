@@ -198,6 +198,7 @@ void init_races()
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_ESPIONAGE,     3);
     _skill(SKILL_MAGIC,         2);
     _skill(SKILL_EARTH_MAGIC,   3);
     _skill(SKILL_WATER_MAGIC,   3);
@@ -317,8 +318,9 @@ and have no affinity for any particular <link=magical school>school</link>.\
     _skill(SKILL_FORESTRY,      5);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_ESPIONAGE,     4);
     _skill(SKILL_MAGIC,         4);
-    _skill(SKILL_EARTH_MAGIC,   4);
+    _skill(SKILL_EARTH_MAGIC,   3);
     _skill(SKILL_WATER_MAGIC,   3);
     _skill(SKILL_AIR_MAGIC,     2);
     _skill(SKILL_FIRE_MAGIC,    2);
@@ -334,7 +336,8 @@ excellently in forests, <link=jungle>jungles</link> and <link=swamp>swamps\
 fell a living tree, and they can not build sawmills.  Instead, elves can build \
 a <link=sacred grove>Sacred Grove</link>, an enchanted copse of trees which \
 willingly give up their branches for use.  Elves are also legendary for their \
-finely crafted bows, and prowess at hunting.\n\
+finely crafted <link=bow>bows</link>, and prowess at <link=hunting>hunting\
+</link>.\n\
 Elves have long lives, but are slow to give birth.  Many prefer to live as \
 <link=homesteader>loners</link> deep in the forest, and it may be difficult to \
 lure them into city living.  They are noble warriors with a strong sense of \
@@ -349,8 +352,7 @@ exceptions to this rule are <link=humans>humans</link> and \
 <link=dwarves>dwarves</link>, with whom the elves share a history of mutual \
 respect.\n\
 Elves are skilled <link=magic>spellcasters</link>, particularly in the \
-<link=magical school>schools</link> of <link=earth magic>earth</link> and \
-<link=life magic>life</link>.\
+<link=magical school>school</link> of <link=life magic>life</link>.\
 ");
 
 
@@ -470,6 +472,7 @@ Elves are skilled <link=magic>spellcasters</link>, particularly in the \
     _skill(SKILL_FORESTRY,      2);
     _skill(SKILL_CONSTRUCTION,  4);
     _skill(SKILL_TRADE,         4);
+    _skill(SKILL_ESPIONAGE,     3);
     _skill(SKILL_MAGIC,         2);
     _skill(SKILL_EARTH_MAGIC,   5);
     _skill(SKILL_WATER_MAGIC,   2);
@@ -479,7 +482,7 @@ Elves are skilled <link=magic>spellcasters</link>, particularly in the \
     _skill(SKILL_DEATH_MAGIC,   2);
 
     _description("\
-Dwarves are a stocky, short <link=race>race</link>.  They have a great \
+Dwarves are a short, stocky <link=race>race</link>.  They have a great \
 affinity for tunnels and caverns, and their small stature helps to make them \
 excellent <link=mining>miners</link>.  Because of this, dwarves are usually \
 most at home in <link=mountain>mountains</link> and <link=hill>foothills\
@@ -591,6 +594,7 @@ are, are among the most powerful in the world.\
     _high_tax_rate      (CIT_MERCHANT,  85);
     _high_tax_rate      (CIT_BURGHER,   70);
 
+    _relations(RACE_ELF,      -1);
     _relations(RACE_DWARF,     1);
     _relations(RACE_ORC,       2);
     _relations(RACE_GOBLIN,   -1);
@@ -600,7 +604,6 @@ are, are among the most powerful in the world.\
     _relations(RACE_GNOME,    -2);
     _relations(RACE_MINOTAUR,  2);
     _relations(RACE_RAKSHASA,  1);
-    _relations(RACE_NAGA,      1);
 
     _skill(SKILL_FARMING,       1);
     _skill(SKILL_HUNTING,       4);
@@ -609,6 +612,7 @@ are, are among the most powerful in the world.\
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_ESPIONAGE,     2);
     _skill(SKILL_MAGIC,         1);
     _skill(SKILL_EARTH_MAGIC,   2);
     _skill(SKILL_WATER_MAGIC,   1);
@@ -758,6 +762,7 @@ exceptions being <link=fire magic>fire</link> and <link=death magic>death\
     _skill(SKILL_FORESTRY,      2);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_ESPIONAGE,     5);
     _skill(SKILL_MAGIC,         2);
     _skill(SKILL_EARTH_MAGIC,   2);
     _skill(SKILL_WATER_MAGIC,   2);
@@ -786,15 +791,14 @@ value of a life; goblins don't find it particularly immoral to kill another \
 goblin, and suicide missions are accepted as a fact of life.  Goblin cities \
 tend to be dominated by the <link=peasants>peasant</link> population, as this \
 lowly caste feels more \"natural\" to them.  Though decent as \
-<link=farming>farmers, goblins fare poorly at the <link=hunting>hunt</link>, \
-and even worse at keeping <link=livestock>livestock</link>; they have \
+<link=farming>farmers</link>, goblins fare poorly at the <link=hunting>hunt\
+</link>, and even worse at keeping <link=livestock>livestock</link>; they have \
 absolutely no affinity for animals.\n\
 Goblins actually respect and even like members of other races, in particular \
 those seen as \"ugly\" by <link=humans>humans</link> and <link=elves>elves\
-</link> - whom the goblins despise due to their vanity and beauty \
-respectively.  Goblins carry a particular fondness for their cousins the \
-orcs.  Unfortunately for the poor goblins, almost none of these admirations \
-are returned.\n\
+</link> - whom the goblins despise due to their vanity and beauty.  Goblins \
+carry a particular fondness for their cousins the orcs.  Unfortunately for the \
+poor goblins, almost none of these admirations are returned.\n\
 Goblins are quite poor at the study of <link=magic>magic</link>, lacking both \
 the patience and the depth of thought required for its mastery.  They lack an \
 affinity for any of the <link=magical school>schools of magic</link>, save for \
@@ -922,6 +926,7 @@ affinity for any of the <link=magical school>schools of magic</link>, save for \
     _skill(SKILL_FORESTRY,      4);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_ESPIONAGE,     2);
     _skill(SKILL_MAGIC,         2);
     _skill(SKILL_EARTH_MAGIC,   4);
     _skill(SKILL_WATER_MAGIC,   4);
@@ -1045,6 +1050,7 @@ become a <link=mage>mage</link> they have a strong connection to \
     _skill(SKILL_FORESTRY,      1);
     _skill(SKILL_CONSTRUCTION,  1);
     _skill(SKILL_TRADE,         1);
+    _skill(SKILL_ESPIONAGE,     1);
     _skill(SKILL_MAGIC,         1);
     _skill(SKILL_EARTH_MAGIC,   2);
     _skill(SKILL_WATER_MAGIC,   1);
@@ -1085,7 +1091,9 @@ Trolls see little point in <link=diplomacy>diplomacy</link> or \
 food, not friends.  They are particularly loathe to fraternize with \
 <link=dwarves>dwarves</link>, their ancient enemies.  One (slight) exception \
 is the <link=orcs>orcs</link>, whose prowess in battle is respected (to a \
-degree) by trolls.\n\
+degree) by trolls.  Trolls are also particularly susceptible to the \
+\"glamour\" of the <link=rakshasa>rakshasa</link>, viewing them with a kind of \
+awe.\n\
 Trolls lack the intelligence or organization to pursue <link=magic>magic\
 </link>, and even if they did, they have essentially no connection to any of \
 the <link=magical school>magical schools</link> besides \
@@ -1196,6 +1204,7 @@ the <link=magical school>magical schools</link> besides \
     _skill(SKILL_FORESTRY,      4);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         2);
+    _skill(SKILL_ESPIONAGE,     3);
     _skill(SKILL_MAGIC,         3);
     _skill(SKILL_EARTH_MAGIC,   3);
     _skill(SKILL_WATER_MAGIC,   3);
@@ -1356,6 +1365,7 @@ destructive <link=magical school>schools</link> of <link=fire magic>fire\
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  3);
     _skill(SKILL_TRADE,         5);
+    _skill(SKILL_ESPIONAGE,     3);
     _skill(SKILL_MAGIC,         1);
     _skill(SKILL_EARTH_MAGIC,   4);
     _skill(SKILL_WATER_MAGIC,   2);
@@ -1374,7 +1384,7 @@ Gnomes are most famous for their love of <link=gold>gold</link> and skill in \
 <link=trade>trading</link> and all other forms of commerce.  However, gnomes \
 are not misers, and are happy to extend a <link=loan>loan</link> to nearly \
 anyone, particularly their fellow gnomes.\n\
-Unfortunately, many races oversee this and tend to regard gnomes with \
+Unfortunately, many races overlook this and tend to regard gnomes with \
 suspicion and distrust.  For their part, gnomes tend to like other races, \
 though they look down their noses a bit at those whom they see as \"country \
 bumpkins\" like <link=ogres>ogres</link> or <link=halfling>halflings</link>.  \
@@ -1479,7 +1489,7 @@ few other <link=magical school>schools</link>.\
     _high_tax_rate      (CIT_BURGHER,   65);
 
     _relations(RACE_ELF,       -1);
-    _relations(RACE_DWARF,      1);
+    _relations(RACE_DWARF,      2);
     _relations(RACE_GOBLIN,    -1);
     _relations(RACE_OGRE,       1);
     _relations(RACE_TROLL,     -2);
@@ -1495,6 +1505,7 @@ few other <link=magical school>schools</link>.\
     _skill(SKILL_FORESTRY,      3);
     _skill(SKILL_CONSTRUCTION,  5);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_ESPIONAGE,     2);
     _skill(SKILL_MAGIC,         2);
     _skill(SKILL_EARTH_MAGIC,   4);
     _skill(SKILL_WATER_MAGIC,   3);
@@ -1509,7 +1520,7 @@ bipedal <link=cow>cow</link>.  Like their bovine brethren, they are \
 <link=vegetarian>vegetarian</link>, and eat no meat.  They are at home in a \
 wide variety of environments, but prefer the open <link=farming>farmable\
 </link> terrain of <link=plains>plains</link>.  Minotaurs are famous for their \
-<link=construction>architecural</link> skills, and are proud of them.  Their \
+<link=construction>architectural</link> skills, and are proud of them.  Their \
 <link=building>buildings</link> are more ornate than any other race's, and \
 built more quickly to boot.\n\
 Minotaurs are a noble race, placing great value on the labor of their \
@@ -1650,8 +1661,9 @@ is not unknown to them.  They are equally skilled in all \
     _skill(SKILL_LIVESTOCK,     4);
     _skill(SKILL_MINING,        2);
     _skill(SKILL_FORESTRY,      2);
-    _skill(SKILL_CONSTRUCTION,  3);
+    _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         4);
+    _skill(SKILL_ESPIONAGE,     5);
     _skill(SKILL_MAGIC,         5);
     _skill(SKILL_EARTH_MAGIC,   4);
     _skill(SKILL_WATER_MAGIC,   4);
@@ -1686,7 +1698,7 @@ a result, most other races have a favorable reaction to rakshasa in \
 <link=diplomacy>diplomacy</link>.  Rakshasa, for their part, are a fairly \
 haughty race and tend to look down on other races, particularly those they see \
 as uncultured or agrarian.  There are a few exceptions, however; \
-<link=elves>Elves</link> for their hauteur, <link=gnomes>gnomes</link> for \
+<link=elves>elves</link> for their hauteur, <link=gnomes>gnomes</link> for \
 their scientific prowess, and <link=naga>naga</link> for their affinity with \
 magic.  Rakshasa consider fellow rakshasa to be beyond reproach, and attacking \
 their own kind would be as unthinkable (though not unheard of) as attacking \
@@ -1804,6 +1816,7 @@ their own siblings.\
     _skill(SKILL_FORESTRY,      4);
     _skill(SKILL_CONSTRUCTION,  2);
     _skill(SKILL_TRADE,         3);
+    _skill(SKILL_ESPIONAGE,     4);
     _skill(SKILL_MAGIC,         5);
     _skill(SKILL_EARTH_MAGIC,   4);
     _skill(SKILL_WATER_MAGIC,   5);
