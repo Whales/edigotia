@@ -37,6 +37,7 @@ public:
   void place_minor_cities(World_map* world, int radius = KINGDOM_CLAIM_RADIUS);
   void build_road(World_map* world, City* start, City* end);
   void expand_boundaries(World_map* world);
+  void setup_trade_routes(int base_percent);  // param is for progress bar
 
 // Data
   int uid;

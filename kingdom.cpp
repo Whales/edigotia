@@ -554,3 +554,30 @@ void Kingdom::expand_boundaries(World_map* world)
     claim_territory(world, points_to_claim[i]);
   }
 }
+
+void Kingdom::setup_trade_routes(int base_percent)
+{
+  int total_cities = 1 + dukes.size() + cities.size();
+  int percent = 100 / total_cities;
+  popup_nowait("Setting trade routes... [%d%%%%%%%%] / [%d%%%%%%%%]",
+               percent, base_percent);
+  capital->setup_trade_routes(40, false);
+  capital->set_all_prices();
+
+  for (int i = 0; i < dukes.size(); i++) {
+    percent = (100 * (i + 1)) / total_cities;
+    popup_nowait("Setting trade routes... [%d%%%%%%%%] / [%d%%%%%%%%]",
+                 percent, base_percent);
+    dukes[i]->setup_trade_routes(40, false);
+    dukes[i]->set_all_prices();
+  }
+
+  for (int i = 0; i < cities.size(); i++) {
+    int city_num = i + 1 + dukes.size();
+    percent = (100 * city_num) / total_cities;
+    popup_nowait("Setting trade routes... [%d%%%%%%%%] / [%d%%%%%%%%]",
+                 percent, base_percent);
+    cities[i]->setup_trade_routes(40, false);
+    cities[i]->set_all_prices();
+  }
+}
