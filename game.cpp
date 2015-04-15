@@ -315,7 +315,8 @@ void Game::generate_kingdoms()
 // Now each kingdom gets to place minor cities in its duchies.
   for (int i = 0; i < kingdoms.size(); i++) {
     int percent = (100 * (i + 1)) / kingdoms.size();
-    popup_nowait("Placing minor cities... [%d%%%%%%%%]", percent);
+    popup_nowait("Placing minor cities... [%d%%%%%%%%] [%d/%d]",
+                 percent, i + 1, kingdoms.size());
     kingdoms[i]->place_minor_cities(world);
   }
 
@@ -339,6 +340,12 @@ void Game::generate_kingdoms()
                    n + 1, expansions, i + 1, kingdoms.size());
       kingdoms[i]->expand_boundaries(world);
     }
+  }
+
+// And setup trade routes for all cities!
+  for (int i = 0; i < kingdoms.size(); i++) {
+    int base_percent = (100 * i) / kingdoms.size();
+    kingdoms[i]->setup_trade_routes(base_percent);
   }
 }
 
