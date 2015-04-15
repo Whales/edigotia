@@ -4,6 +4,21 @@
 #include "rng.h"
 #include <sstream>
 
+AI_mayor::AI_mayor()
+{
+  price_aggressiveness = 5;
+}
+
+AI_mayor::~AI_mayor()
+{
+}
+
+void AI_mayor::randomize()
+{
+// Gives us a 20% chance of 5, 83% chance of [3, 7]
+  price_aggressiveness = dice(2, 4) + rng(-1, 1);
+}
+
 AI_city::AI_city()
 {
   type = CITY_TYPE_CITY;
@@ -128,6 +143,9 @@ void AI_city::randomize_properties(World_map* world)
     return;
   }
 
+// Go ahead and randomize our mayor
+  mayor.randomize();
+
   Race_datum* race_dat = Race_data[race];
 
 // Set up our populations
@@ -178,6 +196,10 @@ void AI_city::randomize_properties(World_map* world)
   } else if (burghers > 0) {
     radius += 1;
   }
+
+  if (radius > CITY_MAP_SIZE / 2) {
+    radius = CITY_MAP_SIZE / 2;
+  }
   
 // Now, pick a City_role from our terrain.
   Map_type mtype = world->get_map_type(location);
@@ -226,7 +248,13 @@ void AI_city::setup_resource_production(World_map* world)
   for (int x = 0 - radius; x <= radius; x++) {
     for (int y = 0 - radius; y <= radius; y++) {
       int mx = CITY_MAP_SIZE / 2 + x, my = CITY_MAP_SIZE / 2 + y;
-      tiles.push_back( map.get_tile(mx, my) );
+      Map_tile* tmp_tile = map.get_tile(mx, my);
+      if (!tmp_tile) {
+        debugmsg("AI_city's map returned NULL for get_tile(%d, %d)!",
+                 mx, my);
+      } else {
+        tiles.push_back( map.get_tile(mx, my) );
+      }
     }
   }
 
@@ -336,6 +364,17 @@ int AI_city::get_gross_resource_production(Resource res)
     return resource_production[res];
   }
   return 0;
+}
+
+void AI_city::set_all_prices()
+{
+  for (int i = RES_NULL + 1; i < RES_MAX; i++) {
+    Resource res = Resource(i);
+    Resource_datum* res_dat = Resource_data[res];
+    if (!res_dat->meta) {
+      set_price(res);
+    }
+  }
 }
 
 std::string AI_city::list_production()
@@ -923,4 +962,49 @@ void AI_city::init_demands()
     resource_demand[RES_FOOD] = 1.1 * (0 - net_food);
   }
 
+}
+
+void AI_city::set_price(Resource res)
+{
+  if (res == RES_NULL) {
+    debugmsg("AI_city::set_price(RES_NULL) called!");
+    return;
+  }
+  if (res == RES_MAX) {
+    debugmsg("AI_city::set_price(RES_MAX) called!");
+    return;
+  }
+
+  Resource_datum* res_dat = Resource_data[res];
+  if (res_dat->meta) {
+    debugmsg("AI_city::set_price(%s) called (it's a meta-resource)!.",
+             res_dat->name.c_str());
+    return;
+  }
+
+  resource_price[res] = res_dat->value;
+
+  std::vector<Trade_route> buyers = find_buyers_for(res);
+
+  if (buyers.empty()) {
+    return; // No one will buy it (for now), so just charge the "normal" price!
+  }
+
+  int avg_overhead;
+  for (int i = 0; i < buyers.size(); i++) {
+    avg_overhead += buyers[i].overhead;
+  }
+  avg_overhead /= buyers.size();
+
+/* So, our price reduction formula looks like:
+ * ( (Normal Price) * (Avg Overhead) ) / (Price Aggressiveness)
+ * AI_mayor's price_aggressiveness value is on a scale from 1 to 9, but we want
+ * it to be on a scale of [25 * (3 to 11)]; also, in AI_mayor a higher number is
+ * more aggressive, but here lower is more aggressive.  So our actual
+ * aggressiveness is 25 * (12 - mayor.price_aggressiveness).
+ */
+
+  int aggressiveness = 25 * (12 - mayor.price_aggressiveness);
+  int reduction = (res_dat->value * avg_overhead) / aggressiveness;
+  resource_price[res] -= reduction;
 }
