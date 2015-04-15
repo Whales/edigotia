@@ -69,6 +69,7 @@ enum Race_skill
 
 // Intercity skills
   SKILL_TRADE,
+  SKILL_ESPIONAGE,
 
 // Magic skills
   SKILL_MAGIC,
