@@ -59,7 +59,7 @@ public:
   void set_random_name();
   void set_race(Race new_race);
   void set_city_type(City_type new_type);
-  void setup_trade_routes();
+  void setup_trade_routes(int range = 100, bool progress_bar = true);
 
   //void add_road_connection(City* neighbor);
 
@@ -82,6 +82,9 @@ public:
   std::vector<Trade_route> find_buyers_for(Resource res);
   int get_price(Resource res);
   int get_price(Mineral  min);
+
+// Set prices for all resources.
+  virtual void set_all_prices();
 
 // The quantity that we want on a daily basis.
 // NOTE: Both of these are overridden for AI_city and Player_city; as such, the

@@ -234,16 +234,19 @@ void City::set_city_type(City_type new_type)
   type = new_type;
 }
 
-void City::setup_trade_routes()
+// range defaults to 100, progress_bar defaults to true
+void City::setup_trade_routes(int range, bool progress_bar)
 {
   trade_routes.clear();
 
   for (int i = 0; i < GAME->world->city_list.size(); i++) {
     int percent = (100 * i) / GAME->world->city_list.size();
-    popup_nowait("Establishing trade routes... [%d%%%%%%%%]", percent);
+    if (progress_bar) {
+      popup_nowait("Establishing trade routes... [%d%%%%%%%%]", percent);
+    }
     City* target = GAME->world->city_list[i];
-// Don't consider cities that are more than 100 tiles away.
-    if (target != this && manhattan_dist(location, target->location) <= 100) {
+// Don't consider cities that are more than <range> tiles away.
+    if (target != this && manhattan_dist(location, target->location) <= range) {
       int dist = GAME->world->get_trade_distance(race, location,
                                                  target->location);
       int overhd = dist + 5;
@@ -405,6 +408,10 @@ int City::get_price(Resource res)
 int City::get_price(Mineral min)
 {
   return mineral_price[min];
+}
+
+void City::set_all_prices()
+{
 }
 
 // get_daily_demand() (both versions) are overridden for AI_city and Player_city
