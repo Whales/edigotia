@@ -21,6 +21,7 @@
 
 /* TODO: Write the following:
  *
+ * god
  * value of life
  * warlikeness
  * commander
