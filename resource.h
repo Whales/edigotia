@@ -69,6 +69,9 @@ enum Resource
   RES_FURNITURE,
   RES_JEWELRY,
 
+// Non-luxury produced goods
+  RES_BLANK_BOOK,
+
 // Meta-resources
   RES_FARMING,  // Can be any available crop
   RES_MINING,   // Available minerals, decided by the terrain
@@ -115,6 +118,8 @@ struct Resource_datum
   int morale; // Morale boost when the demand is met
   Luxury_type luxury_type;
   bool meta;  // True if it's not real; farming, mining, etc
+
+  std::string desription; // For help article
 };
 
 struct Resource_amount
@@ -231,18 +236,22 @@ struct Crop_datum
   Crop_type type;
 
   std::vector<Resource_amount> bonus_resources;
+
+  std::string description;
 };
 
 struct Mineral_datum
 {
+  Mineral_datum() { percentage = 0; value = 0; color = c_ltgray; hidden = false;
+                  }
+
   std::string name;
   int percentage;
   int value;  // Per 100 units
   nc_color color;
   bool hidden;
 
-  Mineral_datum() { percentage = 0; value = 0; color = c_ltgray; hidden = false;
-                  }
+  std::string description;
 };
 
 // These search for the name (trimmed & non-case-sensitive) in the data pools;
