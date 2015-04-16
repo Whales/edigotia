@@ -21,6 +21,8 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
   Resource_data[cur_id]->morale = (n)
 #define _meta() \
   Resource_data[cur_id]->meta = true
+#define _description(s) \
+  Resource_data[cur_id]->description = (s)
 
 // CROP MACROS
 #define _crop(n) \
@@ -45,6 +47,8 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
   Crop_data[cur_id]->bonus_resources.push_back( Resource_amount ( (t), (a) ) )
 #define _type(s) \
   Crop_data[cur_id]->type = (s)
+#define _cdescription(s) \
+  Crop_data[cur_id]->description = (s)
 
 // MINERAL MACROS
 #define _mineral(n) \
@@ -59,6 +63,8 @@ Mineral_datum*  Mineral_data  [MINERAL_MAX];
   Mineral_data[cur_id]->color = (c)
 #define _mhidden() \
   Mineral_data[cur_id]->hidden = true
+#define _mdescription(s) \
+  Mineral_data[cur_id]->description = (s)
 
 
 void init_resource_data()
@@ -84,64 +90,178 @@ void init_resource_data()
     _rname("gold");
     _rvalue(100);
     _rcolor(c_yellow);
+    _description("\
+Gold is the universally accepted currency of Edigotia.  This is its processed \
+form, as opposed to the <link=mineral>ore</link> mined out of the ground \
+(which can be <link=smeltery>smelted</link> to make usable gold).  While gold \
+is not required for trade, it does greatly facilitate it.  Also, it is a \
+necessary <link=resources>resource</link> for building many <link=area>areas\
+</link> and <link=building>buildings</link>, as well as for paying the wages \
+of workers.  Gold can be acquired from your citizens via <link=taxes>taxation\
+</link>.\
+");
 
   _resource(RES_FOOD);
     _rname("food");
     _rvalue(20);
     _rcolor(c_green);
+    _description("\
+Food is one of the most basic needs for a <link=city>city</link> to thrive.  \
+Without an adequate and continuous supply of food, your <link=citizens>citizens\
+</link> will go hungry, their health will suffer, and eventually they will die \
+of starvation.  Fortunately, there are several sources of food; \
+<link=farming>farming</link> and <link=hunting>hunting</link> are available to \
+any city with the proper <link=city map tile>terrain</link> (so long as your \
+<link=race>race</link> is competent at one or both of these).  As food is \
+relatively inexpensive, even a modest economy can <link=trade>trade</link> for \
+it.\
+");
 
   _resource(RES_WOOD);
     _rname("wood");
     _rvalue(30);
     _rcolor(c_ltred);
+    _description("\
+Wood is an important building material, and most new <link=city>cities</link> \
+start with a considerable supply of it.  Both <link=area>areas</link> and \
+<link=building>buildings</link> frequently require wood to be built.  Once \
+your starting supply of wood runs out, you'll either need to <link=trade>trade\
+</link> to get more, or <link=logging>harvest</link> some from the \
+<link=city map tile>land</link> using a <link=sawmill>sawmill</link>.  \
+<link=forest (terrain)>Forest</link> and <link=jungle (terrain)>jungle</link> \
+contain the most wood, with <link=swamp (terrain)>swamps</link> not far \
+behind, but even of map tiles will often have at least a few trees on them \
+which can be cut down.\n\
+Wood can also be used in a <link=woodworking shop>woodworking shop</link> to \
+craft a variety of goods, including several <link=luxuries>luxuries</link>.\
+");
 
   _resource(RES_STONE);
     _rname("stone");
     _rvalue(10);
     _rcolor(c_ltgray);
+    _description("\
+Stone is an important building material, and most new <link=city>cities</link> \
+start with a considerable supply of it.  Both <link=area>areas</link> and \
+<link=building>buildings</link> frequently require stone to be built.  Once \
+your starting supply of stone runs out, you'll either need to <link=trade>trade\
+</link> to get more, or <link=mining>mine</link> some from the \
+<link=city map tile>land</link> using a <link=mine>mine</link>.  Fortunately \
+stone is the most common <link=mineral>mineral</link>, and is available in \
+essentially-infinite amounts in <link=hill (terrain)>hills</link> and \
+<link=mountain (terrain)>mountains</link>.  After mining stone, you will have \
+to cut it into usable blocks at a <link=masonry>masonry</link>.\
+");
 
   _resource(RES_TIN);
     _rname("tin");
     _rvalue(15);
     _rcolor(c_ltcyan);
+    _description("\
+Tin is the most common and least valuable metal.  It can be <link=mining>mined\
+</link> from the ground in the form of <link=tin ore>tin ore</link>, and then \
+<link=smeltery>smelted</link> into this usable form.  Tin is too soft to be \
+used for <link=weapon>weapons</link>, but can be made into various \
+<link=luxury>luxuries</link> at a <link=smith>smith</link>.\
+");
 
   _resource(RES_COPPER);
     _rname("copper");
     _rvalue(30);
     _rcolor(c_ltred);
+    _description("\
+Copper is a shiny red metal which is relatively common.  It can be \
+<link=mining>mined</link> from the ground in the form of \
+<link=copper ore>copper ore</link>, then <link=smeltery>smelted</link> into \
+this usable form.  Copper can be used to make <link=weapon>weapons</link>, \
+though as it is rather soft they will not be of a high quality.  It can also \
+be fashioned into a variety of <link=luxury>luxuries</link> at a \
+<link=smith>smith</link>.\
+");
 
   _resource(RES_IRON);
     _rname("iron");
     _rvalue(50);
     _rcolor(c_cyan);
+    _description("\
+Iron is a hard, gray metal with a wide variety of uses.  It can be \
+<link=mining>mined</link> from the gorund in the form of \
+<link=iron ore>iron ore</link>, and then <link=smeltery>smelted</link> into \
+this usable form.  Iron is the best metal for making <link=weapon>weapons\
+</link>, and is also used for making heavy <link=armor>armor</link>.  Iron can \
+also be made into a variety of <link=luxury>luxuries</link> at a \
+<link=smith>smith</link>.\
+");
 
   _resource(RES_FIBER);
     _rname("fiber");
     _rvalue(14);
     _rcolor(c_ltgray);
+    _description("\
+Fiber refers to any of a variety of materials suitable for making \
+<link=clothing>clothing</link>.  Some <link=crops>crops</link> such as \
+<link=hemp>hemp</link> provide a source of fiber, and some \
+<link=livestock>livestock</link> <link=animal>animals</link>, such as \
+<link=sheep>sheep</link>, provide a wool which is an excellent fiber.  Fiber \
+can be sewn into clothing at a <link=tailor>tailor</link>, or used to make \
+paper for <link=book>books</link> at a <link=scribery>scribery</link>.\
+");
 
   _resource(RES_FUR);
     _rname("fur");
     _rvalue(16);
     _rcolor(c_brown);
+    _description("\
+Fur is the fine, long-haired pelt of any of a variety of <link=animal>animals\
+</link>.  Fur cannot be harvested without killing the animal, either in a \
+<link=hunting>hunt</link> or by slaughtering <link=livestock>livestock\
+</link>.  Fur is used to make <link=fur coats>fur coats</link> at a \
+<link=tailor>tailor</link>.\
+");
 
   _resource(RES_LEATHER);
     _rname("leather");
     _rvalue(16);
     _rcolor(c_brown);
+    _description("\
+Leather is the tough, hairless pelt of any of a variety of <link=animal>animals\
+</link>.  Leather cannot be harvested without killing the animal, either in a \
+<link=hunting>hunt</link> or by slaughtering <link=livestock>livestock\
+</link>.  Leather is used to make <link=leather coats>leather coats</link> at \
+a <link=tailor>tailor</link>, and can also be used to make light \
+<link=armor>leather armor</link>.\
+");
 
   _resource(RES_UNICORN_HORN);
     _rname("unicorn horn");
     _rvalue(5000);
     _rcolor(c_pink);
+    _description("\
+Unicorn horns are extremely rare and valuable.  They can only be obtained by \
+killing a <link=unicorn>unicorn</link>, one of the rarest <link=animal>beasts\
+</link> in all the land.  As killing a unicorn is considered a sin by many \
+<link=god>gods</link>, possessing a unicorn horn is both taboo and a great \
+status symbol.  Unicorn horns are a vital component in a variety of \
+<link=spell>spells</link>, particularly in the <link=magical school>schools\
+</link> of <link=life magic>life</link> and <link=death magic>death</link>.\
+");
 
   _resource(RES_SALT);
     _rname("salt");
-    _rvalue(25);
+    _rvalue(35);
     _rcolor(c_white);
     _luxury(LUX_NULL);  // Salt's technical a spice, but it's universally wanted
-    _demand(100);
-    _morale(6);
+    _demand(150);
+    _morale(8);
+    _description("\
+Salt is an extremely popular spice and an excellent preservative.  Its \
+universal appeal means that it is demanded by every citizen, and does not \
+compete with other spice <link=luxury>luxuries</link>.  It is the only luxury \
+to have a standard demand of more than 1 unit per citizen.  Salt can be \
+<link=mining>mined</link> from the ground in certain locations; in this case, \
+it is brought to the surface in a coarse form, mixed with other minerals, and \
+must be processed in a <link=kitchen>kitchen</link> prior to being eaten.\
+");
 
   _resource(RES_PEPPER);
     _rname("pepper");
@@ -150,6 +270,15 @@ void init_resource_data()
     _luxury(LUX_SPICE);
     _demand(80);
     _morale(5);
+    _description("\
+<c=magenta>For the crop, see <link=pepper>pepper</link><c=magenta>.<c=/>\n\
+\n\
+Pepper is a small fruit, dried and crushed for use as a slightly-hot \
+<link=luxury>spice</link>.  It is highly enjoyed by most.  As a spice, it \
+competes for popularity with <link=cinnamon (resource)>cinnamon</link>, \
+<link=cumin (resource)>cumin</link> and <link=paprika (resource)>paprika\
+</link>.\
+");
 
   _resource(RES_CINNAMON);
     _rname("cinnamon");
@@ -158,14 +287,33 @@ void init_resource_data()
     _luxury(LUX_SPICE);
     _demand(40);
     _morale(3);
+    _description("\
+<c=magenta>For the crop, see <link=cinnamon>cinnamon</link><c=magenta>.<c=/>\n\
+\n\
+Cinnamon is a <link=luxury>spice</link> obtained by drying the inner bark of \
+a certain tree.  It has a pungent flavor which enjoys moderate popularity.  As \
+a spice, it competes for popularity with <link=pepper (resource)>pepper\
+</link>, <link=cumin (resource)>cumin</link> and \
+<link=paprika (resource)>paprika</link>.\
+");
 
   _resource(RES_CUMIN);
     _rname("cumin");
     _rvalue(45);
     _rcolor(c_brown);
     _luxury(LUX_SPICE);
-    _demand(30);
+    _demand(35);
     _morale(5);
+    _description("\
+<c=magenta>For the crop, see <link=cumin>cumin</link><c=magenta>.<c=/>\n\
+\n\
+Cumin is a <link=luxury>spice</link> made by drying and crushing the seeds of \
+a low-growing plant.  It has a rich, smoky flavor which is greatly enjoyed by \
+a relatively small portion of the population. As a spice, it competes for \
+popularity with <link=pepper (resource)>pepper</link>, \
+<link=cinnamon (resource)>cinnamon</link> and <link=paprika (resource)>paprika\
+</link>.\
+");
 
   _resource(RES_PAPRIKA);
     _rname("paprika");
@@ -174,6 +322,16 @@ void init_resource_data()
     _luxury(LUX_SPICE);
     _demand(60);
     _morale(3);
+    _description("\
+<c=magenta>For the crop, see <link=paprika>paprika</link><c=magenta>.<c=/>\n\
+\n\
+Paprika is a <link=luxury>spice</link> which is made by drying a red pepper \
+and grinding it into a powder.  It has a mildly spicy, earthy, slightly-sweet \
+flavor which is enjoyed by much of the population.  As a spice, it competes \
+for popularity with <link=pepper (resource)>pepper</link>, \
+<link=cinnamon (resource)>cinnamon</link> and <link=cumin (resource)>cumin\
+</link>.\
+");
 
   _resource(RES_TOBACCO);
     _rname("tobacco");
@@ -283,6 +441,11 @@ void init_resource_data()
     _rcolor(c_magenta);
     _demand(5);
     _morale(12);
+
+  _resource(RES_BLANK_BOOK);
+    _rname("blank book");
+    _rvalue(50);
+    _rcolor(c_white);
 
   _resource(RES_FARMING);
     _rname("farming");
