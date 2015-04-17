@@ -3,11 +3,11 @@ Lumos        - God of light, purity, cleansing
   Beloved by: Dendroids
   Favored by: Humans, Lizardmen
   Shunned by: Naga, Arachnids
-Aeros        - God of wind, the weather
-!Needs fleshing out
-  Beloved by: Avians
-  Favored by: Gargoyles
-  Shunned by: Formicants
+  Aeros        - God of wind, the weather
+  !Needs fleshing out
+    Beloved by: Avians
+    Favored by: Gargoyles
+    Shunned by: Formicants
 Earth Mother - God of growth and decay
   Beloved by: Elves, Dendroids
   Favored by: Halfling, Formicants
@@ -16,10 +16,10 @@ Nephyrallo   - God of the ocean, swamps and rivers
   Beloved by: Merfolk
   Favored by: Naga, Humans
   Shunned by: Formicants, Trolls, Dwarves
-Vertumnus    - God of the seasons and changes
-  Beloved by:
-  Favored by: Trolls, Minotaur
-  Shunned by: Draconians, Lizardmen
+  Vertumnus    - God of the seasons and changes
+    Beloved by:
+    Favored by: Trolls, Minotaur
+    Shunned by: Draconians, Lizardmen
 
 INDUSTRY/PURSUITS:
 Forge Father - God of heat, industry
@@ -38,11 +38,11 @@ Bacchos      - God of hedonism and alcohol
   Beloved by: Felids, Rakshasa
   Favored by: Humans, Halflings
   Shunned by: 
-Ashlar       - God of masonry, form, structure, order
-  Beloved by: Minotaurs
-  Favored by: Dwarves, Formicants, Humans,
-  Shunned by: Felids
-Farlange     - God of roads, travel, exploration
+  Ashlar       - God of masonry, form, structure, order
+    Beloved by: Minotaurs
+    Favored by: Dwarves, Formicants, Humans,
+    Shunned by: Felids
+  Farlange     - God of roads, travel, exploration
 
 WARFARE/DIPLOMACY:
 Beogh   - God of warfare and bloodshed (Honorable warfare for its own sake)
@@ -61,21 +61,21 @@ Sekhmet - God of pestilence and ruin (Warfare which maximizes destruction)
   Beloved by: Trolls
   Favored by: Orcs
   Shunned by: Halflings, Dendroids
-Erimar  - God of deceit, spies
-  Beloved by: Goblins
-  Favored by: Kobolds, Naga, Halflings, Rakshasa
-  Shunned by: Orcs, Trolls, Draconians
+  Erimar  - God of deceit, spies
+    Beloved by: Goblins
+    Favored by: Kobolds, Naga, Halflings, Rakshasa
+    Shunned by: Orcs, Trolls, Draconians
 
 PURE RELIGION/UNIQUE:
 Fallos   - God of the dark arts and demons
   Beloved by: Rakshasa
 Artici  - God of witchcraft and spells
-Usstang  - God of insects, crawling things, hive minds, and poison
-  Beloved by: Arachnids
-  Favored by: Apiads, Formats
-  Shunned by: Humans, Elves, Dendroids
+  Usstang  - God of insects, crawling things, hive minds, and poison
+    Beloved by: Arachnids
+    Favored by: Apiads, Formats
+    Shunned by: Humans, Elves, Dendroids
 Elderos  - God of foresight
-Nur Derel - God of necromancy and preying upon the weak
+  Nur Derel - God of necromancy and preying upon the weak
 
 
 Each god appreciates worship.  Their opinion generally increases as the number
