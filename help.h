@@ -40,6 +40,8 @@ struct Help_article
 // set_text() looks for the <link=...> </link> tags and adds them as links.
   void set_text(std::string _text);
 
+  bool is_redirect();
+
   std::string name;
   std::string type; // The type of article, e.g. "race" "building" etc.
   std::string text;
@@ -62,12 +64,13 @@ enum Help_result_type
 struct Help_result
 {
   Help_result(std::string N = "", std::string AT = "",
-              Help_result_type T = HELP_RESULT_NULL) :
-    article_name (N), article_type (AT), type (T) { }
+              Help_result_type T = HELP_RESULT_NULL, bool IR = false) :
+    article_name (N), article_type (AT), type (T), is_redirect(IR) { }
 
   std::string article_name;
   std::string article_type;
   Help_result_type type;
+  bool is_redirect;
 };
 
 struct Help_database

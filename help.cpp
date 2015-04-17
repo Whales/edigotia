@@ -88,6 +88,11 @@ void Help_article::set_text(std::string _text)
 
 }
 
+bool Help_article::is_redirect()
+{
+  return !redirect.empty();
+}
+
 Help_database::Help_database()
 {
 }
@@ -192,12 +197,12 @@ std::vector<Help_result> Help_database::search(std::string term,
 
         if (non_exact && lookup_name.find(term) != std::string::npos) {
           Help_result title_match( it->second->name, it->second->type,
-                                   HELP_RESULT_TITLE );
+                                  HELP_RESULT_TITLE, it->second->is_redirect());
           title_matches.push_back( title_match );
 
         } else if (content && text->find(term) != std::string::npos) {
           Help_result text_match( it->second->name, it->second->type,
-                                   HELP_RESULT_TEXT );
+                                  HELP_RESULT_TEXT, it->second->is_redirect() );
           text_matches.push_back( text_match );
         }
 
