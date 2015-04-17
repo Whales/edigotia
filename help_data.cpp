@@ -910,16 +910,37 @@ hard to pass, so you can place walls in the gaps between mountains.\
   _text( ss_resources.str() );
 
 // List of Luxury Categories
+  _article("Luxury Type");
+  _redirect("List of Luxury Categories");
+
+  _article("Luxury Types");
+  _redirect("List of Luxury Categories");
+
+  _article("List of Luxury Types");
+  _redirect("List of Luxury Categories");
+
+  _article("Luxury Category");
+  _redirect("List of Luxury Categories");
+
   _article("Luxury Categories");
   _redirect("List of Luxury Categories");
 
+  std::stringstream ss_luxcat;
+  ss_luxcat << "This is a list of all the categories of " <<
+               "<link=luxury>luxuries</link> in the game.  For an " <<
+               "explaination of what this means, please see the Luxury " <<
+               "article." << std::endl << std::endl;
+
+  for (int i = 1; i < LUX_MAX; i++) {
+    Luxury_type lux_type = Luxury_type(i);
+    std::string type_name = capitalize_all_words( luxury_type_name(lux_type) );
+    ss_luxcat << type_name << std::endl;
+// Make the name of each luxury category redirect to "Luxury"
+    _article( type_name );
+    _redirect("Luxury");
+  }
   _article("List of Luxury Categories");
   _type("Index");
-  std::stringstream ss_luxcat;
-  for (int i = 1; i < LUX_MAX; i++) {
-    ss_luxcat << capitalize_all_words( luxury_type_name( Luxury_type(i) ) ) <<
-                 std::endl;
-  }
   _text( ss_luxcat.str() );
 
 // Add all Area_datums to the help database!
