@@ -119,7 +119,7 @@ struct Resource_datum
   Luxury_type luxury_type;
   bool meta;  // True if it's not real; farming, mining, etc
 
-  std::string desription; // For help article
+  std::string description; // For help article
 };
 
 struct Resource_amount
