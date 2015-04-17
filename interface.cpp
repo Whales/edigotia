@@ -4230,7 +4230,7 @@ void Interface::help_search()
   Window w_help(0, 0, 80, 24);
 
 // These affect the search results we include.
-  bool non_exact_search = false, content_search = false;
+  bool non_exact_search = true, content_search = false, redirects = false;
 
   std::string search_term;
 
@@ -4241,8 +4241,9 @@ void Interface::help_search()
   i_help.ref_data("entry_search",    &search_term);
   i_help.ref_data("list_articles",   &articles   );
   i_help.ref_data("list_categories", &categories );
-  i_help.set_data("text_non_exact",  "off"       );
-  i_help.set_data("text_content",    "off"       );
+  i_help.set_data("text_non_exact",  "<c=ltgreen>on<c=/>");
+  i_help.set_data("text_content",    "<c=blue>off<c=/>"  );
+  i_help.set_data("text_redirects",  "<c=blue>off<c=/>"  );
 
   i_help.select("entry_search");
 
@@ -4266,12 +4267,23 @@ void Interface::help_search()
 
       case ',':
         non_exact_search = !non_exact_search;
-        i_help.set_data("text_non_exact", (non_exact_search ? "on" : "off") );
+        i_help.set_data("text_non_exact",
+                        (non_exact_search ? "<c=ltgreen>on<c=/>" :
+                                            "<c=blue>off<c=/>"    ) );
         break;
 
       case '.':
         content_search = !content_search;
-        i_help.set_data("text_content", (content_search ? "on" : "off") );
+        i_help.set_data("text_content",
+                        (content_search ? "<c=ltgreen>on<c=/>" :
+                                          "<c=blue>off<c=/>"    ) );
+        break;
+
+      case '/':
+        redirects = !redirects;
+        i_help.set_data("text_redirects",
+                        (redirects ? "<c=ltgreen>on<c=/>" :
+                                     "<c=blue>off<c=/>"    ) );
         break;
 
       case '\n':
@@ -4280,6 +4292,7 @@ void Interface::help_search()
 // Fill the search results element
           if (results.empty()) {
             i_help.set_data("text_search_results", "<c=ltred>No results.<c=/>");
+
           } else {
             std::stringstream ss_results;
             ss_results << "<c=ltgreen>" << results.size() << " results.<c=/>";
@@ -4288,15 +4301,62 @@ void Interface::help_search()
 // Populate our vectors (and the interface's lists)
           articles.clear();
           categories.clear();
+
+          if (!redirects) { // Remove all redirects first.
+            for (int i = 0; i < results.size(); i++) {
+              if (results[i].is_redirect) {
+                results.erase( results.begin() + i);
+                i--;
+              }
+            }
+          }
+
           for (int i = 0; i < results.size(); i++) {
-            articles.push_back  ( results[i].article_name );
-            categories.push_back( results[i].article_type );
+            std::stringstream ss_name, ss_type;
+            if (results[i].is_redirect) {
+              ss_name << "<c=dkgray>";
+              ss_type << "<c=dkgray>";
+            } else {
+              switch (results[i].type) {
+                case HELP_RESULT_EXACT:
+                  ss_name << "<c=ltgreen>";
+                  ss_type << "<c=ltgreen>";
+                  break;
+                case HELP_RESULT_TITLE:
+                  ss_name << "<c=white>";
+                  ss_type << "<c=white>";
+                  break;
+              }
+            }
+
+            ss_name << results[i].article_name;
+
+            if (results[i].is_redirect) {
+              ss_type << "(Redirect: ";
+              Help_article* redir = HELP->get_article(results[i].article_name);
+              if (redir) {
+                ss_type << redir->name;
+              } else {
+                ss_type << "<c=red>ERROR<c=dkgray>";
+              }
+              ss_type << ")";
+
+            } else {  // Not a redirect; use the normal type name.
+              ss_type << results[i].article_type;
+            }
+
+            ss_name << "<c=/>";
+            ss_type << "<c=/>";
+
+            articles.push_back  ( ss_name.str() );
+            categories.push_back( ss_type.str() );
           }
           i_help.select("list_articles");
 
         } else {  // We were selecting an article from the list.
 
           std::string article_name = i_help.get_str("list_articles");
+          article_name = remove_color_tags( article_name );
           if (!article_name.empty()) {
             if (!help_article( article_name )) {
               return; // help_article() returns false to indicate "quit help"
@@ -4340,7 +4400,7 @@ bool Interface::help_article(std::string name)
 // Special case - no article found!
     i_help.set_data("text_title", "<c=ltred>Article not found.<c=/>");
     std::stringstream ss_error;
-    ss_error << "There is no article named <c=ltcyan>" << name << "<c=/>." <<
+    ss_error << "There is no article named '<c=ltcyan>" << name << "<c=/>'." <<
                 "  If you are seeing this, it is likely a bug!" << std::endl <<
                 std::endl << "Press any key to leave this screen...";
     i_help.set_data("text_content", ss_error.str());
