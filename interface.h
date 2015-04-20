@@ -151,9 +151,8 @@ private:
   void minister_morale();
 // Related; control of luxuries going to various citizens
   void luxury_management();
-// Information on your resources and minerals; allows the player to give fine
-// goods to citizens.
-  void minister_supplies();
+// Lists active trades and allows the player to set up new ones
+  void minister_trade();
 // Info on buildings; allows player to hire workers.
   void building_status();
   // Sets up the help box depending on circumstances
@@ -211,6 +210,7 @@ private:
   int next_menu_posx;
 
 // Current mode.
+  Player_city* pl_city; // Shorthand for GAME->city
   Game_state game_state; // e.g. "quit"
   Interface_mode cur_mode;
   Data_mode cur_data_mode;
