@@ -533,6 +533,7 @@ bool City::has_resources(std::map<Resource,int> res_used)
   return true;
 }
 
+// amount defaults to 1
 bool City::has_mineral(Mineral res, int amount)
 {
   return (get_mineral_amount(res) >= amount);

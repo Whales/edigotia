@@ -119,7 +119,7 @@ public:
   bool has_resources(std::vector<Resource_amount> res_used);
   bool has_resources(std::map<Resource,int>       res_used);
 
-  bool has_mineral (Mineral res, int amount);
+  bool has_mineral (Mineral res, int amount = 1);
   bool has_mineral (Mineral_amount res);
   bool has_minerals(std::vector<Mineral_amount> min_used);
   bool has_minerals(std::map<Mineral,int>       min_used);
