@@ -2958,14 +2958,19 @@ void Interface::minister_trade()
   cuss::interface i_trade_active;   // Our active trades
   cuss::interface i_trade_new;      // Set up a new trade
 
+  Trade_screen cur_screen = TRADE_SCREEN_SUPPLIES;
+
   Window w_trade(0, 0, 80, 24);
 
   if (!i_trade_supplies.load_from_file("cuss/trade_inventory.cuss")) {
     return;
   }
 
-  Trade_screen cur_screen = TRADE_SCREEN_SUPPLIES;
+  if (!i_trade_new.load_from_file("cuss/trade_new.cuss")) {
+    return;
+  }
 
+// Set up supplies screen
   std::vector<std::string> resource_name, resource_amt,
                            mineral_name, mineral_amt;
 
@@ -2994,12 +2999,45 @@ void Interface::minister_trade()
 
   i_trade_supplies.select("list_resources");
 
+
+// Set up new trade screen
+  std::vector<std::string> new_trade_resource, new_trade_sellers,
+                           new_trade_price;
+
+  for (int i = 1; i < RES_MAX; i++) {
+    Resource res = Resource(i);
+    std::vector<Trade_route> sellers = pl_city->find_sellers_of(res);
+    if (!sellers.empty()) {
+      std::string name = capitalize_all_words(Resource_data[res]->name);
+      new_trade_resource.push_back(name);
+      new_trade_sellers.push_back( itos(sellers.size()) );
+      int lowest_price = 99999;
+      for (int n = 0; n < sellers.size(); n++) {
+        Trade_route route = sellers[n];
+        City* city = GAME->world->get_city(route.target);
+        if (city) {
+          int price = city->get_price(res);
+          price += route.overhead;
+          if (price < lowest_price) {
+            lowest_price = price;
+          }
+        }
+      }
+      new_trade_price.push_back( itos(lowest_price) );
+    }
+  }
+
+  i_trade_new.ref_data("list_resource", &new_trade_resource);
+  i_trade_new.ref_data("list_sellers",  &new_trade_sellers);
+  i_trade_new.ref_data("list_price",    &new_trade_price);
+
+
   bool done = false;
 
   while (!done) {
     switch (cur_screen) {
 
-      case TRADE_SCREEN_SUPPLIES:
+      case TRADE_SCREEN_SUPPLIES: {
 
         i_trade_supplies.draw(&w_trade);
         w_trade.refresh();
@@ -3008,11 +3046,30 @@ void Interface::minister_trade()
 
         if (ch == 'q' || ch == 'Q') {
           done = true;
+        } else if (ch == '3') {
+          cur_screen = TRADE_SCREEN_NEW;
         } else {
           i_trade_supplies.handle_keypress(ch);
         }
 
-        break;
+      } break;
+
+      case TRADE_SCREEN_NEW: {
+
+        i_trade_new.draw(&w_trade);
+        w_trade.refresh();
+
+        long ch = input();
+
+        if (ch == 'q' || ch == 'Q') {
+          done = true;
+        } else if (ch == '1') {
+          cur_screen = TRADE_SCREEN_SUPPLIES;
+        } else {
+          i_trade_new.handle_keypress(ch);
+        }
+
+      } break;
     }
   }
 }
