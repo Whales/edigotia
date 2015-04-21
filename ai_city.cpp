@@ -990,7 +990,7 @@ void AI_city::set_price(Resource res)
     return; // No one will buy it (for now), so just charge the "normal" price!
   }
 
-  int avg_overhead;
+  int avg_overhead = 0;
   for (int i = 0; i < buyers.size(); i++) {
     avg_overhead += buyers[i].overhead;
   }
@@ -1007,4 +1007,5 @@ void AI_city::set_price(Resource res)
   int aggressiveness = 25 * (12 - mayor.price_aggressiveness);
   int reduction = (res_dat->value * avg_overhead) / aggressiveness;
   resource_price[res] -= reduction;
+//debugmsg("%s Price: value %d; avg_overhead %d; Agro %d [%d]; reduction %d; final %d", res_dat->name.c_str(), res_dat->value, avg_overhead, aggressiveness, mayor.price_aggressiveness, reduction, resource_price[res]);
 }
