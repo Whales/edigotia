@@ -249,7 +249,7 @@ void City::setup_trade_routes(int range, bool progress_bar)
     if (target != this && manhattan_dist(location, target->location) <= range) {
       int dist = GAME->world->get_trade_distance(race, location,
                                                  target->location);
-      int overhd = dist + 5;
+      int overhd = dist + 500;
       if (target->race != race) {
         Race_datum* our_race_dat = Race_data[race];
         Race_datum* their_race_dat = Race_data[target->race];
@@ -268,8 +268,16 @@ void City::setup_trade_routes(int range, bool progress_bar)
           overhd = (overhd * penalty) / 10;
         }
       }
+      overhd /= 100;  // Since dist is 100 times the days-of-travel!
       if (dist >= 0 && dist <= 5000) { // 50 days' travel
         trade_routes[target->uid] = Trade_route(target->location, dist, overhd);
+// Bug net
+        if (trade_routes[target->uid].overhead > 100) {
+          debugmsg("Trade_route overhead %d (calc'd %d)!  %s <=> %s, dist %s",
+                   trade_routes[target->uid].overhead, overhd,
+                   location.str().c_str(), target->location.str().c_str(),
+                   dist);
+        }
       }
     }
   }
