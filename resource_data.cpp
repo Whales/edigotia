@@ -335,11 +335,19 @@ for popularity with <link=pepper (resource)>pepper</link>, \
 
   _resource(RES_TOBACCO);
     _rname("tobacco");
-    _rvalue(30);
+    _rvalue(25);
     _rcolor(c_brown);
     _luxury(LUX_SMOKABLE);
     _demand(75);
-    _morale(5);
+    _morale(4);
+    _description("\
+<c=magenta>For the crop, see <link=tobacco>tobacco</link><c=magenta>.<c=/>\n\
+\n\
+Tobacco (the <link=luxury>luxury</link> good) is the dried leaves of the \
+tobacco plant.  When smoked, it acts as a mild stimulant and provides a \
+pleasant sense of relaxation.  It is widely popular.  As a casually-smoked \
+drug, it competes for popularity with <link=cannabis>cannabis</link>.\
+");
 
   _resource(RES_CANNABIS);
     _rname("cannabis");
@@ -348,6 +356,14 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_SMOKABLE);
     _demand(40);
     _morale(5);
+    _description("\
+Cannabis is a <link=luxury>smokable drug</link> made up of the flower buds of \
+the <link=hemp>hemp</link> plant.  When smoked, it gives the user a sense of \
+relaxation and expanded thoughts.  It is usually highly enjoyable, but due to \
+side effects such as anxiety and paranoia, it has limited popularity.  As a \
+casually-smoked drug, it competes for popularity with \
+<link=tobacco (resource)>tobacco</link>.\
+");
 
   _resource(RES_AMANITAS);
     _rname("amanitas");
@@ -356,6 +372,18 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HALLUCINOGEN);
     _demand(5);
     _morale(3);
+    _description("\
+<c=magenta>For the crop, see <link=amanitas>amanitas</link><c=magenta>.<c=/>\n\
+\n\
+Amanitas is a <link=luxury>hallucinogenic</link> mushroom.  It belongs to a \
+family of mushrooms which are mostly very poisonous, and must be parboiled \
+prior to ingestion.  Its effects are highly delirious, and considered \
+unpleasant by almost all of the population; however, those who brave the \
+mental breakdown it causes find their <link=morale>quality of life</link> \
+highly enhanced.  As a hallucinogen, it competes for popularity with \
+<link=ayahuasca (resource)>ayahuasca</link> and \
+<link=spicereed (resource)>spicereed</link>.\
+");
 
   _resource(RES_AYAHUASCA);
     _rname("ayahuasca");
@@ -364,6 +392,18 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HALLUCINOGEN);
     _demand(4);
     _morale(3);
+    _description("\
+<c=magenta>For the crop, see <link=ayahuasca>ayahuasca</link><c=magenta>.\
+<c=/>\n\
+\n\
+Ayahuasca is a <link=luxury>hallucinogenic</link> brew made from a tropical \
+vine, along with other plant ingredients (which are grown alongside the \
+vine).  It has a powerful dissociative effect on the mind, and is enjoyed by \
+very few; however, those few find that it brings a great deal of \
+<link=morale>happiness</link> to their lives.  As a hallucinogen, it competes \
+for popularity with <link=amanitas (resource)>amanitas</link> and \
+<link=spicereed (resource)>spicereed</link>.\
+");
 
   _resource(RES_SPICEREED);
     _rname("spicereed");
@@ -372,13 +412,43 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HALLUCINOGEN);
     _demand(30);
     _morale(4);
+    _description("\
+<c=magenta>For the crop, see <link=spicereed>spicereed</link><c=magenta>.\
+<c=/>\n\
+\n\
+Spicereed is a hallucinogenic, stimulant <link=luxury>drug</link> consisting \
+of a light blue, woody reed which is crushed and smoked.  Its effects are less \
+intense than other hallucinogens, and so it enjoys a much greater popularity.  \
+Users report minor, colorful visuals and a feeling of mind expansion and \
+joyful energy.  As a hallucinogen, it competes for popularity with \
+<link=amanitas (resource)>amanitas</link> and \
+<link=ayahuasca (resource)>ayahuasca</link>.\
+");
 
   _resource(RES_CLOTHING);
     _rname("clothing");
     _rvalue(35);
     _rcolor(c_white);
-    _demand(20);
+    _demand(15);
     _morale(2);
+    _description("\
+While <link=citizens>citizens</link> can make do with home-sewn clothing made \
+from fabric scraps, they greatly prefer finer clothing made by a \
+<link=tailor>tailor</link>.  For those with even finer taste, \
+<link=couture>couture</link> is available.\
+");
+
+  _resource(RES_COUTURE);
+    _rname("couture");
+    _rvalue(38);
+    _rcolor(c_white);
+    _demand(12);
+    _morale(2);
+    _description("\
+A level above regular <link=clothing>clothing</link>, couture is elegant \
+clothing made from the finest materials, including <link=fiber>fiber</link>, \
+<link=fur>fur</link> and <link=leather>leather</link>.\
+");
 
   _resource(RES_FUR_COATS);
     _rname("fur coats");
@@ -387,6 +457,12 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_COATS);
     _demand(10);
     _morale(3);
+    _description("\
+Fur coats are an elegant option to be worn over <link=clothing>clothing\
+</link>.  They are durably made, and do not need to be replaced very often.  \
+As a coat, they compete with <link=leather coats>leather coats</link> for \
+popularity.\
+");
 
   _resource(RES_LEATHER_COATS);
     _rname("leather coats");
@@ -395,6 +471,11 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_COATS);
     _demand(8);
     _morale(3);
+    _description("\
+Leather coats are an elegant option to be worn over <link=clothing>clothing\
+</link>.  They are very durably made, and rarely need to be replaced.  As a \
+coat, they compete with <link=fur coats>fur coats</link> for popularity.\
+");
 
   _resource(RES_WOOD_HOUSEWARES);
     _rname("wood housewares");
@@ -403,6 +484,15 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(4);
+    _description("\
+Housewares are a <link=luxury>luxury item</link> consisting of a variety of \
+home goods; cookware, dining utensils, cups, plates, etc.  These housewares \
+are made from <link=wood>wood</link>, but they can be made from a variety of \
+materials.  Only one variety will be in fashion at a given time.  As such, \
+wood housewares are in competition with housewares made from \
+<link=tin housewares>tin</link>, <link=copper housewares>copper</link>, and \
+<link=iron housewares>iron</link>.\
+");
 
   _resource(RES_TIN_HOUSEWARES);
     _rname("tin housewares");
@@ -411,6 +501,15 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(5);
+    _description("\
+Housewares are a <link=luxury>luxury item</link> consisting of a variety of \
+home goods; cookware, dining utensils, cups, plates, etc.  These housewares \
+are made from <link=tin>tin</link>, but they can be made from a variety of \
+materials.  Only one variety will be in fashion at a given time.  As such, \
+tin housewares are in competition with housewares made from \
+<link=wood housewares>wood</link>, <link=copper housewares>copper</link>, and \
+<link=iron housewares>iron</link>.\
+");
 
   _resource(RES_COPPER_HOUSEWARES);
     _rname("copper housewares");
@@ -419,6 +518,15 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(6);
+    _description("\
+Housewares are a <link=luxury>luxury item</link> consisting of a variety of \
+home goods; cookware, dining utensils, cups, plates, etc.  These housewares \
+are made from <link=copper>copper</link>, but they can be made from a variety \
+of materials.  Only one variety will be in fashion at a given time.  As such, \
+copper housewares are in competition with housewares made from \
+<link=wood housewares>wood</link>, <link=tin housewares>tin</link>, and \
+<link=iron housewares>iron</link>.\
+");
 
   _resource(RES_IRON_HOUSEWARES);
     _rname("iron housewares");
@@ -427,6 +535,15 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _luxury(LUX_HOUSEWARES);
     _demand(10);
     _morale(7);
+    _description("\
+Housewares are a <link=luxury>luxury item</link> consisting of a variety of \
+home goods; cookware, dining utensils, cups, plates, etc.  These housewares \
+are made from <link=iron>iron</link>, but they can be made from a variety of \
+materials.  Only one variety will be in fashion at a given time.  As such, \
+iron housewares are in competition with housewares made from \
+<link=wood housewares>wood</link>, <link=tin housewares>tin</link>, and \
+<link=copper housewares>copper</link>.\
+");
 
   _resource(RES_FURNITURE);
     _rname("furniture");
@@ -434,6 +551,14 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _rcolor(c_ltred);
     _demand(8);
     _morale(8);
+    _description("\
+Furniture is a <link=luxury>luxury good</link> consisting of tables, chairs, \
+and other common household furniture.  It can be made from wood at a \
+<link=woodworking shop>woodworking shop</link>.  It greatly improves the \
+<link=morale>quality of life</link> for those who own it, and very rarely \
+needs to be replaced; these qualities combine to give furniture a very high \
+cost.\
+");
 
   _resource(RES_JEWELRY);
     _rname("jewelry");
@@ -441,6 +566,13 @@ for popularity with <link=pepper (resource)>pepper</link>, \
     _rcolor(c_magenta);
     _demand(5);
     _morale(12);
+    _description("\
+Jewelry takes the form of necklaces, rings, earrings, and other fine bodily \
+accessories.  It is a very valuable <link=luxury>luxury</link> made at a \
+<link=smith>smith</link> from <link=tin>tin</link>, <link=copper>copper</link> \
+and <link=gems>gems</link>.  It provides a very high boost to \
+<link=morale>morale</link> but rarely needs to be replaced.\
+");
 
   _resource(RES_BLANK_BOOK);
     _rname("blank book");
