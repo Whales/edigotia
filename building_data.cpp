@@ -323,7 +323,7 @@ A masonry is a <link=building>building</link> where uncut <link=stone>stone\
       _units_per_day(1);
       _max_deficit(0);
       _uses_mineral(MINERAL_TIN, 1);
-      _uses_resource(RES_WOOD, 3);
+      _uses_resource(RES_WOOD, 30);
     _recipe(RES_TIN, 3);
       _recipe_name("Smelt tin (burn coal)");
       _units_per_day(3);
@@ -335,7 +335,7 @@ A masonry is a <link=building>building</link> where uncut <link=stone>stone\
       _units_per_day(1);
       _max_deficit(0);
       _uses_mineral(MINERAL_COPPER, 1);
-      _uses_resource(RES_WOOD, 3);
+      _uses_resource(RES_WOOD, 30);
     _recipe(RES_COPPER, 3);
       _recipe_name("Smelt copper (burn coal)");
       _units_per_day(3);
@@ -347,7 +347,7 @@ A masonry is a <link=building>building</link> where uncut <link=stone>stone\
       _days_per_unit(2);
       _max_deficit(0);
       _uses_mineral(MINERAL_IRON, 1);
-      _uses_resource(RES_WOOD, 3);
+      _uses_resource(RES_WOOD, 30);
     _recipe(RES_IRON, 3);
       _recipe_name("Smelt iron (burn coal)");
       _units_per_day(2);
@@ -379,7 +379,7 @@ fuel; however, it is much faster and more efficient to burn <link=coal>coal\
       _units_per_day(3);
       _max_deficit(0);
       _uses_mineral(MINERAL_GOLD, 1);
-      _uses_resource(RES_WOOD, 3);
+      _uses_resource(RES_WOOD, 30);
     _recipe(RES_GOLD, 3);
       _recipe_name("Gold (burn coal)");
       _units_per_day(3);
@@ -431,11 +431,18 @@ useable <link=luxury>luxury</link>.\
       _units_per_day(3);
       _max_deficit(-10);
       _uses_resource(RES_FIBER, 10);
+    _recipe(RES_COUTURE, 1);
+      _recipe_name("Sew haute couture");
+      _units_per_day(2);
+      _max_deficit(-14);
+      _uses_resource(RES_FIBER,   8);
+      _uses_resource(RES_FUR,     2);
+      _uses_resource(RES_LEATHER, 1);
     _recipe(RES_FUR_COATS, 1);
       _recipe_name("Sew fur coats");
       _units_per_day(2);
       _max_deficit(-8);
-      _uses_resource(RES_FUR,    8);
+      _uses_resource(RES_FUR, 8);
     _recipe(RES_LEATHER_COATS, 1);
       _recipe_name("Sew leather coats");
       _units_per_day(2);
@@ -461,12 +468,12 @@ A tailor is a <link=building>building</link> where <link=clothing>clothing\
       _recipe_name("Wooden housewares");
       _units_per_day(4);
       _max_deficit(-15);
-      _uses_resource(RES_WOOD, 3);
+      _uses_resource(RES_WOOD, 30);
     _recipe(RES_FURNITURE, 1);
       _recipe_name("Furniture");
       _days_per_unit(2);
       _max_deficit(-25);
-      _uses_resource(RES_WOOD, 15);
+      _uses_resource(RES_WOOD, 150);
     _description("\
 A woodworking shop is a <link=building>building</link> where woodworkers are \
 employed, making a variety of goods from <link=wood>wood</link>.\
