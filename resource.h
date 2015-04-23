@@ -58,6 +58,7 @@ enum Resource
   RES_SPICEREED,
   // Clothing
   RES_CLOTHING,
+  RES_COUTURE,
   RES_FUR_COATS,
   RES_LEATHER_COATS,
   // Housewares
