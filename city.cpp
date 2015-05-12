@@ -192,8 +192,7 @@ void City::start_new_city()
 // loc defaults to (-1, -1)
 void City::generate_map(Point loc)
 {
-  if (loc.x >= 0 && loc.x < WORLD_MAP_SIZE &&
-      loc.y >= 0 && loc.y < WORLD_MAP_SIZE   ) {
+  if (!GAME->world->OOB(loc)) {
     location = loc;
   }
 
@@ -473,11 +472,17 @@ int City::get_net_resource_production(Resource res)
 
 int City::get_resource_amount(Resource res)
 {
+  if (res < 0 || res >= RES_MAX) {
+    return 0;
+  }
   return resources[res];
 }
 
 int City::get_mineral_amount(Mineral min)
 {
+  if (min < 0 || min >= MINERAL_MAX) {
+    return 0;
+  }
   return minerals[min];
 }
 
