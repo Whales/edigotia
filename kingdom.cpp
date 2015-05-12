@@ -12,8 +12,8 @@ Kingdom::Kingdom()
   race = RACE_NULL;
   color = c_ltgray;
   capital = NULL;
-  most_west  = WORLD_MAP_SIZE - 1;
-  most_north = WORLD_MAP_SIZE - 1;
+  most_west  = 999;
+  most_north = 999;
   most_east  = 0;
   most_south = 0;
 }
@@ -148,8 +148,8 @@ bool Kingdom::place_capital(World_map* world, int radius)
 // Get several locations to try
   std::vector<Point> locations_to_try;
   for (int i = 0; i < 40; i++) {
-    Point p( rng(radius * 2, WORLD_MAP_SIZE - (radius * 2 + 1)),
-             rng(radius * 2, WORLD_MAP_SIZE - (radius * 2 + 1)) );
+    Point p( rng(radius * 2, world->get_size() - (radius * 2 + 1)),
+             rng(radius * 2, world->get_size() - (radius * 2 + 1)) );
     locations_to_try.push_back(p);
   }
 
@@ -184,8 +184,7 @@ bool Kingdom::place_duchy_seat(World_map* world, int& expansion_points)
 // points_at_exact_distance() is in geometry.{h,cpp}
       std::vector<Point> circle = points_at_exact_distance(p, dist);
       for (int n = 0; n < circle.size(); n++) {
-        if (circle[n].x >= 0 && circle[n].x < WORLD_MAP_SIZE &&
-            circle[n].y >= 0 && circle[n].y < WORLD_MAP_SIZE &&
+        if (!world->OOB(circle[n]) &&
             world->get_map_type(circle[n].x, circle[n].y) != MAP_OCEAN) {
           points_to_try.push_back( circle[n] );
         }
@@ -250,7 +249,7 @@ void Kingdom::place_minor_cities(World_map* world, int radius)
       for (int y = parent_pos.y - radius; y <= parent_pos.y + radius; y++) {
 // Only use this point if it's in our kingdom and not adjacent to the parent.
         int kingdom_id = world->get_kingdom_id(x, y);
-        if (x >= 0 && x < WORLD_MAP_SIZE && y >= 0 && y < WORLD_MAP_SIZE &&
+        if (!world->OOB(x, y) &&
             (kingdom_id == uid || kingdom_id == -1) &&
             rl_dist(parent_pos, Point(x, y)) > 1) {
 // Figure out the score of the location, and insert it into our list in the
