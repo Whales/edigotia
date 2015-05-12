@@ -34,18 +34,16 @@ bool Game::start_new_game()
       world->load_from_file(SAVE_DIR + "world.sav");
 
     } else {
-      if (!query_yn("We need to generate a world first, is that okay?") ||
-          !generate_world()) {
-        return false;
-      }
-      world->save_to_file("world.sav");
-      save_kingdoms();
+      popup("You need to generate a world first!  Press G to design one.");
+      return false;
     }
 
   }
 
 // Pick our race first, so we know where to start placement.
-  city->pick_race();
+  if (!city->pick_race()) {
+    return false;
+  }
 
 // Let the city pick a location in the world
 // Start from the center of the appropriate kingdom.
@@ -57,11 +55,12 @@ bool Game::start_new_game()
   } else {
     debugmsg("Kingdom not found for %s.  %d kingdoms.",
              Race_data[city->get_race()]->name.c_str(), kingdoms.size());
-    start = Point(WORLD_MAP_SIZE / 2, WORLD_MAP_SIZE / 2);
+    start = Point(world->get_size() / 2, world->get_size() / 2);
   }
 
   city->set_starting_tiles_seen();
 
+  //Point p = world->draw(start);
   Point p = world->draw(start, &(city->world_seen));
 
   if (p.x == -1) {  // We canceled
@@ -116,14 +115,18 @@ bool Game::load_world()
   return load_kingdoms();
 }
 
-bool Game::generate_world()
+bool Game::generate_world(World_design* design)
 {
+  if (!design) {
+    debugmsg("Game::generate_world(NULL) called!");
+    return false;
+  }
   if (world) {
     delete world;
     world = new World_map;
   }
-  world->generate();
-  generate_kingdoms();
+  world->generate(*design);
+  generate_kingdoms(design);
   world->save_to_file(SAVE_DIR + "world.sav");
   save_kingdoms();
   world_ready = true;
@@ -215,10 +218,14 @@ int Game::get_city_uid()
   return ret;
 }
 
-void Game::generate_kingdoms()
+void Game::generate_kingdoms(World_design* design)
 {
   if (!world) {
     debugmsg("Game::generate_kingdoms() called with NULL world!");
+    return;
+  }
+  if (!design) {
+    debugmsg("Game::generate_kingdoms(NULL) called!");
     return;
   }
 
@@ -226,22 +233,26 @@ void Game::generate_kingdoms()
     for (int i = 0; i < kingdoms.size(); i++) {
       delete (kingdoms[i]);
     }
+    kingdoms.clear();
   }
-  kingdoms.clear();
 
   bool color_free[c_null];  // c_null is the last color
   for (int i = 0; i < c_null; i++) {
     color_free[i] = true;
   }
-// One kingdom for each race.  Start at 1 to skip RACE_NULL.
-  for (int i = 1; i < RACE_MAX; i++) {
-    popup_nowait("Initializing kingdoms (%d of %d)...", i, RACE_MAX - 1);
+// Add kingdoms per the races specified in our design.
+  for (int i = 0; i < design->kingdoms.size(); i++) {
+    popup_nowait("Initializing kingdoms (%d of %d)...",
+                 i + 1, design->kingdoms.size());
+
+    Race race = design->kingdoms[i];
+    Race_datum* race_dat = Race_data[race];
 
     Kingdom* kingdom = new Kingdom;
-    kingdom->uid = i - 1;
+    kingdom->uid = i;
     kingdom->set_game(this);
-    kingdom->race = Race(i);
-    Race_datum* race_dat = Race_data[i];
+    kingdom->race = race;
+
 // Pick a color - try the official race color first
     if (race_dat->color < c_dkgray && color_free[ race_dat->color ]) {
       kingdom->color = race_dat->color;
@@ -250,18 +261,18 @@ void Game::generate_kingdoms()
     } else {
       std::vector<nc_color> colors = race_dat->kingdom_colors;
 // Remove any already-used colors
-      for (int i = 0; i < colors.size(); i++) {
-        if (!color_free[ colors[i] ]) {
-          colors.erase(colors.begin() + i);
-          i--;
+      for (int n = 0; n < colors.size(); n++) {
+        if (!color_free[ colors[n] ]) {
+          colors.erase(colors.begin() + n);
+          n--;
         }
       }
       if (colors.empty()) { // Can't use official colors; use a random one
         std::vector<nc_color> free_colors;
 // Start at 1 to skip c_black; stop at c_dkgray to skip bright colors
-        for (int i = 1; i < c_dkgray; i++) {
-          if (color_free[i]) {
-            free_colors.push_back( nc_color(i) );
+        for (int n = 1; n < c_dkgray; n++) {
+          if (color_free[n]) {
+            free_colors.push_back( nc_color(n) );
           }
         }
         if (free_colors.empty()) {  // 8 kingdoms used already!
@@ -281,8 +292,11 @@ void Game::generate_kingdoms()
 // Place the kingdom.
     if (kingdom->place_capital(world)) {
       kingdoms.push_back( kingdom );  // ...and add to our list.
+    } else {
+      popup("Kingdom %d of %d [%s] failed to place its capital!",
+            i + 1, design->kingdoms.size(), race_dat->plural_name.c_str());
     }
-  } // for (int i = 1; i < RACE_MAX; i++)
+  } // for (int i = 0; i < design->kingdoms.size(); i++)
 
 /* Now, expand the kingdoms by placing duchy seats.  To keep things fair, each
  * kingdom gets to place a single city/duchy at a time.  We go through our list,

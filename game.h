@@ -6,10 +6,11 @@
 #include <string>
 #include <vector>
 
-class City;
-class Player_city;
-class World_map;
-class Kingdom;
+class  City;
+class  Player_city;
+struct World_design;
+class  World_map;
+class  Kingdom;
 
 class Game
 {
@@ -25,7 +26,7 @@ public:
 // Also loads kingdoms.  Returns false if no saved world exists
   bool load_world();
 // returns false on failure
-  bool generate_world();
+  bool generate_world(World_design* design);
 
 // Saves the game data and the current city in SAVE_DIR/cities/<cityname>.sav
   bool save_game();
@@ -52,7 +53,7 @@ public:
   Player_city* city;
 
 private:
-  void generate_kingdoms();
+  void generate_kingdoms(World_design* design);
   bool save_kingdoms();
   bool load_kingdoms();
 
