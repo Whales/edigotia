@@ -1,0 +1,70 @@
+Social Systems
+Two types:
+  Government has multiple categories, and you pick ONE option from each.
+  Social values has multiple choices, and you can pick as many as you want!
+
+Government:
+
+  Financial:
+    Open:
+      Default - no effect.
+    Communism:
+      All wages are HALVED.
+      All income (and hence taxes) are HALVED.
+      +5 morale for peasants
+      -5 morale for burghers
+    Free Market:
+      Income for free merchants is increased by 10%.
+      Income for free burghers  is increased by 25%.
+      -5 morale for peasants.
+    Mercantilism:
+      All wages -10%.
+      Luxury consumption -50%; luxury morale bonus -50%.
+
+  Legislative:
+    Direct rule:
+      Default - no effect.
+    Bureaucracy:
+      Corruption +25%
+      Maintenance costs -25%
+
+
+Social:
+  Upward Mobility:
+    Unlock: 1 burgher
+    Chance to birth merchants is increased by 15%.
+    Chance to birth burghers  is increased by 10%.
+    -5 morale for peasants.
+
+  Philantropy:
+    Unlock: Total income >= 500g
+    All citizens earn -10% income.
+    All citizens gain morale proportional to the lost income (max +10).
+
+  Species Superiority:
+    Unlock: Contact 1 city of other race
+    +1 relations for all cities of the same species.
+    -2 relations for all cities of different species.
+    Decreased war weariness for wars against a different species.
+    Increased war weariness for wars against the same species.
+
+  Egalitarianism:
+    Unlock: 5 burghers
+    +5 morale for peasants
+    +50% income for peasants
+    -5 morale for burghers
+    -25% income for burghers
+
+  Caste System:
+    Unlock: 1 burgher
+    Locked at 90% chance of peasant, 9% chance of merchant, 1% chance of burgher
+
+  Free Speech:
+    + 5 peasant  morale
+    +10 merchant morale
+    - 5 burgher  morale
+    No option to silence dissenters (random events)
+
+  Civic Duty
+    All wages are -25%.
+    All income (and hence taxes) are -25%.
