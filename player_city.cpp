@@ -334,15 +334,32 @@ bool Player_city::place_keep()
   return false;
 }
 
-void Player_city::pick_race()
+bool Player_city::pick_race()
 {
-// A list of options.
+// A list of options.  Use the kingdoms set up in GAME.
+  std::vector<Race> used_races;
   std::vector<std::string> options;
-  for (int i = 1; i < RACE_MAX; i++) {
-    options.push_back( Race_data[i]->plural_name );
+  for (int i = 0; i < GAME->kingdoms.size(); i++) {
+    Race race = GAME->kingdoms[i]->race;
+// Don't offer the same race twice.  Check if we've already used it.
+    bool found = false;
+    for (int n = 0; !found && n < used_races.size(); n++) {
+      if (used_races[n] == race) {
+        found = true;
+      }
+    }
+    if (!found) {
+      used_races.push_back(race);
+      options.push_back( capitalize_all_words( Race_data[race]->plural_name ) );
+    }
   }
-  int race_index = 1 + menu_vec("Pick race:", options);
-  race = Race(race_index);
+  options.push_back("<c=ltred>Cancel<c=/>");
+  int index = menu_vec("Pick race:", options);
+  if (index == options.size() - 1) {  // We selected "Cancel"
+    return false;
+  }
+  race = used_races[index];
+  return true;
 }
 
 void Player_city::set_name()
@@ -403,20 +420,11 @@ void Player_city::set_starting_tiles_seen()
     debugmsg("No kingdom found for Player_city::set_starting_tiles_seen().");
     return;
   }
+
 // TODO: Make the bonus area vary by some property of our race?
-// TODO: Round the corners of the square this produces.
   int bonus = 4;
-/*
-  for (int x = kingdom->most_west - bonus;
-           x <= kingdom->most_east + bonus;
-           x++) {
-    for (int y = kingdom->most_north - bonus;
-             y <= kingdom->most_south + bonus;
-             y++) {
-      world_seen.mark_seen(x, y);
-    }
-  }
-*/
+  world_seen.init(GAME->world->get_size());
+
   for (int x = kingdom->most_west; x <= kingdom->most_east; x++) {
     for (int y = kingdom->most_north; y <= kingdom->most_south; y++) {
       int id = GAME->world->get_kingdom_id(x, y);

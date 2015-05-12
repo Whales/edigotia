@@ -62,8 +62,8 @@ public:
   virtual bool load_data(std::istream& data);
 
 // Starting functions
-  bool place_keep();
-  void pick_race();
+  bool place_keep();  // Returns false if we cancel
+  bool pick_race();   // Returns false if we cancel
   void set_name();
   virtual void start_new_city();
 // Set our Map_seen to see all tiles in our kingdom, plus some outside.
