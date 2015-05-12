@@ -76,6 +76,8 @@ public:
 
 // returns false if we quit - this should exit the program
   bool starting_screen();
+// returns false if we cancel
+  bool world_design_screen(World_design& design);
 
   void main_loop();
 

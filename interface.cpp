@@ -186,7 +186,11 @@ bool Interface::starting_screen()
       case 'n':
       case 'N':
 // New city
-        return GAME->start_new_game();
+        if (GAME->start_new_game()) {
+          return true;
+        }
+        i_start.draw(&w_start);
+        w_start.refresh();
         break;
 
       case 'g':
@@ -195,9 +199,12 @@ bool Interface::starting_screen()
         if (!GAME->is_world_ready() ||
             query_yn("Overwrite %s with a new world?",
                      GAME->world->get_name().c_str())) {
-          GAME->generate_world();
-          i_start.set_data("text_world_name", GAME->world->get_name());
-          i_start.set_data("text_world_name", c_yellow);
+          World_design design;
+          if (world_design_screen(design)) {
+            GAME->generate_world(&design);
+            i_start.set_data("text_world_name", GAME->world->get_name());
+            i_start.set_data("text_world_name", c_yellow);
+          }
         }
         i_start.draw(&w_start);
         w_start.refresh();
@@ -211,6 +218,172 @@ bool Interface::starting_screen()
   } // while (true)
 
   return true;
+}
+
+bool Interface::world_design_screen(World_design& design)
+{
+  cuss::interface i_design;
+  if (!i_design.load_from_file("cuss/world_design.cuss")) {
+    return false;
+  }
+
+  Window w_design(0, 0, 80, 24);
+
+/* Set up vectors containing the names of world paraments (size, temp, etc)
+ * These are used for populating the popup menus when we change these values; by
+ * setting up vectors now, we avoid having to build them every time we change
+ * them.
+ */
+  std::vector<std::string> world_size_names, world_temp_names, world_rain_names,
+                           race_names;
+  for (int i = 0; i < WORLD_SIZE_MAX; i++) {
+    world_size_names.push_back( world_size_name( World_size(i) ) );
+  }
+  for (int i = 0; i < WORLD_TEMP_MAX; i++) {
+    world_temp_names.push_back( world_temperature_name( World_temperature(i) ));
+  }
+  for (int i = 0; i < WORLD_RAIN_MAX; i++) {
+    world_rain_names.push_back( world_rainfall_name( World_rainfall(i) ) );
+  }
+// Start at 1 to skip RACE_NULL
+  for (int i = 1; i < RACE_MAX; i++) {
+    race_names.push_back( capitalize_all_words(Race_data[i]->plural_name) );
+  }
+
+  i_design.ref_data("entry_name", &(design.name));
+
+  std::vector<std::string> races;
+  i_design.ref_data("list_kingdoms", &races);
+
+  i_design.set_data("text_size",        world_size_name(design.size) );
+  i_design.set_data("text_size",        c_yellow);
+
+  i_design.set_data("num_kingdoms_recommended",
+                    world_size_kingdoms( design.size ) );
+  i_design.set_data("num_kingdoms_recommended", c_ltgreen);
+
+  i_design.set_data("text_temperature",
+                    world_temperature_name(design.temperature)  );
+  i_design.set_data("text_temperature",
+                    world_temperature_color(design.temperature) );
+
+  i_design.set_data("text_rainfall",    world_rainfall_name(design.rainfall)  );
+  i_design.set_data("text_rainfall",    world_rainfall_color(design.rainfall) );
+
+  i_design.select("entry_name");
+
+  while (true) {
+    i_design.draw(&w_design);
+    w_design.refresh();
+
+    long ch = getch();
+
+    switch (ch) {
+
+      case '!':
+        design.name = get_random_world_name();
+        break;
+
+      case '@': {
+        design.size = World_size( menu_vec("World Size", world_size_names) );
+        i_design.set_data("text_size", world_size_name( design.size ) );
+        int num_kingdoms = world_size_kingdoms( design.size );
+        i_design.set_data("num_kingdoms_recommended", num_kingdoms);
+
+// Colorize num_kingdoms_recommended
+        if (num_kingdoms > design.kingdoms.size()) {
+          i_design.set_data("num_kingdoms_recommended", c_ltgreen);
+        } else if (num_kingdoms == design.kingdoms.size()) {
+          i_design.set_data("num_kingdoms_recommended", c_yellow);
+        } else {  // Too many kingdoms!
+          i_design.set_data("num_kingdoms_recommended", c_red);
+        }
+      } break;
+
+      case '#':
+        design.temperature =
+          World_temperature( menu_vec("World Temperature", world_temp_names) );
+        i_design.set_data("text_temperature",
+                          world_temperature_name ( design.temperature ) );
+        i_design.set_data("text_temperature",
+                          world_temperature_color( design.temperature ) );
+        break;
+
+      case '$':
+        design.rainfall =
+          World_rainfall( menu_vec("World Rainfall", world_rain_names) );
+        i_design.set_data("text_rainfall",
+                          world_rainfall_name ( design.rainfall ) );
+        i_design.set_data("text_rainfall",
+                          world_rainfall_color( design.rainfall ) );
+        break;
+
+      case '\n':
+        if (design.name.empty()) {
+          popup("<c=red>You need to name this world!<c=/>");
+          i_design.select("entry_name");
+        } else if (design.kingdoms.empty()) {
+          popup("<c=red>You need at least one kingdom!<c=/>");
+          i_design.select("list_kingdoms");
+        } else {
+          return true;
+        }
+        break;
+
+      case KEY_ESC:
+        return false;
+
+      default:
+// First, check if we've selected list_kingdoms; if so, we handle a couple keys
+        if (i_design.selected()->name == "list_kingdoms" &&
+            (ch == 'a' || ch == 'A' || ch == 'd' || ch == 'D')) {
+
+          if (ch == 'a' || ch == 'A') {
+// Add 1 since menu_vec() returns 0 for the first choice, and 0 == RACE_NULL
+            Race new_race = Race( 1 + menu_vec("Kingdom Race", race_names) );
+            design.kingdoms.push_back( new_race );
+            std::stringstream ss_race;
+            ss_race << "<c=" << color_tag( Race_data[new_race]->color ) <<
+                       ">" <<
+                       capitalize_all_words(Race_data[new_race]->plural_name) <<
+                       "<c=/>";
+            races.push_back( ss_race.str() );
+
+// Colorize num_kingdoms_recommended
+            int num_kingdoms = world_size_kingdoms( design.size );
+            if (num_kingdoms > design.kingdoms.size()) {
+              i_design.set_data("num_kingdoms_recommended", c_ltgreen);
+            } else if (num_kingdoms == design.kingdoms.size()) {
+              i_design.set_data("num_kingdoms_recommended", c_yellow);
+            } else {  // Too many kingdoms!
+              i_design.set_data("num_kingdoms_recommended", c_red);
+            }
+          } else if (ch == 'd' || ch == 'D') {
+            int index = i_design.get_int("list_kingdoms");
+            if (index >= 0 && index < design.kingdoms.size()) {
+              design.kingdoms.erase( design.kingdoms.begin() + index );
+              races.erase( races.begin() + index );
+
+// Colorize num_kingdoms_recommended
+              int num_kingdoms = world_size_kingdoms( design.size );
+              if (num_kingdoms > design.kingdoms.size()) {
+                i_design.set_data("num_kingdoms_recommended", c_ltgreen);
+              } else if (num_kingdoms == design.kingdoms.size()) {
+                i_design.set_data("num_kingdoms_recommended", c_yellow);
+              } else {  // Too many kingdoms!
+                i_design.set_data("num_kingdoms_recommended", c_red);
+              }
+            }
+          }
+
+        } else {
+// This handles both TAB to move between name entry and the kingdom list, and
+// typing to enter in a world name.
+          i_design.handle_keypress(ch);
+        }
+        break;
+    } // switch (ch)
+  } // while (true)
 }
 
 void Interface::main_loop()
