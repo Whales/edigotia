@@ -11,8 +11,6 @@
 #include <string>
 #include <istream>
 
-#define WORLD_MAP_SIZE 400
-
 // For A* pathfinding
 enum A_star_status
 {
@@ -26,10 +24,17 @@ class Map_seen
 {
 public:
   Map_seen();
+  Map_seen(int S);
   ~Map_seen();
+
+  void init(int S);
 
   std::string save_data();
   bool load_data(std::istream& data);
+
+// Is this point out of bounds?
+  bool OOB      (Point p);
+  bool OOB      (int x, int y);
 
   bool is_seen  (Point p);
   bool is_seen  (int x, int y);
@@ -38,7 +43,65 @@ public:
   void mark_seen(int x, int y);
 
 private:
-  bool seen[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int size;
+  std::vector< std::vector<bool> > seen;
+};
+
+enum World_size
+{
+  WORLD_SIZE_SMALL = 0,
+  WORLD_SIZE_MEDIUM,
+  WORLD_SIZE_LARGE,
+  WORLD_SIZE_HUGE,
+  WORLD_SIZE_MAX
+};
+
+enum World_temperature
+{
+  WORLD_TEMP_ICE_AGE = 0,
+  WORLD_TEMP_COLD,
+  WORLD_TEMP_TEMPERATE,
+  WORLD_TEMP_HOT,
+  WORLD_TEMP_FURNACE,
+  WORLD_TEMP_MAX
+};
+
+enum World_rainfall
+{
+  WORLD_RAIN_DRY = 0,
+  WORLD_RAIN_LIGHT,
+  WORLD_RAIN_MODERATE,
+  WORLD_RAIN_HEAVY,
+  WORLD_RAIN_UNENDING,
+  WORLD_RAIN_MAX
+};
+
+// world_size_kingdoms() returns the maximum number of kingdoms recommended for
+// a world of the given size.
+int world_size_kingdoms             (World_size size);
+// world_size_size() returns the length of each edge for a world map of the
+// given size. TODO: Allow non-squares?
+int world_size_size                 (World_size size);
+std::string world_size_name         (World_size size);
+std::string world_temperature_name  (World_temperature temp);
+nc_color    world_temperature_color (World_temperature temp);
+std::string world_rainfall_name     (World_rainfall rain);
+nc_color    world_rainfall_color    (World_rainfall rain);
+
+std::string get_random_world_name();
+
+struct World_design
+{
+  World_design();
+  ~World_design();
+
+  std::string name;
+
+  World_size size;
+  World_temperature temperature;
+  World_rainfall rainfall;
+
+  std::vector<Race> kingdoms;
 };
 
 class World_map
@@ -47,7 +110,9 @@ public:
   World_map();
   ~World_map();
 
-  void generate();
+// These functions return false if they fail for any reason (buggy parameter)
+  bool generate(World_design design);
+  bool set_size(World_size Size);  // Sets up our data vectors, too
 
   bool save_to_file  (std::string filename);
   bool load_from_file(std::string filename);
@@ -57,6 +122,7 @@ public:
   Point draw(Point start = Point(-1, -1), Map_seen* seen = NULL);
 
   std::string get_name();
+  int get_size();
 
   int land_count(); // Returns the number of tiles that are not ocean
 /* crop_count() and mineral_count() return the number of tiles with the
@@ -66,6 +132,10 @@ public:
   int crop_count    (Crop crop = CROP_NULL);
   int mineral_count (Mineral mineral = MINERAL_NULL);
   int animal_count  (Animal animal = ANIMAL_NULL);
+
+// Are tehese coordinates out of bounds?
+  bool OOB(Point p);
+  bool OOB(int x, int y);
 
   Map_type get_map_type(Point p);
   Map_type get_map_type(int x, int y);
@@ -151,7 +221,6 @@ public:
   std::vector<City*> city_list;
 
 private:
-  void set_random_name();
 
   void add_continent(Point origin, int height = 100, int step = 8, int id = 0);
   void add_river    (Point origin);
@@ -182,19 +251,21 @@ private:
 
   std::string name;
 
-  Map_type tiles  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int altitude    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int rainfall    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int temperature [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int continent_id[WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int kingdom_id  [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  City* city      [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  bool river      [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  bool road       [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  int size;
+
+  std::vector< std::vector<Map_type> >  tiles;
+  std::vector< std::vector<int> >       altitude;
+  std::vector< std::vector<int> >       rainfall;
+  std::vector< std::vector<int> >       temperature;
+  std::vector< std::vector<int> >       continent_id;
+  std::vector< std::vector<int> >       kingdom_id;
+  std::vector< std::vector<City*> >     city;
+  std::vector< std::vector<bool> >      river;
+  std::vector< std::vector<bool> >      road;
 // crops and minerals are bitmaps that indicate what's here
-  int crops       [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int minerals    [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
-  int animals     [WORLD_MAP_SIZE][WORLD_MAP_SIZE];
+  std::vector< std::vector<int> >       crops;
+  std::vector< std::vector<int> >       minerals;
+  std::vector< std::vector<int> >       animals;
 
 // road_map is a map of the road_costs of various terrain.  We will need to
 // update it whenever new roads are built or terrain changes.
