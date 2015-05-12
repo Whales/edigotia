@@ -16,7 +16,7 @@ enum City_role
   CITY_ROLE_FARMING,      // Food production - exports lots of food
   CITY_ROLE_HUNTING,      // Exports food, leather and fur
   CITY_ROLE_LIVESTOCK,    // Exports food, leather, fur, and animals
-  CITY_ROLE_MINING,       // Mining - exports ores
+  CITY_ROLE_MINING,       // Mining - exports ores, or smelted metals
   CITY_ROLE_LOGGING,      // Logging - exports wood
 
   CITY_ROLE_MAX
