@@ -46,8 +46,11 @@ int main()
 
 void check_world_resources(World_map* world)
 {
+  if (!world) {
+    return;
+  }
   int land = world->land_count();
-  int size = WORLD_MAP_SIZE * WORLD_MAP_SIZE;
+  int size = world->get_size() * world->get_size();
   float land_percent = float((100.0 * float(land)) / size);
   debugmsg("Land tiles: %d/%d (%f percent)", land, size, land_percent);
   for (int i = 0; i < CROP_MAX; i++) {
