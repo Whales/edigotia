@@ -76,6 +76,16 @@ enum World_rainfall
   WORLD_RAIN_MAX
 };
 
+enum World_mountain
+{
+  WORLD_MOUNTAIN_FLAT = 0,
+  WORLD_MOUNTAIN_LOW,
+  WORLD_MOUNTAIN_VARIED,
+  WORLD_MOUNTAIN_HIGH,
+  WORLD_MOUNTAIN_COVERED,
+  WORLD_MOUNTAIN_MAX
+};
+
 // world_size_kingdoms() returns the maximum number of kingdoms recommended for
 // a world of the given size.
 int world_size_kingdoms             (World_size size);
@@ -87,6 +97,8 @@ std::string world_temperature_name  (World_temperature temp);
 nc_color    world_temperature_color (World_temperature temp);
 std::string world_rainfall_name     (World_rainfall rain);
 nc_color    world_rainfall_color    (World_rainfall rain);
+std::string world_mountain_name     (World_mountain mountain);
+nc_color    world_mountain_color    (World_mountain mountain);
 
 std::string get_random_world_name();
 
@@ -100,6 +112,7 @@ struct World_design
   World_size size;
   World_temperature temperature;
   World_rainfall rainfall;
+  World_mountain mountain;
 
   std::vector<Race> kingdoms;
 };

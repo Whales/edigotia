@@ -235,7 +235,7 @@ bool Interface::world_design_screen(World_design& design)
  * them.
  */
   std::vector<std::string> world_size_names, world_temp_names, world_rain_names,
-                           race_names;
+                           world_mountain_names, race_names;
   for (int i = 0; i < WORLD_SIZE_MAX; i++) {
     world_size_names.push_back( world_size_name( World_size(i) ) );
   }
@@ -244,6 +244,9 @@ bool Interface::world_design_screen(World_design& design)
   }
   for (int i = 0; i < WORLD_RAIN_MAX; i++) {
     world_rain_names.push_back( world_rainfall_name( World_rainfall(i) ) );
+  }
+  for (int i = 0; i < WORLD_MOUNTAIN_MAX; i++) {
+    world_mountain_names.push_back( world_mountain_name( World_mountain(i) ) );
   }
 // Start at 1 to skip RACE_NULL
   for (int i = 1; i < RACE_MAX; i++) {
@@ -269,6 +272,9 @@ bool Interface::world_design_screen(World_design& design)
 
   i_design.set_data("text_rainfall",    world_rainfall_name(design.rainfall)  );
   i_design.set_data("text_rainfall",    world_rainfall_color(design.rainfall) );
+
+  i_design.set_data("text_mountains",   world_mountain_name(design.mountain)  );
+  i_design.set_data("text_mountains",   world_mountain_color(design.mountain) );
 
   i_design.select("entry_name");
 
@@ -316,6 +322,15 @@ bool Interface::world_design_screen(World_design& design)
                           world_rainfall_name ( design.rainfall ) );
         i_design.set_data("text_rainfall",
                           world_rainfall_color( design.rainfall ) );
+        break;
+
+      case '%':
+        design.mountain =
+          World_mountain( menu_vec("World Mountains", world_mountain_names) );
+        i_design.set_data("text_mountains",
+                          world_mountain_name ( design.mountain ) );
+        i_design.set_data("text_mountains",
+                          world_mountain_color( design.mountain ) );
         break;
 
       case '\n':

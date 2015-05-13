@@ -108,6 +108,7 @@ World_design::World_design()
   size        = WORLD_SIZE_MEDIUM;
   temperature = WORLD_TEMP_TEMPERATE;
   rainfall    = WORLD_RAIN_MODERATE;
+  mountain    = WORLD_MOUNTAIN_VARIED;
 }
 
 World_design::~World_design()
@@ -135,6 +136,10 @@ bool World_map::generate(World_design design)
   }
   if (design.rainfall == WORLD_RAIN_MAX) {
     debugmsg("World_map generated with rainfall of WORLD_RAIN_MAX!");
+    return false;
+  }
+  if (design.mountain == WORLD_MOUNTAIN_MAX) {
+    debugmsg("World_map generated with mountain of WORLD_MOUNTAIN_MAX!");
     return false;
   }
 
@@ -221,8 +226,92 @@ bool World_map::generate(World_design design)
       step = height / 3; // Let's be reasonable.
     }
     add_continent(continents[i], height, step, i);
+  } // for (int i = 0; i < continents.size(); i++)
+
+// Add some mountain ranges.
+  int num_ranges = 0, range_width = 0;
+  int alt_foothill = 55, alt_mountain = 80;
+  switch (design.mountain) {
+    case WORLD_MOUNTAIN_FLAT:
+      num_ranges  = 0;
+      range_width = 0;
+      alt_foothill =  80;
+      alt_mountain = 100;
+      break;
+    case WORLD_MOUNTAIN_LOW:
+      num_ranges  = 1;
+      range_width = 1;
+      alt_foothill =  75;
+      alt_mountain =  95;
+      break;
+    case WORLD_MOUNTAIN_VARIED:
+      num_ranges  = 2;
+      range_width = 1;
+      alt_foothill =  55;
+      alt_mountain =  80;
+      break;
+    case WORLD_MOUNTAIN_HIGH:
+      num_ranges  = 5;
+      range_width = 2;
+      alt_foothill =  30;
+      alt_mountain =  65;
+      break;
+    case WORLD_MOUNTAIN_COVERED:
+      num_ranges  = 15;
+      range_width = 4;
+      alt_foothill =  14;
+      alt_mountain =  40;
+      break;
+  }
+
+  int range_length = size / 5;
+
+  for (int i = 0; i < num_ranges; i++) {
+// Pick a starting point - anywhere in the world.
+    Point start( rng(10, size - 11), rng(10, size - 11));
+// Pick an ending point - fairly close to the starting point.
+    int min_x = start.x - range_length, max_x = start.x + range_length,
+        min_y = start.y - range_length, max_y = start.y + range_length;
+// Make sure our ending points are in-bounds.
+    if (min_x < 10) {
+      min_x = 10;
+    }
+    if (max_x > size - 11) {
+      max_x = size - 11;
+    }
+    if (min_y < 10) {
+      min_y = 10;
+    }
+    if (max_y > size - 11) {
+      max_y = size - 11;
+    }
+    Point end(rng(min_x, max_x), rng(min_y, max_y));
+// Generate a line between the two points.
+    std::vector<Point> range_line = line_to(start, end);
+// Iterate over the line.
+    for (int n = 0; n < range_line.size(); n++) {
+      Point p = range_line[n];
+// Affect all tiles within range_width.  If we're close to the start or end of
+// the range, use a shorter range_width and lower mountains.
+      int range_dist = range_width;
+      int alt_min = alt_foothill, alt_max = alt_mountain;
+      if (rl_dist(start, p) <= 4 || rl_dist(end, p) <= 4) {
+        range_dist = 1;
+        alt_min /= 2;
+        alt_max = alt_max * .75;
+      }
+      for (int x = p.x - range_dist; x <= p.x + range_dist; x++) {
+        for (int y = p.y - range_dist; y <= p.y + range_dist; y++) {
+          if (!OOB(x, y) && altitude[x][y] > 0) {
+            altitude[x][y] = rng(alt_min, alt_max);
+          }
+        }
+      }
+    }
+  } // for (int i = 0; i < num_ranges; i++)
 
 // All continents get some rivers!
+  for (int i = 0; i < continents.size(); i++) {
     Point river(continents[i].x + rng(-5, 5), continents[i].y + rng(-5, 5));
     add_river(river);
     int num = 3;
@@ -366,7 +455,7 @@ bool World_map::generate(World_design design)
     for (int y = 0; y < size; y++) {
 
 // First category: high-altitude stuff.
-      if (altitude[x][y] >= 80) {
+      if (altitude[x][y] >= alt_mountain) {
         if (river[x][y]) {
           if (temperature[x][y] <= 20) {
             tiles[x][y] = MAP_GLACIER;
@@ -380,7 +469,7 @@ bool World_map::generate(World_design design)
         }
 
 // Next category: foothills.
-      } else if (altitude[x][y] >= 55) {
+      } else if (altitude[x][y] >= alt_foothill) {
 
 // What kind of river is it?  We MIGHT have a canyon for high altitude.
         if (river[x][y]) {
@@ -393,8 +482,8 @@ bool World_map::generate(World_design design)
           }
 
 // High rainfall will override the hilly altitude and create jungle/forest.
-        } else if (rainfall[x][y] > altitude[x][y]) {
-          if (temperature[x][y] > 25 + altitude[x][y]) {
+        } else if (rainfall[x][y] - 55 > altitude[x][y] - alt_foothill) {
+          if (temperature[x][y] > altitude[x][y] + 80 - alt_foothill) {
             tiles[x][y] = MAP_JUNGLE;
           } else {
             tiles[x][y] = MAP_FOREST;
@@ -1474,6 +1563,14 @@ Point World_map::draw(Point start, Map_seen* seen)
           if (city_checked) {
             AI_city* ai_city = static_cast<AI_city*>(city_checked);
             popup_fullscreen(ai_city->list_production().c_str());
+          } else {
+            std::stringstream debug_info;
+            debug_info << "Altitude: " << altitude[center.x][center.y] <<
+                          std::endl <<
+                          "Rainfall: " << rainfall[center.x][center.y] <<
+                          std::endl <<
+                          "Temperature: " << temperature[center.x][center.y];
+            popup_fullscreen(debug_info.str().c_str());
           }
           
 /*
@@ -2172,6 +2269,34 @@ nc_color world_rainfall_color(World_rainfall rain)
     case WORLD_RAIN_UNENDING: return c_blue;
     case WORLD_RAIN_MAX:      return c_magenta;
     default:                  return c_magenta;
+  }
+  return c_magenta;
+}
+
+std::string world_mountain_name(World_mountain mountain)
+{
+  switch (mountain) {
+    case WORLD_MOUNTAIN_FLAT:     return "Flat";
+    case WORLD_MOUNTAIN_LOW:      return "Low";
+    case WORLD_MOUNTAIN_VARIED:   return "Varied";
+    case WORLD_MOUNTAIN_HIGH:     return "High";
+    case WORLD_MOUNTAIN_COVERED:  return "Covered";
+    case WORLD_MOUNTAIN_MAX:      return "BUG - WORLD_MOUNTAIN_MAX";
+    default:                      return "Unnamed World_mountain";
+  }
+  return "BUG - Escaped world_mountain_name() switch";
+}
+
+nc_color world_mountain_color(World_mountain mountain)
+{
+  switch (mountain) {
+    case WORLD_MOUNTAIN_FLAT:     return c_ltblue;
+    case WORLD_MOUNTAIN_LOW:      return c_green;
+    case WORLD_MOUNTAIN_VARIED:   return c_yellow;
+    case WORLD_MOUNTAIN_HIGH:     return c_ltgray;
+    case WORLD_MOUNTAIN_COVERED:  return c_ltred;
+    case WORLD_MOUNTAIN_MAX:      return c_magenta;
+    default:                      return c_magenta;
   }
   return c_magenta;
 }
