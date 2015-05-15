@@ -239,19 +239,19 @@ bool World_map::generate(World_design design)
       alt_mountain = 100;
       break;
     case WORLD_MOUNTAIN_LOW:
-      num_ranges  = 1;
+      num_ranges  = 2;
       range_width = 1;
       alt_foothill =  75;
       alt_mountain =  95;
       break;
     case WORLD_MOUNTAIN_VARIED:
-      num_ranges  = 2;
+      num_ranges  = 4;
       range_width = 1;
       alt_foothill =  55;
       alt_mountain =  80;
       break;
     case WORLD_MOUNTAIN_HIGH:
-      num_ranges  = 5;
+      num_ranges  = 8;
       range_width = 2;
       alt_foothill =  30;
       alt_mountain =  65;
@@ -264,28 +264,32 @@ bool World_map::generate(World_design design)
       break;
   }
 
-  int range_length = size / 5;
+  int range_length_max = size / 3, range_length_min = size / 8;
 
   for (int i = 0; i < num_ranges; i++) {
-// Pick a starting point - anywhere in the world.
-    Point start( rng(10, size - 11), rng(10, size - 11));
+// Pick a starting point - anywhere in the world (but far enough from the edges
+// to guarantee an in-bound end point).
+    Point start( rng(range_length_max, size - 1 - range_length_max),
+                 rng(range_length_max, size - 1 - range_length_max) );
+
 // Pick an ending point - fairly close to the starting point.
-    int min_x = start.x - range_length, max_x = start.x + range_length,
-        min_y = start.y - range_length, max_y = start.y + range_length;
-// Make sure our ending points are in-bounds.
-    if (min_x < 10) {
-      min_x = 10;
+    int min_x, max_x, min_y, max_y;
+    if (one_in(2)) {  // Go west
+      min_x = start.x - range_length_max;
+      max_x = start.x - range_length_min;
+    } else {  // Go east
+      min_x = start.x + range_length_min;
+      max_x = start.x + range_length_max;
     }
-    if (max_x > size - 11) {
-      max_x = size - 11;
-    }
-    if (min_y < 10) {
-      min_y = 10;
-    }
-    if (max_y > size - 11) {
-      max_y = size - 11;
+    if (one_in(2)) { // Go north
+      min_y = start.y - range_length_max;
+      max_y = start.y - range_length_min;
+    } else {  // Go south
+      min_y = start.y + range_length_max;
+      max_y = start.y + range_length_min;
     }
     Point end(rng(min_x, max_x), rng(min_y, max_y));
+
 // Generate a line between the two points.
     std::vector<Point> range_line = line_to(start, end);
 // Iterate over the line.
@@ -294,12 +298,15 @@ bool World_map::generate(World_design design)
 // Affect all tiles within range_width.  If we're close to the start or end of
 // the range, use a shorter range_width and lower mountains.
       int range_dist = range_width;
-      int alt_min = alt_foothill, alt_max = alt_mountain;
-      if (rl_dist(start, p) <= 4 || rl_dist(end, p) <= 4) {
+      int alt_min = alt_foothill, alt_max = alt_mountain * 2;
+      if (rl_dist(start, p) <= 3 || rl_dist(end, p) <= 3) {
         range_dist = 1;
-        alt_min /= 2;
-        alt_max = alt_max * .75;
+        alt_min = alt_min / 2;
+        alt_max = alt_mountain;
+      } else if (rl_dist(start, p) <= 6 || rl_dist(end, p) <= 6) {
+        alt_max = alt_mountain;
       }
+
       for (int x = p.x - range_dist; x <= p.x + range_dist; x++) {
         for (int y = p.y - range_dist; y <= p.y + range_dist; y++) {
           if (!OOB(x, y) && altitude[x][y] > 0) {
@@ -2236,7 +2243,7 @@ nc_color world_temperature_color(World_temperature temp)
   switch (temp) {
     case WORLD_TEMP_ICE_AGE:    return c_white;
     case WORLD_TEMP_COLD:       return c_ltcyan;
-    case WORLD_TEMP_TEMPERATE:  return c_white;
+    case WORLD_TEMP_TEMPERATE:  return c_ltgreen;
     case WORLD_TEMP_HOT:        return c_yellow;
     case WORLD_TEMP_FURNACE:    return c_ltred;
     case WORLD_TEMP_MAX:        return c_magenta;
@@ -2264,7 +2271,7 @@ nc_color world_rainfall_color(World_rainfall rain)
   switch (rain) {
     case WORLD_RAIN_DRY:      return c_ltred;
     case WORLD_RAIN_LIGHT:    return c_yellow;
-    case WORLD_RAIN_MODERATE: return c_white;
+    case WORLD_RAIN_MODERATE: return c_ltcyan;
     case WORLD_RAIN_HEAVY:    return c_cyan;
     case WORLD_RAIN_UNENDING: return c_blue;
     case WORLD_RAIN_MAX:      return c_magenta;
