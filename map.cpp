@@ -459,7 +459,19 @@ void City_map::generate(Map_type type,
   for (int i = 0; i < TER_MAX; i++) {
     chance[i] = 0;
   }
+
   switch (type) {
+
+    case MAP_NULL:
+      debugmsg("City_map::generate() called with type MAP_NULL!");
+      chance[TER_FIELD] = 1;
+      break;
+
+    case MAP_MAX:
+      debugmsg("City_map::generate() called with type MAP_MAX!");
+      chance[TER_FIELD] = 1;
+      break;
+
     case MAP_TUNDRA:
       chance[TER_TUNDRA]        = 100;
       chance[TER_ROCKY]         =   1;
